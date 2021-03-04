@@ -13,7 +13,7 @@ You need a Twitter API key, and a Rapid API key for Botometer. Should create a `
 ```
 C_KEY = ""
 C_SECRET = ""
-ACCESS_TOKEN = "-Ex8rgGJLmlnb4hY1ARAfGSMoU5YBF1O"
+ACCESS_TOKEN = ""
 ACCESS_TOKEN_SECRET = ""
 RAPIDAPI_KEY = ""
 ```
