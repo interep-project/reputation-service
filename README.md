@@ -8,6 +8,16 @@ To run in dev mode and reload as code changes:
 
 `export FLASK_ENV=development`
 
+You need a Twitter API key, and a Rapid API key for Botometer. Should create a `secrets.py` file with the consumer key/secret and access token/secret for Twitter, and your Rapid API key:
+
+```
+C_KEY = ""
+C_SECRET = ""
+ACCESS_TOKEN = "-Ex8rgGJLmlnb4hY1ARAfGSMoU5YBF1O"
+ACCESS_TOKEN_SECRET = ""
+RAPIDAPI_KEY = ""
+```
+
 ## FEATURE: Twitter bot check
 
 Build a db of known real people, starting with a seed list. Purpose of this is to avoid hitting botometer API too much, since requests are limited on free tier, and to start building our own reputation filters.
