@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Welcome to ReputationService {% endblock %}</h1>
+    <h1>{% block title %} Welcome to Reputation Service {% endblock %}</h1>
+
+    <h2>Check if an account is a bot or not</h2>
+
+    {% import 'forms.html' as forms %}
+    <dl>
+        <dt>Account username</dt>
+        <dd>{{ forms.input('username') }}</dd>
+    </dl>
+
+    <h2>Connect accounts to a pubkey</h2>
+    <dl>
+        <dt>Pubkey</dt>
+        <dd>{{ forms.input('pubkey') }}</dd>
+    </dl>
+
 {% endblock %}

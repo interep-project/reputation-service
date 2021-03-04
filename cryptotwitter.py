@@ -3,6 +3,10 @@ import tweepy
 
 from secrets import *
 
+import plyvel
+
+tdb = plyvel.DB('/tmp/twitterdb/', create_if_missing=True)
+
 # TODO: save to db
 
 #### SUMMARY #####
@@ -14,7 +18,7 @@ from secrets import *
 ##################
 
 def get_list():
-    text_file = open("people.txt", "r")
+    text_file = open("seedusers.txt", "r")
     list = []
     for line in text_file:
       stripped_line = line.rstrip()
@@ -42,9 +46,19 @@ def seed_user_friends(seed_users):
     # Who seed users follow
     for name in seed_users:
         friends = api.friends_ids(screen_name=name)
-        # Do something with these ids. Returns an array
+        # Save these ids. Dedupe as added.
+        for friend in friends:
+            # tdb.set('id', 'user')
+            # id = tdb.get('k')
+            print(id)
         for f in friends:
             print(f)
+
+def save_user_by_name(users):
+    for name in users:
+        user = api.get_user(screen_name=name)
+        # tdb.set(user.id, name)
+        # print(tdb.get(user.id))
 
 if __name__ == "__main__":
     auth = tweepy.OAuthHandler(C_KEY, C_SECRET)
@@ -57,10 +71,18 @@ if __name__ == "__main__":
     # user = api.get_user('arcalinea')
     # print(user.id_str)
 
-    # we know these people are real. let's assume their followers are real too.
+    # Building the db: We know these ppl are real. let's assume they follow real ppl too.
+    # Pull seed users from seedusers.txt into an array
     seed_users = get_list()
-    print(seed_user_friends(seed_users))
+    # save seed users to DB
+    # save_user_by_name(seed_users)
+    # print(seed_user_friends(seed_users))
     # print(seed_users)
+    # user = api.get_user(screen_name='arcalinea')
+    # print(user.id)
+
+    tdb.put('key', 'value')
+    print(tdb.get('key'))
 
     # these people make good lists
     list_creators = ['twobitidiot']
@@ -74,6 +96,20 @@ if __name__ == "__main__":
     # seed_user_friends(seed_users)
     # list_creator_members(list_creators)
 
+    # FEATURE: Twitter bot check:
+    # Save users to db. dedupe
+    # check twitter account query against it
+    # check botometer if not on it
+    # return if bot or not
+
+    # FEATURE: Pubkey account association
+    # Take a user pubkey
+    # Give option to link to github or Twitter
+    # check those accounts to see if user bot or not.
+    # Save association of pubkey with this account in our db for now
+    # Later, put into merkle tree, sempaphore groups, anchor on chain.
+
+    # db: keyvalue. keyed by pubkey, other one by twitter id
 
 
     # subscriptions = api.lists_subscriptions(screen_name='arcalinea', user_id=user.id_str)
