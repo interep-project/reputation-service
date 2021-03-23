@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import * as dotenv from "dotenv";
-import User from "../models/users/User.model";
-import { dbConnect, dbDisconnect } from "../server/util/database";
+import User from "src/models/users/User.model";
+import { dbConnect, dbDisconnect } from "src/utils/server/database";
 
 dotenv.config({ path: resolve(__dirname, "../.env") });
 

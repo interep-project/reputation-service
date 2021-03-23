@@ -1,7 +1,7 @@
 import Head from "next/head";
-import User from "../models/users/User.model";
-import { dbConnect } from "../server/util/database";
-import serialize from "../server/util/serialize";
+import User from "src/models/users/User.model";
+import { dbConnect } from "src/utils/server/database";
+import serialize from "src/utils/server/serialize";
 import styles from "../styles/Home.module.css";
 
 export default function Home(props: any) {
