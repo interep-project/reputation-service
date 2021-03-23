@@ -1,5 +1,5 @@
 import Head from "next/head";
-import dbConnect from "../server/util/dbConnect";
+import { dbConnect } from "../server/util/database";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
