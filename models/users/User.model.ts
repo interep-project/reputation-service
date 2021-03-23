@@ -1,4 +1,4 @@
-import { model, Schema, Document } from "mongoose";
+import { model, Schema, Document, models } from "mongoose";
 
 export interface IUser {
   twitter: { name: string };
@@ -14,4 +14,8 @@ const UserSchemaFields: Record<keyof IUser, any> = {
 
 const UserSchema = new Schema(UserSchemaFields);
 
-export const User = model<IUserDoc>("User", UserSchema);
+const MODEL_NAME = "User";
+
+// Because of Next.js HMR we need to get the model if it was already compiled
+export default models[MODEL_NAME] ||
+  model<IUserDoc>(MODEL_NAME, UserSchema, "users");
