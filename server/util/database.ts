@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const { MONGODB_URI } = process.env;
+export async function dbConnect() {
+  const { MONGODB_URI } = process.env;
 
-async function dbConnect() {
   // check if we have a connection to the database or if it's currently
   // connecting or disconnecting (readyState 1, 2 and 3)
   if (mongoose.connection.readyState >= 1) {
@@ -11,7 +11,7 @@ async function dbConnect() {
 
   if (!MONGODB_URI) {
     throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env.local"
+      "Please define the MONGODB_URI environment variable inside .env"
     );
   }
 
@@ -33,4 +33,9 @@ async function dbConnect() {
   });
 }
 
-export default dbConnect;
+export const dbDisconnect = () => {
+  if (!mongoose.connection) {
+    return;
+  }
+  mongoose.disconnect();
+};

@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "script": "cd ./scripts && ts-node"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "mongoose": "^5.12.1",
     "next": "10.0.9",
     "react": "17.0.1",
