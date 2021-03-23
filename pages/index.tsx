@@ -1,8 +1,10 @@
 import Head from "next/head";
+import User from "../models/users/User.model";
 import { dbConnect } from "../server/util/database";
+import serialize from "../server/util/serialize";
 import styles from "../styles/Home.module.css";
 
-export default function Home() {
+export default function Home(props: any) {
   return (
     <div className={styles.container}>
       <Head>
@@ -49,6 +51,7 @@ export default function Home() {
             </p>
           </a>
         </div>
+        <div>{JSON.stringify(props.users)}</div>
       </main>
 
       <footer className={styles.footer}>
@@ -67,6 +70,7 @@ export default function Home() {
 
 export async function getServerSideProps() {
   await dbConnect();
+  const users = await User.find({}).exec();
 
-  return { props: {} };
+  return { props: { users: serialize(users) } };
 }
