@@ -5,6 +5,5 @@ export async function findByTwitterName(
   this: typeof User,
   name: string
 ): Promise<IUserDocument | null> {
-  console.log(`name`, name);
-  return this.findOne({ twitter: { name } });
+  return this.findOne({ "twitter.name": name } as any);
 }

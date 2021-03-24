@@ -9,6 +9,7 @@
     "script": "cd ./scripts && ts-node"
   },
   "dependencies": {
+    "botometer": "^1.0.12",
     "dotenv": "^8.2.0",
     "mongoose": "^5.12.1",
     "next": "10.0.9",

@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import config from "src/config";
 
 export async function dbConnect() {
-  const { MONGODB_URI } = process.env;
+  const { MONGODB_URI } = config;
 
   // check if we have a connection to the database or if it's currently
   // connecting or disconnecting (readyState 1, 2 and 3)
@@ -21,6 +22,7 @@ export async function dbConnect() {
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true,
+      autoIndex: true,
     })
     .catch((error) => console.error(error));
 
