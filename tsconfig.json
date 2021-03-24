@@ -27,5 +27,5 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx"]
 }

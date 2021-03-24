@@ -51,7 +51,6 @@ export default function Home(props: any) {
             </p>
           </a>
         </div>
-        <div>{JSON.stringify(props.users)}</div>
       </main>
 
       <footer className={styles.footer}>
