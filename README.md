@@ -5,6 +5,8 @@
 
 ## Getting Started
 
+Run `yarn` to install dependencies.
+
 Copy the `.env.example` file and rename it `.env`.
 
 All environment variables need to be provided. The format for the MongoDB URI is described [here](https://docs.mongodb.com/manual/reference/connection-string/).
