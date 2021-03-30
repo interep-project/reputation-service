@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "script": "cd ./scripts && ts-node"
+    "script": "cd ./scripts && ts-node",
+    "test": "jest"
   },
   "dependencies": {
     "botometer": "^1.0.12",
@@ -17,9 +18,12 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "autoprefixer": "^10.2.5",
+    "babel-jest": "^26.6.3",
+    "jest": "^26.6.3",
     "postcss": "^8.2.8",
     "tailwindcss": "^2.0.4",
     "typescript": "^4.2.3"
