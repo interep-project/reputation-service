@@ -37,13 +37,18 @@ class UserController {
 
     const botometerData = normalizeBotometerData(botometerResponse);
 
-    user.twitter = { ...user.twitter, ...botometerData.twitterData };
-    await user.save();
+    if (botometerData.twitterData && botometerData.botometer) {
+      user.twitter = { ...user.twitter, ...botometerData.twitterData };
+      await user.save();
 
-    user.botometer = botometerData.botometer;
-    await user.save();
+      user.botometer = botometerData.botometer;
+      await user.save();
 
-    res.send(user.botometer);
+      res.send(user.botometer);
+    } else {
+      res.status(500).end();
+      return;
+    }
   };
 }
 

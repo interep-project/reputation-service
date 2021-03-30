@@ -7,32 +7,39 @@ type NormalizedBotometerData = {
     friends_count: number;
     created_at: string;
   };
-  botometer: botometerScoreData;
+  botometer?: botometerScoreData;
 };
 
 export const normalizeBotometerData = (
   botometerData: botometerData
 ): NormalizedBotometerData => {
-  let userData = {};
+  let twitterData;
   const user = botometerData.twitterData?.user;
   if (user) {
     const { id, followers_count, friends_count, created_at } = user;
-    userData = {
-      twitterData: {
-        id,
-        followers_count,
-        friends_count,
-        created_at,
-      },
+    twitterData = {
+      id,
+      followers_count,
+      friends_count,
+      created_at,
+    };
+  }
+
+  let botometer;
+  if (
+    botometerData.raw_scores &&
+    botometerData.display_scores &&
+    botometerData.cap
+  ) {
+    botometer = {
+      raw_scores: botometerData.raw_scores,
+      display_scores: botometerData.display_scores,
+      cap: botometerData.cap,
     };
   }
 
   return {
-    ...userData,
-    botometer: {
-      raw_scores: botometerData.raw_scores,
-      display_scores: botometerData.display_scores,
-      cap: botometerData.cap,
-    },
+    twitterData,
+    botometer,
   };
 };
