@@ -69,8 +69,13 @@ describe("normalizeBotometerData", () => {
   });
 
   it("should handle an empty object", () => {
-    // @ts-expect-error
     const normalizedData = normalizeBotometerData({});
+
+    expect(normalizedData).toEqual({});
+  });
+
+  it("should handle an error", () => {
+    const normalizedData = normalizeBotometerData({ error: new Error() });
 
     expect(normalizedData).toEqual({});
   });

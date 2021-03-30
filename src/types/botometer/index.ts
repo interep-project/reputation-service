@@ -8,19 +8,17 @@ export type botometerScores = {
   spammer: number;
 };
 
-export type botometerScoreData =
-  | {
-      cap: { english?: number; universal: number };
-      raw_scores: {
-        english?: botometerScores;
-        universal: botometerScores;
-      };
-      display_scores: {
-        english?: botometerScores;
-        universal: botometerScores;
-      };
-    }
-  | undefined;
+export type botometerScoreData = {
+  cap?: { english?: number; universal: number };
+  raw_scores?: {
+    english?: botometerScores;
+    universal: botometerScores;
+  };
+  display_scores?: {
+    english?: botometerScores;
+    universal: botometerScores;
+  };
+};
 
 export type botometerData = botometerScoreData & {
   twitterData?: {
@@ -31,4 +29,5 @@ export type botometerData = botometerScoreData & {
       created_at: string;
     };
   };
+  [key: string]: unknown;
 };
