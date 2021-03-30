@@ -2,22 +2,22 @@ import mongoose from "mongoose";
 import config from "src/config";
 
 export async function dbConnect() {
-  const { MONGODB_URI } = config;
-
   // check if we have a connection to the database or if it's currently
   // connecting or disconnecting (readyState 1, 2 and 3)
   if (mongoose.connection.readyState >= 1) {
     return;
   }
 
-  if (!MONGODB_URI) {
+  const { MONGO_URL } = config;
+
+  if (!MONGO_URL) {
     throw new Error(
-      "Please define the MONGODB_URI environment variable inside .env"
+      "Please define the MONGO_URL environment variable inside .env"
     );
   }
 
   mongoose
-    .connect(MONGODB_URI, {
+    .connect(MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
