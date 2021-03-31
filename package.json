@@ -10,6 +10,10 @@
     "test": "jest",
     "lint": "eslint . --ext js,jsx,ts,tsx"
   },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn lint"
+  },
   "dependencies": {
     "botometer": "^1.0.12",
     "dotenv": "^8.2.0",
@@ -31,6 +35,7 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^6.0.0",
     "jest": "^26.6.3",
     "mongodb-memory-server": "^6.9.6",
     "node-mocks-http": "^1.10.1",
