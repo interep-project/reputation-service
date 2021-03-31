@@ -26,8 +26,8 @@ class UserController {
     try {
       botometerResponse = await getBotScore(name);
     } catch (err) {
-      console.error(err);
       res.status(500).end();
+      return;
     }
 
     if (!botometerResponse) {

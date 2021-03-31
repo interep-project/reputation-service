@@ -20,3 +20,12 @@ export const dropDatabaseAndDisconnect = async () => {
   await mongoose.connection.close();
   await mongod.stop();
 };
+
+export const clearDatabase = async () => {
+  const collections = mongoose.connection.collections;
+
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany({});
+  }
+};
