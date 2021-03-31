@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "script": "cd ./scripts && ts-node",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --ext js,jsx,ts,tsx"
   },
   "dependencies": {
     "botometer": "^1.0.12",
