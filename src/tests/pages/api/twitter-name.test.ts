@@ -21,11 +21,12 @@ const getBotScoreMocked = getBotScore as jest.MockedFunction<
   typeof getBotScore
 >;
 
+// TODO: Move into an util
 const createNextMocks = (
   reqOptions: (RequestOptions & { query: Record<string, string> }) | undefined
 ) =>
   createMocks<NextApiRequest, NextApiResponse>({
-    // @ts-ignore
+    // @ts-ignore: GET is part of expected type - RequestMethod - so not sure what is going on
     method: "GET" as RequestMethod,
     ...reqOptions,
   });

@@ -26,6 +26,9 @@ module.exports = {
         "plugin:jsx-a11y/recommended", // Accessibility rules
       ],
       rules: {
+        // Warn about console logs that might have been forgotten
+        "no-console": 1,
+
         // Use TypeScript's types for component props instead
         "react/prop-types": "off",
 
@@ -37,6 +40,14 @@ module.exports = {
 
         // Why would you want unused vars?
         "@typescript-eslint/no-unused-vars": ["error"],
+
+        // Allow ts-ignore comment with description
+        "@typescript-eslint/ban-ts-comment": [
+          "error",
+          {
+            "ts-ignore": "allow-with-description",
+          },
+        ],
 
         // Require return types on functions only where useful
         "@typescript-eslint/explicit-function-return-type": [
