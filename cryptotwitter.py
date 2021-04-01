@@ -3,19 +3,10 @@ import tweepy
 
 from secrets import *
 
-import plyvel
+import leveldb
 
 tdb = plyvel.DB('/tmp/twitterdb/', create_if_missing=True)
 
-# TODO: save to db
-
-#### SUMMARY #####
-# Start a seed list of users we accept as real without a bot check
-# Decide to trust who seed users follow - add them to db
-# Decide to trust members of lists created by trusted curators
-# Note: We don't strictly care that this account is a real person in a KYC sense -
-# they simply must a reputable, non-bot identity. So pseudonymous influencers count as "real"
-##################
 
 def get_list():
     text_file = open("seedusers.txt", "r")
@@ -96,20 +87,6 @@ if __name__ == "__main__":
     # seed_user_friends(seed_users)
     # list_creator_members(list_creators)
 
-    # FEATURE: Twitter bot check:
-    # Save users to db. dedupe
-    # check twitter account query against it
-    # check botometer if not on it
-    # return if bot or not
-
-    # FEATURE: Pubkey account association
-    # Take a user pubkey
-    # Give option to link to github or Twitter
-    # check those accounts to see if user bot or not.
-    # Save association of pubkey with this account in our db for now
-    # Later, put into merkle tree, sempaphore groups, anchor on chain.
-
-    # db: keyvalue. keyed by pubkey, other one by twitter id
 
 
     # subscriptions = api.lists_subscriptions(screen_name='arcalinea', user_id=user.id_str)
