@@ -1,0 +1,45 @@
+{
+  "name": "reputation-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "script": "cd ./scripts && ts-node",
+    "test": "jest",
+    "lint": "eslint . --ext js,jsx,ts,tsx",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "botometer": "^1.0.12",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.12.1",
+    "next": "10.0.9",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.22",
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^4.20.0",
+    "@typescript-eslint/parser": "^4.20.0",
+    "autoprefixer": "^10.2.5",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.23.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "mongodb-memory-server": "^6.9.6",
+    "node-mocks-http": "^1.10.1",
+    "postcss": "^8.2.8",
+    "prettier": "^2.2.1",
+    "tailwindcss": "^2.0.4",
+    "ts-jest": "^26.5.4",
+    "typescript": "^4.2.3"
+  }
+}
