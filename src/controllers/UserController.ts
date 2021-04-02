@@ -5,16 +5,16 @@ import { getBotScore } from "src/services/botometer";
 
 class UserController {
   public getBotScore = async (req: NextApiRequest, res: NextApiResponse) => {
-    if (!req.query.name || typeof req.query.name !== "string") {
+    if (!req.query.username || typeof req.query.username !== "string") {
       res.status(400).end();
       return;
     }
 
-    const name = req.query.name.toLowerCase();
-    let user = await User.findByTwitterName(name);
+    const username = req.query.username.toLowerCase();
+    let user = await User.findByTwitterUsername(username);
 
     if (!user) {
-      user = await new User({ twitter: { name } }).save();
+      user = await new User({ twitter: { username } }).save();
     }
 
     if (user.botometer?.raw_scores?.universal?.overall) {
@@ -24,7 +24,7 @@ class UserController {
 
     let botometerResponse = null;
     try {
-      botometerResponse = await getBotScore(name);
+      botometerResponse = await getBotScore(username);
     } catch (err) {
       res.status(500).end();
       return;

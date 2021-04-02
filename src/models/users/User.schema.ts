@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { findByTwitterName } from "./User.statics";
+import { findByTwitterUsername } from "./User.statics";
 import { IUser, IUserDocument, IUserModel } from "./User.types";
 
 const botometerScores = {
@@ -14,7 +14,7 @@ const botometerScores = {
 
 const UserSchemaFields: Record<keyof IUser, any> = {
   twitter: {
-    name: { type: String, required: true, index: true, unique: true },
+    username: { type: String, required: true, index: true, unique: true },
     id: Number,
     followers_count: Number,
     friends_count: Number,
@@ -35,6 +35,6 @@ const UserSchemaFields: Record<keyof IUser, any> = {
 
 const UserSchema = new Schema<IUserDocument, IUserModel>(UserSchemaFields);
 
-UserSchema.statics.findByTwitterName = findByTwitterName;
+UserSchema.statics.findByTwitterUsername = findByTwitterUsername;
 
 export default UserSchema;

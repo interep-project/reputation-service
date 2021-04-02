@@ -66,7 +66,7 @@ describe("/twitter/[name]", () => {
     // When
     await handler(req, res);
 
-    const user = await User.findByTwitterName(twitterName.toLowerCase());
+    const user = await User.findByTwitterUsername(twitterName.toLowerCase());
 
     // Expect
     expect(user?.twitter.name).toEqual(twitterName.toLowerCase());
@@ -164,7 +164,7 @@ describe("/twitter/[name]", () => {
       query: { name: handle },
     });
     await handler(req, res);
-    const user = await User.findByTwitterName(handle.toLowerCase());
+    const user = await User.findByTwitterUsername(handle.toLowerCase());
 
     // Expect
     expect(getBotScoreMocked).toHaveBeenCalledWith(handle.toLowerCase());
@@ -200,7 +200,7 @@ describe("/twitter/[name]", () => {
       query: { name: handle },
     });
     await handler(req, res);
-    const user = await User.findByTwitterName(handle.toLowerCase());
+    const user = await User.findByTwitterUsername(handle.toLowerCase());
 
     // Expect
     expect(res.statusCode).toBe(500);

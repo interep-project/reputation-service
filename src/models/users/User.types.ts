@@ -1,10 +1,10 @@
 import { Model, Document } from "mongoose";
 import { botometerScoreData } from "src/types/botometer";
-import { findByTwitterName } from "./User.statics";
+import { findByTwitterUsername } from "./User.statics";
 
 export interface IUser {
   twitter: {
-    name: string;
+    username: string;
     id?: number;
     followers_count?: number;
     friends_count?: number;
@@ -16,5 +16,5 @@ export interface IUser {
 export interface IUserDocument extends IUser, Document {}
 
 export interface IUserModel extends Model<IUserDocument> {
-  findByTwitterName: typeof findByTwitterName;
+  findByTwitterUsername: typeof findByTwitterUsername;
 }
