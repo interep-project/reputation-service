@@ -35,7 +35,10 @@ const checkTwitterReputation = async (
   // Check Twitter User Reputation
   const twitterReputation = checkBasicTwitterUserReputation(twitterUser);
 
-  user.twitter = { user: twitterUser, reputation: twitterReputation };
+  user.twitter = {
+    user: { ...user.twitter?.user, ...twitterUser },
+    reputation: twitterReputation,
+  };
   try {
     await user.save();
   } catch (err) {
