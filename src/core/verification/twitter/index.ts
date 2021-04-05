@@ -3,11 +3,12 @@ import { IUserDocument } from "src/models/users/User.types";
 import { getTwitterUserByUsername } from "src/services/twitter";
 import { BasicTwitterReputation } from "src/types/twitter";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
+import getBotometerScores from "./botometer/getBotometerScores";
 
 const checkTwitterReputation = async (
   username: string
 ): Promise<IUserDocument | null> => {
-  // Check if user in database already
+  // Check if user is in database already
   let user = await User.findByTwitterUsername(username);
 
   if (!user) {
@@ -27,12 +28,11 @@ const checkTwitterReputation = async (
     console.error(err);
     return null;
   }
-
+  // Failed to get Twitter data: Abort.
   if (!twitterUser) {
     return null;
   }
 
-  // Check Twitter User Reputation
   const twitterReputation = checkBasicTwitterUserReputation(twitterUser);
 
   user.twitter = {
@@ -46,12 +46,24 @@ const checkTwitterReputation = async (
     return null;
   }
 
-  if (twitterReputation === BasicTwitterReputation.UNCLEAR) {
-    // Get bot score
-    return null;
-  } else {
+  if (
+    twitterReputation === BasicTwitterReputation.CONFIRMED ||
+    twitterReputation === BasicTwitterReputation.NOT_SUFFICIENT
+  ) {
     return user;
   }
+
+  // Further checks needed: query botometer
+  const botometerData = await getBotometerScores(username);
+
+  if (botometerData) {
+    user.twitter.botometer = botometerData;
+    await user.save();
+
+    return user;
+  }
+
+  return null;
 };
 
 export default checkTwitterReputation;
