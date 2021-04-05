@@ -1,7 +1,6 @@
-import { TwitterUser } from "src/types/twitter";
+import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
 import {
-  BasicTwitterReputation,
-  checkTwitterUserReputation,
+  checkBasicTwitterUserReputation,
   DEFAULT_PROFILE_IMG,
   isObviousLegitTwitterUser,
   isTwitterReputationNotSufficient,
@@ -19,6 +18,7 @@ const getFakeTwitterUser = (override?: Partial<TwitterUser>): TwitterUser => ({
   verified: false,
   profile_image_url: "profile_image_url",
   username: "username",
+  created_at: "created_at",
   ...override,
 });
 
@@ -91,11 +91,11 @@ describe("isTwitterReputationNotSufficient", () => {
   });
 });
 
-describe("checkTwitterUserReputation", () => {
+describe("checkBasicTwitterUserReputation", () => {
   it("should return CONFIRMED for legit users", () => {
     const user = getFakeTwitterUser({ verified: true });
 
-    const result = checkTwitterUserReputation(user);
+    const result = checkBasicTwitterUserReputation(user);
 
     expect(result).toBe(BasicTwitterReputation.CONFIRMED);
   });
@@ -103,7 +103,7 @@ describe("checkTwitterUserReputation", () => {
   it("should return NOT_SUFFICIENT if applicable", () => {
     const user = getFakeTwitterUser({ profile_image_url: DEFAULT_PROFILE_IMG });
 
-    const result = checkTwitterUserReputation(user);
+    const result = checkBasicTwitterUserReputation(user);
 
     expect(result).toBe(BasicTwitterReputation.NOT_SUFFICIENT);
   });
@@ -111,7 +111,7 @@ describe("checkTwitterUserReputation", () => {
   it("should return UNCLEAR otherwise", () => {
     const user = getFakeTwitterUser();
 
-    const result = checkTwitterUserReputation(user);
+    const result = checkBasicTwitterUserReputation(user);
 
     expect(result).toBe(BasicTwitterReputation.UNCLEAR);
   });

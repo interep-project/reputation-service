@@ -1,10 +1,4 @@
-import { TwitterUser } from "src/types/twitter";
-
-export enum BasicTwitterReputation {
-  CONFIRMED = "CONFIRMED",
-  UNCLEAR = "UNCLEAR",
-  NOT_SUFFICIENT = "NOT_SUFFICIENT",
-}
+import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
 
 const HIGH_TWITTER_FOLLOWERS_THRESHOLD = 7000;
 const LOW_TWITTER_FOLLOWERS_THRESHOLD = 2;
@@ -48,7 +42,7 @@ export const isTwitterReputationNotSufficient = (
   return false;
 };
 
-export const checkTwitterUserReputation = (
+export const checkBasicTwitterUserReputation = (
   twitterUser: TwitterUser
 ): BasicTwitterReputation => {
   if (isObviousLegitTwitterUser(twitterUser)) {
