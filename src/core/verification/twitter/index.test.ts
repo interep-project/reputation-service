@@ -106,13 +106,12 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         Object.values(BasicTwitterReputation).includes(
-          // @ts-expect-error: warning that it could be undefined but that's what we're checking here
           result?.twitter?.reputation
         )
       ).toBeTruthy();
     });
 
-    it("should save user in DB", async () => {
+    it("should save user in DB after basic twitter reputation check", async () => {
       // When
       await checkTwitterReputation("username");
       const user = await User.findByTwitterUsername(twitterUser.username);
@@ -172,9 +171,11 @@ describe("checkTwitterReputation", () => {
     });
 
     it("should save botometer data when reputation is not obvious ", async () => {
+      // When
       await checkTwitterReputation(twitterUser.username);
       const user = await User.findByTwitterUsername(twitterUser.username);
       const userObject = user?.toObject();
+
       // Expect
       expect(user?.twitter.reputation).toBe(BasicTwitterReputation.UNCLEAR);
       expect(userObject?.twitter.botometer).toEqual({
@@ -182,6 +183,13 @@ describe("checkTwitterReputation", () => {
         display_scores: mockBotometerData.display_scores,
         cap: mockBotometerData.cap,
       });
+    });
+
+    it("should return null if botometer failed", async () => {
+      getBotscoreMocked.mockImplementation(() => Promise.reject(undefined));
+      const result = await checkTwitterReputation(twitterUser.username);
+
+      expect(result).toBeNull();
     });
   });
 });

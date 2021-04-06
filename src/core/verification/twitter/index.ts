@@ -5,7 +5,7 @@ import { BasicTwitterReputation } from "src/types/twitter";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
 
-const checkTwitterReputation = async (
+export const checkTwitterReputation = async (
   username: string
 ): Promise<IUserDocument | null> => {
   // Check if user is in database already
@@ -65,5 +65,3 @@ const checkTwitterReputation = async (
 
   return null;
 };
-
-export default checkTwitterReputation;
