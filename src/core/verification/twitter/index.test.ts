@@ -8,7 +8,7 @@ import {
   connect,
   dropDatabaseAndDisconnect,
 } from "src/utils/server/testDatabase";
-import checkTwitterReputation from ".";
+import { checkTwitterReputation } from ".";
 
 jest.mock("src/services/twitter", () => ({
   getTwitterUserByUsername: jest.fn(),
@@ -106,6 +106,7 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         Object.values(BasicTwitterReputation).includes(
+          // @ts-ignore: reputation is not undefined
           result?.twitter?.reputation
         )
       ).toBeTruthy();
@@ -186,7 +187,7 @@ describe("checkTwitterReputation", () => {
     });
 
     it("should return null if botometer failed", async () => {
-      getBotscoreMocked.mockImplementation(() => Promise.reject(undefined));
+      getBotscoreMocked.mockImplementation(() => Promise.resolve(undefined));
       const result = await checkTwitterReputation(twitterUser.username);
 
       expect(result).toBeNull();
