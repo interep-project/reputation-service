@@ -36,8 +36,6 @@ describe("api/verify/twitter/[username]", () => {
     await connect();
   });
 
-  beforeEach(() => {});
-
   afterAll(async () => await dropDatabaseAndDisconnect());
 
   afterEach(async () => {
