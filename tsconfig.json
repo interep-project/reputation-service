@@ -24,6 +24,9 @@
     // same as our --compilerOptions flag and our TS_NODE_COMPILER_OPTIONS environment variable
     "compilerOptions": {
       "module": "commonjs"
+      // "allowSyntheticDefaultImports": true,
+      // "esModuleInterop": true,
+      // "baseUrl": "."
     }
   },
   "exclude": ["node_modules"],
