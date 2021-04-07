@@ -19,13 +19,20 @@ const setLogger = (): winston.Logger => {
 
   const format = winston.format.combine(
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
-    winston.format.colorize({ all: true }),
     winston.format.printf(
       (info) => `${info.timestamp} ${info.level}: ${info.message}`
     )
   );
 
-  const transports: winston.transport[] = [new winston.transports.Console()];
+  const transports: winston.transport[] = [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize({
+          all: true,
+        })
+      ),
+    }),
+  ];
   if (process.env.NODE_ENV === "production") {
     transports.push(
       new winston.transports.File({
