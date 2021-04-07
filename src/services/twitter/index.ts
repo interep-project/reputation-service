@@ -1,6 +1,7 @@
 import Twitter from "twitter-v2";
 import config from "src/config";
 import { TwitterUser } from "src/types/twitter";
+import logger from "src/utils/server/logger";
 
 const { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } = config;
 
@@ -66,7 +67,7 @@ export const getTwitterFriendsByUserId = async ({
       finalData.push(...data);
       nextToken = meta.next_token;
     } catch (error) {
-      console.log(`error`, error);
+      logger.error(error);
       hasError = true;
     }
   } while (nextToken && !hasError);

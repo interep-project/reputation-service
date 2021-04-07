@@ -2,6 +2,7 @@ import User from "src/models/users/User.model";
 import { IUserDocument } from "src/models/users/User.types";
 import { getTwitterUserByUsername } from "src/services/twitter";
 import { BasicTwitterReputation } from "src/types/twitter";
+import logger from "src/utils/server/logger";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
 
@@ -24,8 +25,7 @@ export const checkTwitterReputation = async (
       username,
     });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(err);
+    logger.error(err);
     return null;
   }
   // Failed to get Twitter data: Abort.
@@ -42,7 +42,7 @@ export const checkTwitterReputation = async (
   try {
     await user.save();
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     return null;
   }
 

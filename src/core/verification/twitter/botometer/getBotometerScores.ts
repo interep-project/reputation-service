@@ -1,4 +1,5 @@
 import { getBotScore } from "src/services/botometer";
+import logger from "src/utils/server/logger";
 
 const getBotometerScores = async (username: string) => {
   if (!username) {
@@ -9,7 +10,7 @@ const getBotometerScores = async (username: string) => {
   try {
     botometerResponse = await getBotScore(username);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     return null;
   }
 

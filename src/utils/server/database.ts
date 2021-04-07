@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import config from "src/config";
+import logger from "./logger";
 
 export async function dbConnect() {
   // check if we have a connection to the database or if it's currently
@@ -16,7 +17,7 @@ export async function dbConnect() {
     );
   }
 
-  mongoose
+  await mongoose
     .connect(MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -24,14 +25,15 @@ export async function dbConnect() {
       useCreateIndex: true,
       autoIndex: true,
     })
-    .catch((error) => console.error(error));
+    .catch((error) => logger.error(error));
 
   const database = mongoose.connection;
-  database.once("open", async () => {
-    console.log("🗄️ Connected to database");
+
+  database.once("open", () => {
+    logger.info("🗄️ Connected to database");
   });
-  database.on("error", () => {
-    console.log("Error connecting to database");
+  database.on("error", (err) => {
+    logger.error("Database connection error:", err);
   });
 }
 

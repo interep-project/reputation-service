@@ -1,5 +1,6 @@
 import { Botometer } from "botometer";
 import config from "src/config";
+import logger from "src/utils/server/logger";
 
 const botometer = new Botometer({
   consumerKey: config.TWITTER_CONSUMER_KEY,
@@ -16,7 +17,7 @@ export const getBotScore = async (handle: string) => {
   try {
     result = await botometer.getScore(handle);
   } catch (err) {
-    console.error(err);
+    logger.error(err);
   }
 
   return result;
