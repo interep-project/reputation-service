@@ -19,7 +19,10 @@ export default function Home() {
         setIsLoading(false);
         setTwitterUserData(data);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        setIsLoading(false);
+        console.error(err);
+      });
   };
 
   return (
