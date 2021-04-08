@@ -15,6 +15,7 @@ const botometerScores = {
 
 const UserSchemaFields: Record<keyof IUser, any> = {
   twitter: {
+    isSeedUser: { type: Boolean, index: true },
     reputation: { type: String, enum: BasicTwitterReputation },
     user: {
       username: {

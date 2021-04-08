@@ -8,8 +8,9 @@ import {
   getTwitterUserByUsername,
 } from "src/services/twitter";
 
-const createUserObjectWithComfirmedReputation = (twitterUser: TwitterUser) => ({
+const createTwitterSeedUserObject = (twitterUser: TwitterUser) => ({
   twitter: {
+    isSeedUser: true,
     user: twitterUser,
     reputation: BasicTwitterReputation.CONFIRMED,
   },
@@ -28,7 +29,7 @@ const createUserObjectWithComfirmedReputation = (twitterUser: TwitterUser) => ({
         const twitterUser = await getTwitterUserByUsername({
           username: handle,
         });
-        const userObject = createUserObjectWithComfirmedReputation(twitterUser);
+        const userObject = createTwitterSeedUserObject(twitterUser);
         user = await User.create(userObject);
 
         console.log(`Created user ${user.twitter.user?.username}`);
@@ -49,11 +50,10 @@ const createUserObjectWithComfirmedReputation = (twitterUser: TwitterUser) => ({
 
       if (friends.length === 0) return;
 
-      const formattedFriends = friends.map(
-        createUserObjectWithComfirmedReputation
-      );
+      const formattedFriends = friends.map(createTwitterSeedUserObject);
 
       try {
+        console.log("Inserting in DB...");
         // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
         const docs = await User.insertMany(formattedFriends, {
           ordered: false,

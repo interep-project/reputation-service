@@ -5,6 +5,7 @@ import { findByTwitterUsername } from "./User.statics";
 
 export interface IUser {
   twitter: {
+    isSeedUser?: boolean;
     user?: {
       username: string;
       name?: string;
