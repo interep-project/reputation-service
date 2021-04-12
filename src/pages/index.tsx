@@ -1,22 +1,23 @@
 import Head from "next/head";
 import { useState } from "react";
-import { botometerScoreData } from "src/types/botometer";
+import { IUser } from "src/models/users/User.types";
+import { BasicTwitterReputation } from "src/types/twitter";
 
 export default function Home() {
   const [twitterHandle, setTwitterHandle] = useState("");
-  const [botometerData, setBotometerData] = useState<botometerScoreData | null>(
-    null
-  );
+  const [twitterUserData, setTwitterUserData] = useState<
+    IUser["twitter"] | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = () => {
     if (!twitterHandle) return;
     setIsLoading(true);
-    fetch(`/api/twitter/${twitterHandle}`)
+    fetch(`/api/verify/twitter/${twitterHandle}`)
       .then((res) => res.json())
       .then((data) => {
         setIsLoading(false);
-        setBotometerData(data);
+        setTwitterUserData(data);
       })
       .catch((err) => console.error(err));
   };
@@ -36,7 +37,7 @@ export default function Home() {
                 Reputation Service
               </h2>
               <p className="mt-2 text-center text-sm text-gray-600">
-                Enter a twitter handle to check its bot score
+                Enter a twitter handle to check if a user is reputable
               </p>
             </div>
             <form
@@ -74,14 +75,29 @@ export default function Home() {
               </div>
             </form>
           </div>
-          {botometerData && !isLoading && (
-            <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-              <dt className="text-sm font-medium text-gray-500 truncate">
-                Bot Score
-              </dt>
-              <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                {botometerData?.display_scores?.universal.overall}/5
-              </dd>
+          {!isLoading && (
+            <div className="flex flex-col items-center">
+              {twitterUserData?.reputation && (
+                <h3 className="mb-3 text-lg leading-6 font-medium text-gray-900">
+                  Reputation: {twitterUserData.reputation}
+                </h3>
+              )}
+
+              {twitterUserData?.reputation ===
+                BasicTwitterReputation.UNCLEAR && (
+                <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
+                  <dt className="text-sm font-medium text-gray-500 truncate">
+                    Bot Score
+                  </dt>
+                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                    {
+                      twitterUserData.botometer?.display_scores?.universal
+                        .overall
+                    }
+                    /5
+                  </dd>
+                </div>
+              )}
             </div>
           )}
         </div>

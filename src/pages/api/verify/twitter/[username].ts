@@ -6,6 +6,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
 
   if (req.method === "GET") {
-    return UserController.getBotScore(req, res);
+    return UserController.getTwitterReputation(req, res);
   }
 };

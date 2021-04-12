@@ -1,9 +1,9 @@
 import User from "./User.model";
 import { IUserDocument } from "./User.types";
 
-export async function findByTwitterName(
+export async function findByTwitterUsername(
   this: typeof User,
-  name: string
+  username: string
 ): Promise<IUserDocument | null> {
-  return this.findOne({ "twitter.name": name } as any);
+  return this.findOne({ "twitter.user.username": username } as any);
 }
