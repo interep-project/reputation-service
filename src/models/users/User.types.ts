@@ -20,7 +20,7 @@ export interface IUser {
       profile_image_url?: string;
       created_at?: string;
     };
-    refreshToken: string;
+    refreshToken?: string;
     reputation?: BasicTwitterReputation;
     botometer?: botometerScoreData;
   };
