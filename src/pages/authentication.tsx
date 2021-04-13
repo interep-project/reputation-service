@@ -1,8 +1,7 @@
 import { signIn, signout, useSession } from "next-auth/client";
 
-export default function Authentication() {
+const Authentication = () => {
   const [session] = useSession();
-
   return (
     <div>
       <main>
@@ -42,4 +41,6 @@ export default function Authentication() {
       </main>
     </div>
   );
-}
+};
+
+export default Authentication;
