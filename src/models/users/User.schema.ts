@@ -37,6 +37,7 @@ const UserSchemaFields: Record<keyof IUser, any> = {
       profile_image_url: String,
       created_at: String,
     },
+    refreshToken: String,
     botometer: {
       cap: { english: Number, universal: Number },
       raw_scores: {
