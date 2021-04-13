@@ -13,7 +13,7 @@ export default function Home() {
   const onSubmit = () => {
     if (!twitterHandle) return;
     setIsLoading(true);
-    fetch(`/api/verify/twitter/${twitterHandle}`)
+    fetch(`/api/reputation/twitter/${twitterHandle}`)
       .then((res) => res.json())
       .then((data) => {
         setIsLoading(false);

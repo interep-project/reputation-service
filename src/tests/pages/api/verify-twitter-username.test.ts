@@ -1,6 +1,6 @@
 import { createMocks, RequestMethod } from "node-mocks-http";
 import User from "src/models/users/User.model";
-import handler from "src/pages/api/verify/twitter/[username]";
+import handler from "src/pages/api/reputation/twitter/[username]";
 import {
   clearDatabase,
   connect,
@@ -31,7 +31,7 @@ const createNextMocks = (
     ...reqOptions,
   });
 
-describe("api/verify/twitter/[username]", () => {
+describe("api/reputation/twitter/[username]", () => {
   beforeAll(async () => {
     await connect();
   });
