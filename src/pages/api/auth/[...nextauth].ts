@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 import config from "src/config";
 import handleTwitterSignIn from "src/core/auth/twitter/handleSignIn";
+import { JWToken } from "src/types/nextAuth/token";
 import { NextAuthTwitterAccount } from "src/types/nextAuth/twitter";
 
 export default NextAuth({
@@ -15,7 +16,8 @@ export default NextAuth({
   secret: config.NEXTAUTH_SECRET,
 
   jwt: {
-    signingKey: config.JWT_SIGNING_PRIVATE_KEY,
+    // signingKey: config.JWT_SIGNING_PRIVATE_KEY,
+    secret: config.JWT_SECRET,
   },
 
   // See docs: https://next-auth.js.org/configuration/callbacks
@@ -32,9 +34,13 @@ export default NextAuth({
       return false;
     },
     async jwt(token, _user, account) {
-      if (account?.provider) {
-        token.provider = account.provider;
+      if (account?.provider === "twitter") {
+        (token as JWToken).twitter = {
+          username: (account as NextAuthTwitterAccount)?.results?.screen_name,
+          id: (account as NextAuthTwitterAccount)?.results?.user_id,
+        };
       }
+
       return token;
     },
   },
