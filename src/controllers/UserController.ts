@@ -1,9 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import jwt from "next-auth/jwt";
 import User from "src/models/users/User.model";
 import { normalizeBotometerData } from "src/normalizers/botometer";
 import { getBotScore } from "src/services/botometer";
 import { checkTwitterReputation } from "src/core/verification/twitter";
 import { IUser } from "src/models/users/User.types";
+import config from "src/config";
+import { JWToken } from "src/types/nextAuth/token";
 
 class UserController {
   public getTwitterReputation = async (
@@ -24,6 +27,43 @@ class UserController {
       res.status(500).end();
       return;
     }
+  };
+
+  public getMyTwitterReputation = async (
+    req: NextApiRequest,
+    res: NextApiResponse
+  ) => {
+    // @ts-ignore: accepts secret
+    const token: JWToken = await jwt.getToken({
+      req,
+      secret: config.JWT_SECRET,
+    });
+
+    if (!token) {
+      // Not Signed in
+      res.status(401).end();
+      return;
+    }
+
+    if (!token?.twitter?.username) {
+      res.status(401).end();
+    }
+
+    // @ts-ignore: username is on it
+    const user = await checkTwitterReputation(token.username);
+
+    if (user?.twitter?.reputation) {
+      res.status(200).send({
+        user: user.twitter.user,
+        reputation: user.twitter.reputation,
+        botometer: user.twitter.botometer,
+      });
+    } else {
+      res.status(500).end();
+      return;
+    }
+
+    res.end();
   };
 
   public getBotScore = async (req: NextApiRequest, res: NextApiResponse) => {
