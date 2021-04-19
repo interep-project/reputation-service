@@ -7,4 +7,5 @@ export default {
   RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
+  JWT_SECRET: process.env.JWT_SECRET,
 };
