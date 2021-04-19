@@ -7,5 +7,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (req.method === "GET") {
     return UserController.getTwitterReputation(req, res);
+  } else {
+    res.status(405).end();
   }
 };
