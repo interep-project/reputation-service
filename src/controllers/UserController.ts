@@ -50,7 +50,7 @@ class UserController {
     }
 
     // @ts-ignore: username is on it
-    const user = await checkTwitterReputation(token.username);
+    const user = await checkTwitterReputation(token.twitter.username);
 
     if (user?.twitter?.reputation) {
       res.status(200).send({
