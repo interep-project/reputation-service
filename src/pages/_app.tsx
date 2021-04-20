@@ -1,12 +1,15 @@
 import type { AppProps } from "next/app";
-import { Provider } from "next-auth/client";
+import { Provider as NextAuthProvider } from "next-auth/client";
+import { Web3ContextProvider } from "src/services/context/Web3Provider";
 import "src/styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Provider session={pageProps.session}>
-      <Component {...pageProps} />
-    </Provider>
+    <Web3ContextProvider>
+      <NextAuthProvider session={pageProps.session}>
+        <Component {...pageProps} />
+      </NextAuthProvider>
+    </Web3ContextProvider>
   );
 }
 
