@@ -1,4 +1,12 @@
 import { getAddress } from "@ethersproject/address";
+import { DisplayableChainNames } from "src/types/chains";
+
+const isKnownChainId = (id: number): id is keyof typeof DisplayableChainNames =>
+  id in DisplayableChainNames;
+
+export const getChainNameFromNetworkId = (id: number): string | null => {
+  return isKnownChainId(id) ? DisplayableChainNames[id] : null;
+};
 
 // returns the checksummed address if the address is valid, otherwise returns null
 export function getChecksummedAddress(value: any): string | null {
