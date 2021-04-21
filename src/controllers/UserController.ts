@@ -47,17 +47,15 @@ class UserController {
 
     if (!token?.twitter?.username) {
       res.status(401).end();
+      return;
     }
 
-    // @ts-ignore: username is on it
     const user = await checkTwitterReputation(token.twitter.username);
 
+    delete user?.twitter.refreshToken;
+
     if (user?.twitter?.reputation) {
-      res.status(200).send({
-        user: user.twitter.user,
-        reputation: user.twitter.reputation,
-        botometer: user.twitter.botometer,
-      });
+      res.status(200).send(user.twitter);
     } else {
       res.status(500).end();
       return;
