@@ -17,9 +17,9 @@ const ActionSection: FC<ActionSectionProps> = ({
 }) => {
   return (
     <div className="px-4 py-5 sm:p-6 flex flex-col">
-      <h3 className="text-lg mb-3 leading-6 font-medium text-gray-900">
+      <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
         {title}
-      </h3>
+      </h2>
       <div className="mt-2 sm:flex sm:items-center sm:justify-between">
         {text && (
           <div className="max-w-xl text-base text-gray-700">
