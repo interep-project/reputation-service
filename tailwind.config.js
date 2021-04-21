@@ -9,6 +9,7 @@ module.exports = {
   },
   variants: {
     extend: {
+      backgroundColor: ["disabled"],
       borderWidth: ["hover", "focus"],
     },
   },

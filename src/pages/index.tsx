@@ -111,9 +111,10 @@ export default function Home() {
               </div>
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
+                  disabled={!connected}
                   onClick={() => null}
                   type="button"
-                  className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700`}
+                  className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
                 >
                   LINK ADDRESS
                 </button>
