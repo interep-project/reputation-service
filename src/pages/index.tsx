@@ -13,7 +13,7 @@ const getMyTwitterUser = async () => {
   } catch (err) {
     console.error(err);
   }
-  console.log(`response`, response);
+
   if (response?.status === 200) {
     return await response.json();
   } else {
@@ -21,8 +21,15 @@ const getMyTwitterUser = async () => {
   }
 };
 
+// const getDomain = (chainId: number) => ({
+//   name: "InterRep",
+//   chainId,
+// });
+
 export default function Home() {
   const [session] = useSession();
+  const hasASession = !!session;
+
   const { connect, address, connected, networkId } = useWeb3Context();
   const [twitterUser, settwitterUser] = useState<
     IUserDocument["twitter"] | null
@@ -38,13 +45,28 @@ export default function Home() {
   useEffect(() => {
     getMyTwitterUser()
       .then((user) => {
-        console.log(`user`, user);
         settwitterUser(user);
       })
       .catch((error) => console.error(error));
   }, [session]);
 
-  const hasASession = !!session;
+  // const signTypedData = async () => {
+  //   if (!networkId || !signer) return;
+  //   const domain = getDomain(networkId);
+  //   const types = {
+  //     Main: [
+  //       { name: "recipient", type: "address" },
+  //       { name: "reputable", type: "bool" },
+  //       { name: "provider", type: "string" },
+  //     ],
+  //   };
+  //   const value = {
+  //     recipient: address,
+  //     reputable: true,
+  //     provider: "twitter",
+  //   };
+  //   return await signer._signTypedData(domain, types, value);
+  // };
 
   return (
     <div className="bg-black min-h-full">
@@ -107,7 +129,11 @@ export default function Home() {
             </h2>
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="max-w-xl text-base text-gray-700">
-                <p>Your account is not linked to any Ethereum address</p>
+                <p>
+                  {connected
+                    ? "Your account is not linked to any Ethereum address"
+                    : "Please connect your wallet first"}
+                </p>
               </div>
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
