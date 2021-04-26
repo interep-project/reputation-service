@@ -52,10 +52,10 @@ class UserController {
 
     const user = await checkTwitterReputation(token.twitter.username);
 
-    delete user?.twitter.refreshToken;
+    const response = { ...user?.twitter, refreshToken: undefined };
 
     if (user?.twitter?.reputation) {
-      res.status(200).send(user.twitter);
+      res.status(200).send(response);
     } else {
       res.status(500).end();
       return;
