@@ -7,15 +7,19 @@ import {
   useMemo,
   useState,
 } from "react";
-import { ethers, providers } from "ethers";
+import type { TypedDataSigner } from "@ethersproject/abstract-signer";
+import { ethers, providers, Signer } from "ethers";
 import { API, Wallet } from "src/types/onboard";
 import initOnboard from "../onboard/init";
 
 export interface Web3State {
   address?: string;
   networkId?: number;
+  wallet?: Wallet;
+  provider?: providers.Web3Provider;
   connect?: () => Promise<void>;
   connected?: boolean;
+  signer?: Signer & TypedDataSigner;
 }
 
 const Web3Context = createContext<Web3State>({} as never);
@@ -28,6 +32,9 @@ export const Web3ContextProvider: React.FC = ({ children }) => {
   const [networkId, setNetworkId] = useState<number | undefined>(undefined);
   const [wallet, setWallet] = useState<Wallet | undefined>(undefined);
   const [connected, setConnected] = useState<boolean | undefined>(undefined);
+  const [signer, setSigner] = useState<(Signer & TypedDataSigner) | undefined>(
+    undefined
+  );
   const [provider, setProvider] = useState<providers.Web3Provider | undefined>(
     undefined
   );
@@ -37,6 +44,7 @@ export const Web3ContextProvider: React.FC = ({ children }) => {
     setWallet(undefined);
     setProvider(undefined);
     setConnected(false);
+    setSigner(undefined);
   }, []);
 
   useEffect(() => {
@@ -59,6 +67,7 @@ export const Web3ContextProvider: React.FC = ({ children }) => {
             wallet.provider
           );
           setProvider(ethersProvider);
+          setSigner(ethersProvider.getSigner());
 
           if (wallet?.name) {
             // set the selectedWallet value in local storage
@@ -133,8 +142,16 @@ export const Web3ContextProvider: React.FC = ({ children }) => {
   }, [onboard, resetAll]);
 
   const contextValue = useMemo(
-    () => ({ address, networkId, wallet, provider, connect, connected }),
-    [address, connect, connected, networkId, provider, wallet]
+    () => ({
+      address,
+      networkId,
+      wallet,
+      provider,
+      signer,
+      connect,
+      connected,
+    }),
+    [address, connect, connected, networkId, provider, signer, wallet]
   );
 
   return (
