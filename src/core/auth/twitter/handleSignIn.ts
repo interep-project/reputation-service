@@ -1,36 +1,42 @@
-import User from "src/models/users/User.model";
+import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types";
+import Web2Account from "src/models/web2Accounts/Web2Account.model";
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
 import { NextAuthTwitterAccount } from "src/types/nextAuth/twitter";
+import { createNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import { dbConnect } from "src/utils/server/database";
 
 const handleSignIn = async (account: NextAuthTwitterAccount) => {
   await dbConnect();
 
-  if (!account.id || !account.results.screen_name) {
+  if (!account.id || !account.results.user_id) {
     throw new Error("Invalid account response");
   }
 
-  let user;
+  let twitterAccount: ITwitterAccountDocument | null = null;
 
   try {
-    user = await User.findByTwitterUsername(account.results.screen_name);
+    twitterAccount = (await Web2Account.findByProviderAccountId(
+      Web2Providers.TWITTER,
+      account.results.user_id
+    )) as ITwitterAccountDocument;
   } catch (error) {
     console.error(error);
   }
 
-  if (!user) {
-    user = new User({
-      twitter: {
-        user: {
-          id: account.results.user_id,
-          username: account.results.screen_name,
-        },
+  if (!twitterAccount) {
+    // Populate with more data?
+    twitterAccount = createNewTwitterAccount({
+      providerAccountId: account.results.user_id,
+      user: {
+        id: account.results.user_id,
+        username: account.results.screen_name,
       },
+      accessToken: account.accessToken,
+      refreshToken: account.refreshToken,
     });
+
+    await twitterAccount.save();
   }
-
-  user.twitter.refreshToken = account.refreshToken;
-
-  await user.save();
 
   return true;
 };

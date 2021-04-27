@@ -1,6 +1,6 @@
 import { createMocks, RequestMethod } from "node-mocks-http";
 import User from "src/models/users/User.model";
-import handler from "src/pages/api/reputation/twitter/[username]";
+import handler from "src/pages/api/reputation/twitter/[id]";
 import {
   clearDatabase,
   connect,

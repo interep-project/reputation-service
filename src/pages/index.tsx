@@ -2,7 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/client";
 import { useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
-import { IUserDocument } from "src/models/users/User.types";
+import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
@@ -31,9 +31,9 @@ export default function Home() {
   const hasASession = !!session;
 
   const { connect, address, connected, networkId } = useWeb3Context();
-  const [twitterUser, settwitterUser] = useState<
-    IUserDocument["twitter"] | null
-  >(null);
+  const [twitterUser, settwitterUser] = useState<TwitterReputation | null>(
+    null
+  );
 
   const currentNetworkName = useMemo(
     () =>

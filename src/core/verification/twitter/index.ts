@@ -1,28 +1,37 @@
-import User from "src/models/users/User.model";
-import { IUserDocument } from "src/models/users/User.types";
-import { getTwitterUserByUsername } from "src/services/twitter";
-import { BasicTwitterReputation } from "src/types/twitter";
+import {
+  ITwitterAccountDocument,
+  TwitterReputation,
+} from "src/models/web2Accounts/twitter/TwitterAccount.types";
+import Web2Account from "src/models/web2Accounts/Web2Account.model";
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
+import { getTwitterUserById } from "src/services/twitter";
+import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
+import { createNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import logger from "src/utils/server/logger";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
 
 export const checkTwitterReputation = async (
-  username: string
-): Promise<IUserDocument | null> => {
-  // Check if user is in database already
-  let user = await User.findByTwitterUsername(username);
+  twitterAccountId: string
+): Promise<TwitterReputation | null> => {
+  // Check if account is in database already
+  let twitterAccount: ITwitterAccountDocument | null = (await Web2Account.findByProviderAccountId(
+    Web2Providers.TWITTER,
+    twitterAccountId
+  )) as ITwitterAccountDocument;
 
-  if (!user) {
-    user = new User({ twitter: { username } });
-  } else if (user.twitter?.reputation) {
-    return user;
+  if (twitterAccount?.reputation) {
+    return {
+      reputation: twitterAccount.reputation,
+      botometer: twitterAccount.botometer,
+    };
   }
 
   // Query Twitter for user data
-  let twitterUser;
+  let twitterUser: TwitterUser;
   try {
-    twitterUser = await getTwitterUserByUsername({
-      username,
+    twitterUser = await getTwitterUserById({
+      id: twitterAccountId,
     });
   } catch (err) {
     logger.error(err);
@@ -35,12 +44,20 @@ export const checkTwitterReputation = async (
 
   const twitterReputation = checkBasicTwitterUserReputation(twitterUser);
 
-  user.twitter = {
-    user: { ...user.twitter?.user, ...twitterUser },
-    reputation: twitterReputation,
-  };
+  if (!twitterAccount) {
+    // TODO: move that to util
+    twitterAccount = createNewTwitterAccount({
+      providerAccountId: twitterUser.id,
+      user: twitterUser,
+      reputation: twitterReputation,
+    });
+  } else {
+    twitterAccount.user = { ...twitterAccount.user, ...twitterUser };
+    twitterAccount.reputation = twitterReputation;
+  }
+
   try {
-    await user.save();
+    await twitterAccount.save();
   } catch (err) {
     logger.error(err);
     return null;
@@ -50,17 +67,23 @@ export const checkTwitterReputation = async (
     twitterReputation === BasicTwitterReputation.CONFIRMED ||
     twitterReputation === BasicTwitterReputation.NOT_SUFFICIENT
   ) {
-    return user;
+    return {
+      reputation: twitterAccount.reputation,
+      botometer: twitterAccount.botometer,
+    };
   }
 
   // Further checks needed: query botometer
-  const botometerData = await getBotometerScores(username);
+  const botometerData = await getBotometerScores(twitterAccount.user.username);
 
   if (botometerData) {
-    user.twitter.botometer = botometerData;
-    await user.save();
+    twitterAccount.botometer = botometerData;
+    await twitterAccount.save();
 
-    return user;
+    return {
+      reputation: twitterAccount.reputation,
+      botometer: twitterAccount.botometer,
+    };
   }
 
   return null;

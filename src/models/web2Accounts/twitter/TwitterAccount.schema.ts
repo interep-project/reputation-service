@@ -1,8 +1,9 @@
-import { Model, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { BasicTwitterReputation } from "src/types/twitter";
 import {
-  ITwitterAccount,
+  IBaseTwitterAccount,
   ITwitterAccountDocument,
+  ITwitterAccountModel,
 } from "./TwitterAccount.types";
 
 const botometerScores = {
@@ -15,7 +16,7 @@ const botometerScores = {
   spammer: Number,
 };
 
-const TwitterAccountSchemaFields: Record<keyof ITwitterAccount, any> = {
+const TwitterAccountSchemaFields: Record<keyof IBaseTwitterAccount, any> = {
   reputation: { type: String, enum: BasicTwitterReputation },
   user: {
     username: {
@@ -57,7 +58,7 @@ const TwitterAccountSchemaFields: Record<keyof ITwitterAccount, any> = {
 
 const TwitterAccountSchema = new Schema<
   ITwitterAccountDocument,
-  Model<ITwitterAccountDocument>
+  ITwitterAccountModel
 >(TwitterAccountSchemaFields);
 
 export default TwitterAccountSchema;

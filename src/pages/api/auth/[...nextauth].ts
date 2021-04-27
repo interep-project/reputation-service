@@ -36,7 +36,7 @@ export default NextAuth({
     async jwt(token, _user, account) {
       if (account?.provider === "twitter") {
         (token as JWToken).twitter = {
-          username: (account as NextAuthTwitterAccount)?.results?.screen_name,
+          username: (account as NextAuthTwitterAccount)?.results?.screen_name.toLowerCase(),
           id: (account as NextAuthTwitterAccount)?.results?.user_id,
         };
       }

@@ -1,6 +1,11 @@
 import { Schema } from "mongoose";
-import { findByAccountId } from "./Web2Account.statics";
-import { IWeb2Account, Web2Providers } from "./Web2Account.types";
+import { findByProviderAccountId } from "./Web2Account.statics";
+import {
+  IWeb2Account,
+  IWeb2AccountDocument,
+  IWeb2AccountModel,
+  Web2Providers,
+} from "./Web2Account.types";
 
 const Web2AccountSchemaFields: Record<keyof IWeb2Account, any> = {
   provider: {
@@ -14,13 +19,16 @@ const Web2AccountSchemaFields: Record<keyof IWeb2Account, any> = {
   updatedAt: { type: Date, default: Date.now },
   refreshToken: String,
   accessToken: String,
-  isSeedUser: Boolean,
+  isSeedUser: { type: Boolean, default: false },
 };
 
 const options = { discriminatorKey: "provider" };
 
-const Web2AccountSchema = new Schema(Web2AccountSchemaFields, options);
+const Web2AccountSchema = new Schema<IWeb2AccountDocument, IWeb2AccountModel>(
+  Web2AccountSchemaFields,
+  options
+);
 
-Web2AccountSchema.statics.findByAccountId = findByAccountId;
+Web2AccountSchema.statics.findByProviderAccountId = findByProviderAccountId;
 
 export default Web2AccountSchema;

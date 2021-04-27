@@ -1,4 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /* eslint no-console: 0 */
+
 import User from "src/models/users/User.model";
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
 import seedTwitterUsers from "./seedTwitterUsers";

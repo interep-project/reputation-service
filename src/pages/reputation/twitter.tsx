@@ -1,13 +1,14 @@
 import Head from "next/head";
 import { useState } from "react";
-import { IUser } from "src/models/users/User.types";
+import { TwitterReputation as TwitterReputationType } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import { BasicTwitterReputation } from "src/types/twitter";
 
 export default function TwitterReputation() {
   const [twitterHandle, setTwitterHandle] = useState("");
-  const [twitterUserData, setTwitterUserData] = useState<
-    IUser["twitter"] | null
-  >(null);
+  const [
+    twitterUserData,
+    setTwitterUserData,
+  ] = useState<TwitterReputationType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = () => {
