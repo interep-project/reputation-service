@@ -2,7 +2,7 @@ import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/Twitter
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
 import { NextAuthTwitterAccount } from "src/types/nextAuth/twitter";
-import { createNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
+import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import { dbConnect } from "src/utils/server/database";
 
 const handleSignIn = async (account: NextAuthTwitterAccount) => {
@@ -25,7 +25,7 @@ const handleSignIn = async (account: NextAuthTwitterAccount) => {
 
   if (!twitterAccount) {
     // Populate with more data?
-    twitterAccount = createNewTwitterAccount({
+    twitterAccount = instantiateNewTwitterAccount({
       providerAccountId: account.results.user_id,
       user: {
         id: account.results.user_id,
