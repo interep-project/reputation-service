@@ -1,8 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 /* eslint no-console: 0 */
-
-import User from "src/models/users/User.model";
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
 import seedTwitterUsers from "./seedTwitterUsers";
 import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
@@ -10,13 +6,15 @@ import {
   getTwitterFriendsByUserId,
   getTwitterUserByUsername,
 } from "src/services/twitter";
+import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
+import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
+import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 
-const createTwitterSeedUserObject = (twitterUser: TwitterUser) => ({
-  twitter: {
-    isSeedUser: true,
-    user: twitterUser,
-    reputation: BasicTwitterReputation.CONFIRMED,
-  },
+const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
+  providerAccountId: twitterUser.id,
+  user: twitterUser,
+  isSeedUser: true,
+  reputation: BasicTwitterReputation.CONFIRMED,
 });
 
 (async () => {
@@ -24,28 +22,24 @@ const createTwitterSeedUserObject = (twitterUser: TwitterUser) => ({
 
   try {
     for (const handle of seedTwitterUsers) {
-      let user = await User.findByTwitterUsername(handle);
+      let twitterAccount = await findByTwitterUsername(handle);
       console.log(`######## Processing ${handle} #########`);
-      console.log(`${handle} already in DB?`, !!user);
+      console.log(`${handle} already in DB?`, !!twitterAccount);
 
-      if (!user) {
+      if (!twitterAccount) {
         const twitterUser = await getTwitterUserByUsername({
           username: handle,
         });
-        const userObject = createTwitterSeedUserObject(twitterUser);
-        user = await User.create(userObject);
+        twitterAccount = await TwitterAccount.create(
+          createTwitterAccountObject(createTwitterSeedUser(twitterUser))
+        );
 
-        console.log(`Created user ${user.twitter.user?.username}`);
-      }
-
-      if (!user.twitter.user?.id) {
-        console.log("Missing Twitter id for", handle);
-        continue;
+        console.log(`Created user ${twitterAccount.user.username}`);
       }
 
       // Get users followed by seed user
       const friends: TwitterUser[] = await getTwitterFriendsByUserId({
-        userId: user.twitter.user?.id,
+        userId: twitterAccount.providerAccountId,
         maxResults: 900,
       });
 
@@ -53,12 +47,14 @@ const createTwitterSeedUserObject = (twitterUser: TwitterUser) => ({
 
       if (friends.length === 0) return;
 
-      const formattedFriends = friends.map(createTwitterSeedUserObject);
+      const formattedFriends = friends.map((friend) =>
+        createTwitterAccountObject(createTwitterSeedUser(friend))
+      );
 
       try {
         console.log("Inserting in DB...");
         // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
-        const docs = await User.insertMany(formattedFriends, {
+        const docs = await TwitterAccount.insertMany(formattedFriends, {
           ordered: false,
         });
         console.log(`Inserted ${docs.length} new users without errors`);

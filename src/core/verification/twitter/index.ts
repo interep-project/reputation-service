@@ -6,7 +6,7 @@ import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
 import { getTwitterUserById } from "src/services/twitter";
 import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
-import { createNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
+import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import logger from "src/utils/server/logger";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
@@ -45,12 +45,12 @@ export const checkTwitterReputation = async (
   const twitterReputation = checkBasicTwitterUserReputation(twitterUser);
 
   if (!twitterAccount) {
-    // TODO: move that to util
-    twitterAccount = createNewTwitterAccount({
+    twitterAccount = instantiateNewTwitterAccount({
       providerAccountId: twitterUser.id,
       user: twitterUser,
       reputation: twitterReputation,
     });
+    // update existing twitter account
   } else {
     twitterAccount.user = { ...twitterAccount.user, ...twitterUser };
     twitterAccount.reputation = twitterReputation;
