@@ -5,7 +5,7 @@ import { IToken, ITokenDocument, ITokenModel } from "./Token.types";
 const TokenSchemaFields: Record<keyof IToken, any> = {
   userAddress: { type: String, index: true },
   issuanceTimestamp: { type: Date, required: true },
-  web2Account: Schema.Types.ObjectId,
+  web2Account: { type: Schema.Types.ObjectId, index: true, unique: true },
 };
 
 const UserSchema = new Schema<ITokenDocument, ITokenModel>(TokenSchemaFields);
