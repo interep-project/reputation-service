@@ -1,9 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import Providers from "next-auth/providers";
+import { WithAdditionalParams } from "next-auth/_utils";
 import config from "src/config";
 import handleTwitterSignIn from "src/core/auth/twitter/handleSignIn";
+import Web2Account from "src/models/web2Accounts/Web2Account.model";
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
 import { JWToken } from "src/types/nextAuth/token";
 import { NextAuthTwitterAccount } from "src/types/nextAuth/twitter";
+import logger from "src/utils/server/logger";
 
 export default NextAuth({
   providers: [
@@ -27,21 +31,46 @@ export default NextAuth({
       // console.log(`account`, account);
       // console.log(`profile`, profile);
       if (account?.provider === "twitter") {
-        await handleTwitterSignIn(account as NextAuthTwitterAccount);
+        try {
+          await handleTwitterSignIn(account as NextAuthTwitterAccount);
+        } catch (err) {
+          logger.error(err);
+        }
         return true;
       }
 
       return false;
     },
     async jwt(token, _user, account) {
-      if (account?.provider === "twitter") {
-        (token as JWToken).twitter = {
-          username: (account as NextAuthTwitterAccount)?.results?.screen_name.toLowerCase(),
-          id: (account as NextAuthTwitterAccount)?.results?.user_id,
-        };
+      if (
+        account?.provider === "twitter" &&
+        (account as NextAuthTwitterAccount)?.results.user_id
+      ) {
+        const userId = (account as NextAuthTwitterAccount).results.user_id;
+        const web2Account = await Web2Account.findByProviderAccountId(
+          Web2Providers.TWITTER,
+          userId
+        );
+        if (web2Account) {
+          token.web2AccountId = web2Account.id;
+          token.twitter = {
+            username: (account as NextAuthTwitterAccount)?.results?.screen_name.toLowerCase(),
+            userId,
+          };
+        }
       }
 
       return token;
+    },
+    // @ts-ignore: todo
+    async session(session: Session, token?: JWToken) {
+      if (!token) return session;
+      session.web2AccountId = token.web2AccountId;
+      if (token.twitter) {
+        (session as WithAdditionalParams<Session>).twitter = token.twitter;
+      }
+
+      return Promise.resolve(session);
     },
   },
 });

@@ -43,12 +43,14 @@ class UserController {
       return;
     }
 
-    if (!token?.twitter?.id) {
+    if (!token?.twitter?.userId) {
       res.status(401).end();
       return;
     }
 
-    const twitterReputation = await checkTwitterReputation(token.twitter.id);
+    const twitterReputation = await checkTwitterReputation(
+      token.twitter.userId
+    );
 
     if (twitterReputation) {
       res.status(200).send(twitterReputation);
