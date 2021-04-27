@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import jwt from "next-auth/jwt";
 // import { normalizeBotometerData } from "src/normalizers/botometer";
 // import { getBotScore } from "src/services/botometer";
-import { checkTwitterReputation } from "src/core/verification/twitter";
+import { checkTwitterReputation } from "src/core/reputation/twitter";
 import config from "src/config";
 import { JWToken } from "src/types/nextAuth/token";
 import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccount.types";

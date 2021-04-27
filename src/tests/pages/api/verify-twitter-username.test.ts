@@ -8,12 +8,12 @@ import {
 } from "src/utils/server/testDatabase";
 import { NextApiRequest, NextApiResponse } from "next";
 import { RequestOptions } from "node:https";
-import { checkTwitterReputation } from "src/core/verification/twitter";
+import { checkTwitterReputation } from "src/core/reputation/twitter";
 
 jest.mock("src/services/botometer", () => ({
   getBotScore: jest.fn(),
 }));
-jest.mock("src/core/verification/twitter", () => ({
+jest.mock("src/core/reputation/twitter", () => ({
   checkTwitterReputation: jest.fn(),
 }));
 // @ts-ignore: no idea
