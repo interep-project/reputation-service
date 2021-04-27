@@ -1,7 +1,8 @@
 import { signIn, signOut, useSession } from "next-auth/client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
+import { createAssociationMessage } from "src/core/linking/signature";
 import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
@@ -30,7 +31,7 @@ export default function Home() {
   const [session] = useSession();
   const hasASession = !!session;
 
-  const { connect, address, connected, networkId } = useWeb3Context();
+  const { connect, address, connected, networkId, signer } = useWeb3Context();
   const [
     twitterReputation,
     setTwitterReputation,
@@ -42,13 +43,14 @@ export default function Home() {
       "Unsupported network",
     [networkId]
   );
-
   useEffect(() => {
-    getMyTwitterReputation()
-      .then((reputation) => {
-        setTwitterReputation(reputation);
-      })
-      .catch((error) => console.error(error));
+    if (session) {
+      getMyTwitterReputation()
+        .then((reputation) => {
+          setTwitterReputation(reputation);
+        })
+        .catch((error) => console.error(error));
+    }
   }, [session]);
 
   // const signTypedData = async () => {
@@ -68,6 +70,31 @@ export default function Home() {
   //   };
   //   return await signer._signTypedData(domain, types, value);
   // };
+
+  const signAssociation = useCallback(async () => {
+    if (!signer || !address) {
+      console.error("Can't sign without a signer");
+      return;
+    }
+    if (!session?.web2AccountId) {
+      console.error("Unknown Web 2 account");
+      return;
+    }
+    const message = createAssociationMessage({
+      address,
+      web2AccountId: session.web2AccountId,
+    });
+    const signature = await signer.signMessage(message);
+
+    await fetch(`/api/linking`, {
+      method: "PUT",
+      body: JSON.stringify({
+        address,
+        web2AccountId: session.web2AccountId,
+        signature,
+      }),
+    });
+  }, [address, session, signer]);
 
   return (
     <div className="bg-black min-h-full">
@@ -139,7 +166,7 @@ export default function Home() {
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
                   disabled={!connected}
-                  onClick={() => null}
+                  onClick={() => signAssociation()}
                   type="button"
                   className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
                 >
