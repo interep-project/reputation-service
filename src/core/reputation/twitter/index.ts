@@ -11,6 +11,7 @@ import logger from "src/utils/server/logger";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
 
+// TODO: split it, could accept web2AccountId directly
 export const checkTwitterReputation = async (
   twitterAccountId: string
 ): Promise<TwitterReputation | null> => {
