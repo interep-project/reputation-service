@@ -6,7 +6,7 @@ import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccoun
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
-const getMyTwitterUser = async () => {
+const getMyTwitterReputation = async () => {
   let response;
   try {
     response = await fetch(`/api/reputation/twitter/`);
@@ -31,9 +31,10 @@ export default function Home() {
   const hasASession = !!session;
 
   const { connect, address, connected, networkId } = useWeb3Context();
-  const [twitterUser, settwitterUser] = useState<TwitterReputation | null>(
-    null
-  );
+  const [
+    twitterReputation,
+    setTwitterReputation,
+  ] = useState<TwitterReputation | null>(null);
 
   const currentNetworkName = useMemo(
     () =>
@@ -43,9 +44,9 @@ export default function Home() {
   );
 
   useEffect(() => {
-    getMyTwitterUser()
-      .then((user) => {
-        settwitterUser(user);
+    getMyTwitterReputation()
+      .then((reputation) => {
+        setTwitterReputation(reputation);
       })
       .catch((error) => console.error(error));
   }, [session]);
@@ -117,9 +118,9 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {twitterUser?.reputation ? (
+            {twitterReputation?.reputation ? (
               <p className="text-base text-gray-700">
-                Twitter reputation: {twitterUser.reputation}
+                Twitter reputation: {twitterReputation.reputation}
               </p>
             ) : null}
           </div>
