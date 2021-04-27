@@ -20,7 +20,7 @@ const handleSignIn = async (account: NextAuthTwitterAccount) => {
       account.results.user_id
     )) as ITwitterAccountDocument;
   } catch (error) {
-    console.error(error);
+    throw new Error(`Error trying to retrieve the account: ${error}`);
   }
 
   if (!twitterAccount) {
