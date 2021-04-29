@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { createAssociationMessage } from "src/core/linking/signature";
 import Token from "src/models/tokens/Token.model";
+import { getChecksummedAddress } from "src/utils/crypto/address";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 
@@ -30,11 +31,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    let checksummedAddress;
-    try {
-      checksummedAddress = ethers.utils.getAddress(address);
-    } catch (err) {
-      // Invalid address
+    const checksummedAddress = getChecksummedAddress(address);
+
+    // Invalid address
+    if (!checksummedAddress) {
       res.status(400).end();
       return;
     }

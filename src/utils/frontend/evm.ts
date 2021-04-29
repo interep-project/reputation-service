@@ -1,5 +1,5 @@
-import { getAddress } from "@ethersproject/address";
 import { DisplayableChainNames } from "src/types/chains";
+import { getChecksummedAddress } from "src/utils/crypto/address";
 
 const isKnownChainId = (id: number): id is keyof typeof DisplayableChainNames =>
   id in DisplayableChainNames;
@@ -7,15 +7,6 @@ const isKnownChainId = (id: number): id is keyof typeof DisplayableChainNames =>
 export const getChainNameFromNetworkId = (id: number): string | null => {
   return isKnownChainId(id) ? DisplayableChainNames[id] : null;
 };
-
-// returns the checksummed address if the address is valid, otherwise returns null
-export function getChecksummedAddress(value: any): string | null {
-  try {
-    return getAddress(value);
-  } catch {
-    return null;
-  }
-}
 
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end
 export function shortenAddress(address: string, chars = 4): string {
