@@ -18,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const { address, web2AccountId, signature } = JSON.parse(req.body);
+  const { address, web2AccountId, signature } = req.body;
 
   // Invalid call
   if (!address || !web2AccountId || !signature) {
@@ -27,8 +27,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const token = linkAccounts({ address, web2AccountId, signature });
-    return res.status(200).json(token);
+    const token = await linkAccounts({ address, web2AccountId, signature });
+    return token ? res.status(200) : res.status(500);
   } catch (error) {
     logger.error(error);
     return res.status(400).send({ error });
