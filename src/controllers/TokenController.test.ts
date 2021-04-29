@@ -1,13 +1,7 @@
-import { getSession } from "next-auth/client";
-import { RequestMethod } from "node-mocks-http";
-import linkAccounts from "src/core/linking";
 import createNextMocks from "src/mocks/createNextMocks";
-import { mockSession } from "src/mocks/session";
 import Token from "src/models/tokens/Token.model";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
-import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
-import handler from "src/pages/api/linking";
 import { BasicTwitterReputation } from "src/types/twitter";
 import {
   clearDatabase,
@@ -20,12 +14,6 @@ jest.mock("src/core/linking", () => jest.fn());
 jest.mock("next-auth/client", () => ({
   getSession: jest.fn(),
 }));
-
-const getSessionMocked = getSession as jest.MockedFunction<typeof getSession>;
-
-const linkAccountsMocked = linkAccounts as jest.MockedFunction<
-  typeof linkAccounts
->;
 
 describe("TokenController", () => {
   beforeAll(async () => {
@@ -115,7 +103,7 @@ describe("TokenController", () => {
             {
               provider: "twitter",
               reputation: BasicTwitterReputation.CONFIRMED,
-              botometer: expect.anything(),
+              botometer: undefined,
             },
           ],
         })

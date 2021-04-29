@@ -22,7 +22,7 @@ const getReputationFromToken = async (
     return {
       provider: Web2Providers.TWITTER,
       reputation: (web2Account as ITwitterAccount).reputation || undefined,
-      botometer: web2Account.botometer || undefined,
+      botometer: web2Account.toObject()?.botometer || undefined,
     };
   }
   return null;

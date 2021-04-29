@@ -1,5 +1,4 @@
 import { verifyMessage } from "@ethersproject/wallet";
-import { ethers } from "ethers";
 import linkAccounts from "src/core/linking";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import {
