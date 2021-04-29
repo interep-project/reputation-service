@@ -27,6 +27,7 @@ const handleSignIn = async (account: NextAuthTwitterAccount) => {
     // Populate with more data?
     twitterAccount = instantiateNewTwitterAccount({
       providerAccountId: account.results.user_id,
+      isLinkedToAddress: false,
       user: {
         id: account.results.user_id,
         username: account.results.screen_name,

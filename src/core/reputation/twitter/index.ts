@@ -50,6 +50,7 @@ export const checkTwitterReputation = async (
       providerAccountId: twitterUser.id,
       user: twitterUser,
       reputation: twitterReputation,
+      isLinkedToAddress: false,
     });
     // update existing twitter account
   } else {

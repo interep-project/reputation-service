@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import { createAssociationMessage } from "src/core/linking/signature";
 import Token from "src/models/tokens/Token.model";
+import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
@@ -11,7 +12,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
 
   if (req.method === "PUT") {
-    console.log(`req.body`, req.body);
     const session = await getSession({ req });
     if (!session) {
       res.status(401).end();
@@ -39,12 +39,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    // Web 2 Account already linked
-    const isWeb2AccountAlreadyLinked = await Token.exists({
-      web2Account: web2AccountId,
-    });
+    const web2Account = await Web2Account.findById(web2AccountId);
 
-    if (isWeb2AccountAlreadyLinked) {
+    // Web 2 account not found
+    if (!web2Account) {
+      res.status(400).end();
+      return;
+    }
+
+    // Web 2 Account already linked
+    if (web2Account.isLinkedToAddress) {
       res.status(403).end();
       return;
     }
@@ -57,7 +61,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       recreatedMessage,
       signature
     );
-    console.log(`signerAdd`, signerAddress);
 
     // Invalid signature
     if (signerAddress !== checksummedAddress) {
@@ -66,6 +69,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     try {
+      web2Account.isLinkedToAddress = true;
+      await web2Account.save();
+
       const token = await Token.create({
         userAddress: checksummedAddress,
         web2Account: web2AccountId,

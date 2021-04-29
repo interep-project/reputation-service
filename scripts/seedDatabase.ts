@@ -14,6 +14,7 @@ const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   providerAccountId: twitterUser.id,
   user: twitterUser,
   isSeedUser: true,
+  isLinkedToAddress: false,
   reputation: BasicTwitterReputation.CONFIRMED,
 });
 

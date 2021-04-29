@@ -15,6 +15,7 @@ const Web2AccountSchemaFields: Record<keyof IWeb2Account, any> = {
   },
   providerAccountId: { type: String, index: true, required: true },
   uniqueKey: { type: String, index: true, unique: true },
+  isLinkedToAddress: { type: Boolean, required: true },
   createdAt: { type: Date, default: Date.now, required: true },
   updatedAt: { type: Date, default: Date.now },
   refreshToken: String,

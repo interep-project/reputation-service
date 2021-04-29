@@ -13,6 +13,7 @@ export interface IWeb2Account {
   provider: Web2Providers;
   providerAccountId: string;
   uniqueKey: string;
+  isLinkedToAddress: boolean;
   refreshToken?: string;
   accessToken?: string;
   createdAt: number;
