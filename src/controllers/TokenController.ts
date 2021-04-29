@@ -10,18 +10,16 @@ class TokenController {
   public getReputationByAddress = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{ address: string; results: AccountReputation[] } | undefined> => {
+  ): Promise<{ address: string; results: AccountReputation[] } | void> => {
     if (!req.query.address || typeof req.query.address !== "string") {
-      res.status(400).end();
-      return;
+      return res.status(400).end();
     }
 
     // check address
     const address = getChecksummedAddress(req.query.address);
 
     if (!address) {
-      res.status(400).end();
-      return;
+      return res.status(400).end();
     }
 
     // retrieve all tokens for this address
@@ -30,8 +28,7 @@ class TokenController {
       tokens = await Token.findByUserAddress(address);
     } catch (error) {
       logger.error(error);
-      res.status(500).end();
-      return;
+      return res.status(500).end();
     }
 
     if (!tokens || tokens.length === 0) {
@@ -49,8 +46,7 @@ class TokenController {
       );
     } catch (error) {
       logger.error(error);
-      res.status(500).end();
-      return;
+      return res.status(500).end();
     }
 
     res.status(200).send({ address, results });
