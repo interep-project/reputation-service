@@ -43,6 +43,7 @@ const linkAccounts = async ({
     address,
     web2AccountId: web2AccountId,
   });
+
   const signerAddress = ethers.utils.verifyMessage(recreatedMessage, signature);
 
   if (signerAddress !== checksummedAddress) {
