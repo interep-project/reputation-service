@@ -3,6 +3,7 @@ module.exports = {
   testEnvironment: "node",
   moduleDirectories: ["node_modules", "src"],
   modulePaths: ["<rootDir>"],
+  clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
