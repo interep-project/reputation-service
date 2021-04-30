@@ -1,24 +1,30 @@
-import handler from "src/pages/api/reputation/twitter/[id]";
+import handler from "src/pages/api/reputation/twitter";
 import {
   clearDatabase,
   connect,
   dropDatabaseAndDisconnect,
 } from "src/utils/server/testDatabase";
-import { checkTwitterReputation } from "src/core/reputation/twitter";
+import { checkTwitterReputationByUsername } from "src/core/reputation/twitter";
 import createNextMocks from "src/mocks/createNextMocks";
+import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
+import {
+  AccountReputationByAccount,
+  BasicReputation,
+  Web2Providers,
+} from "src/models/web2Accounts/Web2Account.types";
+import { mockBotometerScores } from "src/mocks/botometerData";
 
 jest.mock("src/services/botometer", () => ({
   getBotScore: jest.fn(),
 }));
 jest.mock("src/core/reputation/twitter", () => ({
-  checkTwitterReputation: jest.fn(),
+  checkTwitterReputationByUsername: jest.fn(),
 }));
 // @ts-ignore: no idea
-const checkTwitterReputationMocked = checkTwitterReputation as jest.MockedFunction<
-  typeof checkTwitterReputation
+const checkTwitterReputationByUsernameMocked = checkTwitterReputationByUsername as jest.MockedFunction<
+  typeof checkTwitterReputationByUsername
 >;
 
-// TODO: TO UPDATE
 describe("api/reputation/twitter/[username]", () => {
   beforeAll(async () => {
     await connect();
@@ -43,10 +49,10 @@ describe("api/reputation/twitter/[username]", () => {
     expect(res._getStatusCode()).toBe(400);
   });
 
-  it.skip("should return a 500 if user has no twitter reputation", async () => {
+  it("should return a 500 if user has no twitter reputation", async () => {
     // Given
     const handle = "problematicAccount";
-    checkTwitterReputationMocked.mockImplementation(() =>
+    checkTwitterReputationByUsernameMocked.mockImplementation(() =>
       Promise.resolve(null)
     );
 
@@ -55,21 +61,24 @@ describe("api/reputation/twitter/[username]", () => {
       query: { username: handle },
     });
     await handler(req, res);
-    const user = await User.findByTwitterUsername(handle.toLowerCase());
+    const user = await findByTwitterUsername(handle.toLowerCase());
 
     // Expect
     expect(res.statusCode).toBe(500);
     expect(user).toBeNull();
   });
 
-  it.skip("should return user.twitter", async () => {
+  it("should return the account reputation", async () => {
     // Given
     const username = "username";
-    const fakeUser = User.create({
-      twitter: { user: { username }, reputation: "CONFIRMED" },
-    });
-    checkTwitterReputationMocked.mockImplementation(() =>
-      Promise.resolve(fakeUser)
+    const accountReputation: AccountReputationByAccount = {
+      provider: Web2Providers.TWITTER,
+      basicReputation: BasicReputation.NOT_SUFFICIENT,
+      user: { username, id: "id" },
+      botometer: mockBotometerScores,
+    };
+    checkTwitterReputationByUsernameMocked.mockImplementation(() =>
+      Promise.resolve(accountReputation)
     );
 
     // When
@@ -80,6 +89,8 @@ describe("api/reputation/twitter/[username]", () => {
 
     // Expect
     expect(res._getData().user.username).toBe(username);
-    expect(res._getData().reputation).toBe((await fakeUser).twitter.reputation);
+    expect(res._getData().basicReputation).toBe(
+      accountReputation.basicReputation
+    );
   });
 });

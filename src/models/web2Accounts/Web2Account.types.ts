@@ -19,7 +19,7 @@ export interface IWeb2Account {
   provider: Web2Providers;
   providerAccountId: string;
   uniqueKey: string;
-  basicReputation: BasicReputation;
+  basicReputation?: BasicReputation;
   isLinkedToAddress: boolean;
   refreshToken?: string;
   accessToken?: string;
@@ -40,12 +40,14 @@ export function isTwitterAccount(
   return web2Account.provider === Web2Providers.TWITTER;
 }
 
+// Response of a query which should NOT reveal information that can be used to identify the account
 export type AccountReputationByAddress = {
   provider: Web2Providers;
-  basicReputation: BasicReputation;
+  basicReputation?: BasicReputation;
 };
 
+// Response of a query, knowing the account already
 export type AccountReputationByAccount = {
   provider: Web2Providers;
-  basicReputation: BasicReputation;
+  basicReputation?: BasicReputation;
 } & TwitterReputation;

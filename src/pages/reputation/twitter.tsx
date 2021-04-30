@@ -1,20 +1,22 @@
 import Head from "next/head";
 import { useState } from "react";
-import { TwitterReputation as TwitterReputationType } from "src/models/web2Accounts/twitter/TwitterAccount.types";
-import { BasicTwitterReputation } from "src/types/twitter";
+import {
+  AccountReputationByAccount,
+  BasicReputation,
+} from "src/models/web2Accounts/Web2Account.types";
 
 export default function TwitterReputation() {
   const [twitterHandle, setTwitterHandle] = useState("");
   const [
     twitterUserData,
     setTwitterUserData,
-  ] = useState<TwitterReputationType | null>(null);
+  ] = useState<AccountReputationByAccount | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = () => {
     if (!twitterHandle) return;
     setIsLoading(true);
-    fetch(`/api/reputation/twitter/${twitterHandle}`)
+    fetch(`/api/reputation/twitter/?username=${twitterHandle}`)
       .then((res) => res.json())
       .then((data) => {
         setIsLoading(false);
@@ -81,14 +83,13 @@ export default function TwitterReputation() {
           </div>
           {!isLoading && (
             <div className="flex flex-col items-center">
-              {twitterUserData?.reputation && (
+              {twitterUserData?.basicReputation && (
                 <h3 className="mb-3 text-lg leading-6 font-medium text-gray-900">
-                  Reputation: {twitterUserData.reputation}
+                  Reputation: {twitterUserData.basicReputation}
                 </h3>
               )}
 
-              {twitterUserData?.reputation ===
-                BasicTwitterReputation.UNCLEAR && (
+              {twitterUserData?.basicReputation === BasicReputation.UNCLEAR && (
                 <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
                   <dt className="text-sm font-medium text-gray-500 truncate">
                     Bot Score

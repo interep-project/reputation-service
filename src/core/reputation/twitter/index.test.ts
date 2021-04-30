@@ -14,7 +14,7 @@ import {
   connect,
   dropDatabaseAndDisconnect,
 } from "src/utils/server/testDatabase";
-import { checkTwitterReputation } from ".";
+import { checkTwitterReputationById, getTwitterUserReputation } from ".";
 
 jest.mock("src/services/twitter", () => ({
   getTwitterUserById: jest.fn(),
@@ -56,7 +56,7 @@ describe("checkTwitterReputation", () => {
     await instantiateNewTwitterAccount(mockUser).save();
 
     // When
-    const result = await checkTwitterReputation(mockTwitterUserId);
+    const result = await checkTwitterReputationById(mockTwitterUserId);
 
     // Expect
     expect(result?.user?.id).toEqual(mockTwitterUserId);
@@ -64,7 +64,7 @@ describe("checkTwitterReputation", () => {
   });
 
   it("should call to fetch twitter data", async () => {
-    await checkTwitterReputation("123");
+    await checkTwitterReputationById("123");
 
     expect(getTwitterUserById).toHaveBeenCalledWith({
       id: "123",
@@ -72,7 +72,7 @@ describe("checkTwitterReputation", () => {
   });
 
   it("should return null if no twitter data is returned", async () => {
-    const result = await checkTwitterReputation("zzasdadsadsad");
+    const result = await checkTwitterReputationById("zzasdadsadsad");
 
     expect(result).toBeNull();
   });
@@ -103,7 +103,7 @@ describe("checkTwitterReputation", () => {
 
     it("should perform basic checks and return user", async () => {
       // When
-      const result = await checkTwitterReputation("userId");
+      const result = await checkTwitterReputationById("userId");
 
       // Expect
       expect(result?.user).toMatchObject({
@@ -119,7 +119,7 @@ describe("checkTwitterReputation", () => {
 
     it("should save user in DB after basic twitter reputation check", async () => {
       // When
-      await checkTwitterReputation(twitterUser.id);
+      await checkTwitterReputationById(twitterUser.id);
 
       const account = await Web2Account.findByProviderAccountId(
         Web2Providers.TWITTER,
@@ -134,13 +134,15 @@ describe("checkTwitterReputation", () => {
         username: twitterUser.username.toLowerCase(),
       });
       expect(
+        // @ts-expect-error: should be defined
         Object.values(BasicReputation).includes(account?.basicReputation)
       ).toBeTruthy();
     });
   });
 
-  describe("Botometer", () => {
+  describe("getTwitterUserReputation", () => {
     let twitterUser: TwitterUser;
+    const twitterAccount = null;
 
     beforeEach(() => {
       // Given
@@ -165,9 +167,12 @@ describe("checkTwitterReputation", () => {
         Promise.resolve(mockBotometerData)
       );
     });
-    it("should returned botometer data when reputation is not obvious", async () => {
+    it("should return botometer data when reputation is not obvious", async () => {
       // When
-      const response = await checkTwitterReputation(twitterUser.username);
+      const response = await getTwitterUserReputation({
+        twitterAccount,
+        twitterUser,
+      });
 
       // Expect
       expect(response?.basicReputation).toBe(BasicReputation.UNCLEAR);
@@ -180,7 +185,10 @@ describe("checkTwitterReputation", () => {
 
     it("should save botometer data when reputation is not obvious ", async () => {
       // When
-      await checkTwitterReputation(twitterUser.username);
+      await getTwitterUserReputation({
+        twitterAccount,
+        twitterUser,
+      });
       const account = await Web2Account.findByProviderAccountId(
         Web2Providers.TWITTER,
         twitterUser.id
@@ -198,7 +206,10 @@ describe("checkTwitterReputation", () => {
 
     it("should return null if botometer failed", async () => {
       getBotscoreMocked.mockImplementation(() => Promise.resolve(undefined));
-      const result = await checkTwitterReputation(twitterUser.username);
+      const result = await getTwitterUserReputation({
+        twitterAccount,
+        twitterUser,
+      });
 
       expect(result).toBeNull();
     });

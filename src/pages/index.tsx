@@ -3,14 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
 import { createAssociationMessage } from "src/core/linking/signature";
-import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccount.types";
+import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
 const getMyTwitterReputation = async () => {
   let response;
   try {
-    response = await fetch(`/api/reputation/twitter/`);
+    response = await fetch(`/api/reputation/twitter/me`);
   } catch (err) {
     console.error(err);
   }
@@ -35,7 +35,7 @@ export default function Home() {
   const [
     twitterReputation,
     setTwitterReputation,
-  ] = useState<TwitterReputation | null>(null);
+  ] = useState<AccountReputationByAccount | null>(null);
 
   const currentNetworkName = useMemo(
     () =>
@@ -145,9 +145,9 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {twitterReputation?.reputation ? (
+            {twitterReputation?.basicReputation ? (
               <p className="text-base text-gray-700">
-                Twitter reputation: {twitterReputation.reputation}
+                Twitter reputation: {twitterReputation.basicReputation}
               </p>
             ) : null}
           </div>

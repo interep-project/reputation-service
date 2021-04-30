@@ -2,35 +2,49 @@ import { NextApiRequest, NextApiResponse } from "next";
 import jwt from "next-auth/jwt";
 // import { normalizeBotometerData } from "src/normalizers/botometer";
 // import { getBotScore } from "src/services/botometer";
-import { checkTwitterReputation } from "src/core/reputation/twitter";
+import {
+  checkTwitterReputationById,
+  checkTwitterReputationByUsername,
+} from "src/core/reputation/twitter";
 import config from "src/config";
 import { JWToken } from "src/types/nextAuth/token";
-import { TwitterReputation } from "src/models/web2Accounts/twitter/TwitterAccount.types";
+import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
+import logger from "src/utils/server/logger";
 
-class UserController {
+class TwitterAccountController {
   public getTwitterReputation = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<TwitterReputation | undefined> => {
-    if (!req.query.id || typeof req.query.id !== "string") {
-      res.status(400).end();
-      return;
+  ): Promise<AccountReputationByAccount | void> => {
+    const { query } = req;
+    let twitterReputation;
+
+    // username was passed
+    if (query?.username && typeof query.username === "string") {
+      twitterReputation = await checkTwitterReputationByUsername(
+        query.username
+      );
+      // id was passed
+    } else if (query?.id && typeof query.id === "string") {
+      twitterReputation = await checkTwitterReputationById(query.id);
+    } else {
+      return res.status(400).send({ error: "No id or username was provided" });
     }
 
-    const twitterReputation = await checkTwitterReputation(req.query.id);
-
     if (twitterReputation) {
-      res.status(200).send(twitterReputation);
+      return res.status(200).send(twitterReputation);
     } else {
-      res.status(500).end();
-      return;
+      logger.error(
+        `No twitter reputation returned. Query username: ${query?.username}, id: ${query?.id}`
+      );
+      return res.status(500).end();
     }
   };
 
   public getMyTwitterReputation = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<TwitterReputation | undefined> => {
+  ): Promise<AccountReputationByAccount | undefined> => {
     // @ts-ignore: accepts secret
     const token: JWToken = await jwt.getToken({
       req,
@@ -48,7 +62,7 @@ class UserController {
       return;
     }
 
-    const twitterReputation = await checkTwitterReputation(
+    const twitterReputation = await checkTwitterReputationById(
       token.twitter.userId
     );
 
@@ -110,4 +124,4 @@ class UserController {
   // };
 }
 
-export default new UserController();
+export default new TwitterAccountController();
