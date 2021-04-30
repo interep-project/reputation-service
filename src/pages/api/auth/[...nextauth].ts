@@ -35,6 +35,7 @@ export default NextAuth({
           await handleTwitterSignIn(account as NextAuthTwitterAccount);
         } catch (err) {
           logger.error(err);
+          return false;
         }
         return true;
       }
