@@ -28,10 +28,10 @@ const bodyParams = {
   signature: "0x",
 };
 const createCall = (bodyOverride?: { [key: string]: unknown }) => ({
-  body: JSON.stringify({
+  body: (JSON.stringify({
     ...bodyParams,
     ...bodyOverride,
-  }),
+  }) as unknown) as Body,
   method: "PUT" as RequestMethod,
 });
 
@@ -106,7 +106,7 @@ describe("api/linking", () => {
       });
     });
 
-    it("should call linkAccounts and return 200", async () => {
+    it("should call linkAccounts and return 201", async () => {
       linkAccountsMocked.mockImplementation(({ address }) =>
         Promise.resolve(new Token({ userAddress: address }))
       );
@@ -117,7 +117,7 @@ describe("api/linking", () => {
       await handler(req, res);
 
       // Expect
-      expect(res._getStatusCode()).toBe(200);
+      expect(res._getStatusCode()).toBe(201);
       expect(linkAccounts).toHaveBeenCalledWith(bodyParams);
     });
 
@@ -133,7 +133,7 @@ describe("api/linking", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(400);
-      expect(res._getData()).toEqual({ error: Error("There was an error") });
+      expect(res._getData()).toEqual({ error: "There was an error" });
     });
   });
 });
