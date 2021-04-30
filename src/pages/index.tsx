@@ -85,7 +85,7 @@ export default function Home() {
         })
         .catch((error) => console.error(error));
     }
-  }, [session]);
+  }, [session, accountLinkingMessage]);
 
   // const signTypedData = async () => {
   //   if (!networkId || !signer) return;
@@ -130,7 +130,7 @@ export default function Home() {
     })
       .then((res) => res.json())
       .then((response) => {
-        if (response.ok) {
+        if (response.status === "ok") {
           setAccountLinkingMessage("Success!");
         } else if (response?.error) {
           setAccountLinkingMessage(`Error: ${response.error}`);
@@ -140,7 +140,10 @@ export default function Home() {
           );
         }
       })
-      .catch((err) => setAccountLinkingMessage(err));
+      .catch((err) => {
+        console.error(err);
+        setAccountLinkingMessage(JSON.stringify(err.message));
+      });
   }, [address, session, signer]);
 
   return (
@@ -205,16 +208,24 @@ export default function Home() {
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="max-w-xl text-base text-gray-700">
                 <p>{!connected && "Please connect your wallet first."}</p>
+                <p>{!hasASession && "Please sign in to a web 2 account."}</p>
                 <p>
-                  {connected && isCurrentAccountLinked
-                    ? "Your account is already linked to an Ethereum address."
-                    : "Your account is not linked to any Ethereum address."}
+                  {hasASession &&
+                    isCurrentAccountLinked &&
+                    "Your account is already linked to an Ethereum address."}
+                </p>
+                <p>
+                  {hasASession &&
+                    !isCurrentAccountLinked &&
+                    "Your account is not linked to any Ethereum address."}
                 </p>
                 <p>{accountLinkingMessage}</p>
               </div>
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
-                  disabled={!connected || isCurrentAccountLinked}
+                  disabled={
+                    !connected || !hasASession || isCurrentAccountLinked
+                  }
                   onClick={() => signAssociation()}
                   type="button"
                   className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}

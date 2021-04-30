@@ -34,7 +34,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const token = await linkAccounts({ address, web2AccountId, signature });
     return token instanceof Token
-      ? res.status(200).end()
+      ? res.status(201).send({ status: "ok" })
       : res.status(500).end();
   } catch (error) {
     logger.error(error);
