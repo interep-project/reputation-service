@@ -1,4 +1,5 @@
 import { signIn, signOut, useSession } from "next-auth/client";
+import getConfig from "next/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
@@ -6,6 +7,8 @@ import { createAssociationMessage } from "src/core/linking/signature";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
+
+const { publicRuntimeConfig } = getConfig();
 
 const getMyTwitterReputation = async () => {
   let response;
@@ -50,6 +53,16 @@ export default function Home() {
   const [isCurrentAccountLinked, setIsCurrentAccountLinked] = useState(
     undefined
   );
+
+  useEffect(() => {
+    if (networkId !== publicRuntimeConfig.networkId) {
+      alert(
+        `Please switch to ${getChainNameFromNetworkId(
+          publicRuntimeConfig.networkId
+        )} network`
+      );
+    }
+  }, [networkId]);
 
   const currentNetworkName = useMemo(
     () =>
