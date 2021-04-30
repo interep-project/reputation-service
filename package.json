@@ -9,6 +9,7 @@
     "script": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register",
     "seedDB": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register scripts/seedDatabase.ts",
     "test": "jest",
+    "test:ci": "./node_modules/.bin/jest",
     "test:w": "jest --watch",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "prepare": "husky install"
