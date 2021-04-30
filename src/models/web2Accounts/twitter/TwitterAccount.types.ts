@@ -1,6 +1,5 @@
 import { Model, Document } from "mongoose";
 import { botometerScoreData } from "src/types/botometer";
-import { BasicTwitterReputation } from "src/types/twitter";
 import { IWeb2Account } from "../Web2Account.types";
 
 export interface IBaseTwitterAccount {
@@ -18,7 +17,6 @@ export interface IBaseTwitterAccount {
     profile_image_url?: string;
     created_at?: string;
   };
-  reputation?: BasicTwitterReputation;
   botometer?: botometerScoreData;
 }
 
@@ -29,6 +27,6 @@ export interface ITwitterAccountDocument extends ITwitterAccount, Document {}
 export type ITwitterAccountModel = Model<ITwitterAccountDocument>;
 
 export type TwitterReputation = {
-  reputation: ITwitterAccountDocument["reputation"];
   botometer: ITwitterAccountDocument["botometer"];
+  user: ITwitterAccountDocument["user"];
 };

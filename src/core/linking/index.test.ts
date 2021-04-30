@@ -46,9 +46,9 @@ describe("linkAccounts", () => {
   });
 
   it("should throw if it fails retrieving the web 2 account", () => {
-    expect(linkAccounts(getParams({ web2AccountId: "badId" }))).rejects.toThrow(
-      `Error retrieving web 2 account`
-    );
+    expect(
+      linkAccounts(getParams({ web2AccountId: "thisIdIsInvalid" }))
+    ).rejects.toThrow(`Error retrieving web 2 account`);
   });
 
   it("should throw if there is no web 2 account for that id", () => {

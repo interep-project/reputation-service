@@ -1,4 +1,5 @@
-import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
+import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
+import { TwitterUser } from "src/types/twitter";
 
 const HIGH_TWITTER_FOLLOWERS_THRESHOLD = 7000;
 const LOW_TWITTER_FOLLOWERS_THRESHOLD = 2;
@@ -44,14 +45,14 @@ export const isTwitterReputationNotSufficient = (
 
 export const checkBasicTwitterUserReputation = (
   twitterUser: TwitterUser
-): BasicTwitterReputation => {
+): BasicReputation => {
   if (isObviousLegitTwitterUser(twitterUser)) {
-    return BasicTwitterReputation.CONFIRMED;
+    return BasicReputation.CONFIRMED;
   }
 
   if (isTwitterReputationNotSufficient(twitterUser)) {
-    return BasicTwitterReputation.NOT_SUFFICIENT;
+    return BasicReputation.NOT_SUFFICIENT;
   }
 
-  return BasicTwitterReputation.UNCLEAR;
+  return BasicReputation.UNCLEAR;
 };

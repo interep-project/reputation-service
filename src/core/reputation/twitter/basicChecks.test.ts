@@ -1,4 +1,5 @@
-import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
+import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
+import { TwitterUser } from "src/types/twitter";
 import {
   checkBasicTwitterUserReputation,
   DEFAULT_PROFILE_IMG,
@@ -97,7 +98,7 @@ describe("checkBasicTwitterUserReputation", () => {
 
     const result = checkBasicTwitterUserReputation(user);
 
-    expect(result).toBe(BasicTwitterReputation.CONFIRMED);
+    expect(result).toBe(BasicReputation.CONFIRMED);
   });
 
   it("should return NOT_SUFFICIENT if applicable", () => {
@@ -105,7 +106,7 @@ describe("checkBasicTwitterUserReputation", () => {
 
     const result = checkBasicTwitterUserReputation(user);
 
-    expect(result).toBe(BasicTwitterReputation.NOT_SUFFICIENT);
+    expect(result).toBe(BasicReputation.NOT_SUFFICIENT);
   });
 
   it("should return UNCLEAR otherwise", () => {
@@ -113,6 +114,6 @@ describe("checkBasicTwitterUserReputation", () => {
 
     const result = checkBasicTwitterUserReputation(user);
 
-    expect(result).toBe(BasicTwitterReputation.UNCLEAR);
+    expect(result).toBe(BasicReputation.UNCLEAR);
   });
 });

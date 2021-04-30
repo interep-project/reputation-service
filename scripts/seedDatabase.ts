@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
 import seedTwitterUsers from "./seedTwitterUsers";
-import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
+import { TwitterUser } from "src/types/twitter";
 import {
   getTwitterFriendsByUserId,
   getTwitterUserByUsername,
@@ -9,13 +9,14 @@ import {
 import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
+import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 
 const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   providerAccountId: twitterUser.id,
   user: twitterUser,
   isSeedUser: true,
   isLinkedToAddress: false,
-  reputation: BasicTwitterReputation.CONFIRMED,
+  basicReputation: BasicReputation.CONFIRMED,
 });
 
 (async () => {

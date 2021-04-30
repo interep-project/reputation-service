@@ -1,8 +1,10 @@
 import { mockBotometerScores } from "src/mocks/botometerData";
 import Token from "src/models/tokens/Token.model";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
-import { BasicTwitterReputation } from "src/types/twitter";
+import {
+  BasicReputation,
+  Web2Providers,
+} from "src/models/web2Accounts/Web2Account.types";
 import {
   connect,
   dropDatabaseAndDisconnect,
@@ -36,7 +38,7 @@ describe("getReputationFromToken", () => {
       },
       providerAccountId: "1",
       isLinkedToAddress: false,
-      reputation: BasicTwitterReputation.UNCLEAR,
+      basicReputation: BasicReputation.UNCLEAR,
       botometer: mockBotometerScores,
     };
     const twitterAccount = await TwitterAccount.create(mockTwitterAccount);
@@ -50,8 +52,7 @@ describe("getReputationFromToken", () => {
 
     expect(result).toEqual({
       provider: mockTwitterAccount.provider,
-      reputation: mockTwitterAccount.reputation,
-      botometer: mockTwitterAccount.botometer,
+      basicReputation: mockTwitterAccount.basicReputation,
     });
   });
 });

@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { BasicTwitterReputation } from "src/types/twitter";
 import {
   IBaseTwitterAccount,
   ITwitterAccountDocument,
@@ -17,7 +16,6 @@ const botometerScores = {
 };
 
 const TwitterAccountSchemaFields: Record<keyof IBaseTwitterAccount, any> = {
-  reputation: { type: String, enum: BasicTwitterReputation },
   user: {
     username: {
       type: String,

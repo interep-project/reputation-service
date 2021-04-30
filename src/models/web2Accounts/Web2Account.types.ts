@@ -9,10 +9,17 @@ export enum Web2Providers {
   TWITTER = "twitter",
 }
 
+export enum BasicReputation {
+  CONFIRMED = "CONFIRMED",
+  UNCLEAR = "UNCLEAR",
+  NOT_SUFFICIENT = "NOT_SUFFICIENT",
+}
+
 export interface IWeb2Account {
   provider: Web2Providers;
   providerAccountId: string;
   uniqueKey: string;
+  basicReputation: BasicReputation;
   isLinkedToAddress: boolean;
   refreshToken?: string;
   accessToken?: string;
@@ -33,6 +40,12 @@ export function isTwitterAccount(
   return web2Account.provider === Web2Providers.TWITTER;
 }
 
-export type AccountReputation = {
+export type AccountReputationByAddress = {
   provider: Web2Providers;
+  basicReputation: BasicReputation;
+};
+
+export type AccountReputationByAccount = {
+  provider: Web2Providers;
+  basicReputation: BasicReputation;
 } & TwitterReputation;

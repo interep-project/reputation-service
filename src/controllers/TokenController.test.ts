@@ -1,8 +1,10 @@
 import createNextMocks from "src/mocks/createNextMocks";
 import Token from "src/models/tokens/Token.model";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
-import { BasicTwitterReputation } from "src/types/twitter";
+import {
+  BasicReputation,
+  Web2Providers,
+} from "src/models/web2Accounts/Web2Account.types";
 import {
   clearDatabase,
   connect,
@@ -76,13 +78,13 @@ describe("TokenController", () => {
         provider: Web2Providers.TWITTER,
         providerAccountId: "1",
         isLinkedToAddress: true,
-        reputation: BasicTwitterReputation.CONFIRMED,
+        basicReputation: BasicReputation.CONFIRMED,
         user: {
           id: "id",
           username: "username",
         },
       });
-      const token = await Token.create({
+      await Token.create({
         userAddress: address,
         web2Account: web2Account.id,
         issuanceTimestamp: Date.now(),
@@ -96,18 +98,15 @@ describe("TokenController", () => {
       // When
       await TokenController.getReputationByAddress(req, res);
 
-      expect(res._getData()).toEqual(
-        expect.objectContaining({
-          address: address,
-          results: [
-            {
-              provider: "twitter",
-              reputation: BasicTwitterReputation.CONFIRMED,
-              botometer: undefined,
-            },
-          ],
-        })
-      );
+      expect(res._getData()).toEqual({
+        address: address,
+        results: [
+          {
+            provider: "twitter",
+            basicReputation: BasicReputation.CONFIRMED,
+          },
+        ],
+      });
     });
   });
 });

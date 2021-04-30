@@ -1,31 +1,38 @@
-import {
-  ITwitterAccountDocument,
-  TwitterReputation,
-} from "src/models/web2Accounts/twitter/TwitterAccount.types";
+import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
+import {
+  AccountReputationByAccount,
+  BasicReputation,
+  Web2Providers,
+} from "src/models/web2Accounts/Web2Account.types";
 import { getTwitterUserById } from "src/services/twitter";
-import { BasicTwitterReputation, TwitterUser } from "src/types/twitter";
+import { TwitterUser } from "src/types/twitter";
 import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import logger from "src/utils/server/logger";
 import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
 
+const getTwitterAccountReputationPayload = (
+  account: ITwitterAccountDocument
+): AccountReputationByAccount => ({
+  provider: Web2Providers.TWITTER,
+  user: account.user,
+  basicReputation: account.basicReputation,
+  botometer: account.botometer,
+});
+
 // TODO: split it, could accept web2AccountId directly
 export const checkTwitterReputation = async (
   twitterAccountId: string
-): Promise<TwitterReputation | null> => {
+): Promise<AccountReputationByAccount | null> => {
   // Check if account is in database already
   let twitterAccount: ITwitterAccountDocument | null = (await Web2Account.findByProviderAccountId(
     Web2Providers.TWITTER,
     twitterAccountId
   )) as ITwitterAccountDocument;
 
-  if (twitterAccount?.reputation) {
-    return {
-      reputation: twitterAccount.reputation,
-      botometer: twitterAccount.botometer,
-    };
+  if (twitterAccount?.basicReputation) {
+    return getTwitterAccountReputationPayload(twitterAccount);
   }
 
   // Query Twitter for user data
@@ -49,13 +56,13 @@ export const checkTwitterReputation = async (
     twitterAccount = instantiateNewTwitterAccount({
       providerAccountId: twitterUser.id,
       user: twitterUser,
-      reputation: twitterReputation,
+      basicReputation: twitterReputation,
       isLinkedToAddress: false,
     });
     // update existing twitter account
   } else {
     twitterAccount.user = { ...twitterAccount.user, ...twitterUser };
-    twitterAccount.reputation = twitterReputation;
+    twitterAccount.basicReputation = twitterReputation;
   }
 
   try {
@@ -66,13 +73,10 @@ export const checkTwitterReputation = async (
   }
 
   if (
-    twitterReputation === BasicTwitterReputation.CONFIRMED ||
-    twitterReputation === BasicTwitterReputation.NOT_SUFFICIENT
+    twitterReputation === BasicReputation.CONFIRMED ||
+    twitterReputation === BasicReputation.NOT_SUFFICIENT
   ) {
-    return {
-      reputation: twitterAccount.reputation,
-      botometer: twitterAccount.botometer,
-    };
+    return getTwitterAccountReputationPayload(twitterAccount);
   }
 
   // Further checks needed: query botometer
@@ -82,10 +86,7 @@ export const checkTwitterReputation = async (
     twitterAccount.botometer = botometerData;
     await twitterAccount.save();
 
-    return {
-      reputation: twitterAccount.reputation,
-      botometer: twitterAccount.botometer,
-    };
+    return getTwitterAccountReputationPayload(twitterAccount);
   }
 
   return null;

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import getReputationFromToken from "src/core/reputation/getReputationFromToken";
 import Token from "src/models/tokens/Token.model";
 import { ITokenDocument } from "src/models/tokens/Token.types";
-import { AccountReputation } from "src/models/web2Accounts/Web2Account.types";
+import { AccountReputationByAddress } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
 
@@ -10,7 +10,10 @@ class TokenController {
   public getReputationByAddress = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{ address: string; results: AccountReputation[] } | void> => {
+  ): Promise<{
+    address: string;
+    results: AccountReputationByAddress[];
+  } | void> => {
     if (!req.query.address || typeof req.query.address !== "string") {
       return res.status(400).end();
     }
