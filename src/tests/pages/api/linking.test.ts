@@ -24,7 +24,7 @@ const linkAccountsMocked = linkAccounts as jest.MockedFunction<
 
 const bodyParams = {
   address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
-  web2AccountId: "acountId",
+  web2AccountId: mockSession.web2AccountId,
   signature: "0x",
 };
 const createCall = (bodyOverride?: { [key: string]: unknown }) => ({
@@ -77,6 +77,18 @@ describe("api/linking", () => {
   describe("with Session", () => {
     beforeAll(() => {
       getSessionMocked.mockImplementation(() => Promise.resolve(mockSession));
+    });
+
+    it("should return 403 if the session account id is not the one passed", async () => {
+      const { req, res } = createNextMocks(
+        createCall({ web2AccountId: "11111111" })
+      );
+
+      // When
+      await handler(req, res);
+
+      // Expect
+      expect(res._getStatusCode()).toBe(403);
     });
 
     it("should return 400 if a parameter is missing", async () => {
