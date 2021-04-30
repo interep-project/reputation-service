@@ -35,8 +35,15 @@ const handleSignIn = async (account: NextAuthTwitterAccount) => {
       accessToken: account.accessToken,
       refreshToken: account.refreshToken,
     });
+  } else {
+    twitterAccount.accessToken = account.accessToken;
+    twitterAccount.refreshToken = account.refreshToken;
+  }
 
+  try {
     await twitterAccount.save();
+  } catch (error) {
+    throw new Error(`Error trying to save the account: ${error}`);
   }
 
   return true;
