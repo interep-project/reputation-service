@@ -22,6 +22,17 @@ const getMyTwitterReputation = async () => {
   }
 };
 
+const checkIfMyAccountIsLinked = async () => {
+  const response = await fetch(`/api/linking/checkLink`);
+
+  if (response?.status === 200) {
+    return await response.json();
+  } else {
+    console.error("Can't determine if account is already linked");
+    return null;
+  }
+};
+
 // const getDomain = (chainId: number) => ({
 //   name: "InterRep",
 //   chainId,
@@ -36,6 +47,9 @@ export default function Home() {
     twitterReputation,
     setTwitterReputation,
   ] = useState<AccountReputationByAccount | null>(null);
+  const [isCurrentAccountLinked, setIsCurrentAccountLinked] = useState(
+    undefined
+  );
 
   const currentNetworkName = useMemo(
     () =>
@@ -48,6 +62,12 @@ export default function Home() {
       getMyTwitterReputation()
         .then((reputation) => {
           setTwitterReputation(reputation);
+        })
+        .catch((error) => console.error(error));
+
+      checkIfMyAccountIsLinked()
+        .then((response) => {
+          response && setIsCurrentAccountLinked(response.isLinkedToAddress);
         })
         .catch((error) => console.error(error));
     }
@@ -157,15 +177,16 @@ export default function Home() {
             </h2>
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="max-w-xl text-base text-gray-700">
+                <p>{!connected && "Please connect your wallet first"}</p>
                 <p>
-                  {connected
-                    ? "Your account is not linked to any Ethereum address"
-                    : "Please connect your wallet first"}
+                  {connected && isCurrentAccountLinked
+                    ? "Your account is already linked to an Ethereum address"
+                    : "Your account is not linked to any Ethereum address"}
                 </p>
               </div>
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
-                  disabled={!connected}
+                  disabled={!connected || isCurrentAccountLinked}
                   onClick={() => signAssociation()}
                   type="button"
                   className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}

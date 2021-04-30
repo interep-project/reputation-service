@@ -9,14 +9,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
 
   if (req.method !== "PUT") {
-    res.status(405).end();
-    return;
+    return res.status(405).end();
   }
 
   const session = await getSession({ req });
   if (!session) {
-    res.status(401).end();
-    return;
+    return res.status(401).end();
   }
 
   const { address, web2AccountId, signature } = req.body;
@@ -27,8 +25,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Invalid call
   if (!address || !web2AccountId || !signature) {
-    res.status(400).end();
-    return;
+    return res.status(400).end();
+  }
+
+  if (session.web2AccountId !== web2AccountId) {
+    return res.status(403).end();
   }
 
   try {
