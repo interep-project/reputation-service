@@ -16,8 +16,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (!session) {
     return res.status(401).end();
   }
-
-  const { address, web2AccountId, signature } = req.body;
+  const { address, web2AccountId, signature } = JSON.parse(req.body);
 
   // logger.silly(
   //   `Linking ${address} with ${web2AccountId}. Signature: ${signature}`
@@ -39,6 +38,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       : res.status(500).end();
   } catch (error) {
     logger.error(error);
-    return res.status(400).send({ error });
+    return res.status(400).send({ error: error.message });
   }
 };
