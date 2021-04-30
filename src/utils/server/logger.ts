@@ -26,6 +26,7 @@ const setLogger = (): winston.Logger => {
 
   const transports: winston.transport[] = [
     new winston.transports.Console({
+      level: process.env.NODE_ENV === "production" ? "info" : "silly",
       format: winston.format.combine(
         winston.format.colorize({
           all: true,
