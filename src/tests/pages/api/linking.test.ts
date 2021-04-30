@@ -28,10 +28,10 @@ const bodyParams = {
   signature: "0x",
 };
 const createCall = (bodyOverride?: { [key: string]: unknown }) => ({
-  body: {
+  body: JSON.stringify({
     ...bodyParams,
     ...bodyOverride,
-  },
+  }),
   method: "PUT" as RequestMethod,
 });
 

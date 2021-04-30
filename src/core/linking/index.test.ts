@@ -2,6 +2,7 @@ import { verifyMessage } from "@ethersproject/wallet";
 import linkAccounts from "src/core/linking";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import {
+  BasicReputation,
   IWeb2AccountDocument,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
@@ -57,21 +58,42 @@ describe("linkAccounts", () => {
     );
   });
 
-  describe("Web2Account already linked", () => {
-    let web2Account: IWeb2AccountDocument;
-    beforeAll(async () => {
-      web2Account = await Web2Account.create({
-        provider: Web2Providers.TWITTER,
-        providerAccountId: "1",
-        isLinkedToAddress: true,
-      });
+  it("should throw if the account is already linked", async () => {
+    const web2Account = await Web2Account.create({
+      provider: Web2Providers.TWITTER,
+      providerAccountId: "1",
+      isLinkedToAddress: true,
     });
 
-    it("should throw if the account is already linked", () => {
-      expect(
-        linkAccounts(getParams({ web2AccountId: web2Account.id }))
-      ).rejects.toThrow(`Web 2 account already linked`);
+    expect(
+      linkAccounts(getParams({ web2AccountId: web2Account.id }))
+    ).rejects.toThrow(`Web 2 account already linked`);
+  });
+
+  it("should throw if the account's reputation is not defined", async () => {
+    const web2Account = await Web2Account.create({
+      provider: Web2Providers.TWITTER,
+      providerAccountId: "1",
+      isLinkedToAddress: false,
+      basicReputation: undefined,
     });
+
+    expect(
+      linkAccounts(getParams({ web2AccountId: web2Account.id }))
+    ).rejects.toThrow(`Insufficient account's reputation`);
+  });
+
+  it("should throw if the account's reputation is not CONFIRMED", async () => {
+    const web2Account = await Web2Account.create({
+      provider: Web2Providers.TWITTER,
+      providerAccountId: "1",
+      isLinkedToAddress: false,
+      basicReputation: BasicReputation.UNCLEAR,
+    });
+
+    expect(
+      linkAccounts(getParams({ web2AccountId: web2Account.id }))
+    ).rejects.toThrow(`Insufficient account's reputation`);
   });
 
   describe("signature", () => {
@@ -81,6 +103,7 @@ describe("linkAccounts", () => {
         provider: Web2Providers.TWITTER,
         providerAccountId: "1",
         isLinkedToAddress: false,
+        basicReputation: BasicReputation.CONFIRMED,
       });
     });
 
@@ -114,6 +137,7 @@ describe("linkAccounts", () => {
         provider: Web2Providers.TWITTER,
         providerAccountId: "1",
         isLinkedToAddress: false,
+        basicReputation: BasicReputation.CONFIRMED,
       });
     });
 

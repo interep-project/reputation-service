@@ -53,9 +53,10 @@ export default function Home() {
   const [isCurrentAccountLinked, setIsCurrentAccountLinked] = useState(
     undefined
   );
+  const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
 
   useEffect(() => {
-    if (networkId !== publicRuntimeConfig.networkId) {
+    if (networkId && networkId !== publicRuntimeConfig.networkId) {
       alert(
         `Please switch to ${getChainNameFromNetworkId(
           publicRuntimeConfig.networkId
@@ -119,14 +120,27 @@ export default function Home() {
     });
     const signature = await signer.signMessage(message);
 
-    await fetch(`/api/linking`, {
+    fetch(`/api/linking`, {
       method: "PUT",
       body: JSON.stringify({
         address,
         web2AccountId: session.web2AccountId,
         signature,
       }),
-    });
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (response.ok) {
+          setAccountLinkingMessage("Success!");
+        } else if (response?.error) {
+          setAccountLinkingMessage(`Error: ${response.error}`);
+        } else {
+          setAccountLinkingMessage(
+            `Sorry there was an error while linking your accounts`
+          );
+        }
+      })
+      .catch((err) => setAccountLinkingMessage(err));
   }, [address, session, signer]);
 
   return (
@@ -190,12 +204,13 @@ export default function Home() {
             </h2>
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="max-w-xl text-base text-gray-700">
-                <p>{!connected && "Please connect your wallet first"}</p>
+                <p>{!connected && "Please connect your wallet first."}</p>
                 <p>
                   {connected && isCurrentAccountLinked
-                    ? "Your account is already linked to an Ethereum address"
-                    : "Your account is not linked to any Ethereum address"}
+                    ? "Your account is already linked to an Ethereum address."
+                    : "Your account is not linked to any Ethereum address."}
                 </p>
+                <p>{accountLinkingMessage}</p>
               </div>
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
