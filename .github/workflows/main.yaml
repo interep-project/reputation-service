@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --frozen-lockfile
+        run: yarn --prefer-offline --frozen-lockfile
 
       - name: Run tests
         run: yarn run test:ci
