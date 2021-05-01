@@ -1,110 +1,242 @@
-import Head from "next/head";
-import { useState } from "react";
-import { IUser } from "src/models/users/User.types";
-import { BasicTwitterReputation } from "src/types/twitter";
+import { signIn, signOut, useSession } from "next-auth/client";
+import getConfig from "next/config";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import ActionSection from "src/components/ActionSection/ActionSection";
+import NavBar from "src/components/NavBar/NavBar";
+import { createAssociationMessage } from "src/core/linking/signature";
+import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
+import { useWeb3Context } from "src/services/context/Web3Provider";
+import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
+
+const { publicRuntimeConfig } = getConfig();
+
+const getMyTwitterReputation = async () => {
+  let response;
+  try {
+    response = await fetch(`/api/reputation/twitter/me`);
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (response?.status === 200) {
+    return await response.json();
+  } else {
+    return null;
+  }
+};
+
+const checkIfMyAccountIsLinked = async () => {
+  const response = await fetch(`/api/linking/checkLink`);
+
+  if (response?.status === 200) {
+    return await response.json();
+  } else {
+    console.error("Can't determine if account is already linked");
+    return null;
+  }
+};
+
+// const getDomain = (chainId: number) => ({
+//   name: "InterRep",
+//   chainId,
+// });
 
 export default function Home() {
-  const [twitterHandle, setTwitterHandle] = useState("");
-  const [twitterUserData, setTwitterUserData] = useState<
-    IUser["twitter"] | null
-  >(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [session] = useSession();
+  const hasASession = !!session;
 
-  const onSubmit = () => {
-    if (!twitterHandle) return;
-    setIsLoading(true);
-    fetch(`/api/verify/twitter/${twitterHandle}`)
+  const { connect, address, connected, networkId, signer } = useWeb3Context();
+  const [
+    twitterReputation,
+    setTwitterReputation,
+  ] = useState<AccountReputationByAccount | null>(null);
+  const [isCurrentAccountLinked, setIsCurrentAccountLinked] = useState(
+    undefined
+  );
+  const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
+
+  useEffect(() => {
+    if (networkId && networkId !== publicRuntimeConfig.networkId) {
+      alert(
+        `Please switch to ${getChainNameFromNetworkId(
+          publicRuntimeConfig.networkId
+        )} network`
+      );
+    }
+  }, [networkId]);
+
+  const currentNetworkName = useMemo(
+    () =>
+      (networkId && getChainNameFromNetworkId(networkId)) ||
+      "Unsupported network",
+    [networkId]
+  );
+  useEffect(() => {
+    if (session) {
+      getMyTwitterReputation()
+        .then((reputation) => {
+          setTwitterReputation(reputation);
+        })
+        .catch((error) => console.error(error));
+
+      checkIfMyAccountIsLinked()
+        .then((response) => {
+          response && setIsCurrentAccountLinked(response.isLinkedToAddress);
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [session, accountLinkingMessage]);
+
+  // const signTypedData = async () => {
+  //   if (!networkId || !signer) return;
+  //   const domain = getDomain(networkId);
+  //   const types = {
+  //     Main: [
+  //       { name: "recipient", type: "address" },
+  //       { name: "reputable", type: "bool" },
+  //       { name: "provider", type: "string" },
+  //     ],
+  //   };
+  //   const value = {
+  //     recipient: address,
+  //     reputable: true,
+  //     provider: "twitter",
+  //   };
+  //   return await signer._signTypedData(domain, types, value);
+  // };
+
+  const signAssociation = useCallback(async () => {
+    if (!signer || !address) {
+      console.error("Can't sign without a signer");
+      return;
+    }
+    if (!session?.web2AccountId) {
+      console.error("Unknown Web 2 account");
+      return;
+    }
+    const message = createAssociationMessage({
+      address,
+      web2AccountId: session.web2AccountId,
+    });
+    const signature = await signer.signMessage(message);
+
+    fetch(`/api/linking`, {
+      method: "PUT",
+      body: JSON.stringify({
+        address,
+        web2AccountId: session.web2AccountId,
+        signature,
+      }),
+    })
       .then((res) => res.json())
-      .then((data) => {
-        setIsLoading(false);
-        setTwitterUserData(data);
+      .then((response) => {
+        if (response.status === "ok") {
+          setAccountLinkingMessage("Success!");
+        } else if (response?.error) {
+          setAccountLinkingMessage(`Error: ${response.error}`);
+        } else {
+          setAccountLinkingMessage(
+            `Sorry there was an error while linking your accounts`
+          );
+        }
       })
       .catch((err) => {
-        setIsLoading(false);
         console.error(err);
+        setAccountLinkingMessage(JSON.stringify(err.message));
       });
-  };
+  }, [address, session, signer]);
 
   return (
-    <div>
-      <Head>
-        <title>Reputation Service</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-md w-full space-y-8 mb-8">
-            <div>
-              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Reputation Service
-              </h2>
-              <p className="mt-2 text-center text-sm text-gray-600">
-                Enter a twitter handle to check if a user is reputable
-              </p>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                onSubmit();
-              }}
-              className="mt-8 space-y-6"
-            >
-              <div>
-                <div className="mt-1 flex rounded-md shadow-sm">
-                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                    @
-                  </span>
-                  <input
-                    value={twitterHandle}
-                    onChange={(e) => setTwitterHandle(e.target.value)}
-                    type="text"
-                    name="twitter_handle"
-                    id="twitter-handle"
-                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
-                    placeholder="jack"
-                  />
-                </div>
+    <div className="bg-black min-h-full">
+      <NavBar
+        isConnected={!!connected}
+        address={address}
+        networkName={currentNetworkName}
+        onAddressClick={() => connect && connect()}
+      />
+      <div className="max-w-7xl mx-auto mt-10 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
+          <ActionSection
+            title="Web 3 Authentication"
+            onClick={() => connect && connect()}
+            buttonText={connected ? "CHANGE WALLET" : "CONNECT WALLET"}
+            buttonClassname=" bg-blue-600 hover:bg-blue-700"
+            text={
+              connected
+                ? `You are connected with ${address}`
+                : "Connect your wallet to get started"
+            }
+          />
+          {/* Twitter section */}
+          <div className="px-4 pb-5 sm:p-6 flex flex-col">
+            <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+              Web 2 Authentication
+            </h2>
+            <h3 className="text-base text-blue-500">Twitter</h3>
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="max-w-xl text-base text-gray-700">
+                <p>
+                  {session
+                    ? `You are connected as ${session?.user?.name}`
+                    : "Sign in with Twitter"}
+                </p>
               </div>
-
-              <div>
+              <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => (hasASession ? signOut() : signIn())}
+                  type="button"
+                  className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm ${
+                    hasASession
+                      ? " bg-red-700 hover:bg-red-800"
+                      : " bg-blue-600 hover:bg-blue-700"
+                  }`}
                 >
-                  {isLoading ? "Loading..." : "CHECK"}
+                  {hasASession ? "LOG OUT" : "SIGN IN"}
                 </button>
               </div>
-            </form>
-          </div>
-          {!isLoading && (
-            <div className="flex flex-col items-center">
-              {twitterUserData?.reputation && (
-                <h3 className="mb-3 text-lg leading-6 font-medium text-gray-900">
-                  Reputation: {twitterUserData.reputation}
-                </h3>
-              )}
-
-              {twitterUserData?.reputation ===
-                BasicTwitterReputation.UNCLEAR && (
-                <div className="px-4 py-5 bg-white shadow rounded-lg overflow-hidden sm:p-6">
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Bot Score
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {
-                      twitterUserData.botometer?.display_scores?.universal
-                        .overall
-                    }
-                    /5
-                  </dd>
-                </div>
-              )}
             </div>
-          )}
+            {twitterReputation?.basicReputation ? (
+              <p className="text-base text-gray-700">
+                Twitter reputation: {twitterReputation.basicReputation}
+              </p>
+            ) : null}
+          </div>
+          <div className="px-4 pb-5 sm:p-6 flex flex-col">
+            <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+              Account Linking
+            </h2>
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="max-w-xl text-base text-gray-700">
+                <p>{!connected && "Please connect your wallet first."}</p>
+                <p>{!hasASession && "Please sign in to a web 2 account."}</p>
+                <p>
+                  {hasASession &&
+                    isCurrentAccountLinked &&
+                    "Your account is already linked to an Ethereum address."}
+                </p>
+                <p>
+                  {hasASession &&
+                    !isCurrentAccountLinked &&
+                    "Your account is not linked to any Ethereum address."}
+                </p>
+                <p>{accountLinkingMessage}</p>
+              </div>
+              <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                <button
+                  disabled={
+                    !connected || !hasASession || isCurrentAccountLinked
+                  }
+                  onClick={() => signAssociation()}
+                  type="button"
+                  className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                >
+                  LINK ADDRESS
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
