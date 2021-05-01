@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "NODE_OPTIONS='--max-old-space-size=1536' next build --debug",
+    "analyze": "ANALYZE=true yarn build",
     "start": "next start",
     "script": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register",
     "seedDB": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register scripts/seedDatabase.ts",
@@ -18,6 +19,10 @@
     "node": "14.x",
     "yarn": "1.x"
   },
+  "cacheDirectories": [
+    "node_modules/",
+    ".next/cache/"
+  ],
   "dependencies": {
     "bnc-onboard": "^1.23.0",
     "botometer": "^1.0.12",
@@ -32,6 +37,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^10.2.0",
     "@types/jest": "^26.0.22",
     "@types/next-auth": "^3.13.0",
     "@types/node": "^14.14.35",
