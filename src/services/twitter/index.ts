@@ -1,6 +1,7 @@
 import Twitter from "twitter-v2";
 import config from "src/config";
 import { TwitterUser } from "src/types/twitter";
+import logger from "src/utils/server/logger";
 
 const { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } = config;
 
@@ -37,6 +38,17 @@ export const getTwitterUserByUsername = async ({
   return data;
 };
 
+export const getTwitterUserById = async ({
+  id,
+}: {
+  id: string;
+}): Promise<TwitterUser> => {
+  // See https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-id
+  const { data } = await client.get(`users/${id}`, userRequestedFields);
+
+  return data;
+};
+
 export const getTwitterFriendsByUserId = async ({
   userId,
   maxResults = 10,
@@ -66,7 +78,7 @@ export const getTwitterFriendsByUserId = async ({
       finalData.push(...data);
       nextToken = meta.next_token;
     } catch (error) {
-      console.log(`error`, error);
+      logger.error(error);
       hasError = true;
     }
   } while (nextToken && !hasError);

@@ -6,23 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "script": "cd ./scripts && ts-node",
+    "script": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register",
     "seedDB": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register scripts/seedDatabase.ts",
     "test": "jest",
+    "test:ci": "./node_modules/.bin/jest",
+    "test:w": "jest --watch",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "prepare": "husky install"
   },
   "dependencies": {
+    "bnc-onboard": "^1.23.0",
     "botometer": "^1.0.12",
     "dotenv": "^8.2.0",
+    "ethers": "^5.1.2",
     "mongoose": "^5.12.1",
     "next": "10.0.9",
+    "next-auth": "^3.14.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "twitter-v2": "^1.0.8"
+    "twitter-v2": "^1.0.8",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
+    "@types/next-auth": "^3.13.0",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.20.0",

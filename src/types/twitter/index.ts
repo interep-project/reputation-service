@@ -1,9 +1,3 @@
-export enum BasicTwitterReputation {
-  CONFIRMED = "CONFIRMED",
-  UNCLEAR = "UNCLEAR",
-  NOT_SUFFICIENT = "NOT_SUFFICIENT",
-}
-
 export type TwitterUser = {
   name: string;
   id: string;
