@@ -12,7 +12,6 @@ import {
   BasicReputation,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
-import { JWToken } from "src/types/nextAuth/token";
 import TwitterAccountController from "./TwitterAccountController";
 
 jest.mock("next-auth/jwt", () => ({

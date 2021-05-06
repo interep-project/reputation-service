@@ -4,25 +4,21 @@ import {
   connect,
   dropDatabaseAndDisconnect,
 } from "src/utils/server/testDatabase";
-import { checkTwitterReputationByUsername } from "src/core/reputation/twitter";
 import createNextMocks from "src/mocks/createNextMocks";
-import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
 import {
   AccountReputationByAccount,
   BasicReputation,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
 import { mockBotometerScores } from "src/mocks/botometerData";
+import TwitterAccountController from "src/controllers/TwitterAccountController";
 
-jest.mock("src/services/botometer", () => ({
-  getBotScore: jest.fn(),
+jest.mock("src/controllers/TwitterAccountController", () => ({
+  getTwitterReputation: jest.fn(),
 }));
-jest.mock("src/core/reputation/twitter", () => ({
-  checkTwitterReputationByUsername: jest.fn(),
-}));
-// @ts-ignore: no idea
-const checkTwitterReputationByUsernameMocked = checkTwitterReputationByUsername as jest.MockedFunction<
-  typeof checkTwitterReputationByUsername
+
+const getTwitterReputationMocked = TwitterAccountController.getTwitterReputation as jest.MockedFunction<
+  typeof TwitterAccountController.getTwitterReputation
 >;
 
 describe("api/reputation/twitter/[username]", () => {
@@ -36,36 +32,17 @@ describe("api/reputation/twitter/[username]", () => {
     await clearDatabase();
   });
 
-  it("should return a 400 if a username is not provided", async () => {
-    // Given
+  it("should return a 405 if the method is not GET", async () => {
     const { req, res } = createNextMocks({
       query: {},
+      method: "PUT",
     });
 
     // When
     await handler(req, res);
 
     // Expect
-    expect(res._getStatusCode()).toBe(400);
-  });
-
-  it("should return a 500 if user has no twitter reputation", async () => {
-    // Given
-    const handle = "problematicAccount";
-    checkTwitterReputationByUsernameMocked.mockImplementation(() =>
-      Promise.resolve(null)
-    );
-
-    // When
-    const { req, res } = createNextMocks({
-      query: { username: handle },
-    });
-    await handler(req, res);
-    const user = await findByTwitterUsername(handle.toLowerCase());
-
-    // Expect
-    expect(res.statusCode).toBe(500);
-    expect(user).toBeNull();
+    expect(res._getStatusCode()).toBe(405);
   });
 
   it("should return the account reputation", async () => {
@@ -77,8 +54,8 @@ describe("api/reputation/twitter/[username]", () => {
       user: { username, id: "id" },
       botometer: mockBotometerScores,
     };
-    checkTwitterReputationByUsernameMocked.mockImplementation(() =>
-      Promise.resolve(accountReputation)
+    getTwitterReputationMocked.mockImplementation((req, res) =>
+      Promise.resolve(res.status(200).send(accountReputation))
     );
 
     // When
