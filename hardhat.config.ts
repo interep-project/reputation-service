@@ -1,5 +1,6 @@
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
+import "@typechain/hardhat";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -19,6 +20,9 @@ const config: HardhatUserConfig = {
   paths: {
     sources: "src/contracts",
     tests: "src/tests/contracts",
+  },
+  typechain: {
+    outDir: "typechain",
   },
 };
 
