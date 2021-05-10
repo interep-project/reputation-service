@@ -12,6 +12,8 @@
     "test": "jest",
     "test:ci": "./node_modules/.bin/jest",
     "test:w": "jest --watch",
+    "eth:compile": "hardhat compile",
+    "eth:test": "hardhat test",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "prepare": "husky install"
   },
