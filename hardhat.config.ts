@@ -16,6 +16,10 @@ task("accounts", "Prints the list of accounts", async (_args, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: "0.7.3",
+  paths: {
+    sources: "src/contracts",
+    tests: "src/tests/contracts",
+  },
 };
 
 export default config;
