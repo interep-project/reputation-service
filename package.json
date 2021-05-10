@@ -27,6 +27,7 @@
     ".next/cache/"
   ],
   "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0",
     "bnc-onboard": "^1.23.0",
     "botometer": "^1.0.12",
     "dotenv": "^8.2.0",
