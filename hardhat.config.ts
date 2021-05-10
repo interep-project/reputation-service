@@ -5,7 +5,7 @@ import "solidity-coverage";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.7.3",
+    version: "0.8.0",
   },
   paths: {
     sources: "src/contracts",
