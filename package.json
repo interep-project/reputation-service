@@ -14,6 +14,7 @@
     "test:w": "jest --watch",
     "eth:compile": "hardhat compile",
     "eth:test": "hardhat test",
+    "eth:coverage": "hardhat coverage --solcoverjs ./.solcover.js --testfiles \"src/tests/contracts/*.ts\"",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "prepare": "husky install"
   },
@@ -69,6 +70,7 @@
     "postcss": "^8.2.8",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.10",
+    "solidity-coverage": "^0.7.16",
     "tailwindcss": "^2.0.4",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
