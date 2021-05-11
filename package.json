@@ -64,6 +64,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "ethereum-waffle": "^3.0.0",
     "hardhat": "^2.2.1",
+    "hardhat-gas-reporter": "^1.0.4",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
     "mongodb-memory-server": "^6.9.6",

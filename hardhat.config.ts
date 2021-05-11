@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "solidity-coverage";
+import "hardhat-gas-reporter";
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -13,6 +14,9 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: "typechain",
+  },
+  gasReporter: {
+    currency: "USD",
   },
 };
 
