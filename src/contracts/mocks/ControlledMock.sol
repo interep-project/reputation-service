@@ -10,7 +10,7 @@ contract ControlledMock is Controlled {
         return true;
     }
 
-    function getBackendAddress() public view returns (address) {
+    function getBackendAddress() public view override returns (address) {
         return _backendAddress;
     }
 }

@@ -2,27 +2,29 @@
 pragma solidity ^0.8.0;
 
 import "./Badge.sol";
-import "./Controlled.sol";
+import "./IBadgeFactory.sol";
 
-contract ReputationBadge is Badge, Controlled {
+contract ReputationBadge is Badge {
+    IBadgeFactory internal badgeFactory;
+
     struct TokenParameters {
         address owner;
         uint256 tokenId;
     }
 
-    constructor(
-        string memory badgeName_,
-        string memory badgeSymbol_,
-        address backendAddress_
-    ) Badge(badgeName_, badgeSymbol_) Controlled(backendAddress_) {}
+    constructor(string memory badgeName_, string memory badgeSymbol_)
+        Badge(badgeName_, badgeSymbol_)
+    {
+        badgeFactory = IBadgeFactory(msg.sender);
+    }
 
     function mint(address to, uint256 tokenId) external {
-        require(msg.sender == _backendAddress, "Unauthorized");
+        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
         _mint(to, tokenId);
     }
 
     function batchMint(TokenParameters[] memory tokensToMint) external {
-        require(msg.sender == _backendAddress, "Unauthorized");
+        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
 
         for (uint256 i = 0; i < tokensToMint.length; i++) {
             _mint(tokensToMint[i].owner, tokensToMint[i].tokenId);
@@ -31,7 +33,8 @@ contract ReputationBadge is Badge, Controlled {
 
     function burn(uint256 tokenId) external {
         require(
-            msg.sender == _backendAddress || msg.sender == ownerOf(tokenId),
+            msg.sender == badgeFactory.getBackendAddress() ||
+                msg.sender == ownerOf(tokenId),
             "Unauthorized"
         );
         _burn(tokenId);

@@ -10,6 +10,10 @@ contract Controlled is Ownable {
         _backendAddress = backendAddress_;
     }
 
+    function getBackendAddress() public view virtual returns (address) {
+        return _backendAddress;
+    }
+
     function setBackendAddress(address newBackendAddress) external onlyOwner {
         _backendAddress = newBackendAddress;
     }

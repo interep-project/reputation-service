@@ -20,14 +20,23 @@ describe("ReputationBadge", () => {
   });
 
   beforeEach(async function () {
-    const ReputationBadgeFactory = await ethers.getContractFactory(
-      "ReputationBadge"
-    );
-    reputationBadge = await ReputationBadgeFactory.connect(owner).deploy(
-      badgeName,
-      badgeSymbol,
-      backend.address
-    );
+    const BadgeFactoryFactory = await ethers.getContractFactory("BadgeFactory");
+    const badgeFactory = await BadgeFactoryFactory.deploy(backend.address);
+
+    const deployBadgeTx = await badgeFactory
+      .connect(owner)
+      .deployBadge(badgeName, badgeSymbol);
+    const txReceipt = await deployBadgeTx.wait();
+
+    const event = txReceipt.events?.[0];
+    if (!event) throw new Error("No event emitted when deploying new badge");
+
+    const newBadgeAddress = event?.args?.[1];
+
+    reputationBadge = (await ethers.getContractAt(
+      "ReputationBadge",
+      newBadgeAddress
+    )) as ReputationBadge;
   });
 
   describe("constructor", () => {
@@ -37,10 +46,6 @@ describe("ReputationBadge", () => {
 
     it("should have the right symbol", async () => {
       expect(await reputationBadge.symbol()).to.eq(badgeSymbol);
-    });
-
-    it("should have the right owner", async () => {
-      expect(await reputationBadge.owner()).to.eq(owner.address);
     });
   });
 
