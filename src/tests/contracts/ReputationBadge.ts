@@ -44,7 +44,7 @@ describe("ReputationBadge", () => {
     });
   });
 
-  describe("minting", () => {
+  describe("mint", () => {
     it("should restrict minting to the backend address", async () => {
       await expect(
         reputationBadge.connect(signer2).mint(signer2.address, 1)
@@ -64,7 +64,32 @@ describe("ReputationBadge", () => {
     });
   });
 
-  describe("burning", () => {
+  describe("batchMint", () => {
+    it("should restrict batch minting to the backend address", async () => {
+      await expect(
+        reputationBadge.connect(signer2).batchMint([
+          { owner: signer2.address, tokenId: 1 },
+          { owner: signer3.address, tokenId: 2 },
+        ])
+      ).to.be.revertedWith("Unauthorized");
+    });
+
+    it("should batch mint several tokens", async () => {
+      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(0);
+      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(0);
+
+      const batchMintTx = await reputationBadge.connect(backend).batchMint([
+        { owner: signer2.address, tokenId: 1 },
+        { owner: signer3.address, tokenId: 2 },
+      ]);
+      await batchMintTx.wait();
+
+      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(1);
+      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(2);
+    });
+  });
+
+  describe("burn", () => {
     let tokenOwner: SignerWithAddress;
     const tokenId = 11;
     beforeEach(async () => {
