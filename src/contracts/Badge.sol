@@ -79,6 +79,7 @@ contract Badge is IBadge {
         require(to != address(0), "Invalid owner at zero address");
         require(tokenId != 0, "Token ID cannot be zero");
         require(!_exists(tokenId), "Token already minted");
+        require(tokenOf(to) == 0, "Owner already has a token");
 
         _tokens[to] = tokenId;
         _owners[tokenId] = to;

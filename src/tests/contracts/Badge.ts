@@ -69,6 +69,23 @@ describe("BadgeMock", () => {
       );
     });
 
+    it("should not allow two tokens to be minted for the same address", async () => {
+      const tokenRecipient = signer1.address;
+      const tokenId1 = 1111;
+      const tokenId2 = 2222;
+
+      expect(await badgeMock.tokenOf(tokenRecipient)).to.eq(0);
+
+      const mintTx1 = await badgeMock.mint(tokenRecipient, tokenId1);
+      await mintTx1.wait();
+
+      expect(await badgeMock.tokenOf(tokenRecipient)).to.eq(tokenId1);
+
+      await expect(badgeMock.mint(tokenRecipient, tokenId2)).to.be.revertedWith(
+        "Owner already has a token"
+      );
+    });
+
     it("should mint and emit an event", async () => {
       const tokenId = 1;
       const owner = signer1.address;
