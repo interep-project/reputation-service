@@ -77,8 +77,8 @@ contract Badge is IBadge {
      */
     function _mint(address to, uint256 tokenId) internal virtual {
         require(to != address(0), "Invalid owner at zero address");
-        require(!_exists(tokenId), "Token already minted");
         require(tokenId != 0, "Token ID cannot be zero");
+        require(!_exists(tokenId), "Token already minted");
 
         _tokens[to] = tokenId;
         _owners[tokenId] = to;
