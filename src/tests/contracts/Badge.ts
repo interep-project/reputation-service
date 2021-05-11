@@ -55,7 +55,7 @@ describe("BadgeMock", () => {
 
     it("should not allow minting with an id of zero", async () => {
       await expect(badgeMock.mint(signer0.address, 0)).to.be.revertedWith(
-        " Token ID cannot be zero"
+        "Token ID cannot be zero"
       );
     });
 
@@ -72,10 +72,58 @@ describe("BadgeMock", () => {
     it("should mint and emit an event", async () => {
       const tokenId = 1;
       const owner = signer1.address;
-      // const block = await ethers.provider.getBlock("latest");
 
       await expect(badgeMock.mint(owner, tokenId))
         .to.emit(badgeMock, "Minted")
+        .withArgs(
+          owner,
+          tokenId,
+          // Not sure about this one
+          (await ethers.provider.getBlock("latest")).timestamp + 1
+        );
+    });
+  });
+
+  describe("burn", () => {
+    it("should revert if the token does not exist", async () => {
+      await expect(badgeMock.burn(123)).to.be.revertedWith(
+        "Invalid owner at zero address"
+      );
+    });
+
+    it("should revert if tokenId equals 0", async () => {
+      await expect(badgeMock.burn(0)).to.be.revertedWith(
+        "Invalid tokenId value"
+      );
+    });
+
+    it("should burn a token", async () => {
+      const owner = signer1.address;
+      const tokenId = 11;
+
+      // minting
+      const mintTx = await badgeMock.mint(owner, tokenId);
+      await mintTx.wait();
+
+      expect(await badgeMock.tokenOf(owner)).to.equal(tokenId);
+
+      // burning
+      const burnTx = await badgeMock.burn(tokenId);
+      await burnTx.wait();
+
+      expect(await badgeMock.tokenOf(owner)).to.equal(0);
+    });
+
+    it("should emit an event", async () => {
+      const owner = signer1.address;
+      const tokenId = 11;
+
+      // minting
+      const mintTx = await badgeMock.mint(owner, tokenId);
+      await mintTx.wait();
+
+      await expect(badgeMock.burn(tokenId))
+        .to.emit(badgeMock, "Burned")
         .withArgs(
           owner,
           tokenId,
