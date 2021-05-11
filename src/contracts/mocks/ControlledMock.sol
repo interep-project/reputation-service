@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../Controlled.sol";
 
-contract MockControlled is Controlled {
+contract ControlledMock is Controlled {
     constructor(address backendAddress_) Controlled(backendAddress_) {}
 
     function isOwner() public view onlyOwner returns (bool) {

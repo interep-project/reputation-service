@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { Controlled, MockControlled } from "typechain";
+import { Controlled, ControlledMock } from "typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 const { ethers } = hre;
@@ -28,10 +28,10 @@ describe("Controlled", function () {
   });
 
   describe("Controlled child", () => {
-    let mockControlled: MockControlled;
+    let mockControlled: ControlledMock;
     beforeEach(async function () {
-      const MockControlled = await ethers.getContractFactory("MockControlled");
-      mockControlled = await MockControlled.connect(deployer).deploy(
+      const ControlledMock = await ethers.getContractFactory("ControlledMock");
+      mockControlled = await ControlledMock.connect(deployer).deploy(
         backend.address
       );
     });
