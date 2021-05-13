@@ -8,11 +8,11 @@ contract BadgeMock is Badge {
         Badge(name_, symbol_)
     {}
 
-    function mint(address to, uint256 tokenId) public {
+    function mint(address to, bytes32 tokenId) public {
         _mint(to, tokenId);
     }
 
-    function burn(uint256 tokenId) public {
+    function burn(bytes32 tokenId) public {
         _burn(tokenId);
     }
 }

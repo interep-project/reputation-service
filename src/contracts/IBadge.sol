@@ -10,7 +10,7 @@ interface IBadge {
      */
     event Minted(
         address indexed to,
-        uint256 indexed tokenId,
+        bytes32 indexed tokenId,
         uint256 timestamp
     );
 
@@ -22,7 +22,7 @@ interface IBadge {
      */
     event Burned(
         address indexed owner,
-        uint256 indexed tokenId,
+        bytes32 indexed tokenId,
         uint256 timestamp
     );
 
@@ -43,7 +43,7 @@ interface IBadge {
      *
      * - `owner` cannot be the zero address.
      */
-    function tokenOf(address owner) external view returns (uint256);
+    function tokenOf(address owner) external view returns (bytes32);
 
     /**
      * @dev Returns the owner of the `tokenId` token.
@@ -52,5 +52,5 @@ interface IBadge {
      *
      * - `tokenId` must exist.
      */
-    function ownerOf(uint256 tokenId) external view returns (address);
+    function ownerOf(bytes32 tokenId) external view returns (address);
 }

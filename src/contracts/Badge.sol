@@ -11,10 +11,10 @@ contract Badge is IBadge {
     string private _symbol;
 
     // Mapping from token ID to owner's address
-    mapping(uint256 => address) private _owners;
+    mapping(bytes32 => address) private _owners;
 
     // Mapping from owner's address to token ID
-    mapping(address => uint256) private _tokens;
+    mapping(address => bytes32) private _tokens;
 
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
@@ -37,7 +37,7 @@ contract Badge is IBadge {
         view
         virtual
         override
-        returns (uint256)
+        returns (bytes32)
     {
         require(owner != address(0), "Invalid owner at zero address");
 
@@ -45,7 +45,7 @@ contract Badge is IBadge {
     }
 
     // Returns the owner of a given token ID, reverts if the token does not exist
-    function ownerOf(uint256 tokenId)
+    function ownerOf(bytes32 tokenId)
         public
         view
         virtual
@@ -62,7 +62,7 @@ contract Badge is IBadge {
     }
 
     // Checks if a token ID exists
-    function _exists(uint256 tokenId) internal view virtual returns (bool) {
+    function _exists(bytes32 tokenId) internal view virtual returns (bool) {
         return _owners[tokenId] != address(0);
     }
 
@@ -75,7 +75,7 @@ contract Badge is IBadge {
      *
      * Emits a {Minted} event.
      */
-    function _mint(address to, uint256 tokenId) internal virtual {
+    function _mint(address to, bytes32 tokenId) internal virtual {
         require(to != address(0), "Invalid owner at zero address");
         require(tokenId != 0, "Token ID cannot be zero");
         require(!_exists(tokenId), "Token already minted");
@@ -96,7 +96,7 @@ contract Badge is IBadge {
      *
      * Emits a {Burned} event.
      */
-    function _burn(uint256 tokenId) internal virtual {
+    function _burn(bytes32 tokenId) internal virtual {
         address owner = Badge.ownerOf(tokenId);
 
         delete _tokens[owner];

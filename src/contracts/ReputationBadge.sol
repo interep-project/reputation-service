@@ -9,7 +9,7 @@ contract ReputationBadge is Badge {
 
     struct TokenParameters {
         address owner;
-        uint256 tokenId;
+        bytes32 tokenId;
     }
 
     constructor(string memory badgeName_, string memory badgeSymbol_)
@@ -18,7 +18,7 @@ contract ReputationBadge is Badge {
         badgeFactory = IBadgeFactory(msg.sender);
     }
 
-    function mint(address to, uint256 tokenId) external {
+    function mint(address to, bytes32 tokenId) external {
         require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
         _mint(to, tokenId);
     }
@@ -31,7 +31,7 @@ contract ReputationBadge is Badge {
         }
     }
 
-    function burn(uint256 tokenId) external {
+    function burn(bytes32 tokenId) external {
         require(
             msg.sender == badgeFactory.getBackendAddress() ||
                 msg.sender == ownerOf(tokenId),
