@@ -5,7 +5,7 @@ import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
-import mintNewBadge from "src/core/contractInteractions/ReputationBadge/mintNewBadge";
+import mintNewBadge from "src/core/blockchain/ReputationBadge/mintNewBadge";
 import { createAssociationMessage } from "./signature";
 
 type LinkAccountsProps = {
