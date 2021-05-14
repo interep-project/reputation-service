@@ -5,22 +5,12 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
+import { getDefaultNetworkName } from "./src/utils/crypto/getDefaultNetwork";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const networkByEnv = {
-  test: "hardhat",
-  development: "localhost",
-  production: "kovan",
-};
-
-const getDefaultNetwork = () => {
-  const env = process.env.NODE_ENV;
-  return env in networkByEnv ? networkByEnv[env] : "hardhat";
-};
-
 const config: HardhatUserConfig = {
-  defaultNetwork: getDefaultNetwork(),
+  defaultNetwork: getDefaultNetworkName(),
   solidity: {
     version: "0.8.0",
   },
