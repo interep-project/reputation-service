@@ -52,6 +52,37 @@ describe("ReputationBadge", () => {
     });
   });
 
+  describe("exists", () => {
+    it("should return true for an existing token", async () => {
+      const tokenRecipient = signer2.address;
+      const tokenId = getTokenIdHash("4242");
+
+      const mintTx = await reputationBadge
+        .connect(backend)
+        .mint(tokenRecipient, tokenId);
+      await mintTx.wait();
+
+      // @ts-ignore: temp
+      expect(await reputationBadge.exists(tokenId)).to.be.true;
+    });
+
+    it("should return false for a token that does not exist", async () => {
+      const tokenRecipient = signer2.address;
+      const tokenId = getTokenIdHash("4242");
+
+      const mintTx = await reputationBadge
+        .connect(backend)
+        .mint(tokenRecipient, tokenId);
+      await mintTx.wait();
+
+      const burnTx = await reputationBadge.connect(backend).burn(tokenId);
+      await burnTx.wait();
+
+      // @ts-ignore: temp
+      expect(await reputationBadge.exists(tokenId)).to.be.false;
+    });
+  });
+
   describe("mint", () => {
     it("should restrict minting to the backend address", async () => {
       await expect(

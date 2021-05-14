@@ -18,6 +18,10 @@ contract ReputationBadge is Badge {
         badgeFactory = IBadgeFactory(msg.sender);
     }
 
+    function exists(bytes32 tokenId) external view returns (bool) {
+        return _exists(tokenId);
+    }
+
     function mint(address to, bytes32 tokenId) external {
         require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
         _mint(to, tokenId);
