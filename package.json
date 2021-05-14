@@ -13,7 +13,7 @@
     "test:ci": "./node_modules/.bin/jest",
     "test:w": "jest --watch",
     "eth:compile": "hardhat compile",
-    "eth:test": "hardhat test",
+    "eth:test": "NODE_ENV=test hardhat test",
     "eth:coverage": "hardhat coverage --solcoverjs ./.solcover.js --testfiles \"src/tests/contracts/*.ts\"",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "prepare": "husky install"
