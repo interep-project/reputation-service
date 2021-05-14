@@ -6,8 +6,6 @@ import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
 
-import "tsconfig-paths/register";
-
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 const networkByEnv = {
