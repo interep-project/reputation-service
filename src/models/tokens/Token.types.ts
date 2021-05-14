@@ -5,6 +5,7 @@ export interface IToken {
   userAddress: string;
   issuanceTimestamp: number;
   web2Account: string;
+  idHash?: string;
 }
 
 export interface ITokenDocument extends IToken, Document {}

@@ -6,6 +6,7 @@ const TokenSchemaFields: Record<keyof IToken, any> = {
   userAddress: { type: String, index: true },
   issuanceTimestamp: { type: Date, required: true },
   web2Account: { type: Schema.Types.ObjectId, index: true, unique: true },
+  idHash: { type: String, index: true },
 };
 
 const UserSchema = new Schema<ITokenDocument, ITokenModel>(TokenSchemaFields);

@@ -5,6 +5,7 @@ import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
+import mintNewBadge from "src/core/contractInteractions/ReputationBadge/mintNewBadge";
 import { createAssociationMessage } from "./signature";
 
 type LinkAccountsProps = {
@@ -67,6 +68,22 @@ const linkAccounts = async ({
       web2Account: web2AccountId,
       issuanceTimestamp: Date.now(),
     });
+
+    // hash the id
+    const tokenIdHash = ethers.utils.id(token.id.toString());
+
+    token.idHash = tokenIdHash;
+    await token.save();
+
+    const txHash = await mintNewBadge({
+      badgeAddress: "0xa16E02E87b7454126E5E10d957A927A7F5B5d2be",
+      to: checksummedAddress,
+      tokenId: tokenIdHash,
+    });
+
+    if (txHash) {
+      console.log(`txHash`, txHash);
+    }
 
     return token;
   } catch (error) {
