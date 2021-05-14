@@ -2,7 +2,7 @@ import hre from "hardhat";
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
-import mintNewBadge from "src/core/contractInteractions/ReputationBadge/mintNewBadge";
+import mintNewBadge from "../../core/blockchain/ReputationBadge/mintNewBadge";
 import { getTokenIdHash } from "../utils/getTokenIdHash";
 
 const { ethers } = hre;

@@ -2,7 +2,7 @@ import hre from "hardhat";
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
-import { getTokenIdHash } from "src/tests/utils/getTokenIdHash";
+import { getTokenIdHash } from "../utils/getTokenIdHash";
 
 const { ethers } = hre;
 const zeroX =
@@ -61,7 +61,7 @@ describe("ReputationBadge", () => {
         .connect(backend)
         .mint(tokenRecipient, tokenId);
       await mintTx.wait();
-
+      console.log(`txReceipt`, JSON.stringify(mintTx.chainId));
       // @ts-ignore: temp
       expect(await reputationBadge.exists(tokenId)).to.be.true;
     });
