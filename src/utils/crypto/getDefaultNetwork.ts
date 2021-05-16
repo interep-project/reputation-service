@@ -6,7 +6,7 @@ const networkByEnv = {
 
 export const getDefaultNetworkId = () => {
   const env = process.env.NODE_ENV;
-  return env in networkByEnv ? networkByEnv[env].id : "31337";
+  return env in networkByEnv ? networkByEnv[env].id : 31337;
 };
 
 export const getDefaultNetworkName = () => {
