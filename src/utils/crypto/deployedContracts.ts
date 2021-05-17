@@ -14,13 +14,13 @@ const deployedContracts: {
     [DeployedContracts.BADGE_FACTORY]:
       "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     [DeployedContracts.TWITTER_BADGE]:
-      "0xa16E02E87b7454126E5E10d957A927A7F5B5d2be",
+      "0x8398bCD4f633C72939F9043dB78c574A91C99c0A",
   },
   42: {
     [DeployedContracts.BADGE_FACTORY]:
-      "0xcdd8ff6b388ed0e89263dD77f432aba790383Ae3",
+      "0xB9C4F6dC99f7CaC75F1a0dd18bc5A3fAc5a78466",
     [DeployedContracts.TWITTER_BADGE]:
-      "0x23b06041580d8e6cDb11A56783c9f183B7B8C8B1",
+      "0xb3e404E8BCbc2af1683da73f14A558662346119F",
   },
 };
 
