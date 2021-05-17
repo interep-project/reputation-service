@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
-const useMyTokens = (address?: string): { tokens: any[] } => {
+const useMyTokens = (
+  address?: string
+): { tokens: any[]; refetchTokens: () => Promise<null | undefined> } => {
   const [tokens, setTokens] = useState([]);
 
-  const getMyTokens = useCallback(async (address: string) => {
+  const getMyTokens = useCallback(async () => {
     let response;
     try {
       response = await fetch(`/api/tokens/?owner=${address}`);
@@ -17,13 +19,13 @@ const useMyTokens = (address?: string): { tokens: any[] } => {
     } else {
       return null;
     }
-  }, []);
+  }, [address]);
 
   useEffect(() => {
-    address && getMyTokens(address);
+    address && getMyTokens();
   }, [address, getMyTokens]);
 
-  return { tokens };
+  return { tokens, refetchTokens: getMyTokens };
 };
 
 export default useMyTokens;
