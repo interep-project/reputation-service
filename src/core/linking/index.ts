@@ -78,6 +78,8 @@ const linkAccounts = async ({
     throw new Error(`Invalid signature`);
   }
 
+  logger.silly(`[Linking] Signer address: ${signerAddress}`);
+
   try {
     const token = new Token({
       contractAddress: badgeAddress,
@@ -100,6 +102,8 @@ const linkAccounts = async ({
       to: checksummedAddress,
       tokenId: tokenIdHash,
     });
+
+    logger.silly(`[MINTING TX] Tx Response: ${JSON.stringify(txResponse)}`);
 
     if (txResponse) {
       const { hash, blockNumber, chainId, timestamp } = txResponse;
