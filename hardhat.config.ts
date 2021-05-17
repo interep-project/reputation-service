@@ -1,11 +1,27 @@
 import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
 import { getDefaultNetworkName } from "./src/utils/crypto/getDefaultNetwork";
+
+task("faucet", "Sends ETH to an address")
+  .addPositionalParam("receiver", "The address that will receive them")
+  .setAction(async ({ receiver }) => {
+    // @ts-ignore: hre is defined inside a task
+    const [sender] = await hre.ethers.getSigners();
+
+    const tx2 = await sender.sendTransaction({
+      to: receiver,
+      // @ts-ignore: hre is defined inside a task
+      value: hre.ethers.constants.WeiPerEther,
+    });
+    await tx2.wait();
+
+    console.log(`Transferred 1 ETH to ${receiver}`);
+  });
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
