@@ -7,5 +7,5 @@ export const DisplayableChainNames = {
   56: "Binance Smart Chain",
   100: "xDAI Chain",
   137: "Matic Mainnet",
-  33137: "Hardhat",
+  31337: "Hardhat",
 };
