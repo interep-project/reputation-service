@@ -13,9 +13,9 @@ const mintNewBadge = async ({
   to,
   tokenId,
 }: MintNewBadgeProps): Promise<ContractTransaction> => {
-  const [backend] = await ethers.getSigners();
-
   if (!tokenId) throw new Error("Token id is not defined");
+
+  const [backend] = await ethers.getSigners();
 
   const reputationBadge = (await ethers.getContractAt(
     "ReputationBadge",
