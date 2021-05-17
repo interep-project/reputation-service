@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers } from "hardhat";
 import Token from "src/models/tokens/Token.model";
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
@@ -10,6 +10,7 @@ import { createAssociationMessage } from "./signature";
 import {
   DeployedContracts,
   getDeployedContractAddress,
+  isNetworkWithDeployedContract,
 } from "src/utils/crypto/deployedContracts";
 
 type LinkAccountsProps = {
@@ -23,6 +24,20 @@ const linkAccounts = async ({
   web2AccountId,
   signature,
 }: LinkAccountsProps): Promise<ITokenDocument> => {
+  const badgeAddress = getDeployedContractAddress(
+    DeployedContracts.TWITTER_BADGE
+  );
+
+  if (!badgeAddress) {
+    throw new Error(`Invalid badge address ${badgeAddress}`);
+  }
+
+  const chainId = (await ethers.provider.getNetwork()).chainId;
+
+  if (!isNetworkWithDeployedContract(chainId)) {
+    throw new Error(`Invalid network id ${chainId}`);
+  }
+
   const checksummedAddress = getChecksummedAddress(address);
 
   if (!checksummedAddress) {
@@ -65,6 +80,8 @@ const linkAccounts = async ({
 
   try {
     const token = new Token({
+      contractAddress: badgeAddress,
+      chainId,
       userAddress: checksummedAddress,
       web2Account: web2AccountId,
       web2Provider: web2Account.provider,
@@ -79,7 +96,7 @@ const linkAccounts = async ({
     await token.save();
 
     const txResponse = await mintNewBadge({
-      badgeAddress: getDeployedContractAddress(DeployedContracts.TWITTER_BADGE),
+      badgeAddress,
       to: checksummedAddress,
       tokenId: tokenIdHash,
     });
