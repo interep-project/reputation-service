@@ -16,6 +16,12 @@ const deployedContracts: {
     [DeployedContracts.TWITTER_BADGE]:
       "0xa16E02E87b7454126E5E10d957A927A7F5B5d2be",
   },
+  42: {
+    [DeployedContracts.BADGE_FACTORY]:
+      "0xcdd8ff6b388ed0e89263dD77f432aba790383Ae3",
+    [DeployedContracts.TWITTER_BADGE]:
+      "0x23b06041580d8e6cDb11A56783c9f183B7B8C8B1",
+  },
 };
 
 export const isNetworkWithDeployedContract = (
