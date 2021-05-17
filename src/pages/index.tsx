@@ -1,12 +1,18 @@
+import { ethers } from "ethers";
 import { signIn, signOut, useSession } from "next-auth/client";
 import getConfig from "next/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
 import { createAssociationMessage } from "src/core/linking/signature";
+import useMyTokens from "src/hooks/useMyTokens";
+import { TokenStatus } from "src/models/tokens/Token.types";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
+import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
+
+import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -55,6 +61,8 @@ export default function Home() {
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
 
+  const { tokens } = useMyTokens(address);
+
   useEffect(() => {
     if (networkId && networkId !== publicRuntimeConfig.networkId) {
       alert(
@@ -71,6 +79,7 @@ export default function Home() {
       "Unsupported network",
     [networkId]
   );
+
   useEffect(() => {
     if (session) {
       getMyTwitterReputation()
@@ -145,6 +154,28 @@ export default function Home() {
         setAccountLinkingMessage(JSON.stringify(err.message));
       });
   }, [address, session, signer]);
+
+  const burnToken = useCallback(
+    async (web2Provider, tokenId) => {
+      if (!signer) {
+        console.error("No signer");
+        return;
+      }
+      try {
+        const badge = new ethers.Contract(
+          getBadgeAddressByProvider(web2Provider),
+          ReputationBadge.abi
+        );
+
+        const tx = await badge.connect(signer).burn(tokenId);
+        await tx.wait();
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+    },
+    [signer]
+  );
 
   return (
     <div className="bg-black min-h-full">
@@ -234,6 +265,39 @@ export default function Home() {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="px-4 pb-5 sm:p-6 flex flex-col">
+            <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+              Badges
+            </h2>
+            {!connected && <p>Please connect your wallet first.</p>}
+            <h3 className="text-base text-blue-500">Twitter</h3>
+            {tokens.length > 0 &&
+              tokens.map((token) => (
+                <div
+                  key={token.idHash}
+                  className="sm:flex sm:items-center sm:justify-between"
+                >
+                  <div className="max-w-xl text-base text-gray-700">
+                    <div className="text-xs">
+                      <p>id: {token.idHash}</p>
+                      <p>status: {token.status}</p>
+                    </div>
+                  </div>
+                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                    <button
+                      disabled={token.status !== TokenStatus.MINTED}
+                      onClick={() =>
+                        burnToken(token.web2Provider, token.idHash)
+                      }
+                      type="button"
+                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                    >
+                      BURN
+                    </button>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
