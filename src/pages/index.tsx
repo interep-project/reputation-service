@@ -61,7 +61,7 @@ export default function Home() {
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
 
-  const { tokens } = useMyTokens(address);
+  const { tokens, refetchTokens } = useMyTokens(address);
 
   useEffect(() => {
     if (networkId && networkId !== publicRuntimeConfig.networkId) {
@@ -152,8 +152,9 @@ export default function Home() {
       .catch((err) => {
         console.error(err);
         setAccountLinkingMessage(JSON.stringify(err.message));
-      });
-  }, [address, session, signer]);
+      })
+      .finally(() => refetchTokens());
+  }, [address, refetchTokens, session, signer]);
 
   const burnToken = useCallback(
     async (web2Provider, tokenId) => {
@@ -172,9 +173,11 @@ export default function Home() {
       } catch (err) {
         console.error(err);
         return;
+      } finally {
+        refetchTokens();
       }
     },
-    [signer]
+    [refetchTokens, signer]
   );
 
   return (
@@ -276,7 +279,7 @@ export default function Home() {
               tokens.map((token) => (
                 <div
                   key={token.idHash}
-                  className="sm:flex sm:items-center sm:justify-between"
+                  className="sm:flex sm:items-center sm:justify-between mb-4"
                 >
                   <div className="max-w-xl text-base text-gray-700">
                     <div className="text-xs">
