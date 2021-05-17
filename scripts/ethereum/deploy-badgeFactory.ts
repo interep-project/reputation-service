@@ -8,7 +8,9 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const badgeFactoryFactory = await ethers.getContractFactory("BadgeFactory");
-  const badgeFactory = await badgeFactoryFactory.deploy(backend.address);
+  const badgeFactory = await badgeFactoryFactory
+    .connect(deployer)
+    .deploy(backend.address);
 
   console.log("badgeFactory address:", badgeFactory.address);
 }

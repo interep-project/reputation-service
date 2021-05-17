@@ -16,10 +16,11 @@ async function main() {
     "BadgeFactory",
     badgeFactoryAddress
   )) as BadgeFactory;
-  const deployBadgeTx = await badgeFactory.deployBadge(
-    NEW_BADGE_NAME,
-    NEW_BADGE_SYMBOL
-  );
+
+  const deployBadgeTx = await badgeFactory
+    .connect(deployer)
+    .deployBadge(NEW_BADGE_NAME, NEW_BADGE_SYMBOL);
+
   const txReceipt = await deployBadgeTx.wait();
 
   console.log("Transaction complete");
