@@ -61,8 +61,7 @@ describe("ReputationBadge", () => {
         .connect(backend)
         .mint(tokenRecipient, tokenId);
       await mintTx.wait();
-      console.log(`txReceipt`, JSON.stringify(mintTx.chainId));
-      // @ts-ignore: temp
+
       expect(await reputationBadge.exists(tokenId)).to.be.true;
     });
 
@@ -78,7 +77,6 @@ describe("ReputationBadge", () => {
       const burnTx = await reputationBadge.connect(backend).burn(tokenId);
       await burnTx.wait();
 
-      // @ts-ignore: temp
       expect(await reputationBadge.exists(tokenId)).to.be.false;
     });
   });
