@@ -32,6 +32,17 @@ export default async (
     if (!web2AccountId) {
       return res.status(403).end();
     }
+
+    const web2Account = await Web2Account.findById(web2AccountId);
+
+    if (!web2Account) {
+      return res.status(400).send("Unable to find web 2 account");
+    }
+
+    if (!web2Account.isLinkedToAddress) {
+      return res.status(200).send("Web 2 account is not linked");
+    }
+
     // get all tokens associated with owner's address
     const tokens = await Token.findByUserAddress(address);
 
@@ -44,9 +55,7 @@ export default async (
       (token) => token.status === TokenStatus.BURNED
     );
 
-    const web2Account = await Web2Account.findById(web2AccountId);
-
-    if (areAllTokensBurned && web2Account) {
+    if (areAllTokensBurned) {
       web2Account.isLinkedToAddress = false;
       await web2Account.save();
 
