@@ -2,6 +2,7 @@ import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
@@ -48,6 +49,9 @@ const config: HardhatUserConfig = {
   },
   gasReporter: {
     currency: "USD",
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
