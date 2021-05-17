@@ -12,7 +12,7 @@ import {
 const TokenSchemaFields: Record<keyof IToken, any> = {
   userAddress: { type: String, index: true },
   issuanceTimestamp: { type: Date, required: true },
-  web2Account: { type: Schema.Types.ObjectId, index: true, unique: true },
+  web2Account: { type: Schema.Types.ObjectId, index: true },
   idHash: { type: String, index: true, required: true },
   status: { type: String, enum: Object.values(TokenStatus), required: true },
   mintTransactions: [TransactionSchema],
