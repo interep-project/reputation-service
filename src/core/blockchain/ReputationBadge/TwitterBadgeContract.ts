@@ -7,6 +7,7 @@ import {
 import { ReputationBadge } from "typechain";
 import { TypedEventFilter } from "typechain/commons";
 
+// TODO: Refactor this file
 let instance: ReputationBadge;
 
 export const getInstance = async (contractAddress?: string) => {
