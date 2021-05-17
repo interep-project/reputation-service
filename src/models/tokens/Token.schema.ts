@@ -10,6 +10,8 @@ import {
 } from "./Token.types";
 
 const TokenSchemaFields: Record<keyof IToken, any> = {
+  chainId: { type: Number, required: true },
+  contractAddress: { type: String, required: true },
   userAddress: { type: String, index: true },
   issuanceTimestamp: { type: Date, required: true },
   web2Account: { type: Schema.Types.ObjectId, index: true },

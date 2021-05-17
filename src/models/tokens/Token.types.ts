@@ -12,6 +12,8 @@ export enum TokenStatus {
 }
 
 export interface IToken {
+  chainId: number;
+  contractAddress: number;
   userAddress: string;
   issuanceTimestamp: number;
   web2Account: string;
