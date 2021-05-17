@@ -60,16 +60,20 @@ export default function Home() {
     undefined
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
+  const [isOnProperNetwork, setIsOnProperNetwork] = useState(false);
 
   const { tokens, refetchTokens } = useMyTokens(address);
 
   useEffect(() => {
     if (networkId && networkId !== publicRuntimeConfig.networkId) {
+      setIsOnProperNetwork(false);
       alert(
         `Please switch to ${getChainNameFromNetworkId(
           publicRuntimeConfig.networkId
         )} network`
       );
+    } else if (networkId && networkId === publicRuntimeConfig.networkId) {
+      setIsOnProperNetwork(true);
     }
   }, [networkId]);
 
@@ -258,7 +262,10 @@ export default function Home() {
               <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
                 <button
                   disabled={
-                    !connected || !hasASession || isCurrentAccountLinked
+                    !connected ||
+                    !hasASession ||
+                    isCurrentAccountLinked ||
+                    !isOnProperNetwork
                   }
                   onClick={() => signAssociation()}
                   type="button"
