@@ -127,6 +127,8 @@ export default function Home() {
       console.error("Unknown Web 2 account");
       return;
     }
+    setAccountLinkingMessage(`Linking in progress...`);
+
     const message = createAssociationMessage({
       address,
       web2AccountId: session.web2AccountId,
