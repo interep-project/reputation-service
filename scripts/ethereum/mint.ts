@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import mintNewBadge from "src/core/contractInteractions/ReputationBadge/mintNewBadge";
+import mintNewBadge from "src/core/blockchain/ReputationBadge/mintNewBadge";
 
 async function main() {
   const tokenId = ethers.utils.id("12344");
