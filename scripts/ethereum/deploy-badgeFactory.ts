@@ -2,7 +2,9 @@ import { ethers } from "hardhat";
 
 async function main() {
   const [backend, deployer] = await ethers.getSigners();
+  const networkName = (await ethers.provider.getNetwork()).name;
 
+  console.log(`Network: `, networkName);
   console.log("Deploying contracts with the account:", deployer.address);
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
