@@ -34,8 +34,8 @@ const config: HardhatUserConfig = {
     kovan: {
       url: process.env.INFURA_KOVAN_RPC_URL,
       accounts: [
-        `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
         `0x${process.env.BACKEND_PRIVATE_KEY}`,
+        `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
       ],
     },
   },
