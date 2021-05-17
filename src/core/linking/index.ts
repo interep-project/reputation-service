@@ -1,12 +1,16 @@
 import { ethers } from "ethers";
 import Token from "src/models/tokens/Token.model";
-import { ITokenDocument } from "src/models/tokens/Token.types";
+import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
 import mintNewBadge from "src/core/blockchain/ReputationBadge/mintNewBadge";
 import { createAssociationMessage } from "./signature";
+import {
+  DeployedContracts,
+  getDeployedContractAddress,
+} from "src/utils/crypto/deployedContracts";
 
 type LinkAccountsProps = {
   address: string;
@@ -60,29 +64,35 @@ const linkAccounts = async ({
   }
 
   try {
-    web2Account.isLinkedToAddress = true;
-    await web2Account.save();
-
-    const token = await Token.create({
+    const token = new Token({
       userAddress: checksummedAddress,
       web2Account: web2AccountId,
+      web2Provider: web2Account.provider,
       issuanceTimestamp: Date.now(),
     });
 
     // hash the id
     const tokenIdHash = ethers.utils.id(token.id.toString());
 
-    token.idHash = tokenIdHash;
-    await token.save();
-
-    const txHash = await mintNewBadge({
-      badgeAddress: "0xa16E02E87b7454126E5E10d957A927A7F5B5d2be",
+    const txResponse = await mintNewBadge({
+      badgeAddress: getDeployedContractAddress(DeployedContracts.TWITTER_BADGE),
       to: checksummedAddress,
       tokenId: tokenIdHash,
     });
 
-    if (txHash) {
-      console.log(`txHash`, txHash);
+    if (txResponse) {
+      const { hash, blockNumber, chainId, timestamp } = txResponse;
+
+      token.mintTransactions?.push({
+        response: { hash, blockNumber, chainId, timestamp },
+      });
+      token.status = TokenStatus.MINT_PENDING;
+      token.idHash = tokenIdHash;
+
+      await token.save();
+
+      web2Account.isLinkedToAddress = true;
+      await web2Account.save();
     }
 
     return token;
