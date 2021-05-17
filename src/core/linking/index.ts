@@ -69,10 +69,14 @@ const linkAccounts = async ({
       web2Account: web2AccountId,
       web2Provider: web2Account.provider,
       issuanceTimestamp: Date.now(),
+      status: TokenStatus.NOT_MINTED,
     });
 
     // hash the id
     const tokenIdHash = ethers.utils.id(token.id.toString());
+
+    token.idHash = tokenIdHash;
+    await token.save();
 
     const txResponse = await mintNewBadge({
       badgeAddress: getDeployedContractAddress(DeployedContracts.TWITTER_BADGE),
@@ -87,7 +91,6 @@ const linkAccounts = async ({
         response: { hash, blockNumber, chainId, timestamp },
       });
       token.status = TokenStatus.MINT_PENDING;
-      token.idHash = tokenIdHash;
 
       await token.save();
 
