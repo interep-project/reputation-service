@@ -1,4 +1,5 @@
-import { verifyMessage } from "@ethersproject/wallet";
+import { ethers } from "hardhat";
+import { ContractTransaction } from "@ethersproject/contracts";
 import linkAccounts from "src/core/linking";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import {
@@ -20,12 +21,39 @@ const getParams = (override?: Record<string, unknown>) => ({
   ...override,
 });
 
+jest.mock("hardhat", () => ({
+  ethers: {
+    provider: {
+      getNetwork: jest.fn(() => ({ chainId: 31337, name: "hardhat" })),
+    },
+    utils: {
+      id: jest.fn(
+        () =>
+          `0x03dd40b36474bf4559c4d733be6f5ec1e61bcb562d1c7f04629ee3af7ee569f9`
+      ),
+      verifyMessage: jest.fn(),
+    },
+  },
+}));
+
 jest.mock("@ethersproject/wallet", () => ({
   verifyMessage: jest.fn(),
 }));
 
-const verifyMessageMocked = verifyMessage as jest.MockedFunction<
-  typeof verifyMessage
+jest.mock("../blockchain/ReputationBadge/mintNewBadge", () => ({
+  __esModule: true,
+  default: jest.fn(
+    (): Partial<ContractTransaction> => ({
+      hash: "hash",
+      blockNumber: 5,
+      chainId: 31337,
+      timestamp: 1234,
+    })
+  ),
+}));
+
+const verifyMessageMocked = ethers.utils.verifyMessage as jest.MockedFunction<
+  typeof ethers.utils.verifyMessage
 >;
 
 describe("linkAccounts", () => {
