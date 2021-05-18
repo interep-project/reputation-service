@@ -12,7 +12,7 @@ import {
 } from "src/utils/server/testDatabase";
 import getReputationFromToken from "./getReputationFromToken";
 
-describe.only("getReputationFromToken", () => {
+describe("getReputationFromToken", () => {
   beforeAll(async () => {
     await connect();
   });
