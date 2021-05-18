@@ -3,15 +3,12 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { Badge, BadgeMock } from "typechain";
 import { getTokenIdHash } from "../utils/getTokenIdHash";
+import { zeroAddress, zeroBytes32 } from "../../utils/crypto/constants";
 
 const { ethers } = hre;
 
 const badgeName = "MyBadge";
 const badgeSymbol = "BDGE";
-
-const zeroAddress = "0x0000000000000000000000000000000000000000";
-const zeroX =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 describe("Badge", () => {
   let signer0: SignerWithAddress;
@@ -57,9 +54,9 @@ describe("BadgeMock", () => {
     });
 
     it("should not allow minting with an id of zero", async () => {
-      await expect(badgeMock.mint(signer0.address, zeroX)).to.be.revertedWith(
-        "Token ID cannot be zero"
-      );
+      await expect(
+        badgeMock.mint(signer0.address, zeroBytes32)
+      ).to.be.revertedWith("Token ID cannot be zero");
     });
 
     it("should not allow minting with a token id that already exists", async () => {
@@ -80,7 +77,7 @@ describe("BadgeMock", () => {
       const tokenId1 = getTokenIdHash("1111");
       const tokenId2 = getTokenIdHash("2222");
 
-      expect(await badgeMock.tokenOf(tokenRecipient)).to.eq(zeroX);
+      expect(await badgeMock.tokenOf(tokenRecipient)).to.eq(zeroBytes32);
 
       const mintTx1 = await badgeMock.mint(tokenRecipient, tokenId1);
       await mintTx1.wait();
@@ -115,7 +112,7 @@ describe("BadgeMock", () => {
     });
 
     it("should revert if tokenId equals 0", async () => {
-      await expect(badgeMock.burn(zeroX)).to.be.revertedWith(
+      await expect(badgeMock.burn(zeroBytes32)).to.be.revertedWith(
         "Invalid tokenId value"
       );
     });
@@ -134,7 +131,7 @@ describe("BadgeMock", () => {
       const burnTx = await badgeMock.burn(tokenId);
       await burnTx.wait();
 
-      expect(await badgeMock.tokenOf(owner)).to.equal(zeroX);
+      expect(await badgeMock.tokenOf(owner)).to.equal(zeroBytes32);
     });
 
     it("should emit an event", async () => {
@@ -164,7 +161,7 @@ describe("BadgeMock", () => {
     });
 
     it("should return 0 if the owner does not have a token", async () => {
-      expect(await badgeMock.tokenOf(signer0.address)).to.equal(zeroX);
+      expect(await badgeMock.tokenOf(signer0.address)).to.equal(zeroBytes32);
     });
 
     it("should return the id of the token owned by owner", async () => {
@@ -178,7 +175,7 @@ describe("BadgeMock", () => {
 
   describe("ownerOf", () => {
     it("should revert if tokenId equals 0", async () => {
-      await expect(badgeMock.ownerOf(zeroX)).to.be.revertedWith(
+      await expect(badgeMock.ownerOf(zeroBytes32)).to.be.revertedWith(
         "Invalid tokenId value"
       );
     });

@@ -3,10 +3,9 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
 import { getTokenIdHash } from "../utils/getTokenIdHash";
+import { zeroBytes32 } from "src/utils/crypto/constants";
 
 const { ethers } = hre;
-const zeroX =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 describe("ReputationBadge", () => {
   let owner: SignerWithAddress;
@@ -114,8 +113,8 @@ describe("ReputationBadge", () => {
     });
 
     it("should batch mint several tokens", async () => {
-      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(zeroX);
-      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(zeroX);
+      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(zeroBytes32);
+      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(zeroBytes32);
 
       const batchMintTx = await reputationBadge.connect(backend).batchMint([
         { owner: signer2.address, tokenId: getTokenIdHash("1") },
