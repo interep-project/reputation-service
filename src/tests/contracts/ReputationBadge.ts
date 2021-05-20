@@ -156,14 +156,18 @@ describe("ReputationBadge", () => {
       const burnTx = await reputationBadge.connect(backend).burn(tokenId);
       await burnTx.wait();
 
-      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(zeroX);
+      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(
+        zeroBytes32
+      );
     });
 
     it("should let owners burn their token", async () => {
       const burnTx = await reputationBadge.connect(tokenOwner).burn(tokenId);
       await burnTx.wait();
 
-      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(zeroX);
+      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(
+        zeroBytes32
+      );
     });
   });
 });
