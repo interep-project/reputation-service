@@ -1,11 +1,15 @@
-import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import {
   DeployedContracts,
   getDeployedContractAddress,
 } from "src/utils/crypto/deployedContracts";
 import { ReputationBadge } from "typechain";
-import { TypedEventFilter } from "typechain/commons";
+
+import ReputationBadgeArtifact from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+
+const ReputationBadgeInterface = new ethers.utils.Interface(
+  ReputationBadgeArtifact.abi
+);
 
 // TODO: Refactor this file
 let instance: ReputationBadge;
@@ -36,15 +40,24 @@ export const getBurnedEvent = async (
   owner?: string,
   tokenId?: string,
   contractAddress?: string
-): Promise<
-  TypedEventFilter<
-    [string, string, BigNumber],
-    { owner: string; tokenId: string; timestamp: BigNumber }
-  >
-> => {
+): Promise<any[]> => {
   const instance = await getInstance(contractAddress);
+  let topics: (string | string[])[] | undefined;
 
-  return instance.filters.Burned(owner, tokenId);
+  if (owner || tokenId) {
+    topics = instance.filters.Burned(owner, tokenId).topics;
+  }
+
+  const logs = await ethers.provider.getLogs({
+    address: contractAddress || instance.address,
+    topics,
+  });
+
+  const decodedEvents = logs.map((log) => ({
+    ...ReputationBadgeInterface.decodeEventLog("Burned", log.data, log.topics),
+  }));
+
+  return decodedEvents;
 };
 
 export default { getInstance, exists, tokenOf, getBurnedEvent };
