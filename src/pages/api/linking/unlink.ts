@@ -43,13 +43,10 @@ export default async (
       return res.status(200).send("Web 2 account is not linked");
     }
 
-    // get all tokens associated with owner's address
-    const tokens = await Token.findByUserAddress(address);
-
-    // Filter by web2Account id
-    const tokensAssociatedWithWeb2account = tokens?.filter(
-      (token) => token.web2Account === web2AccountId
-    );
+    // Get tokens associated with the web2Account id
+    const tokensAssociatedWithWeb2account = await Token.find({
+      web2Account: web2AccountId,
+    });
 
     const areAllTokensBurned = tokensAssociatedWithWeb2account?.every(
       (token) => token.status === TokenStatus.BURNED
@@ -60,9 +57,13 @@ export default async (
       await web2Account.save();
 
       return res.status(200).send("Accounts were successfully un-linked");
+    } else {
+      return res
+        .status(200)
+        .send(
+          "On-chain token associated with web 2 account needs to be burned first"
+        );
     }
-
-    return res.status(500).end();
   } catch (err) {
     logger.error(err);
     return res.status(500).end();
