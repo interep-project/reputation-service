@@ -8,6 +8,8 @@ import "solidity-coverage";
 import "hardhat-gas-reporter";
 import { getDefaultNetworkName } from "./src/utils/crypto/getDefaultNetwork";
 
+import "tsconfig-paths/register";
+
 task("faucet", "Sends ETH to an address")
   .addPositionalParam("receiver", "The address that will receive them")
   .setAction(async ({ receiver }) => {
