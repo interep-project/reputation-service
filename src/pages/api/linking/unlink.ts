@@ -16,10 +16,6 @@ export default async (
   await dbConnect();
 
   try {
-    const address = req.query.address;
-    if (!address || typeof address !== "string") {
-      return res.status(400).end();
-    }
     // @ts-ignore: secret exists
     const token: JWToken = await jwt.getToken({
       req,
@@ -61,7 +57,7 @@ export default async (
       return res
         .status(200)
         .send(
-          "On-chain token associated with web 2 account needs to be burned first"
+          "The on-chain token associated with the web 2 account you are connected with needs to be burned first."
         );
     }
   } catch (err) {
