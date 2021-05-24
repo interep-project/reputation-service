@@ -1,3 +1,4 @@
+import createMockTokenObject from "src/mocks/createMockToken";
 import createNextMocks from "src/mocks/createNextMocks";
 import Token from "src/models/tokens/Token.model";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
@@ -84,11 +85,13 @@ describe("TokenController", () => {
           username: "username",
         },
       });
-      await Token.create({
-        userAddress: address,
-        web2Account: web2Account.id,
-        issuanceTimestamp: Date.now(),
-      });
+      await Token.create(
+        createMockTokenObject({
+          userAddress: address,
+          web2Account: web2Account.id,
+          issuanceTimestamp: Date.now(),
+        })
+      );
 
       const { req, res } = createNextMocks({
         query: { address },

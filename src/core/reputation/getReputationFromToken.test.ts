@@ -1,4 +1,5 @@
 import { mockBotometerScores } from "src/mocks/botometerData";
+import createMockTokenObject from "src/mocks/createMockToken";
 import Token from "src/models/tokens/Token.model";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
 import {
@@ -19,10 +20,11 @@ describe("getReputationFromToken", () => {
   afterAll(async () => await dropDatabaseAndDisconnect());
 
   it("should return null if the web account is not found", async () => {
-    const token = await Token.create({
-      web2Account: "608ae9611f0d263e6da446ff",
-      issuanceTimestamp: Date.now(),
-    });
+    const token = await Token.create(
+      createMockTokenObject({
+        web2Account: "608ae9611f0d263e6da446ff",
+      })
+    );
 
     const result = await getReputationFromToken(token);
 
@@ -43,10 +45,11 @@ describe("getReputationFromToken", () => {
     };
     const twitterAccount = await TwitterAccount.create(mockTwitterAccount);
 
-    const token = await Token.create({
-      web2Account: twitterAccount.id,
-      issuanceTimestamp: Date.now(),
-    });
+    const token = await Token.create(
+      createMockTokenObject({
+        web2Account: twitterAccount.id,
+      })
+    );
 
     const result = await getReputationFromToken(token);
 

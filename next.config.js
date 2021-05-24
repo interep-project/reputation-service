@@ -1,3 +1,5 @@
+require("ts-node").register({ transpileOnly: true });
+
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
@@ -5,6 +7,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 module.exports = withBundleAnalyzer({
   publicRuntimeConfig: {
     // Will be available on both server and client
-    networkId: 42,
+    networkId: process.env.NODE_ENV === "development" ? 31337 : 42,
   },
 });

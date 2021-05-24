@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus";
 import getReputationFromToken from "src/core/reputation/getReputationFromToken";
 import Token from "src/models/tokens/Token.model";
 import { ITokenDocument } from "src/models/tokens/Token.types";
@@ -53,6 +54,34 @@ class TokenController {
     }
 
     res.status(200).send({ address, results });
+  };
+
+  public getTokensByAddress = async (
+    req: NextApiRequest,
+    res: NextApiResponse
+  ): Promise<{
+    tokens: ITokenDocument[];
+  } | void> => {
+    try {
+      const owner = req.query.owner;
+      if (!owner || typeof owner !== "string") {
+        return res.status(400).end();
+      }
+      const ownerChecksummedAddress = getChecksummedAddress(owner);
+
+      if (!ownerChecksummedAddress) return res.status(200).send({ tokens: [] });
+
+      const tokens = await Token.findByUserAddress(ownerChecksummedAddress);
+
+      if (!tokens) return res.status(200).send({ tokens: [] });
+
+      await checkAndUpdateTokenStatus(tokens);
+
+      return res.status(200).send({ tokens });
+    } catch (err) {
+      logger.error(err);
+      return res.status(500).end();
+    }
   };
 }
 

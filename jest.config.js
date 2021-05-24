@@ -1,7 +1,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  moduleDirectories: ["node_modules", "src"],
+  moduleDirectories: ["node_modules", "<rootDir>/src"],
   modulePaths: ["<rootDir>"],
   clearMocks: true,
   collectCoverage: true,
@@ -16,4 +16,5 @@ module.exports = {
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
   },
+  transformIgnorePatterns: ["node_modules/(?!ethereum-cryptography).*"],
 };
