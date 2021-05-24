@@ -14,7 +14,7 @@ import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
-import { encryptMessage } from "src/utils/crypto/encryption";
+import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 
 const getMyTwitterReputation = async () => {
   let response;
@@ -157,7 +157,7 @@ export default function Home() {
       .then(async (response) => {
         if (response.status === "ok") {
           const pubKey = await getPublicKey();
-          const encryptedBackendSignature = encryptMessage(
+          const encryptedBackendSignature = encryptMessageWithSalt(
             pubKey,
             response.attestation.backendSignature
           );
