@@ -27,15 +27,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).end();
   }
 
+  // Check if user is connected with the web 2 account to be linked
   if (session.web2AccountId !== web2AccountId) {
     return res.status(403).end();
   }
 
   try {
-    const token = await linkAccounts({ address, web2AccountId, signature });
+    const attestation = await linkAccounts({
+      address,
+      web2AccountId,
+      signature,
+    });
 
-    return token instanceof Token
-      ? res.status(201).send({ status: "ok" })
+    return attestation.backendSignature
+      ? res.status(201).send({ status: "ok", attestation })
       : res.status(500).end();
   } catch (error) {
     logger.error(error);
