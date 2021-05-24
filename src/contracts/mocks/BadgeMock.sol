@@ -15,4 +15,8 @@ contract BadgeMock is Badge {
     function burn(bytes32 tokenId) public {
         _burn(tokenId);
     }
+
+    function setURI(string memory newURI) public {
+        _setURI(newURI);
+    }
 }

@@ -46,6 +46,22 @@ describe("BadgeMock", () => {
     badgeMock = await BadgeMockFactory.deploy(badgeName, badgeSymbol);
   });
 
+  describe("URI", () => {
+    it("should return an empty URI by default", async () => {
+      expect(await badgeMock.URI()).to.eq("");
+    });
+
+    it("should set a new URI", async () => {
+      const newURI =
+        "https://ipfs.io/ipfs/Qme7ss3ARVgxv6rXqVPiikMJ8u2NLgmgszg13pYrDKEoiu";
+
+      const tx = await badgeMock.setURI(newURI);
+      await tx.wait();
+
+      expect(await badgeMock.URI()).to.eq(newURI);
+    });
+  });
+
   describe("mint", () => {
     it("should not allow minting to the zero address", async () => {
       await expect(

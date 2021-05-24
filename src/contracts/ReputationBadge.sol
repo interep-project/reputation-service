@@ -12,6 +12,11 @@ contract ReputationBadge is Badge {
         bytes32 tokenId;
     }
 
+    modifier onlyBackend {
+        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
+        _;
+    }
+
     constructor(string memory badgeName_, string memory badgeSymbol_)
         Badge(badgeName_, badgeSymbol_)
     {
@@ -22,14 +27,18 @@ contract ReputationBadge is Badge {
         return _exists(tokenId);
     }
 
-    function mint(address to, bytes32 tokenId) external {
-        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
+    function setURI(string memory newURI) external onlyBackend {
+        _setURI(newURI);
+    }
+
+    function mint(address to, bytes32 tokenId) external onlyBackend {
         _mint(to, tokenId);
     }
 
-    function batchMint(TokenParameters[] memory tokensToMint) external {
-        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
-
+    function batchMint(TokenParameters[] memory tokensToMint)
+        external
+        onlyBackend
+    {
         for (uint256 i = 0; i < tokensToMint.length; i++) {
             _mint(tokensToMint[i].owner, tokensToMint[i].tokenId);
         }

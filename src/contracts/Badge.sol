@@ -10,6 +10,9 @@ contract Badge is IBadge {
     // Badge's symbol
     string private _symbol;
 
+    // Badge's URI
+    string private _URI;
+
     // Mapping from token ID to owner's address
     mapping(bytes32 => address) private _owners;
 
@@ -29,6 +32,11 @@ contract Badge is IBadge {
     // Returns the badge's symbol
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
+    }
+
+    // Returns the badge's URI
+    function URI() public view virtual override returns (string memory) {
+        return _URI;
     }
 
     // Returns the token ID owned by `owner`, if it exists, and 0 otherwise
@@ -59,6 +67,11 @@ contract Badge is IBadge {
         require(owner != address(0), "Invalid owner at zero address");
 
         return owner;
+    }
+
+    // Sets a new badge URI
+    function _setURI(string memory newURI) internal virtual {
+        _URI = newURI;
     }
 
     // Checks if a token ID exists

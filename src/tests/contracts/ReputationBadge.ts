@@ -80,6 +80,28 @@ describe("ReputationBadge", () => {
     });
   });
 
+  describe("URI", () => {
+    it("should return an empty URI by default", async () => {
+      expect(await reputationBadge.URI()).to.eq("");
+    });
+
+    it("should let the backend set a new URI", async () => {
+      const newURI =
+        "https://ipfs.io/ipfs/Qme7ss3ARVgxv6rXqVPiikMJ8u2NLgmgszg13pYrDKEoiu";
+
+      const tx = await reputationBadge.connect(backend).setURI(newURI);
+      await tx.wait();
+
+      expect(await reputationBadge.URI()).to.eq(newURI);
+    });
+
+    it("should not let any address set a new URI", async () => {
+      await expect(
+        reputationBadge.connect(signer2).setURI("https://google.com")
+      ).to.be.revertedWith("Unauthorized");
+    });
+  });
+
   describe("mint", () => {
     it("should restrict minting to the backend address", async () => {
       await expect(
