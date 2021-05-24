@@ -13,6 +13,8 @@ import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
+import useEncryption from "src/hooks/useEncryption";
+import { encryptMessage } from "src/utils/crypto/encryption";
 
 const getMyTwitterReputation = async () => {
   let response;
@@ -50,6 +52,7 @@ export default function Home() {
   const hasASession = !!session;
 
   const { connect, address, connected, networkId, signer } = useWeb3Context();
+  const { getPublicKey } = useEncryption();
   const [
     twitterReputation,
     setTwitterReputation,
@@ -151,9 +154,14 @@ export default function Home() {
       }),
     })
       .then((res) => res.json())
-      .then((response) => {
+      .then(async (response) => {
         if (response.status === "ok") {
-          setAccountLinkingMessage("Success!");
+          const pubKey = await getPublicKey();
+          const encryptedBackendSignature = encryptMessage(
+            pubKey,
+            response.attestation.backendSignature
+          );
+          console.log(`encryptedBackendSignature`, encryptedBackendSignature);
         } else if (response?.error) {
           setAccountLinkingMessage(`Error: ${response.error}`);
         } else {
