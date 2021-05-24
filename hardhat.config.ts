@@ -28,26 +28,34 @@ task("faucet", "Sends ETH to an address")
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const kovanAccounts =
-  process.env.BACKEND_PRIVATE_KEY && process.env.DEPLOYER_PRIVATE_KEY
-    ? [
-        `0x${process.env.BACKEND_PRIVATE_KEY}`,
-        `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
-      ]
-    : "remote";
+const getNetworks = () => {
+  if (process.env.NODE_ENV === "production") {
+    if (!process.env.BACKEND_PRIVATE_KEY || !process.env.DEPLOYER_PRIVATE_KEY) {
+      throw new Error("Please set the private keys in a .env file");
+    }
+    const kovanAccounts = [
+      `0x${process.env.BACKEND_PRIVATE_KEY}`,
+      `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
+    ];
+
+    return {
+      kovan: {
+        url: process.env.INFURA_KOVAN_RPC_URL,
+        chainId: 42,
+        accounts: kovanAccounts,
+      },
+    };
+  }
+
+  return undefined;
+};
 
 const config: HardhatUserConfig = {
   defaultNetwork: getDefaultNetworkName(),
   solidity: {
     version: "0.8.0",
   },
-  networks: {
-    kovan: {
-      url: process.env.INFURA_KOVAN_RPC_URL,
-      chainId: 42,
-      accounts: kovanAccounts,
-    },
-  },
+  networks: getNetworks(),
   paths: {
     sources: "src/contracts",
     tests: "src/tests/contracts",
