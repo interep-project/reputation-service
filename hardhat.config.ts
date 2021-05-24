@@ -28,6 +28,9 @@ task("faucet", "Sends ETH to an address")
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
+const backendPrivateKey = `0x${process.env.BACKEND_PRIVATE_KEY}` || "";
+const deployerPrivateKey = `0x${process.env.DEPLOYER_PRIVATE_KEY}` || "";
+
 const config: HardhatUserConfig = {
   defaultNetwork: getDefaultNetworkName(),
   solidity: {
@@ -36,10 +39,7 @@ const config: HardhatUserConfig = {
   networks: {
     kovan: {
       url: process.env.INFURA_KOVAN_RPC_URL,
-      accounts: [
-        `0x${process.env.BACKEND_PRIVATE_KEY}`,
-        `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
-      ],
+      accounts: [backendPrivateKey, deployerPrivateKey],
     },
   },
   paths: {
