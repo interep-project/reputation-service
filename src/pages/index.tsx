@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
 import { signIn, signOut, useSession } from "next-auth/client";
-import getConfig from "next/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
@@ -13,8 +12,7 @@ import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
-
-const { publicRuntimeConfig } = getConfig();
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
 const getMyTwitterReputation = async () => {
   let response;
@@ -67,14 +65,16 @@ export default function Home() {
   const { tokens, refetchTokens } = useMyTokens(address);
 
   useEffect(() => {
-    if (networkId && networkId !== publicRuntimeConfig.networkId) {
+    const expectedNetworkId = getDefaultNetworkId();
+
+    if (networkId && networkId !== expectedNetworkId) {
       setIsOnProperNetwork(false);
       alert(
         `Please switch to ${getChainNameFromNetworkId(
-          publicRuntimeConfig.networkId
+          expectedNetworkId
         )} network`
       );
-    } else if (networkId && networkId === publicRuntimeConfig.networkId) {
+    } else if (networkId && networkId === expectedNetworkId) {
       // user switched from wrong to right network, force-reload the page
       if (isOnProperNetwork === false) {
         window.location.reload();
