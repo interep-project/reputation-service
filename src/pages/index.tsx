@@ -3,7 +3,7 @@ import { signIn, signOut, useSession } from "next-auth/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
-import { createAssociationMessage } from "src/core/linking/signature";
+import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
 import { TokenStatus } from "src/models/tokens/Token.types";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
@@ -15,6 +15,7 @@ import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/Reputat
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
+import { getChecksummedAddress } from "src/utils/crypto/address";
 
 const getMyTwitterReputation = async () => {
   let response;
@@ -138,32 +139,64 @@ export default function Home() {
       return;
     }
     setAccountLinkingMessage(`Linking in progress...`);
+    const checksummedAddress = getChecksummedAddress(address);
 
-    const message = createAssociationMessage({
-      address,
+    if (!checksummedAddress) {
+      console.error("Invalid address");
+      return;
+    }
+    const message = createUserAttestationMessage({
+      checksummedAddress,
       web2AccountId: session.web2AccountId,
     });
-    const signature = await signer.signMessage(message);
+    const userSignature = await signer.signMessage(message);
 
-    fetch(`/api/linking`, {
+    fetch(`/api/linking/attestation`, {
       method: "PUT",
       body: JSON.stringify({
         address,
         web2AccountId: session.web2AccountId,
-        signature,
+        userSignature,
       }),
     })
       .then((res) => res.json())
       .then(async (response) => {
         if (response.status === "ok") {
           const pubKey = await getPublicKey();
-          const encryptedBackendSignature = encryptMessageWithSalt(
+          const encryptedAttestation = encryptMessageWithSalt(
             pubKey,
-            response.attestation.backendSignature
+            JSON.stringify(response.attestation)
           );
-          console.log(`encryptedBackendSignature`, encryptedBackendSignature);
+          console.log(`encryptedBackendAttestation`, encryptedAttestation);
+          return {
+            encryptedAttestation,
+          };
         } else if (response?.error) {
-          setAccountLinkingMessage(`Error: ${response.error}`);
+          throw new Error(`Error: ${response.error}`);
+        } else {
+          throw new Error(
+            `Sorry there was an error while linking your accounts`
+          );
+        }
+      })
+      .then(({ encryptedAttestation }) => {
+        return fetch(`/api/linking`, {
+          method: "PUT",
+          body: JSON.stringify({
+            chainId: networkId,
+            address,
+            web2AccountId: session.web2AccountId,
+            userSignature,
+            encryptedAttestation,
+          }),
+        });
+      })
+      .then((res) => res.json())
+      .then((payload) => {
+        if (payload.status === "ok") {
+          setAccountLinkingMessage("Success!");
+        } else if (payload?.error) {
+          setAccountLinkingMessage(`Error: ${payload.error}`);
         } else {
           setAccountLinkingMessage(
             `Sorry there was an error while linking your accounts`
@@ -175,7 +208,7 @@ export default function Home() {
         setAccountLinkingMessage(JSON.stringify(err.message));
       })
       .finally(() => refetchTokens());
-  }, [address, refetchTokens, session, signer]);
+  }, [address, refetchTokens, session, signer, networkId, getPublicKey]);
 
   const burnToken = useCallback(
     async (web2Provider, tokenId) => {
