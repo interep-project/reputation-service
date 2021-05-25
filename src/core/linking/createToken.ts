@@ -87,22 +87,6 @@ const createToken = async ({
     token.idHash = tokenIdHash;
     await token.save();
 
-    // const txResponse = await mintNewBadge({
-    //   badgeAddress,
-    //   to: checksummedAddress,
-    //   tokenId: tokenIdHash,
-    // });
-    // logger.silly(`[MINTING TX] Tx Response: ${JSON.stringify(txResponse)}`);
-    // if (txResponse) {
-    //   const { hash, blockNumber, chainId, timestamp } = txResponse;
-    //   token.mintTransactions?.push({
-    //     response: { hash, blockNumber, chainId, timestamp },
-    //   });
-    //   token.status = TokenStatus.MINT_PENDING;
-    //   await token.save();
-    //   web2Account.isLinkedToAddress = true;
-    //   await web2Account.save();
-    // }
     return token;
   } catch (error) {
     logger.error(error);
