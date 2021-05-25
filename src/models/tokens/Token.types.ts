@@ -15,8 +15,8 @@ export interface IToken {
   chainId: number;
   contractAddress: number;
   userAddress: string;
+  encryptedAttestation: string;
   issuanceTimestamp: number;
-  web2Account: string;
   idHash?: string;
   status: TokenStatus;
   mintTransactions?: ITransaction[];
