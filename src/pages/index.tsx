@@ -43,6 +43,31 @@ const checkIfMyAccountIsLinked = async () => {
   }
 };
 
+const mintToken = async (tokenId: string) => {
+  try {
+    const response = await fetch(`/api/tokens/mint`, {
+      method: "POST",
+      body: JSON.stringify({
+        tokenId,
+      }),
+    });
+
+    if (response?.status === 200) {
+      const data = await response.json();
+      return data;
+    } else if (response?.status === 400) {
+      const data = await response.json();
+      console.error(`Error: ${data.error}`);
+      return;
+    } else {
+      console.error(`Error while minting token`);
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 // const getDomain = (chainId: number) => ({
 //   name: "InterRep",
 //   chainId,
@@ -346,16 +371,31 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                      <button
-                        disabled={token.status !== TokenStatus.MINTED}
-                        onClick={() =>
-                          burnToken(token.web2Provider, token.idHash)
-                        }
-                        type="button"
-                        className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                      >
-                        BURN
-                      </button>
+                      {token.status === TokenStatus.NOT_MINTED && (
+                        <button
+                          disabled={token.status !== TokenStatus.NOT_MINTED}
+                          onClick={() => {
+                            console.log(`token`, token);
+                            mintToken(token._id);
+                          }}
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          MINT
+                        </button>
+                      )}
+                      {token.status === TokenStatus.MINTED && (
+                        <button
+                          disabled={token.status !== TokenStatus.MINTED}
+                          onClick={() =>
+                            burnToken(token.web2Provider, token.idHash)
+                          }
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          BURN
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
