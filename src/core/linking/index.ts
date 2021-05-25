@@ -1,70 +1,40 @@
 import { ethers } from "hardhat";
-import Token from "src/models/tokens/Token.model";
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
-import mintNewBadge from "src/core/blockchain/ReputationBadge/mintNewBadge";
-import {
-  createAssociationMessage,
-  createBackendAssociationMessage,
-} from "./signature";
-import {
-  DeployedContracts,
-  getDeployedContractAddress,
-  isNetworkWithDeployedContract,
-} from "src/utils/crypto/deployedContracts";
+import { checkIfUserSignatureIsValid } from "src/core/signing/checkIfUserSignatureIsValid";
+import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage";
 
-type LinkAccountsProps = {
+type GenerateAttestationParams = {
   address: string;
   web2AccountId: string;
-  signature: string;
+  userSignature: string;
 };
 
-const linkAccounts = async ({
+const generateAttestation = async ({
   address,
   web2AccountId,
-  signature,
-}: LinkAccountsProps): Promise<{
-  associationMessage: string;
-  backendSignature: string;
+  userSignature,
+}: GenerateAttestationParams): Promise<{
+  attestationMessage: string;
+  backendAttestationSignature: string;
 }> => {
-  // const badgeAddress = getDeployedContractAddress(
-  //   DeployedContracts.TWITTER_BADGE
-  // );
-
-  // if (!badgeAddress) {
-  //   throw new Error(`Invalid badge address ${badgeAddress}`);
-  // }
-
-  // const chainId = (await ethers.provider.getNetwork()).chainId;
-
-  // if (!isNetworkWithDeployedContract(chainId)) {
-  //   throw new Error(`Invalid network id ${chainId}`);
-  // }
-
-  const recreatedMessageSignedByUser = createAssociationMessage({
-    address,
-    web2AccountId: web2AccountId,
-  });
-
-  const signerAddress = ethers.utils.verifyMessage(
-    recreatedMessageSignedByUser,
-    signature
-  );
-
   const checksummedAddress = getChecksummedAddress(address);
 
   if (!checksummedAddress) {
     throw new Error(`Invalid address ${address}`);
   }
 
-  if (signerAddress !== checksummedAddress) {
+  const isUserSignatureValid = checkIfUserSignatureIsValid({
+    checksummedAddress,
+    web2AccountId,
+    userSignature,
+  });
+
+  if (!isUserSignatureValid) {
     throw new Error(`Invalid signature`);
   }
-
-  logger.silly(`[Linking] Signer address: ${signerAddress}`);
 
   let web2Account;
   try {
@@ -89,7 +59,7 @@ const linkAccounts = async ({
     throw new Error(`Insufficient account's reputation`);
   }
 
-  const associationMessage = createBackendAssociationMessage({
+  const attestationMessage = createBackendAttestationMessage({
     address: checksummedAddress,
     provider: web2Account.provider,
     providerAccountId: web2Account.providerAccountId,
@@ -97,63 +67,22 @@ const linkAccounts = async ({
 
   try {
     const [backendSigner] = await ethers.getSigners();
-    const backendSignature = await backendSigner.signMessage(
-      associationMessage
+    const backendAttestationSignature = await backendSigner.signMessage(
+      attestationMessage
+    );
+
+    logger.silly(
+      `Attestation generated. Message: ${attestationMessage}. Backend Signature: ${backendAttestationSignature}`
     );
 
     return {
-      associationMessage,
-      backendSignature,
+      attestationMessage,
+      backendAttestationSignature,
     };
   } catch (error) {
     logger.error(error);
     throw new Error(`Error while creating attestation`);
   }
-
-  // try {
-  //   const token = new Token({
-  //     contractAddress: badgeAddress,
-  //     chainId,
-  //     userAddress: checksummedAddress,
-  //     web2Account: web2AccountId,
-  //     web2Provider: web2Account.provider,
-  //     issuanceTimestamp: Date.now(),
-  //     status: TokenStatus.NOT_MINTED,
-  //   });
-
-  //   // hash the id
-  //   const tokenIdHash = ethers.utils.id(token.id.toString());
-
-  //   token.idHash = tokenIdHash;
-  //   await token.save();
-
-  //   const txResponse = await mintNewBadge({
-  //     badgeAddress,
-  //     to: checksummedAddress,
-  //     tokenId: tokenIdHash,
-  //   });
-
-  //   logger.silly(`[MINTING TX] Tx Response: ${JSON.stringify(txResponse)}`);
-
-  //   if (txResponse) {
-  //     const { hash, blockNumber, chainId, timestamp } = txResponse;
-
-  //     token.mintTransactions?.push({
-  //       response: { hash, blockNumber, chainId, timestamp },
-  //     });
-  //     token.status = TokenStatus.MINT_PENDING;
-
-  //     await token.save();
-
-  //     web2Account.isLinkedToAddress = true;
-  //     await web2Account.save();
-  //   }
-
-  //   return token;
-  // } catch (error) {
-  //   logger.error(error);
-  //   throw new Error(`Error while creating token`);
-  // }
 };
 
-export default linkAccounts;
+export default generateAttestation;
