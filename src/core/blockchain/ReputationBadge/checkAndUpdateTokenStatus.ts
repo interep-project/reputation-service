@@ -20,7 +20,9 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
               await token.save();
             }
           } else {
-            if (token.status === TokenStatus.MINT_PENDING) {
+            if (token.status === TokenStatus.NOT_MINTED) {
+              return;
+            } else if (token.status === TokenStatus.MINT_PENDING) {
               token.status = TokenStatus.NOT_MINTED;
               await token.save();
             } else {
@@ -29,7 +31,7 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
                 tokenId
               );
 
-              if (burnedEvent) {
+              if (burnedEvent.length > 0) {
                 token.status = TokenStatus.BURNED;
                 await token.save();
               } else {
