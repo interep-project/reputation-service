@@ -14,7 +14,7 @@ export const getDefaultNetworkId = () => {
 export const getDefaultNetworkName = () => {
   const env = process.env.NODE_ENV;
 
-  if (env === "test") return "hardhat";
+  if (env === "test" || !env) return "hardhat";
 
   const { publicRuntimeConfig } = getConfig();
   const networks = publicRuntimeConfig.defaultNetworkByEnv;
