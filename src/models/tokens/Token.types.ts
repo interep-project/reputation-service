@@ -13,7 +13,7 @@ export enum TokenStatus {
 
 export interface IToken {
   chainId: number;
-  contractAddress: number;
+  contractAddress: string;
   userAddress: string;
   encryptedAttestation: string;
   issuanceTimestamp: number;
