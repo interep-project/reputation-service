@@ -1,29 +1,41 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
-import linkAccounts from "src/core/linking";
+import createToken from "src/core/linking/createToken";
 import Token from "src/models/tokens/Token.model";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<{ isLinkedToAddress: boolean } | void | { error: string }> => {
   await dbConnect();
-
-  if (req.method !== "PUT") {
-    return res.status(405).end();
-  }
 
   const session = await getSession({ req });
   if (!session) {
     return res.status(401).end();
   }
-  const { address, web2AccountId, signature } = JSON.parse(req.body);
+
+  const {
+    chainId,
+    address,
+    web2AccountId,
+    userSignature,
+    encryptedAttestation,
+  } = JSON.parse(req.body);
 
   // logger.silly(
   //   `Linking ${address} with ${web2AccountId}. Signature: ${signature}`
   // );
 
   // Invalid call
-  if (!address || !web2AccountId || !signature) {
+  if (
+    !chainId ||
+    !address ||
+    !web2AccountId ||
+    !userSignature ||
+    !encryptedAttestation
+  ) {
     return res.status(400).end();
   }
 
@@ -33,17 +45,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    const attestation = await linkAccounts({
+    const token = await createToken({
+      chainId,
       address,
       web2AccountId,
-      signature,
+      userSignature,
+      encryptedAttestation,
     });
 
-    return attestation.backendSignature
-      ? res.status(201).send({ status: "ok", attestation })
+    return token instanceof Token
+      ? res.status(201).send({ status: "ok" })
       : res.status(500).end();
-  } catch (error) {
-    logger.error(error);
-    return res.status(400).send({ error: error.message });
+  } catch (err) {
+    logger.error(err);
   }
 };
