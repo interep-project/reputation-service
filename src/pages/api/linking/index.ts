@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
-import createToken from "src/core/linking/createToken";
+import linkAccounts from "src/core/linking";
 import Token from "src/models/tokens/Token.model";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
@@ -21,7 +21,7 @@ export default async (
     address,
     web2AccountId,
     userSignature,
-    encryptedAttestation,
+    userPublicKey,
   } = JSON.parse(req.body);
 
   // logger.silly(
@@ -34,7 +34,7 @@ export default async (
     !address ||
     !web2AccountId ||
     !userSignature ||
-    !encryptedAttestation
+    !userPublicKey
   ) {
     return res.status(400).end();
   }
@@ -45,12 +45,12 @@ export default async (
   }
 
   try {
-    const token = await createToken({
+    const token = await linkAccounts({
       chainId,
       address,
       web2AccountId,
       userSignature,
-      encryptedAttestation,
+      userPublicKey,
     });
 
     return token instanceof Token
