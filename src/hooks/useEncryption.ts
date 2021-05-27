@@ -18,7 +18,18 @@ const useEncryption = () => {
     return pubKey;
   }, []);
 
-  return { getPublicKey, publicKey };
+  const decrypt = async (messageToDecrypt: string): Promise<string> => {
+    // @ts-ignore: ignore
+    const decrypted = await window.ethereum.request({
+      method: "eth_decrypt",
+      // @ts-ignore: ignore
+      params: [messageToDecrypt, window.ethereum.selectedAddress],
+    });
+
+    return decrypted;
+  };
+
+  return { getPublicKey, publicKey, decrypt };
 };
 
 export default useEncryption;
