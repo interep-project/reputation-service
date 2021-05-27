@@ -5,21 +5,33 @@ import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
 import { checkIfUserSignatureIsValid } from "src/core/signing/checkIfUserSignatureIsValid";
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage";
+import Token from "src/models/tokens/Token.model";
+import {
+  getBadgeAddressByProvider,
+  isNetworkWithDeployedContract,
+} from "src/utils/crypto/deployedContracts";
+import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
+import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 
-type GenerateAttestationParams = {
+type LinkAccountsParams = {
+  chainId: number;
   address: string;
   web2AccountId: string;
   userSignature: string;
+  userPublicKey: string;
 };
 
-const generateAttestation = async ({
+const linkAccounts = async ({
+  chainId,
   address,
   web2AccountId,
   userSignature,
-}: GenerateAttestationParams): Promise<{
-  attestationMessage: string;
-  backendAttestationSignature: string;
-}> => {
+  userPublicKey,
+}: LinkAccountsParams): Promise<ITokenDocument> => {
+  if (!isNetworkWithDeployedContract(chainId)) {
+    throw new Error(`Invalid network id ${chainId}`);
+  }
+
   const checksummedAddress = getChecksummedAddress(address);
 
   if (!checksummedAddress) {
@@ -59,13 +71,38 @@ const generateAttestation = async ({
     throw new Error(`Insufficient account's reputation`);
   }
 
-  const attestationMessage = createBackendAttestationMessage({
-    address: checksummedAddress,
-    provider: web2Account.provider,
-    providerAccountId: web2Account.providerAccountId,
-  });
+  const badgeAddress = getBadgeAddressByProvider(web2Account.provider);
+
+  if (!badgeAddress) {
+    throw new Error(`Invalid badge address ${badgeAddress}`);
+  }
 
   try {
+    web2Account.isLinkedToAddress = true;
+    await web2Account.save();
+
+    const token = new Token({
+      chainId,
+      contractAddress: badgeAddress,
+      userAddress: checksummedAddress,
+      web2Provider: web2Account.provider,
+      web2AccountId,
+      issuanceTimestamp: Date.now(),
+      status: TokenStatus.NOT_MINTED,
+    });
+
+    // hash the id
+    const tokenIdHash = ethers.utils.id(token.id.toString());
+    token.idHash = tokenIdHash;
+    await token.save();
+
+    const attestationMessage = createBackendAttestationMessage({
+      tokenIdHash,
+      address: checksummedAddress,
+      provider: web2Account.provider,
+      providerAccountId: web2Account.providerAccountId,
+    });
+
     const [backendSigner] = await ethers.getSigners();
     const backendAttestationSignature = await backendSigner.signMessage(
       attestationMessage
@@ -75,14 +112,22 @@ const generateAttestation = async ({
       `Attestation generated. Message: ${attestationMessage}. Backend Signature: ${backendAttestationSignature}`
     );
 
-    return {
-      attestationMessage,
-      backendAttestationSignature,
-    };
+    const encryptedAttestation = encryptMessageWithSalt(
+      userPublicKey,
+      JSON.stringify({
+        attestationMessage,
+        backendAttestationSignature,
+      })
+    );
+
+    token.encryptedAttestation = encryptedAttestation;
+    await token.save();
+
+    return token;
   } catch (error) {
     logger.error(error);
     throw new Error(`Error while creating attestation`);
   }
 };
 
-export default generateAttestation;
+export default linkAccounts;
