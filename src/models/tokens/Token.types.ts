@@ -9,6 +9,7 @@ export enum TokenStatus {
   MINTED = "MINTED",
   BURN_PENDING = "BURN_PENDING",
   BURNED = "BURNED",
+  REVOKED = "REVOKED",
 }
 
 export interface IToken {
