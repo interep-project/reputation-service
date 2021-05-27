@@ -5,7 +5,7 @@ import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
-import { TokenStatus } from "src/models/tokens/Token.types";
+import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
@@ -14,9 +14,9 @@ import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
-import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 
+// TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
   let response;
   try {
@@ -32,7 +32,7 @@ const getMyTwitterReputation = async () => {
   }
 };
 
-const checkIfMyAccountIsLinked = async () => {
+const callCheckLink = async () => {
   const response = await fetch(`/api/linking/checkLink`);
 
   if (response?.status === 200) {
@@ -78,7 +78,7 @@ export default function Home() {
   const hasASession = !!session;
 
   const { connect, address, connected, networkId, signer } = useWeb3Context();
-  const { getPublicKey } = useEncryption();
+  const { getPublicKey, decrypt } = useEncryption();
   const [
     twitterReputation,
     setTwitterReputation,
@@ -120,6 +120,14 @@ export default function Home() {
     [networkId]
   );
 
+  const checkIfMyAccountIsLinked = () => {
+    callCheckLink()
+      .then((response) => {
+        response && setIsCurrentAccountLinked(response.isLinkedToAddress);
+      })
+      .catch((error) => console.error(error));
+  };
+
   useEffect(() => {
     if (session) {
       getMyTwitterReputation()
@@ -128,11 +136,7 @@ export default function Home() {
         })
         .catch((error) => console.error(error));
 
-      checkIfMyAccountIsLinked()
-        .then((response) => {
-          response && setIsCurrentAccountLinked(response.isLinkedToAddress);
-        })
-        .catch((error) => console.error(error));
+      checkIfMyAccountIsLinked();
     }
   }, [session, accountLinkingMessage]);
 
@@ -170,41 +174,37 @@ export default function Home() {
       console.error("Invalid address");
       return;
     }
-    const message = createUserAttestationMessage({
-      checksummedAddress,
-      web2AccountId: session.web2AccountId,
-    });
-    const userSignature = await signer.signMessage(message);
 
-    fetch(`/api/linking/attestation`, {
-      method: "PUT",
-      body: JSON.stringify({
-        address,
-        web2AccountId: session.web2AccountId,
-        userSignature,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (response) => {
-        if (response.status === "ok") {
-          const pubKey = await getPublicKey();
-          const encryptedAttestation = encryptMessageWithSalt(
-            pubKey,
-            JSON.stringify(response.attestation)
-          );
-          console.log(`encryptedBackendAttestation`, encryptedAttestation);
-          return {
-            encryptedAttestation,
-          };
-        } else if (response?.error) {
-          throw new Error(`Error: ${response.error}`);
-        } else {
-          throw new Error(
-            `Sorry there was an error while linking your accounts`
+    getPublicKey()
+      .then((pubKey) => {
+        if (!pubKey) throw new Error("Public key is needed to link accounts");
+        setAccountLinkingMessage(
+          "Please confirm that you wish to link your accounts by opening Metamask and signing the message"
+        );
+        return pubKey;
+      })
+      .then(async (pubKey) => {
+        let userSignature;
+        try {
+          const message = createUserAttestationMessage({
+            checksummedAddress,
+            web2AccountId: session.web2AccountId,
+          });
+          userSignature = await signer.signMessage(message);
+          if (!userSignature)
+            throw new Error(
+              "Your signature is needed to register your intent to link the accounts"
+            );
+          console.log(`userSignature`, userSignature);
+        } catch (err) {
+          console.error(err);
+          setAccountLinkingMessage(
+            "Your signature is needed to register your intent to link the accounts"
           );
         }
+        return { pubKey, userSignature };
       })
-      .then(({ encryptedAttestation }) => {
+      .then(({ pubKey, userSignature }) => {
         return fetch(`/api/linking`, {
           method: "PUT",
           body: JSON.stringify({
@@ -212,7 +212,7 @@ export default function Home() {
             address,
             web2AccountId: session.web2AccountId,
             userSignature,
-            encryptedAttestation,
+            userPublicKey: pubKey,
           }),
         });
       })
@@ -235,6 +235,18 @@ export default function Home() {
       .finally(() => refetchTokens());
   }, [address, refetchTokens, session, signer, networkId, getPublicKey]);
 
+  const mintTokenAndRefetch = useCallback(
+    (tokenId) => {
+      mintToken(tokenId).then((data) => {
+        if (data) {
+          console.log(`data`, data);
+        }
+        refetchTokens();
+      });
+    },
+    [refetchTokens]
+  );
+
   const burnToken = useCallback(
     async (web2Provider, tokenId) => {
       if (!signer) {
@@ -256,8 +268,34 @@ export default function Home() {
         refetchTokens();
       }
     },
+    // networkId is added as dep so the the callback & badge instance is different if network changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [refetchTokens, signer, networkId]
   );
+
+  const unlinkAccounts = async (token: ITokenDocument) => {
+    if (!token.encryptedAttestation) {
+      console.error("Error: token has no encrypted attestation");
+      return;
+    }
+
+    try {
+      const decryptedAttestation = await decrypt(token.encryptedAttestation);
+      console.log(`decryptedAttestation`, decryptedAttestation);
+
+      await fetch(`/api/linking/unlink`, {
+        method: "POST",
+        body: JSON.stringify({
+          decryptedAttestation,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await checkIfMyAccountIsLinked();
+      await refetchTokens();
+    }
+  };
 
   return (
     <div className="bg-black min-h-full">
@@ -375,8 +413,7 @@ export default function Home() {
                         <button
                           disabled={token.status !== TokenStatus.NOT_MINTED}
                           onClick={() => {
-                            console.log(`token`, token);
-                            mintToken(token._id);
+                            mintTokenAndRefetch(token._id);
                           }}
                           type="button"
                           className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
@@ -394,6 +431,15 @@ export default function Home() {
                           className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
                         >
                           BURN
+                        </button>
+                      )}
+                      {token.status === TokenStatus.BURNED && (
+                        <button
+                          onClick={() => unlinkAccounts(token)}
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          UNLINK ACCOUNTS
                         </button>
                       )}
                     </div>
