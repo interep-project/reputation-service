@@ -6,7 +6,7 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
   if (!tokens) return;
 
   try {
-    await Promise.all(
+    return Promise.all(
       tokens.map(async (token) => {
         const tokenId = token.idHash;
         if (!tokenId) {
@@ -22,9 +22,13 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
           if (token.status === TokenStatus.MINT_PENDING) {
             token.status = TokenStatus.MINTED;
             await token.save();
+            return;
           }
         } else {
-          if (token.status === TokenStatus.NOT_MINTED) {
+          if (
+            token.status === TokenStatus.NOT_MINTED ||
+            token.status === TokenStatus.REVOKED
+          ) {
             return;
           } else if (token.status === TokenStatus.MINT_PENDING) {
             token.status = TokenStatus.NOT_MINTED;
