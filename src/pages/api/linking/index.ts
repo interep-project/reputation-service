@@ -24,9 +24,9 @@ export default async (
     userPublicKey,
   } = JSON.parse(req.body);
 
-  // logger.silly(
-  //   `Linking ${address} with ${web2AccountId}. Signature: ${signature}`
-  // );
+  logger.silly(
+    `Linking ${address} with ${web2AccountId}. Signature: ${userSignature}`
+  );
 
   // Invalid call
   if (
@@ -58,5 +58,6 @@ export default async (
       : res.status(500).end();
   } catch (err) {
     logger.error(err);
+    return res.status(400).end();
   }
 };

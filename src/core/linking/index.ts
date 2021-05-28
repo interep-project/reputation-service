@@ -86,7 +86,6 @@ const linkAccounts = async ({
       contractAddress: badgeAddress,
       userAddress: checksummedAddress,
       web2Provider: web2Account.provider,
-      web2AccountId,
       issuanceTimestamp: Date.now(),
       status: TokenStatus.NOT_MINTED,
     });
@@ -94,7 +93,6 @@ const linkAccounts = async ({
     // hash the id
     const tokenIdHash = ethers.utils.id(token.id.toString());
     token.idHash = tokenIdHash;
-    await token.save();
 
     const attestationMessage = createBackendAttestationMessage({
       tokenIdHash,
