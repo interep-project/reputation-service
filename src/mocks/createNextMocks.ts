@@ -8,10 +8,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const createNextMocks = (
   reqOptions?: RequestOptions
-): Mocks<NextApiRequest, NextApiResponse> =>
-  createMocks<NextApiRequest, NextApiResponse>({
+): Mocks<NextApiRequest, NextApiResponse> => {
+  const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
     method: "GET" as RequestMethod,
     ...reqOptions,
   });
+  req.body = JSON.stringify(req.body);
+
+  return { req, res };
+};
 
 export default createNextMocks;
