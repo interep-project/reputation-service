@@ -2,17 +2,17 @@ import { ContractTransaction } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 import { ReputationBadge } from "typechain";
 
-type MintNewBadgeProps = {
+type MintNewTokenProps = {
   badgeAddress: string;
   to: string;
   tokenId: string;
 };
 
-const mintNewBadge = async ({
+const mintNewToken = async ({
   badgeAddress,
   to,
   tokenId,
-}: MintNewBadgeProps): Promise<ContractTransaction> => {
+}: MintNewTokenProps): Promise<ContractTransaction> => {
   if (!tokenId) throw new Error("Token id is not defined");
 
   const [backend] = await ethers.getSigners();
@@ -29,4 +29,4 @@ const mintNewBadge = async ({
   return mintTx;
 };
 
-export default mintNewBadge;
+export default mintNewToken;
