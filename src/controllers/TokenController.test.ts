@@ -1,4 +1,5 @@
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus";
+import mintToken from "src/core/linking/mintToken";
 import createMockTokenObject from "src/mocks/createMockToken";
 import createNextMocks from "src/mocks/createNextMocks";
 import Token from "src/models/tokens/Token.model";
@@ -23,6 +24,11 @@ jest.mock("src/utils/server/logger", () => ({
   default: {
     error: jest.fn(),
   },
+}));
+
+jest.mock("src/core/linking/mintToken", () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
 describe("TokenController", () => {
@@ -213,6 +219,57 @@ describe("TokenController", () => {
       await TokenController.getTokensByAddress(req, res);
 
       expect(res._getStatusCode()).toBe(500);
+      expect(logger.error).toHaveBeenCalledWith(err);
+    });
+  });
+
+  describe("mintToken", () => {
+    it("should return a 400 if not token id was passed", async () => {
+      const { req, res } = createNextMocks({
+        body: {},
+        method: "PUT",
+      });
+
+      await TokenController.mintToken(req, res);
+
+      expect(res._getStatusCode()).toBe(400);
+    });
+
+    it("should call mintToken with tokenId and return the tx response", async () => {
+      const txResponseMock = { hash: "hash" };
+      // @ts-expect-error: mocked above
+      mintToken.mockImplementationOnce(() => txResponseMock);
+
+      const tokenId = "0xaaaaa";
+      const { req, res } = createNextMocks({
+        body: { tokenId },
+        method: "PUT",
+      });
+
+      await TokenController.mintToken(req, res);
+
+      expect(mintToken).toHaveBeenCalledWith(tokenId);
+      expect(res._getStatusCode()).toBe(200);
+      expect(res._getData()).toEqual(txResponseMock);
+    });
+
+    it("should return 400 and send the error", async () => {
+      const err = new Error("Invalid operation");
+      // @ts-expect-error: mocked above
+      mintToken.mockImplementationOnce(() => {
+        throw err;
+      });
+
+      const tokenId = "0xaaaaa";
+      const { req, res } = createNextMocks({
+        body: { tokenId },
+        method: "PUT",
+      });
+
+      await TokenController.mintToken(req, res);
+
+      expect(res._getStatusCode()).toBe(400);
+      expect(res._getData()).toEqual({ error: err.message });
       expect(logger.error).toHaveBeenCalledWith(err);
     });
   });
