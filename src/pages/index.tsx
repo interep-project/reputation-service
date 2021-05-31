@@ -1,21 +1,22 @@
 import { ethers } from "ethers";
 import { signIn, signOut, useSession } from "next-auth/client";
-import getConfig from "next/config";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
-import { createAssociationMessage } from "src/core/linking/signature";
+import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
-import { TokenStatus } from "src/models/tokens/Token.types";
+import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
+import useEncryption from "src/hooks/useEncryption";
+import { getChecksummedAddress } from "src/utils/crypto/address";
 
-const { publicRuntimeConfig } = getConfig();
-
+// TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
   let response;
   try {
@@ -31,7 +32,7 @@ const getMyTwitterReputation = async () => {
   }
 };
 
-const checkIfMyAccountIsLinked = async () => {
+const callCheckLink = async () => {
   const response = await fetch(`/api/linking/checkLink`);
 
   if (response?.status === 200) {
@@ -39,6 +40,31 @@ const checkIfMyAccountIsLinked = async () => {
   } else {
     console.error("Can't determine if account is already linked");
     return null;
+  }
+};
+
+const mintToken = async (tokenId: string) => {
+  try {
+    const response = await fetch(`/api/tokens/mint`, {
+      method: "POST",
+      body: JSON.stringify({
+        tokenId,
+      }),
+    });
+
+    if (response?.status === 200) {
+      const data = await response.json();
+      return data;
+    } else if (response?.status === 400) {
+      const data = await response.json();
+      console.error(`Error: ${data.error}`);
+      return;
+    } else {
+      console.error(`Error while minting token`);
+      return;
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -52,6 +78,7 @@ export default function Home() {
   const hasASession = !!session;
 
   const { connect, address, connected, networkId, signer } = useWeb3Context();
+  const { getPublicKey, decrypt } = useEncryption();
   const [
     twitterReputation,
     setTwitterReputation,
@@ -67,14 +94,16 @@ export default function Home() {
   const { tokens, refetchTokens } = useMyTokens(address);
 
   useEffect(() => {
-    if (networkId && networkId !== publicRuntimeConfig.networkId) {
+    const expectedNetworkId = getDefaultNetworkId();
+
+    if (networkId && networkId !== expectedNetworkId) {
       setIsOnProperNetwork(false);
       alert(
         `Please switch to ${getChainNameFromNetworkId(
-          publicRuntimeConfig.networkId
+          expectedNetworkId
         )} network`
       );
-    } else if (networkId && networkId === publicRuntimeConfig.networkId) {
+    } else if (networkId && networkId === expectedNetworkId) {
       // user switched from wrong to right network, force-reload the page
       if (isOnProperNetwork === false) {
         window.location.reload();
@@ -91,6 +120,14 @@ export default function Home() {
     [networkId]
   );
 
+  const checkIfMyAccountIsLinked = () => {
+    callCheckLink()
+      .then((response) => {
+        response && setIsCurrentAccountLinked(response.isLinkedToAddress);
+      })
+      .catch((error) => console.error(error));
+  };
+
   useEffect(() => {
     if (session) {
       getMyTwitterReputation()
@@ -99,11 +136,7 @@ export default function Home() {
         })
         .catch((error) => console.error(error));
 
-      checkIfMyAccountIsLinked()
-        .then((response) => {
-          response && setIsCurrentAccountLinked(response.isLinkedToAddress);
-        })
-        .catch((error) => console.error(error));
+      checkIfMyAccountIsLinked();
     }
   }, [session, accountLinkingMessage]);
 
@@ -135,27 +168,60 @@ export default function Home() {
       return;
     }
     setAccountLinkingMessage(`Linking in progress...`);
+    const checksummedAddress = getChecksummedAddress(address);
 
-    const message = createAssociationMessage({
-      address,
-      web2AccountId: session.web2AccountId,
-    });
-    const signature = await signer.signMessage(message);
+    if (!checksummedAddress) {
+      console.error("Invalid address");
+      return;
+    }
 
-    fetch(`/api/linking`, {
-      method: "PUT",
-      body: JSON.stringify({
-        address,
-        web2AccountId: session.web2AccountId,
-        signature,
-      }),
-    })
+    getPublicKey()
+      .then((pubKey) => {
+        if (!pubKey) throw new Error("Public key is needed to link accounts");
+        setAccountLinkingMessage(
+          "Please confirm that you wish to link your accounts by opening Metamask and signing the message"
+        );
+        return pubKey;
+      })
+      .then(async (pubKey) => {
+        let userSignature;
+        try {
+          const message = createUserAttestationMessage({
+            checksummedAddress,
+            web2AccountId: session.web2AccountId,
+          });
+          userSignature = await signer.signMessage(message);
+          if (!userSignature)
+            throw new Error(
+              "Your signature is needed to register your intent to link the accounts"
+            );
+          console.log(`userSignature`, userSignature);
+        } catch (err) {
+          console.error(err);
+          setAccountLinkingMessage(
+            "Your signature is needed to register your intent to link the accounts"
+          );
+        }
+        return { pubKey, userSignature };
+      })
+      .then(({ pubKey, userSignature }) => {
+        return fetch(`/api/linking`, {
+          method: "PUT",
+          body: JSON.stringify({
+            chainId: networkId,
+            address,
+            web2AccountId: session.web2AccountId,
+            userSignature,
+            userPublicKey: pubKey,
+          }),
+        });
+      })
       .then((res) => res.json())
-      .then((response) => {
-        if (response.status === "ok") {
+      .then((payload) => {
+        if (payload.status === "ok") {
           setAccountLinkingMessage("Success!");
-        } else if (response?.error) {
-          setAccountLinkingMessage(`Error: ${response.error}`);
+        } else if (payload?.error) {
+          setAccountLinkingMessage(`Error: ${payload.error}`);
         } else {
           setAccountLinkingMessage(
             `Sorry there was an error while linking your accounts`
@@ -167,7 +233,19 @@ export default function Home() {
         setAccountLinkingMessage(JSON.stringify(err.message));
       })
       .finally(() => refetchTokens());
-  }, [address, refetchTokens, session, signer]);
+  }, [address, refetchTokens, session, signer, networkId, getPublicKey]);
+
+  const mintTokenAndRefetch = useCallback(
+    (tokenId) => {
+      mintToken(tokenId).then((data) => {
+        if (data) {
+          console.log(`data`, data);
+        }
+        refetchTokens();
+      });
+    },
+    [refetchTokens]
+  );
 
   const burnToken = useCallback(
     async (web2Provider, tokenId) => {
@@ -190,8 +268,34 @@ export default function Home() {
         refetchTokens();
       }
     },
+    // networkId is added as dep so the the callback & badge instance is different if network changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [refetchTokens, signer, networkId]
   );
+
+  const unlinkAccounts = async (token: ITokenDocument) => {
+    if (!token.encryptedAttestation) {
+      console.error("Error: token has no encrypted attestation");
+      return;
+    }
+
+    try {
+      const decryptedAttestation = await decrypt(token.encryptedAttestation);
+      console.log(`decryptedAttestation`, decryptedAttestation);
+
+      await fetch(`/api/linking/unlink`, {
+        method: "POST",
+        body: JSON.stringify({
+          decryptedAttestation,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      await checkIfMyAccountIsLinked();
+      await refetchTokens();
+    }
+  };
 
   return (
     <div className="bg-black min-h-full">
@@ -305,16 +409,39 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                      <button
-                        disabled={token.status !== TokenStatus.MINTED}
-                        onClick={() =>
-                          burnToken(token.web2Provider, token.idHash)
-                        }
-                        type="button"
-                        className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                      >
-                        BURN
-                      </button>
+                      {token.status === TokenStatus.NOT_MINTED && (
+                        <button
+                          disabled={token.status !== TokenStatus.NOT_MINTED}
+                          onClick={() => {
+                            mintTokenAndRefetch(token._id);
+                          }}
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          MINT
+                        </button>
+                      )}
+                      {token.status === TokenStatus.MINTED && (
+                        <button
+                          disabled={token.status !== TokenStatus.MINTED}
+                          onClick={() =>
+                            burnToken(token.web2Provider, token.idHash)
+                          }
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          BURN
+                        </button>
+                      )}
+                      {token.status === TokenStatus.BURNED && (
+                        <button
+                          onClick={() => unlinkAccounts(token)}
+                          type="button"
+                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                        >
+                          UNLINK ACCOUNTS
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

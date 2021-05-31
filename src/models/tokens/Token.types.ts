@@ -9,14 +9,15 @@ export enum TokenStatus {
   MINTED = "MINTED",
   BURN_PENDING = "BURN_PENDING",
   BURNED = "BURNED",
+  REVOKED = "REVOKED",
 }
 
 export interface IToken {
   chainId: number;
-  contractAddress: number;
+  contractAddress: string;
   userAddress: string;
+  encryptedAttestation: string;
   issuanceTimestamp: number;
-  web2Account: string;
   idHash?: string;
   status: TokenStatus;
   mintTransactions?: ITransaction[];

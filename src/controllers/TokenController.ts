@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus";
+import mintToken from "src/core/linking/mintToken";
 import getReputationFromToken from "src/core/reputation/getReputationFromToken";
 import Token from "src/models/tokens/Token.model";
 import { ITokenDocument } from "src/models/tokens/Token.types";
@@ -81,6 +82,26 @@ class TokenController {
     } catch (err) {
       logger.error(err);
       return res.status(500).end();
+    }
+  };
+
+  public mintToken = async (
+    req: NextApiRequest,
+    res: NextApiResponse
+  ): Promise<{
+    tokens: ITokenDocument[];
+  } | void> => {
+    const { tokenId } = JSON.parse(req.body);
+
+    if (!tokenId) return res.status(400).end();
+
+    try {
+      const txResponse = await mintToken(tokenId);
+
+      return res.status(200).send(txResponse);
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).send({ error: error.message });
     }
   };
 }

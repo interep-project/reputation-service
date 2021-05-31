@@ -1,10 +1,8 @@
 import Onboard from "bnc-onboard";
 import { API, Subscriptions } from "src/types/onboard";
-import getConfig from "next/config";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
-const { publicRuntimeConfig } = getConfig();
-
-const NETWORK_ID = publicRuntimeConfig.networkId;
+const NETWORK_ID = getDefaultNetworkId();
 
 const WALLETS = [
   { walletName: "metamask", preferred: true },
