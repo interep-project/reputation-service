@@ -11,6 +11,10 @@ export default async (
 ): Promise<{ isLinkedToAddress: boolean } | void | { error: string }> => {
   await dbConnect();
 
+  if (req.method !== "PUT") {
+    return res.status(405).end();
+  }
+
   const session = await getSession({ req });
   if (!session) {
     return res.status(401).end();

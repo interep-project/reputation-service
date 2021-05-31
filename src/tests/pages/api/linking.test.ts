@@ -5,6 +5,7 @@ import createNextMocks from "src/mocks/createNextMocks";
 import { mockSession } from "src/mocks/session";
 import Token from "src/models/tokens/Token.model";
 import handler from "src/pages/api/linking";
+import logger from "src/utils/server/logger";
 import {
   clearDatabase,
   connect,
@@ -16,6 +17,8 @@ jest.mock("next-auth/client", () => ({
   getSession: jest.fn(),
 }));
 
+jest.spyOn(logger, "error");
+
 const getSessionMocked = getSession as jest.MockedFunction<typeof getSession>;
 
 const linkAccountsMocked = linkAccounts as jest.MockedFunction<
@@ -23,15 +26,17 @@ const linkAccountsMocked = linkAccounts as jest.MockedFunction<
 >;
 
 const bodyParams = {
-  address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
+  chainId: 33137,
   web2AccountId: mockSession.web2AccountId,
-  signature: "0x",
+  address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
+  userSignature: "0xSignature",
+  userPublicKey: "publicKey",
 };
 const createCall = (bodyOverride?: { [key: string]: unknown }) => ({
-  body: (JSON.stringify({
+  body: {
     ...bodyParams,
     ...bodyOverride,
-  }) as unknown) as Body,
+  },
   method: "PUT" as RequestMethod,
 });
 
@@ -94,9 +99,15 @@ describe("api/linking", () => {
     it("should return 400 if a parameter is missing", async () => {
       const withoutAddress = createCall({ address: undefined });
       const withoutWeb2AccountId = createCall({ web2AccountId: undefined });
-      const withoutSignature = createCall({ signature: undefined });
+      const withoutSignature = createCall({ userSignature: undefined });
+      const withoutPubKey = createCall({ userPublicKey: undefined });
 
-      const calls = [withoutAddress, withoutSignature, withoutWeb2AccountId];
+      const calls = [
+        withoutAddress,
+        withoutSignature,
+        withoutWeb2AccountId,
+        withoutPubKey,
+      ];
       calls.forEach(async (call) => {
         const { req, res } = createNextMocks(call);
 
@@ -117,14 +128,27 @@ describe("api/linking", () => {
       await handler(req, res);
 
       // Expect
-      expect(res._getStatusCode()).toBe(201);
       expect(linkAccounts).toHaveBeenCalledWith(bodyParams);
+      expect(res._getStatusCode()).toBe(201);
+      expect(res._getData()).toEqual({ status: "ok" });
     });
 
-    it("should return an error if linkAccounts throws an error", async () => {
-      linkAccountsMocked.mockImplementation(() =>
-        Promise.reject(new Error("There was an error"))
-      );
+    it("should return a 500 if linkAccount did not return a token", async () => {
+      //@ts-expect-error: should return a token
+      linkAccountsMocked.mockImplementation(() => Promise.resolve(undefined));
+
+      const { req, res } = createNextMocks(createCall());
+
+      // When
+      await handler(req, res);
+
+      // Expect
+      expect(res._getStatusCode()).toBe(500);
+    });
+
+    it("should log the error if linkAccounts throws an error", async () => {
+      const err = new Error("There was an error");
+      linkAccountsMocked.mockImplementation(() => Promise.reject(err));
 
       const { req, res } = createNextMocks(createCall());
 
@@ -133,7 +157,7 @@ describe("api/linking", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(400);
-      expect(res._getData()).toEqual({ error: "There was an error" });
+      expect(logger.error).toHaveBeenCalledWith(err);
     });
   });
 });
