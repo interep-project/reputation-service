@@ -6,7 +6,12 @@ import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/check
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
 
 const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
-  const token = await Token.findById(tokenId);
+  let token;
+  try {
+    token = await Token.findById(tokenId);
+  } catch {
+    throw new Error(`Error while retrieving token with id ${tokenId} `);
+  }
 
   if (!token) throw new Error(`token with id ${tokenId} not found`);
 
