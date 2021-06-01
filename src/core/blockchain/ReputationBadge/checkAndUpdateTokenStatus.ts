@@ -9,9 +9,10 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
     return Promise.all(
       tokens.map(async (token) => {
         const tokenId = token.idHash;
+
         if (!tokenId) {
           logger.error(`Token with id ${token.id} has no idHash`);
-          return;
+          throw new Error(`Token with id ${token.id} has no idHash`);
         }
 
         // TODO: checking each contract might not be the most scalable solution
