@@ -29,7 +29,7 @@ const unlinkAccounts = async ({
   }
 
   if (!web2Account.isLinkedToAddress) {
-    return { success: false, message: "Web 2 account is not linked" };
+    return getError("Web 2 account is not linked");
   }
 
   const parsedAttestation = JSON.parse(decryptedAttestation);
@@ -80,11 +80,9 @@ const unlinkAccounts = async ({
   await checkAndUpdateTokenStatus([token]);
 
   if (token.status !== TokenStatus.BURNED) {
-    return {
-      success: false,
-      message:
-        "The on-chain token associated with the web 2 account you are connected with needs to be burned first.",
-    };
+    return getError(
+      "The on-chain token associated with the web 2 account you are connected with needs to be burned first."
+    );
   }
 
   token.status = TokenStatus.REVOKED;
