@@ -1,6 +1,6 @@
 import { checkIfUserSignatureIsValid } from "./checkIfUserSignatureIsValid";
 
-const address = "0xd0a5d34aae14354a563f50541e11d9548a5f6540";
+const address = "0xEefc6026a202EA1B5129e84fEF229eBD412C3a5A";
 
 describe("checkIfUserSignatureIsValid", () => {
   it("should return false if the signer does not match the given address and params", () => {
@@ -17,9 +17,9 @@ describe("checkIfUserSignatureIsValid", () => {
   it("should return true if the signer matches", () => {
     const isSigvalid = checkIfUserSignatureIsValid({
       checksummedAddress: address,
-      web2AccountId: "web2Id",
+      web2AccountId: "608c4a10c994a377e232df7f",
       userSignature:
-        "0x09acbc016f68fed9c7a38a2b4033ff3e663cff89a86aefce8f1599523a01f55129f5b9990b6e66286c771e2e368484bd6832499f96085913ac6098cc6effb6351c",
+        "0x59f4262c3fd7ba49a2453e6718002c89d250d1cdced9ae7e2338a7773f60ff652920c2146a28705aad28112a93d28f0cbd8869632987f988ffddb4cd6825620d1b",
     });
 
     expect(isSigvalid).toBe(true);
