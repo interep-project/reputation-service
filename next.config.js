@@ -7,7 +7,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 module.exports = withBundleAnalyzer({
   publicRuntimeConfig: {
     // Will be available on both server and client
-    // networkId: process.env.NODE_ENV === "development" ? 31337 : 42,
     defaultNetworkByEnv: {
       test: { id: 31337, name: "hardhat" },
       development: { id: 31337, name: "localhost" },

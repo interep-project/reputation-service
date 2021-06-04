@@ -2,11 +2,16 @@ import { ContractTransaction } from "@ethersproject/contracts";
 import Token from "src/models/tokens/Token.model";
 import { TokenStatus } from "src/models/tokens/Token.types";
 import logger from "src/utils/server/logger";
-import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus";
-import mintNewBadge from "../blockchain/ReputationBadge/mintNewBadge";
+import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus";
+import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
 
 const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
-  const token = await Token.findById(tokenId);
+  let token;
+  try {
+    token = await Token.findById(tokenId);
+  } catch {
+    throw new Error(`Error while retrieving token with id ${tokenId} `);
+  }
 
   if (!token) throw new Error(`token with id ${tokenId} not found`);
 
@@ -21,7 +26,7 @@ const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
   if (!contractAddress || !userAddress || !idHash)
     throw new Error(`Missing properties on token`);
 
-  const txResponse = await mintNewBadge({
+  const txResponse = await mintNewToken({
     badgeAddress: contractAddress,
     to: userAddress,
     tokenId: idHash,

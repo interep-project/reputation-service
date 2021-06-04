@@ -2,12 +2,12 @@ import hre from "hardhat";
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
-import mintNewBadge from "../../core/blockchain/ReputationBadge/mintNewBadge";
-import { getTokenIdHash } from "../utils/getTokenIdHash";
+import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
+import { getTokenIdHash } from "src/tests/utils/getTokenIdHash";
 
 const { ethers } = hre;
 
-describe("mintNewBadge", () => {
+describe("mintNewToken", () => {
   let owner: SignerWithAddress;
   let backend: SignerWithAddress;
   let tokenHolder: SignerWithAddress;
@@ -46,7 +46,7 @@ describe("mintNewBadge", () => {
     const tokenRecipientAddress = tokenHolder.address;
     const tokenId = getTokenIdHash("6087dabb0b3af8703a581bf0");
 
-    await mintNewBadge({
+    await mintNewToken({
       badgeAddress: reputationBadge.address,
       tokenId,
       to: tokenRecipientAddress,
