@@ -51,3 +51,6 @@ cache
 artifacts
 
 typechain
+
+#openzeppelin
+.openzeppelin/unknown-*.json
