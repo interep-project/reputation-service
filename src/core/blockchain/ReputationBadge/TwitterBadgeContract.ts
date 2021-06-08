@@ -31,11 +31,6 @@ export const exists = async (tokenId: string): Promise<boolean> => {
   return instance.exists(tokenId);
 };
 
-export const tokenOf = async (owner: string): Promise<string> => {
-  const instance = await getInstance();
-  return instance.tokenOf(owner);
-};
-
 export const getBurnedEvent = async (
   owner?: string,
   tokenId?: string,
@@ -60,4 +55,4 @@ export const getBurnedEvent = async (
   return decodedEvents;
 };
 
-export default { getInstance, exists, tokenOf, getBurnedEvent };
+export default { getInstance, exists, getBurnedEvent };

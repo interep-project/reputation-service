@@ -1,11 +1,12 @@
 import { ContractTransaction } from "@ethersproject/contracts";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { ReputationBadge } from "typechain";
 
 type MintNewTokenProps = {
   badgeAddress: string;
   to: string;
-  tokenId: string;
+  tokenId: BigNumber;
 };
 
 const mintNewToken = async ({
@@ -24,7 +25,7 @@ const mintNewToken = async ({
 
   const mintTx: ContractTransaction = await reputationBadge
     .connect(backend)
-    .mint(to, tokenId);
+    .safeMint(to, tokenId);
 
   return mintTx;
 };
