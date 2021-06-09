@@ -1,90 +1,86 @@
-// import hre from "hardhat";
-// import { expect } from "chai";
-// import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-// import { ReputationBadge } from "typechain";
-// import { getTokenIdHash } from "../utils/getTokenIdHash";
-// import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract";
+import hre, { upgrades } from "hardhat";
+import { expect } from "chai";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import { ReputationBadge } from "typechain";
+import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract";
+import { ContractFactory } from "ethers";
+import { zeroAddress } from "src/utils/crypto/constants";
 
-// const { ethers } = hre;
+const { ethers } = hre;
 
-// describe("ReputationBadgeContract", () => {
-//   let owner: SignerWithAddress;
-//   let backend: SignerWithAddress;
-//   let tokenOwner: SignerWithAddress;
-//   let reputationBadge: ReputationBadge;
+describe("ReputationBadgeContract", () => {
+  let backend: SignerWithAddress;
+  let tokenOwner: SignerWithAddress;
+  let reputationBadge: ReputationBadge;
 
-//   const badgeName = "TwitterBadge";
-//   const badgeSymbol = "TWITT";
+  const badgeName = "TwitterBadge";
+  const badgeSymbol = "TWITT";
 
-//   before(async function () {
-//     [owner, backend, tokenOwner] = await hre.ethers.getSigners();
-//   });
+  before(async function () {
+    [backend, tokenOwner] = await hre.ethers.getSigners();
+  });
 
-//   beforeEach(async function () {
-//     const BadgeFactoryFactory = await ethers.getContractFactory("BadgeFactory");
-//     const badgeFactory = await BadgeFactoryFactory.deploy(backend.address);
+  beforeEach(async function () {
+    const BadgeFactory: ContractFactory = await ethers.getContractFactory(
+      "ReputationBadge"
+    );
 
-//     const deployBadgeTx = await badgeFactory
-//       .connect(owner)
-//       .deployBadge(badgeName, badgeSymbol);
-//     const txReceipt = await deployBadgeTx.wait();
+    reputationBadge = (await upgrades.deployProxy(BadgeFactory, [
+      badgeName,
+      badgeSymbol,
+      backend.address,
+    ])) as ReputationBadge;
 
-//     const event = txReceipt.events?.[0];
-//     if (!event) throw new Error("No event emitted when deploying new badge");
+    await reputationBadge.deployed();
+  });
 
-//     const newBadgeAddress = event?.args?.[1];
+  describe("getTransferEvent", () => {
+    const tokenId = "134224823094823";
+    beforeEach(async () => {
+      const mintTx = await reputationBadge
+        .connect(backend)
+        .safeMint(tokenOwner.address, tokenId);
+      await mintTx.wait();
 
-//     reputationBadge = (await ethers.getContractAt(
-//       "ReputationBadge",
-//       newBadgeAddress
-//     )) as ReputationBadge;
-//   });
+      const burnTx = await reputationBadge.connect(tokenOwner).burn(tokenId);
+      await burnTx.wait();
+    });
 
-//   describe("getBurnedEvent", () => {
-//     const tokenId = getTokenIdHash("42");
-//     beforeEach(async () => {
-//       const mintTx = await reputationBadge
-//         .connect(backend)
-//         .mint(tokenOwner.address, tokenId);
-//       await mintTx.wait();
+    it("should return events by token id", async () => {
+      const events = await TwitterBadgeContract.getTransferEvent(
+        undefined,
+        undefined,
+        tokenId,
+        reputationBadge.address
+      );
 
-//       const burnTx = await reputationBadge.connect(backend).burn(tokenId);
-//       await burnTx.wait();
-//     });
+      expect(events[0].tokenId).to.eq(tokenId);
+      expect(events[0].from).to.eq(tokenOwner.address);
+      expect(events[0].to).to.eq(zeroAddress);
+    });
 
-//     it("should return events by token id", async () => {
-//       const events = await TwitterBadgeContract.getBurnedEvent(
-//         undefined,
-//         tokenId,
-//         reputationBadge.address
-//       );
+    it("should return transfer events by `from` address", async () => {
+      const events = await TwitterBadgeContract.getTransferEvent(
+        tokenOwner.address,
+        undefined,
+        undefined,
+        reputationBadge.address
+      );
 
-//       expect(events[0].tokenId).to.eq(tokenId);
-//       expect(events[0].owner).to.eq(tokenOwner.address);
-//     });
+      expect(events[0].tokenId).to.eq(tokenId);
+      expect(events[0].from).to.eq(tokenOwner.address);
+      expect(events[0].to).to.eq(zeroAddress);
+    });
 
-//     it("should return events by owner", async () => {
-//       const events = await TwitterBadgeContract.getBurnedEvent(
-//         tokenOwner.address,
-//         undefined,
-//         reputationBadge.address
-//       );
+    it("should return an empty array if no event is found", async () => {
+      const events = await TwitterBadgeContract.getTransferEvent(
+        backend.address,
+        undefined,
+        reputationBadge.address
+      );
 
-//       expect(events[0].tokenId).to.eq(tokenId);
-//       expect(events[0].owner).to.eq(tokenOwner.address);
-//     });
-
-//     it("should return an empty array if no event is found", async () => {
-//       const events = await TwitterBadgeContract.getBurnedEvent(
-//         backend.address,
-//         undefined,
-//         reputationBadge.address
-//       );
-
-//       expect(events).to.be.instanceOf(Array);
-//       expect(events.length).to.eq(0);
-//     });
-//   });
-// });
-
-export {};
+      expect(events).to.be.instanceOf(Array);
+      expect(events.length).to.eq(0);
+    });
+  });
+});
