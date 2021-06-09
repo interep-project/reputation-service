@@ -1,4 +1,3 @@
-import { ethers } from "hardhat";
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
 
 async function main() {

@@ -3,7 +3,6 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
-import { getDecimalTokenId } from "src/tests/utils/tokenId";
 import { ContractFactory } from "ethers";
 
 const { ethers, upgrades } = hre;
@@ -34,7 +33,7 @@ describe("mintNewToken", () => {
 
   it("should mint successfully", async () => {
     const tokenRecipientAddress = tokenHolder.address;
-    const tokenId = getDecimalTokenId("6087dabb0b3af8703a581bf0");
+    const tokenId = "185030932498643032395873032093248040430932832";
 
     expect(await reputationBadge.balanceOf(tokenRecipientAddress)).to.eq(0);
 

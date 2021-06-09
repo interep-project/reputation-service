@@ -235,13 +235,10 @@ describe("ReputationBadge", function () {
     await badge.connect(backend).safeMint(signer1.address, tokenId);
 
     await expect(() =>
-      badge
-        .connect(signer1)
-        ["safeTransferFrom(address,address,uint256)"](
-          signer1.address,
-          signer2.address,
-          tokenId
-        )
+      badge.connect(signer1)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
     ).to.changeTokenBalances(badge, [signer1, signer2], [-1, 1]);
   });
 
@@ -251,13 +248,10 @@ describe("ReputationBadge", function () {
 
     await badge.connect(signer1).approve(signer2.address, tokenId);
 
-    await badge
-      .connect(signer2)
-      ["safeTransferFrom(address,address,uint256)"](
-        signer1.address,
-        deployer.address,
-        tokenId
-      );
+    await badge.connect(signer2)[
+      // eslint-disable-next-line no-unexpected-multiline
+      "safeTransferFrom(address,address,uint256)"
+    ](signer1.address, deployer.address, tokenId);
 
     expect(await badge.ownerOf(tokenId)).to.eq(deployer.address);
   });
@@ -267,13 +261,10 @@ describe("ReputationBadge", function () {
     await badge.connect(backend).safeMint(signer1.address, tokenId);
 
     await expect(
-      badge
-        .connect(signer2)
-        ["safeTransferFrom(address,address,uint256)"](
-          signer1.address,
-          signer2.address,
-          tokenId
-        )
+      badge.connect(signer2)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
     ).to.be.revertedWith("ERC721: transfer caller is not owner nor approved");
   });
 
@@ -284,13 +275,10 @@ describe("ReputationBadge", function () {
     await badge.connect(deployer).pause();
 
     await expect(
-      badge
-        .connect(signer1)
-        ["safeTransferFrom(address,address,uint256)"](
-          signer1.address,
-          signer2.address,
-          tokenId
-        )
+      badge.connect(signer1)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
     ).to.be.revertedWith("Pausable: paused");
   });
 });
