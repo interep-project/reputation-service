@@ -1,12 +1,12 @@
 import { ContractTransaction } from "@ethersproject/contracts";
-import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
+import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 import { ReputationBadge } from "typechain";
 
 type MintNewTokenProps = {
   badgeAddress: string;
   to: string;
-  tokenId: BigNumber;
+  tokenId: string;
 };
 
 const mintNewToken = async ({
@@ -15,6 +15,8 @@ const mintNewToken = async ({
   tokenId,
 }: MintNewTokenProps): Promise<ContractTransaction> => {
   if (!tokenId) throw new Error("Token id is not defined");
+
+  const decimalId = stringToBigNumber(tokenId);
 
   const [backend] = await ethers.getSigners();
 
@@ -25,7 +27,7 @@ const mintNewToken = async ({
 
   const mintTx: ContractTransaction = await reputationBadge
     .connect(backend)
-    .safeMint(to, tokenId);
+    .safeMint(to, decimalId);
 
   return mintTx;
 };

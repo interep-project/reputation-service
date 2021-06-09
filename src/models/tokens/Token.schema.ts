@@ -15,7 +15,7 @@ const TokenSchemaFields: Record<keyof IToken, any> = {
   userAddress: { type: String, index: true },
   issuanceTimestamp: { type: Date, required: true },
   encryptedAttestation: { type: String, required: true },
-  idHash: { type: String, index: true, required: true },
+  decimalId: { type: String, index: true, required: true },
   status: { type: String, enum: Object.values(TokenStatus), required: true },
   mintTransactions: [TransactionSchema],
   web2Provider: {

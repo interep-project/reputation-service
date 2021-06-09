@@ -52,7 +52,7 @@ const unlinkAccounts = async ({
     return getError("Attestation signature invalid");
   }
 
-  const { tokenIdHash, web2Provider, providerAccountId } = JSON.parse(
+  const { decimalId, web2Provider, providerAccountId } = JSON.parse(
     attestationMessage
   );
 
@@ -71,10 +71,10 @@ const unlinkAccounts = async ({
     return getError("Web 2 accounts don't match");
   }
 
-  const token = await Token.findOne({ idHash: tokenIdHash });
+  const token = await Token.findOne({ decimalId: decimalId });
 
   if (!token) {
-    return getError(`Can't find token with idHash ${tokenIdHash}`);
+    return getError(`Can't find token with decimalId ${decimalId}`);
   }
 
   await checkAndUpdateTokenStatus([token]);

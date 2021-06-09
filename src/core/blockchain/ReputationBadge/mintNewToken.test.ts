@@ -1,4 +1,3 @@
-import { ethers } from "hardhat";
 import mintNewToken from "./mintNewToken";
 
 jest.mock("hardhat", () => ({
@@ -23,7 +22,7 @@ describe("mintNewToken", () => {
 
   it("should return the transaction response", async () => {
     const to = "to";
-    const tokenId = ethers.BigNumber.from("12234");
+    const tokenId = "12234";
     const txResponse = await mintNewToken({
       badgeAddress: "badgeAddy",
       to,

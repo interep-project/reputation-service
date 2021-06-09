@@ -32,11 +32,11 @@ describe("checkAndUpdateTokenStatus", () => {
     expect(await checkAndUpdateTokenStatus()).toBeUndefined();
   });
 
-  it("should throw if a token has no idHash", async () => {
-    const token = new Token(createMockTokenObject({ idHash: undefined }));
+  it("should throw if a token has no decimalId", async () => {
+    const token = new Token(createMockTokenObject({ decimalId: undefined }));
 
     expect(checkAndUpdateTokenStatus([token])).rejects.toThrowError(
-      `Token with id ${token.id} has no idHash`
+      `Token with id ${token.id} has no decimalId`
     );
   });
 

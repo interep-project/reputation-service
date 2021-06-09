@@ -8,7 +8,8 @@ const createMockTokenObject = (override?: Partial<ITokenDocument>) => ({
   web2Provider: Web2Providers.TWITTER,
   chainId: 33137,
   status: TokenStatus.NOT_MINTED,
-  idHash: "0x03dd40b36474bf4559c4d733be6f5ec1e61bcb562d1c7f04629ee3af7ee569f9",
+  decimalId:
+    "99841047636891000514743136290083633803587659719163489038083863229813808784161",
   encryptedAttestation: "encryptedAttestation",
   ...override,
 });

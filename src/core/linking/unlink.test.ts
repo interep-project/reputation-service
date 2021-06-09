@@ -24,18 +24,21 @@ jest.mock(
 
 const createMockBackendAttestation = async ({
   providerAccountId,
-  tokenIdHash,
+  decimalId,
 }: {
   providerAccountId: string;
-  tokenIdHash?: string;
-}) => {
+  decimalId?: string;
+}): Promise<{
+  attestationMessage: string;
+  backendAttestationSignature: string;
+}> => {
   const [backendSigner] = await ethers.getSigners();
 
   const attestationMessage = createBackendAttestationMessage({
     providerAccountId,
     provider: "twitter",
     address: "0x",
-    tokenIdHash: tokenIdHash || "0xeef",
+    decimalId: decimalId || "573930924",
   });
 
   const backendAttestationSignature = await backendSigner.signMessage(
@@ -211,14 +214,14 @@ describe("unlink", () => {
 
     expect(result).toEqual({
       success: false,
-      error: "Can't find token with idHash 0xeef",
+      error: "Can't find token with decimalId 573930924",
     });
   });
 
   it("should not proceed with a token that is not burned", async () => {
     const token = await Token.create(createMockTokenObject());
 
-    if (!token.idHash) throw new Error("Token creation failed");
+    if (!token.decimalId) throw new Error("Token creation failed");
 
     // @ts-ignore: mocked above
     checkAndUpdateTokenStatus.mockImplementationOnce(async ([token]) => {
@@ -239,7 +242,7 @@ describe("unlink", () => {
       backendAttestationSignature,
     } = await createMockBackendAttestation({
       providerAccountId: web2Account.providerAccountId,
-      tokenIdHash: token.idHash,
+      decimalId: token.decimalId,
     });
 
     const result = await unlinkAccounts({
@@ -263,7 +266,7 @@ describe("unlink", () => {
   it("should update web 2 account and mark token as REVOKED", async () => {
     const token = await Token.create(createMockTokenObject());
 
-    if (!token.idHash) throw new Error("Token creation failed");
+    if (!token.decimalId) throw new Error("Token creation failed");
 
     // @ts-ignore: mocked above
     checkAndUpdateTokenStatus.mockImplementationOnce(async ([token]) => {
@@ -284,7 +287,7 @@ describe("unlink", () => {
       backendAttestationSignature,
     } = await createMockBackendAttestation({
       providerAccountId: web2Account.providerAccountId,
-      tokenIdHash: token.idHash,
+      decimalId: token.decimalId,
     });
 
     const result = await unlinkAccounts({

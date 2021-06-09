@@ -6,6 +6,7 @@ import {
 import { ReputationBadge } from "typechain";
 
 import ReputationBadgeArtifact from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 
 const ReputationBadgeInterface = new ethers.utils.Interface(
   ReputationBadgeArtifact.abi
@@ -28,7 +29,10 @@ export const getInstance = async (contractAddress?: string) => {
 
 export const exists = async (tokenId: string): Promise<boolean> => {
   const instance = await getInstance();
-  return instance.exists(tokenId);
+
+  const tokenIdBigNum = stringToBigNumber(tokenId);
+
+  return instance.exists(tokenIdBigNum);
 };
 
 export const getBurnedEvent = async (

@@ -399,12 +399,12 @@ export default function Home() {
               {tokens.length > 0 &&
                 tokens.map((token) => (
                   <div
-                    key={token.idHash}
+                    key={token.decimalId}
                     className="sm:flex sm:items-center sm:justify-between mb-4"
                   >
                     <div className="max-w-xl text-base text-gray-700">
                       <div className="text-xs">
-                        <p>id: {token.idHash}</p>
+                        <p>id: {token.decimalId}</p>
                         <p>status: {token.status}</p>
                       </div>
                     </div>
@@ -425,7 +425,7 @@ export default function Home() {
                         <button
                           disabled={token.status !== TokenStatus.MINTED}
                           onClick={() =>
-                            burnToken(token.web2Provider, token.idHash)
+                            burnToken(token.web2Provider, token.decimalId)
                           }
                           type="button"
                           className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}

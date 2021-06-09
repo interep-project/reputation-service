@@ -68,7 +68,7 @@ describe("mintToken", () => {
     expect(mintNewToken).toHaveBeenCalledWith({
       badgeAddress: mockToken.contractAddress,
       to: mockToken.userAddress,
-      tokenId: mockToken.idHash,
+      tokenId: mockToken.decimalId,
     });
 
     const tken = await Token.findById(mockToken.id);

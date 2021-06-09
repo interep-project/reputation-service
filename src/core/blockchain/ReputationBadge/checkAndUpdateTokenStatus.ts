@@ -8,13 +8,12 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
   try {
     return Promise.all(
       tokens.map(async (token) => {
-        const tokenId = token.idHash;
+        const tokenId = token.decimalId;
 
         if (!tokenId) {
-          logger.error(`Token with id ${token.id} has no idHash`);
-          throw new Error(`Token with id ${token.id} has no idHash`);
+          logger.error(`Token with id ${token.id} has no decimalId`);
+          throw new Error(`Token with id ${token.id} has no decimalId`);
         }
-
         // TODO: checking each contract might not be the most scalable solution
         // refactor to avoid explicit dependency with individual contracts?
         const tokenExistsOnChain = await TwitterBadgeContract.exists(tokenId);

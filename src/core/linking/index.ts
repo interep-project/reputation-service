@@ -12,6 +12,7 @@ import {
 } from "src/utils/crypto/deployedContracts";
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
+import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 
 type LinkAccountsParams = {
   chainId: number;
@@ -92,10 +93,13 @@ const linkAccounts = async ({
 
     // hash the id
     const tokenIdHash = ethers.utils.id(token.id.toString());
-    token.idHash = tokenIdHash;
+    // convert to BigNumber then string
+    const decimalId = stringToBigNumber(tokenIdHash).toString();
+
+    token.decimalId = decimalId;
 
     const attestationMessage = createBackendAttestationMessage({
-      tokenIdHash,
+      decimalId,
       address: checksummedAddress,
       provider: web2Account.provider,
       providerAccountId: web2Account.providerAccountId,
