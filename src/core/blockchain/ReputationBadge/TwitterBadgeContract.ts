@@ -35,16 +35,22 @@ export const exists = async (tokenId: string): Promise<boolean> => {
   return instance.exists(tokenIdBigNum);
 };
 
-export const getBurnedEvent = async (
-  owner?: string,
+export const getTransferEvent = async (
+  from?: string,
+  to?: string,
   tokenId?: string,
   contractAddress?: string
 ): Promise<any[]> => {
   const instance = await getInstance(contractAddress);
   let topics: (string | string[])[] | undefined;
 
-  if (owner || tokenId) {
-    topics = instance.filters.Burned(owner, tokenId).topics;
+  let decimalId;
+  if (tokenId) {
+    decimalId = stringToBigNumber(tokenId);
+  }
+
+  if (from || to || decimalId) {
+    topics = instance.filters.Transfer(from, to, decimalId).topics;
   }
 
   const logs = await ethers.provider.getLogs({
@@ -53,10 +59,14 @@ export const getBurnedEvent = async (
   });
 
   const decodedEvents = logs.map((log) => ({
-    ...ReputationBadgeInterface.decodeEventLog("Burned", log.data, log.topics),
+    ...ReputationBadgeInterface.decodeEventLog(
+      "Transfer",
+      log.data,
+      log.topics
+    ),
   }));
 
   return decodedEvents;
 };
 
-export default { getInstance, exists, getBurnedEvent };
+export default { getInstance, exists, getTransferEvent };

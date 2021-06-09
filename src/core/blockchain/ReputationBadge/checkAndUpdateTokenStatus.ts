@@ -1,4 +1,5 @@
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
+import { zeroAddress } from "src/utils/crypto/constants";
 import logger from "src/utils/server/logger";
 import TwitterBadgeContract from "./TwitterBadgeContract";
 
@@ -34,12 +35,13 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
             token.status = TokenStatus.NOT_MINTED;
             await token.save();
           } else {
-            const burnedEvent = await TwitterBadgeContract.getBurnedEvent(
+            const burnedEvents = await TwitterBadgeContract.getTransferEvent(
               undefined,
+              zeroAddress,
               tokenId
             );
 
-            if (burnedEvent.length > 0) {
+            if (burnedEvents.length > 0) {
               token.status = TokenStatus.BURNED;
               await token.save();
             } else {

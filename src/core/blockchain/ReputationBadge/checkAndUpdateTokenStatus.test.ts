@@ -11,7 +11,7 @@ import TwitterBadgeContract from "./TwitterBadgeContract";
 
 jest.mock("./TwitterBadgeContract", () => ({
   exists: jest.fn(),
-  getBurnedEvent: jest.fn(),
+  getTransferEvent: jest.fn(),
 }));
 
 describe("checkAndUpdateTokenStatus", () => {
@@ -95,7 +95,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
   it("should update if token was burned", async () => {
     // @ts-ignore: mocked above
-    TwitterBadgeContract.getBurnedEvent.mockImplementationOnce(() =>
+    TwitterBadgeContract.getTransferEvent.mockImplementationOnce(() =>
       Promise.resolve([{ mock: "event" }])
     );
 
@@ -110,7 +110,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
   it("should throw if no burn event was found", async () => {
     // @ts-ignore: mocked above
-    TwitterBadgeContract.getBurnedEvent.mockImplementationOnce(() =>
+    TwitterBadgeContract.getTransferEvent.mockImplementationOnce(() =>
       Promise.reject(new Error("Can't find events"))
     );
 
