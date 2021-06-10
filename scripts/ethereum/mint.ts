@@ -1,8 +1,8 @@
-import { ethers } from "hardhat";
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
 
 async function main() {
-  const tokenId = ethers.utils.id("12344");
+  // Set token Id number here:
+  // const tokenId = ethers.BigNumber.from(123);
 
   const txHash = await mintNewToken({
     badgeAddress: "0xa16E02E87b7454126E5E10d957A927A7F5B5d2be",

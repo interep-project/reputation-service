@@ -1,195 +1,284 @@
 import hre from "hardhat";
-import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { ReputationBadge } from "typechain";
-import { getTokenIdHash } from "../utils/getTokenIdHash";
-import { zeroBytes32 } from "src/utils/crypto/constants";
+import { expect } from "chai";
+import { Contract, ContractFactory } from "@ethersproject/contracts";
 
-const { ethers } = hre;
+const { ethers, upgrades } = hre;
 
-describe("ReputationBadge", () => {
-  let owner: SignerWithAddress;
+describe("ReputationBadge", function () {
+  let badge: Contract;
+  let deployer: SignerWithAddress;
   let backend: SignerWithAddress;
+  let signer1: SignerWithAddress;
   let signer2: SignerWithAddress;
-  let signer3: SignerWithAddress;
-  let reputationBadge: ReputationBadge;
 
   const badgeName = "TwitterBadge";
-  const badgeSymbol = "TWITT";
+  const badgeSymbol = "iTWITT";
 
   before(async function () {
-    [owner, backend, signer2, signer3] = await hre.ethers.getSigners();
+    [deployer, backend, signer1, signer2] = await hre.ethers.getSigners();
   });
 
   beforeEach(async function () {
-    const BadgeFactoryFactory = await ethers.getContractFactory("BadgeFactory");
-    const badgeFactory = await BadgeFactoryFactory.deploy(backend.address);
+    const BadgeFactory: ContractFactory = await ethers.getContractFactory(
+      "ReputationBadge"
+    );
 
-    const deployBadgeTx = await badgeFactory
-      .connect(owner)
-      .deployBadge(badgeName, badgeSymbol);
-    const txReceipt = await deployBadgeTx.wait();
+    badge = await upgrades.deployProxy(BadgeFactory, [
+      badgeName,
+      badgeSymbol,
+      backend.address,
+    ]);
 
-    const event = txReceipt.events?.[0];
-    if (!event) throw new Error("No event emitted when deploying new badge");
-
-    const newBadgeAddress = event?.args?.[1];
-
-    reputationBadge = (await ethers.getContractAt(
-      "ReputationBadge",
-      newBadgeAddress
-    )) as ReputationBadge;
+    await badge.deployed();
   });
 
-  describe("constructor", () => {
-    it("should have the right name", async () => {
-      expect(await reputationBadge.name()).to.eq(badgeName);
-    });
-
-    it("should have the right symbol", async () => {
-      expect(await reputationBadge.symbol()).to.eq(badgeSymbol);
-    });
+  it("should return the badge name", async () => {
+    expect(await badge.name()).to.eq(badgeName);
   });
 
-  describe("exists", () => {
-    it("should return true for an existing token", async () => {
-      const tokenRecipient = signer2.address;
-      const tokenId = getTokenIdHash("4242");
-
-      const mintTx = await reputationBadge
-        .connect(backend)
-        .mint(tokenRecipient, tokenId);
-      await mintTx.wait();
-
-      expect(await reputationBadge.exists(tokenId)).to.be.true;
-    });
-
-    it("should return false for a token that does not exist", async () => {
-      const tokenRecipient = signer2.address;
-      const tokenId = getTokenIdHash("4242");
-
-      const mintTx = await reputationBadge
-        .connect(backend)
-        .mint(tokenRecipient, tokenId);
-      await mintTx.wait();
-
-      const burnTx = await reputationBadge.connect(backend).burn(tokenId);
-      await burnTx.wait();
-
-      expect(await reputationBadge.exists(tokenId)).to.be.false;
-    });
+  it("should return the badge symbol", async () => {
+    expect(await badge.symbol()).to.eq(badgeSymbol);
   });
 
-  describe("URI", () => {
-    it("should return an empty URI by default", async () => {
-      expect(await reputationBadge.URI()).to.eq("");
-    });
+  /*
+   **** PAUSING ****
+   */
+  it("should let the deployer pause", async () => {
+    await badge.connect(deployer).pause();
 
-    it("should let the backend set a new URI", async () => {
-      const newURI =
-        "https://ipfs.io/ipfs/Qme7ss3ARVgxv6rXqVPiikMJ8u2NLgmgszg13pYrDKEoiu";
-
-      const tx = await reputationBadge.connect(backend).setURI(newURI);
-      await tx.wait();
-
-      expect(await reputationBadge.URI()).to.eq(newURI);
-    });
-
-    it("should not let any address set a new URI", async () => {
-      await expect(
-        reputationBadge.connect(signer2).setURI("https://google.com")
-      ).to.be.revertedWith("Unauthorized");
-    });
+    expect(await badge.paused()).to.be.true;
   });
 
-  describe("mint", () => {
-    it("should restrict minting to the backend address", async () => {
-      await expect(
-        reputationBadge
-          .connect(signer2)
-          .mint(signer2.address, getTokenIdHash("1"))
-      ).to.be.revertedWith("Unauthorized");
-    });
+  it("should let the deployer unpause", async () => {
+    await badge.connect(deployer).pause();
 
-    it("should mint successfully", async () => {
-      const tokenRecipient = signer2.address;
-      const tokenId = getTokenIdHash("42");
+    await badge.connect(deployer).unpause();
 
-      const mintTx = await reputationBadge
-        .connect(backend)
-        .mint(tokenRecipient, tokenId);
-      await mintTx.wait();
-
-      expect(await reputationBadge.tokenOf(tokenRecipient)).to.eq(tokenId);
-    });
+    expect(await badge.paused()).to.be.false;
   });
 
-  describe("batchMint", () => {
-    it("should restrict batch minting to the backend address", async () => {
-      await expect(
-        reputationBadge.connect(signer2).batchMint([
-          { owner: signer2.address, tokenId: getTokenIdHash("1") },
-          { owner: signer3.address, tokenId: getTokenIdHash("2") },
-        ])
-      ).to.be.revertedWith("Unauthorized");
-    });
-
-    it("should batch mint several tokens", async () => {
-      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(zeroBytes32);
-      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(zeroBytes32);
-
-      const batchMintTx = await reputationBadge.connect(backend).batchMint([
-        { owner: signer2.address, tokenId: getTokenIdHash("1") },
-        { owner: signer3.address, tokenId: getTokenIdHash("2") },
-      ]);
-      await batchMintTx.wait();
-
-      expect(await reputationBadge.tokenOf(signer2.address)).to.eq(
-        getTokenIdHash("1")
-      );
-      expect(await reputationBadge.tokenOf(signer3.address)).to.eq(
-        getTokenIdHash("2")
-      );
-    });
+  it("should not let another signer pause", async () => {
+    await expect(badge.connect(signer1).pause()).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
   });
 
-  describe("burn", () => {
-    let tokenOwner: SignerWithAddress;
-    const tokenId = getTokenIdHash("11");
-    beforeEach(async () => {
-      tokenOwner = signer3;
+  it("should not let another signer unpause", async () => {
+    await expect(badge.connect(signer1).unpause()).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+  });
 
-      // mint token with `tokenId` to `tokenOwner` before each test
-      const mintTx = await reputationBadge
-        .connect(backend)
-        .mint(tokenOwner.address, tokenId);
-      await mintTx.wait();
+  /*
+   **** MINTING ****
+   */
+  it("should let the backend mint a token", async () => {
+    await badge.connect(backend).safeMint(signer1.address, 1);
 
-      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(tokenId);
-    });
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+    expect(await badge.ownerOf(1)).to.eq(signer1.address);
+  });
 
-    it("should not let anyone burn", async () => {
-      await expect(
-        reputationBadge.connect(owner).burn(tokenId)
-      ).to.be.revertedWith("Unauthorized");
-    });
+  it("should only let the backend mint a token", async () => {
+    await expect(
+      badge.connect(signer1).safeMint(signer1.address, 234)
+    ).to.be.revertedWith("Unauthorized");
+  });
 
-    it("should let the backend burn a token", async () => {
-      const burnTx = await reputationBadge.connect(backend).burn(tokenId);
-      await burnTx.wait();
+  it("should not let mint twice with the same id", async () => {
+    const tokenId = 5555;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
 
-      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(
-        zeroBytes32
-      );
-    });
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
 
-    it("should let owners burn their token", async () => {
-      const burnTx = await reputationBadge.connect(tokenOwner).burn(tokenId);
-      await burnTx.wait();
+    await expect(
+      badge.connect(backend).safeMint(signer2.address, tokenId)
+    ).to.be.revertedWith("ERC721: token already minted");
+  });
 
-      expect(await reputationBadge.tokenOf(tokenOwner.address)).to.eq(
-        zeroBytes32
-      );
-    });
+  it("should batch mint several tokens", async () => {
+    expect(await badge.balanceOf(signer1.address)).to.eq(0);
+    expect(await badge.balanceOf(signer2.address)).to.eq(0);
+
+    const batchMintTx = await badge.connect(backend).batchMint([
+      { to: signer1.address, tokenId: 34 },
+      { to: signer2.address, tokenId: 45 },
+    ]);
+    await batchMintTx.wait();
+
+    expect(await badge.ownerOf(34)).to.eq(signer1.address);
+    expect(await badge.ownerOf(45)).to.eq(signer2.address);
+  });
+
+  it("should restrict batch minting to the backend", async () => {
+    await expect(
+      badge.connect(signer2).batchMint([
+        { to: signer1.address, tokenId: 10 },
+        { to: signer2.address, tokenId: 11 },
+      ])
+    ).to.be.revertedWith("Unauthorized");
+  });
+
+  it("should return true if a token exists", async () => {
+    await badge.connect(backend).safeMint(signer1.address, 1);
+
+    expect(await badge.exists(1)).to.be.true;
+  });
+
+  it("should return false if a token does not exist", async () => {
+    expect(await badge.exists(268080990909099)).to.be.false;
+  });
+
+  /*
+   **** BACKEND ADDRESS ****
+   */
+  it("should return the backend address", async () => {
+    expect(await badge.backendAddress()).to.eq(backend.address);
+  });
+
+  it("should let the deployer change the backend address", async () => {
+    const newBackend = signer1;
+
+    await expect(
+      badge.connect(newBackend).safeMint(signer1.address, 234)
+    ).to.be.revertedWith("Unauthorized");
+
+    // check balance is 0
+    expect(await badge.balanceOf(signer1.address)).to.eq(0);
+
+    // change backend address
+    const tx = await badge
+      .connect(deployer)
+      .changeBackendAddress(signer1.address);
+    await tx.wait();
+
+    // check backendAddress was changed
+    expect(await badge.backendAddress()).to.eq(signer1.address);
+
+    // try minting again
+    await badge.connect(signer1).safeMint(signer1.address, 234);
+
+    // check balance is 1
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+  });
+
+  it("should only let the deployer change the backend address", async () => {
+    await expect(
+      badge.connect(signer1).changeBackendAddress(signer1.address)
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+  });
+
+  /*
+   **** BURNING ****
+   */
+  it("should let tokens be burned by their owner", async () => {
+    const tokenId = 5645324387978;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+
+    await badge.connect(signer1).burn(tokenId);
+
+    expect(await badge.balanceOf(signer1.address)).to.eq(0);
+  });
+
+  it("should let approved accounts burn tokens on behalf", async () => {
+    const tokenId = 44;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+
+    await badge.connect(signer1).approve(signer2.address, tokenId);
+
+    await expect(badge.connect(signer2).burn(tokenId)).to.not.be.reverted;
+    expect(await badge.balanceOf(signer1.address)).to.eq(0);
+  });
+
+  it("should not let tokens be burned if not approved or owner", async () => {
+    const tokenId = 3333;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+
+    await expect(badge.connect(signer2).burn(tokenId)).to.be.revertedWith(
+      "ERC721Burnable: caller is not owner nor approved"
+    );
+    expect(await badge.balanceOf(signer1.address)).to.eq(1);
+  });
+
+  /*
+   **** URI ****
+   */
+  it("should set the base URI", async () => {
+    const baseURI = "https://interrep.link/tokens/";
+    const tokenId = 1;
+
+    await badge.connect(deployer).changeBaseURI(baseURI);
+
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    expect(await badge.tokenURI(1)).to.eq(baseURI + tokenId.toString());
+  });
+
+  it("should only let the deployer change the base URI", async () => {
+    await expect(
+      badge.connect(signer1).changeBaseURI("https://opensea.io/")
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+  });
+
+  /*
+   **** TRANSFER ****
+   */
+  it("should let token holders transfer their token", async () => {
+    const tokenId = 6;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    await expect(() =>
+      badge.connect(signer1)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
+    ).to.changeTokenBalances(badge, [signer1, signer2], [-1, 1]);
+  });
+
+  it("should let approved accounts transfer a token", async () => {
+    const tokenId = 77;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    await badge.connect(signer1).approve(signer2.address, tokenId);
+
+    await badge.connect(signer2)[
+      // eslint-disable-next-line no-unexpected-multiline
+      "safeTransferFrom(address,address,uint256)"
+    ](signer1.address, deployer.address, tokenId);
+
+    expect(await badge.ownerOf(tokenId)).to.eq(deployer.address);
+  });
+
+  it("should not let unapproved transfers happen", async () => {
+    const tokenId = 8;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    await expect(
+      badge.connect(signer2)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
+    ).to.be.revertedWith("ERC721: transfer caller is not owner nor approved");
+  });
+
+  it("should not let transfer happen when paused", async () => {
+    const tokenId = 991;
+    await badge.connect(backend).safeMint(signer1.address, tokenId);
+
+    await badge.connect(deployer).pause();
+
+    await expect(
+      badge.connect(signer1)[
+        // eslint-disable-next-line no-unexpected-multiline
+        "safeTransferFrom(address,address,uint256)"
+      ](signer1.address, signer2.address, tokenId)
+    ).to.be.revertedWith("Pausable: paused");
   });
 });

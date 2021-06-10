@@ -1,55 +1,93 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Badge.sol";
-import "./IBadgeFactory.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract ReputationBadge is Badge {
-    IBadgeFactory internal badgeFactory;
+contract ReputationBadge is
+    Initializable,
+    ERC721Upgradeable,
+    PausableUpgradeable,
+    OwnableUpgradeable,
+    ERC721BurnableUpgradeable
+{
+    address private _backendAddress;
+    string private _baseTokenURI;
 
-    struct TokenParameters {
-        address owner;
-        bytes32 tokenId;
+    struct MintParameters {
+        address to;
+        uint256 tokenId;
+    }
+
+    function initialize(
+        string memory name_,
+        string memory symbol_,
+        address backendAddress_
+    ) public initializer {
+        __Context_init_unchained();
+        __Pausable_init_unchained();
+        __Ownable_init_unchained();
+        __ERC165_init_unchained();
+        __ERC721_init_unchained(name_, symbol_);
+        __ERC721Burnable_init_unchained();
+
+        _backendAddress = backendAddress_;
     }
 
     modifier onlyBackend {
-        require(msg.sender == badgeFactory.getBackendAddress(), "Unauthorized");
+        require(msg.sender == _backendAddress, "Unauthorized");
         _;
     }
 
-    constructor(string memory badgeName_, string memory badgeSymbol_)
-        Badge(badgeName_, badgeSymbol_)
-    {
-        badgeFactory = IBadgeFactory(msg.sender);
+    function backendAddress() public view returns (address) {
+        return _backendAddress;
     }
 
-    function exists(bytes32 tokenId) external view returns (bool) {
+    function exists(uint256 tokenId) public view returns (bool) {
         return _exists(tokenId);
     }
 
-    function setURI(string memory newURI) external onlyBackend {
-        _setURI(newURI);
+    function safeMint(address to, uint256 tokenId) public onlyBackend {
+        _safeMint(to, tokenId);
     }
 
-    function mint(address to, bytes32 tokenId) external onlyBackend {
-        _mint(to, tokenId);
-    }
-
-    function batchMint(TokenParameters[] memory tokensToMint)
+    function batchMint(MintParameters[] memory tokensToMint)
         external
         onlyBackend
     {
         for (uint256 i = 0; i < tokensToMint.length; i++) {
-            _mint(tokensToMint[i].owner, tokensToMint[i].tokenId);
+            _safeMint(tokensToMint[i].to, tokensToMint[i].tokenId);
         }
     }
 
-    function burn(bytes32 tokenId) external {
-        require(
-            msg.sender == badgeFactory.getBackendAddress() ||
-                msg.sender == ownerOf(tokenId),
-            "Unauthorized"
-        );
-        _burn(tokenId);
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
+    function changeBackendAddress(address newBackendAddress) public onlyOwner {
+        _backendAddress = newBackendAddress;
+    }
+
+    function changeBaseURI(string memory baseURI) public onlyOwner {
+        _baseTokenURI = baseURI;
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override whenNotPaused {
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

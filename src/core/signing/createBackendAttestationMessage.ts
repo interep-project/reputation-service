@@ -1,19 +1,19 @@
 export type BackendAttestationMessageParams = {
   address: string;
-  tokenIdHash: string;
+  decimalId: string;
   provider: string;
   providerAccountId: string;
 };
 
 export const createBackendAttestationMessage = ({
   address,
-  tokenIdHash,
+  decimalId,
   provider,
   providerAccountId,
 }: BackendAttestationMessageParams): string =>
   JSON.stringify({
     service: "InterRep",
-    tokenIdHash,
+    decimalId,
     userAddress: address,
     web2Provider: provider,
     providerAccountId: providerAccountId,

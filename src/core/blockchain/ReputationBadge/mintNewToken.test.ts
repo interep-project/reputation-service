@@ -3,9 +3,10 @@ import mintNewToken from "./mintNewToken";
 jest.mock("hardhat", () => ({
   ethers: {
     getContractAt: () => ({
-      connect: () => ({ mint: jest.fn(() => "mintTxResponse") }),
+      connect: () => ({ safeMint: jest.fn(() => "mintTxResponse") }),
     }),
     getSigners: () => [{ signer: "1" }],
+    BigNumber: { from: jest.fn(() => 12334556) },
   },
 }));
 
@@ -21,7 +22,7 @@ describe("mintNewToken", () => {
 
   it("should return the transaction response", async () => {
     const to = "to";
-    const tokenId = "tokenId";
+    const tokenId = "12234";
     const txResponse = await mintNewToken({
       badgeAddress: "badgeAddy",
       to,

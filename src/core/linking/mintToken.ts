@@ -21,15 +21,15 @@ const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
     throw new Error(`Can't mint a token with status ${token.status}`);
   }
 
-  const { contractAddress, userAddress, idHash } = token;
+  const { contractAddress, userAddress, decimalId } = token;
 
-  if (!contractAddress || !userAddress || !idHash)
+  if (!contractAddress || !userAddress || !decimalId)
     throw new Error(`Missing properties on token`);
 
   const txResponse = await mintNewToken({
     badgeAddress: contractAddress,
     to: userAddress,
-    tokenId: idHash,
+    tokenId: decimalId,
   });
 
   logger.silly(`[MINTING TX] Tx Response: ${JSON.stringify(txResponse)}`);

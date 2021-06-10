@@ -6,6 +6,7 @@ import {
 import { ReputationBadge } from "typechain";
 
 import ReputationBadgeArtifact from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 
 const ReputationBadgeInterface = new ethers.utils.Interface(
   ReputationBadgeArtifact.abi
@@ -28,24 +29,28 @@ export const getInstance = async (contractAddress?: string) => {
 
 export const exists = async (tokenId: string): Promise<boolean> => {
   const instance = await getInstance();
-  return instance.exists(tokenId);
+
+  const tokenIdBigNum = stringToBigNumber(tokenId);
+
+  return instance.exists(tokenIdBigNum);
 };
 
-export const tokenOf = async (owner: string): Promise<string> => {
-  const instance = await getInstance();
-  return instance.tokenOf(owner);
-};
-
-export const getBurnedEvent = async (
-  owner?: string,
+export const getTransferEvent = async (
+  from?: string,
+  to?: string,
   tokenId?: string,
   contractAddress?: string
 ): Promise<any[]> => {
   const instance = await getInstance(contractAddress);
   let topics: (string | string[])[] | undefined;
 
-  if (owner || tokenId) {
-    topics = instance.filters.Burned(owner, tokenId).topics;
+  let decimalId;
+  if (tokenId) {
+    decimalId = stringToBigNumber(tokenId);
+  }
+
+  if (from || to || decimalId) {
+    topics = instance.filters.Transfer(from, to, decimalId).topics;
   }
 
   const logs = await ethers.provider.getLogs({
@@ -54,10 +59,14 @@ export const getBurnedEvent = async (
   });
 
   const decodedEvents = logs.map((log) => ({
-    ...ReputationBadgeInterface.decodeEventLog("Burned", log.data, log.topics),
+    ...ReputationBadgeInterface.decodeEventLog(
+      "Transfer",
+      log.data,
+      log.topics
+    ),
   }));
 
   return decodedEvents;
 };
 
-export default { getInstance, exists, tokenOf, getBurnedEvent };
+export default { getInstance, exists, getTransferEvent };

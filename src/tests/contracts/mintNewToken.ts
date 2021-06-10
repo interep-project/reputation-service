@@ -3,12 +3,11 @@ import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ReputationBadge } from "typechain";
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken";
-import { getTokenIdHash } from "src/tests/utils/getTokenIdHash";
+import { ContractFactory } from "ethers";
 
-const { ethers } = hre;
+const { ethers, upgrades } = hre;
 
 describe("mintNewToken", () => {
-  let owner: SignerWithAddress;
   let backend: SignerWithAddress;
   let tokenHolder: SignerWithAddress;
   let reputationBadge: ReputationBadge;
@@ -17,34 +16,26 @@ describe("mintNewToken", () => {
   const badgeSymbol = "TWITT";
 
   before(async function () {
-    [backend, owner, tokenHolder] = await hre.ethers.getSigners();
+    [backend, tokenHolder] = await hre.ethers.getSigners();
   });
 
   beforeEach(async function () {
-    const BadgeFactoryFactory = await ethers.getContractFactory("BadgeFactory");
-    const badgeFactory = await BadgeFactoryFactory.connect(owner).deploy(
-      backend.address
+    const BadgeFactory: ContractFactory = await ethers.getContractFactory(
+      "ReputationBadge"
     );
 
-    const deployBadgeTx = await badgeFactory
-      .connect(owner)
-      .deployBadge(badgeName, badgeSymbol);
-    const txReceipt = await deployBadgeTx.wait();
-
-    const event = txReceipt.events?.[0];
-    if (!event) throw new Error("No event emitted when deploying new badge");
-
-    const newBadgeAddress = event?.args?.[1];
-
-    reputationBadge = (await ethers.getContractAt(
-      "ReputationBadge",
-      newBadgeAddress
-    )) as ReputationBadge;
+    reputationBadge = (await upgrades.deployProxy(BadgeFactory, [
+      badgeName,
+      badgeSymbol,
+      backend.address,
+    ])) as ReputationBadge;
   });
 
   it("should mint successfully", async () => {
     const tokenRecipientAddress = tokenHolder.address;
-    const tokenId = getTokenIdHash("6087dabb0b3af8703a581bf0");
+    const tokenId = "185030932498643032395873032093248040430932832";
+
+    expect(await reputationBadge.balanceOf(tokenRecipientAddress)).to.eq(0);
 
     await mintNewToken({
       badgeAddress: reputationBadge.address,
@@ -52,6 +43,6 @@ describe("mintNewToken", () => {
       to: tokenRecipientAddress,
     });
 
-    expect(await reputationBadge.tokenOf(tokenRecipientAddress)).to.eq(tokenId);
+    expect(await reputationBadge.balanceOf(tokenRecipientAddress)).to.eq(1);
   });
 });

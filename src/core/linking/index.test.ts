@@ -191,10 +191,10 @@ describe("linkAccounts", () => {
 
       expect(account!.isLinkedToAddress).toBe(true);
       expect(savedToken.userAddress).toBe(addy);
-      expect(typeof savedToken.idHash).toBe("string");
+      expect(typeof savedToken.decimalId).toBe("string");
       expect(encryptMessageWithSalt).toHaveBeenCalledWith(
         userPublicKey,
-        '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"tokenIdHash\\":\\"0x03dd40b36474bf4559c4d733be6f5ec1e61bcb562d1c7f04629ee3af7ee569f9\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"web2Provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0xce1aa45532a2347dbc9bea31e2dbbcb88197e0098e186a7fac5fb714f56902fd58e71d47739e8de125a9dabb881946d5a80de5bc16411f8717ecc18f3598a68f1b"}'
+        '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"web2Provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x58e10c262844d01fbc3c8fed5f067429c068c6b851e0a1a45505b8863b4852b523c00052ec0cfe024f4bc199917f9363183676441a8568015a5a93876c0019371b"}'
       );
       expect(savedToken.encryptedAttestation).toEqual("encryptedMessage");
     });

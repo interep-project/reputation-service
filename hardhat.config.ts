@@ -6,6 +6,7 @@ import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
+import "@openzeppelin/hardhat-upgrades";
 import { getDefaultNetworkName } from "./src/utils/crypto/getDefaultNetwork";
 
 import "tsconfig-paths/register";
