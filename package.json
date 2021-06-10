@@ -12,11 +12,12 @@
     "test": "jest",
     "test:ci": "hardhat compile && ./node_modules/.bin/jest",
     "test:w": "jest --watch",
-    "eth:compile": "hardhat compile",
+    "eth:compile": "hardhat clean && hardhat compile",
     "eth:test": "NODE_ENV=test hardhat test",
     "eth:coverage": "hardhat coverage --solcoverjs ./.solcover.js --testfiles \"src/tests/contracts/*.ts\"",
     "lint": "eslint . --ext js,jsx,ts,tsx",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "yarn run eth:compile"
   },
   "engines": {
     "node": "14.x",
