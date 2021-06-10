@@ -1,14 +1,15 @@
-import getConfig from "next/config";
+export const defaultNetworkByEnv = {
+  test: { id: 31337, name: "hardhat" },
+  development: { id: 31337, name: "localhost" },
+  production: { id: 42, name: "kovan" },
+};
 
 export const getDefaultNetworkId = () => {
   const env = process.env.NODE_ENV;
 
   if (env === "test") return 31337;
 
-  const { publicRuntimeConfig } = getConfig();
-  const networks = publicRuntimeConfig.defaultNetworkByEnv;
-
-  return env in networks ? networks[env].id : 31337;
+  return env in defaultNetworkByEnv ? defaultNetworkByEnv[env].id : 31337;
 };
 
 export const getDefaultNetworkName = () => {
@@ -16,8 +17,5 @@ export const getDefaultNetworkName = () => {
 
   if (env === "test" || !env) return "hardhat";
 
-  const { publicRuntimeConfig } = getConfig();
-  const networks = publicRuntimeConfig.defaultNetworkByEnv;
-
-  return env in networks ? networks[env].name : "hardhat";
+  return env in defaultNetworkByEnv ? defaultNetworkByEnv[env].name : "hardhat";
 };
