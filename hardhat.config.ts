@@ -31,13 +31,10 @@ dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 const getNetworks = () => {
   if (process.env.NODE_ENV === "production") {
-    if (!process.env.BACKEND_PRIVATE_KEY || !process.env.DEPLOYER_PRIVATE_KEY) {
-      throw new Error("Please set the private keys in a .env file");
+    if (!process.env.BACKEND_PRIVATE_KEY) {
+      throw new Error("Please set the private key in a .env file");
     }
-    const kovanAccounts = [
-      `0x${process.env.BACKEND_PRIVATE_KEY}`,
-      `0x${process.env.DEPLOYER_PRIVATE_KEY}`,
-    ];
+    const kovanAccounts = [`0x${process.env.BACKEND_PRIVATE_KEY}`];
 
     return {
       kovan: {
