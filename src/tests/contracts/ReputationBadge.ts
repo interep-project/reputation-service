@@ -41,6 +41,21 @@ describe("ReputationBadge", function () {
     expect(await badge.symbol()).to.eq(badgeSymbol);
   });
 
+  it("should return the owner of the contract", async () => {
+    expect(await badge.owner()).to.eq(deployer.address);
+  });
+
+  it("should be able to transfer ownership from deployer", async () => {
+    expect(await badge.owner()).to.eq(deployer.address);
+
+    const transferTx = await badge
+      .connect(deployer)
+      .transferOwnership(signer1.address);
+    await transferTx.wait();
+
+    expect(await badge.owner()).to.eq(signer1.address);
+  });
+
   /*
    **** PAUSING ****
    */

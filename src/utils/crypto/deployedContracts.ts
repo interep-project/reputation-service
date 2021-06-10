@@ -15,7 +15,7 @@ const deployedContracts: {
   },
   42: {
     [DeployedContracts.TWITTER_BADGE]:
-      "0xb3e404E8BCbc2af1683da73f14A558662346119F",
+      "0x99FCf805C468977e0F8Ceae21935268EEceadC07",
   },
 };
 

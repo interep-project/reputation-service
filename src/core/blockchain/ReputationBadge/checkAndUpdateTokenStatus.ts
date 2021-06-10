@@ -17,6 +17,7 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
         }
         // TODO: checking each contract might not be the most scalable solution
         // refactor to avoid explicit dependency with individual contracts?
+        // TODO: Also it should check the right contract based on token.chainId
         const tokenExistsOnChain = await TwitterBadgeContract.exists(tokenId);
 
         if (tokenExistsOnChain) {
