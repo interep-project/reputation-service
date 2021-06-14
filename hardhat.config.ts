@@ -49,7 +49,7 @@ const getNetworks = () => {
 };
 
 const config: HardhatUserConfig = {
-  defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV].name,
+  defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV]?.name || "hardhat",
   solidity: {
     version: "0.8.0",
   },
