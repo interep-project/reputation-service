@@ -27,6 +27,6 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.d.ts", "**/*.ts", "**/*.tsx", "*.config.ts"],
+  "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts"],
   "files": ["./hardhat.config.ts"]
 }

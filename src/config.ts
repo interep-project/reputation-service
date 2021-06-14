@@ -1,3 +1,15 @@
+export const SupportedChainId = {
+  HARDHAT: 31337,
+  LOCALHOST: 31337,
+  KOVAN: 42,
+};
+
+export const defaultNetworkByEnv = {
+  test: { id: SupportedChainId.HARDHAT, name: "hardhat" },
+  development: { id: SupportedChainId.LOCALHOST, name: "localhost" },
+  production: { id: SupportedChainId.KOVAN, name: "kovan" },
+};
+
 export default {
   MONGO_URL: process.env.MONGO_URL,
   TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY,

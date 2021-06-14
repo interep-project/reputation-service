@@ -1,8 +1,4 @@
-export const defaultNetworkByEnv = {
-  test: { id: 31337, name: "hardhat" },
-  development: { id: 31337, name: "localhost" },
-  production: { id: 42, name: "kovan" },
-};
+import { defaultNetworkByEnv } from "src/config";
 
 export const getDefaultNetworkId = () => {
   const env = process.env.NODE_ENV;
