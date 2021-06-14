@@ -6,7 +6,7 @@ type ActionSectionProps = {
   buttonText: string;
   text?: string;
   buttonClassname: string;
-  buttonDisabled: boolean;
+  isButtonDisplayed: boolean;
 };
 
 const ActionSection: FC<ActionSectionProps> = ({
@@ -15,7 +15,7 @@ const ActionSection: FC<ActionSectionProps> = ({
   onClick,
   buttonText,
   buttonClassname,
-  buttonDisabled,
+  isButtonDisplayed,
 }) => {
   return (
     <div className="px-4 py-5 sm:p-6 flex flex-col">
@@ -28,19 +28,20 @@ const ActionSection: FC<ActionSectionProps> = ({
             <p>{text}</p>
           </div>
         )}
-        <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-          <button
-            disabled={buttonDisabled}
-            onClick={onClick}
-            type="button"
-            className={
-              "inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm" +
-              buttonClassname
-            }
-          >
-            {buttonText}
-          </button>
-        </div>
+        {isButtonDisplayed && (
+          <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+            <button
+              onClick={onClick}
+              type="button"
+              className={
+                "inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm" +
+                buttonClassname
+              }
+            >
+              {buttonText}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -310,10 +310,10 @@ export default function Home() {
           <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
             <ActionSection
               title="Ethereum Address"
-              buttonDisabled={connected || true}
               onClick={() => connect && connect()}
+              isButtonDisplayed={!connected}
               buttonText={"CONNECT WALLET"}
-              buttonClassname=" bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-default"
+              buttonClassname=" bg-blue-600 hover:bg-blue-700"
               text={
                 connected
                   ? `You are connected with ${address}`
