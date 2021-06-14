@@ -11,6 +11,7 @@ module.exports = {
     extend: {
       backgroundColor: ["disabled"],
       borderWidth: ["hover", "focus"],
+      cursor: ["disabled"],
     },
   },
   plugins: [],
