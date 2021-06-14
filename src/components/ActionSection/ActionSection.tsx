@@ -4,14 +4,14 @@ type ActionSectionProps = {
   title?: string;
   onClick: () => void;
   buttonText: string;
-  text?: string;
+  textChildren?: JSX.Element;
   buttonClassname: string;
   isButtonDisplayed: boolean;
 };
 
 const ActionSection: FC<ActionSectionProps> = ({
   title,
-  text,
+  textChildren,
   onClick,
   buttonText,
   buttonClassname,
@@ -23,10 +23,8 @@ const ActionSection: FC<ActionSectionProps> = ({
         {title}
       </h2>
       <div className="mt-2 sm:flex sm:items-center sm:justify-between">
-        {text && (
-          <div className="max-w-xl text-base text-gray-700">
-            <p>{text}</p>
-          </div>
+        {textChildren && (
+          <div className="max-w-xl text-base text-gray-700">{textChildren}</div>
         )}
         {isButtonDisplayed && (
           <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
