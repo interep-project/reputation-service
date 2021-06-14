@@ -6,7 +6,10 @@ import NavBar from "src/components/NavBar/NavBar";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
+import {
+  AccountReputationByAccount,
+  BasicReputation,
+} from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
@@ -74,11 +77,44 @@ const mintToken = async (tokenId: string) => {
 //   chainId,
 // });
 
+const getAccountLinkingInstruction = ({
+  connected,
+  hasASession,
+  isCurrentAccountLinked,
+  hasEnoughReputation,
+}: {
+  connected: boolean;
+  hasASession: boolean;
+  isCurrentAccountLinked?: boolean;
+  hasEnoughReputation: boolean;
+}): string | null => {
+  if (!connected) return "Please connect your wallet first.";
+
+  if (!hasASession) return "Please sign in to a web 2 account.";
+
+  if (isCurrentAccountLinked)
+    return "Your account is already linked to an Ethereum address.";
+
+  if (!hasEnoughReputation)
+    return "Sorry, we were unable to confirm the reputation of your Twitter account.";
+
+  if (hasEnoughReputation)
+    return "Your account is not linked to any Ethereum address.";
+
+  return null;
+};
+
 export default function Home() {
   const [session] = useSession();
   const hasASession = !!session;
 
-  const { connect, address, connected, networkId, signer } = useWeb3Context();
+  const {
+    connect,
+    address,
+    connected = false,
+    networkId,
+    signer,
+  } = useWeb3Context();
   const { getPublicKey, decrypt } = useEncryption();
   const [
     twitterReputation,
@@ -361,19 +397,15 @@ export default function Home() {
                 </h2>
                 <div className="sm:flex sm:items-center sm:justify-between">
                   <div className="max-w-xl text-base text-gray-700">
-                    <p>{!connected && "Please connect your wallet first."}</p>
                     <p>
-                      {!hasASession && "Please sign in to a web 2 account."}
-                    </p>
-                    <p>
-                      {hasASession &&
-                        isCurrentAccountLinked &&
-                        "Your account is already linked to an Ethereum address."}
-                    </p>
-                    <p>
-                      {hasASession &&
-                        !isCurrentAccountLinked &&
-                        "Your account is not linked to any Ethereum address."}
+                      {getAccountLinkingInstruction({
+                        connected,
+                        hasASession,
+                        isCurrentAccountLinked,
+                        hasEnoughReputation:
+                          twitterReputation?.basicReputation ===
+                          BasicReputation.CONFIRMED,
+                      })}
                     </p>
                     <p>{accountLinkingMessage}</p>
                   </div>
@@ -381,9 +413,9 @@ export default function Home() {
                     <button
                       disabled={
                         !connected ||
-                        !hasASession ||
-                        isCurrentAccountLinked ||
-                        !isOnProperNetwork
+                        twitterReputation?.basicReputation !==
+                          BasicReputation.CONFIRMED ||
+                        isCurrentAccountLinked
                       }
                       onClick={() => signAssociation()}
                       type="button"
