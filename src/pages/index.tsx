@@ -309,7 +309,7 @@ export default function Home() {
         {isOnProperNetwork && (
           <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
             <ActionSection
-              title="Web 3 Authentication"
+              title="Ethereum Address"
               onClick={() => connect && connect()}
               buttonText={connected ? "CHANGE WALLET" : "CONNECT WALLET"}
               buttonClassname=" bg-blue-600 hover:bg-blue-700"
@@ -322,9 +322,8 @@ export default function Home() {
             {/* Twitter section */}
             <div className="px-4 pb-5 sm:p-6 flex flex-col">
               <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                Web 2 Authentication
+                Twitter Account
               </h2>
-              <h3 className="text-base text-blue-500">Twitter</h3>
               <div className="sm:flex sm:items-center sm:justify-between">
                 <div className="max-w-xl text-base text-gray-700">
                   <p>
