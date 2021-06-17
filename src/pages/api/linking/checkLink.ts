@@ -1,10 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { withSentry } from "@sentry/nextjs";
 import { getSession } from "next-auth/client";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 
-export default async (
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<{ isLinkedToAddress: boolean } | void | { error: string }> => {
@@ -32,3 +33,5 @@ export default async (
     logger.error(err);
   }
 };
+
+export default withSentry(handler as NextApiHandler);

@@ -1,8 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { withSentry } from "@sentry/nextjs";
 import TwitterAccountController from "src/controllers/TwitterAccountController";
 import { dbConnect } from "src/utils/server/database";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
 
   if (req.method === "GET") {
@@ -11,3 +12,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).end();
   }
 };
+
+export default withSentry(handler as NextApiHandler);
