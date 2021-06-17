@@ -6,7 +6,10 @@ import NavBar from "src/components/NavBar/NavBar";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
+import {
+  AccountReputationByAccount,
+  BasicReputation,
+} from "src/models/web2Accounts/Web2Account.types";
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
@@ -15,6 +18,9 @@ import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/Reputat
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
 import { getChecksummedAddress } from "src/utils/crypto/address";
+import DeployedContractSection from "src/components/DeployedContractSection/DeployedContractSection";
+import Spinner from "src/components/Spinner/Spinner";
+import { getAccountLinkingInstruction } from "src/utils/frontend/getAccountLinkingInstruction";
 
 // TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
@@ -77,7 +83,13 @@ export default function Home() {
   const [session] = useSession();
   const hasASession = !!session;
 
-  const { connect, address, connected, networkId, signer } = useWeb3Context();
+  const {
+    connect,
+    address,
+    connected = false,
+    networkId,
+    signer,
+  } = useWeb3Context();
   const { getPublicKey, decrypt } = useEncryption();
   const [
     twitterReputation,
@@ -87,6 +99,7 @@ export default function Home() {
     undefined
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
+  const [isMintingInProgress, setIsMintingInProgress] = useState(false);
   const [isOnProperNetwork, setIsOnProperNetwork] = useState<boolean | null>(
     null
   );
@@ -179,7 +192,7 @@ export default function Home() {
       .then((pubKey) => {
         if (!pubKey) throw new Error("Public key is needed to link accounts");
         setAccountLinkingMessage(
-          "Please confirm that you wish to link your accounts by opening Metamask and signing the message"
+          "Please confirm that you wish to link your accounts by opening Metamask and signing the message."
         );
         return pubKey;
       })
@@ -237,10 +250,12 @@ export default function Home() {
 
   const mintTokenAndRefetch = useCallback(
     (tokenId) => {
+      setIsMintingInProgress(true);
       mintToken(tokenId).then((data) => {
         if (data) {
           console.log(`data`, data);
         }
+        setIsMintingInProgress(false);
         refetchTokens();
       });
     },
@@ -307,146 +322,160 @@ export default function Home() {
       />
       <div className="max-w-7xl mx-auto mt-10 sm:px-6 lg:px-8">
         {isOnProperNetwork && (
-          <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
-            <ActionSection
-              title="Web 3 Authentication"
-              onClick={() => connect && connect()}
-              buttonText={connected ? "CHANGE WALLET" : "CONNECT WALLET"}
-              buttonClassname=" bg-blue-600 hover:bg-blue-700"
-              text={
-                connected
-                  ? `You are connected with ${address}`
-                  : "Connect your wallet to get started"
-              }
-            />
-            {/* Twitter section */}
-            <div className="px-4 pb-5 sm:p-6 flex flex-col">
-              <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                Web 2 Authentication
-              </h2>
-              <h3 className="text-base text-blue-500">Twitter</h3>
-              <div className="sm:flex sm:items-center sm:justify-between">
-                <div className="max-w-xl text-base text-gray-700">
-                  <p>
-                    {session
-                      ? `You are connected as ${session?.user?.name}`
-                      : "Sign in with Twitter"}
-                  </p>
+          <>
+            <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
+              <ActionSection
+                title="Ethereum Address"
+                onClick={() => connect && connect()}
+                isButtonDisplayed={!connected}
+                buttonText={"CONNECT WALLET"}
+                buttonClassname=" bg-blue-600 hover:bg-blue-700"
+                textChildren={
+                  <>
+                    {connected ? (
+                      <p>
+                        You are connected with{" "}
+                        <span className="font-semibold">{address}</span>
+                      </p>
+                    ) : (
+                      <p>Connect your wallet to get started</p>
+                    )}
+                  </>
+                }
+              />
+              {/* Twitter section */}
+              <div className="px-4 pb-5 sm:p-6 flex flex-col">
+                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+                  Twitter Account
+                </h2>
+                <div className="sm:flex sm:items-center sm:justify-between">
+                  <div className="max-w-xl text-base text-gray-700">
+                    <p>
+                      {session
+                        ? `You are connected as ${session?.user?.name}`
+                        : "Sign in with Twitter"}
+                    </p>
+                  </div>
+                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                    <button
+                      onClick={() =>
+                        hasASession ? signOut() : signIn("twitter")
+                      }
+                      type="button"
+                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm ${
+                        hasASession
+                          ? " bg-red-700 hover:bg-red-800"
+                          : " bg-blue-600 hover:bg-blue-700"
+                      }`}
+                    >
+                      {hasASession ? "LOG OUT" : "SIGN IN"}
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                  <button
-                    onClick={() => (hasASession ? signOut() : signIn())}
-                    type="button"
-                    className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm ${
-                      hasASession
-                        ? " bg-red-700 hover:bg-red-800"
-                        : " bg-blue-600 hover:bg-blue-700"
-                    }`}
-                  >
-                    {hasASession ? "LOG OUT" : "SIGN IN"}
-                  </button>
+                {twitterReputation?.basicReputation ? (
+                  <p className="text-base text-gray-700">
+                    Twitter reputation: {twitterReputation.basicReputation}
+                  </p>
+                ) : null}
+              </div>
+              <div className="px-4 pb-5 sm:p-6 flex flex-col">
+                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+                  Account Linking
+                </h2>
+                <div className="sm:flex sm:items-center sm:justify-between">
+                  <div className="max-w-xl text-base text-gray-700">
+                    <p>
+                      {getAccountLinkingInstruction({
+                        connected,
+                        hasASession,
+                        isCurrentAccountLinked,
+                        hasEnoughReputation:
+                          twitterReputation?.basicReputation ===
+                          BasicReputation.CONFIRMED,
+                      })}
+                    </p>
+                    <p>{accountLinkingMessage}</p>
+                  </div>
+                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                    <button
+                      disabled={
+                        !connected ||
+                        twitterReputation?.basicReputation !==
+                          BasicReputation.CONFIRMED ||
+                        isCurrentAccountLinked
+                      }
+                      onClick={() => signAssociation()}
+                      type="button"
+                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                    >
+                      LINK ACCOUNTS
+                    </button>
+                  </div>
                 </div>
               </div>
-              {twitterReputation?.basicReputation ? (
-                <p className="text-base text-gray-700">
-                  Twitter reputation: {twitterReputation.basicReputation}
-                </p>
-              ) : null}
-            </div>
-            <div className="px-4 pb-5 sm:p-6 flex flex-col">
-              <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                Account Linking
-              </h2>
-              <div className="sm:flex sm:items-center sm:justify-between">
-                <div className="max-w-xl text-base text-gray-700">
-                  <p>{!connected && "Please connect your wallet first."}</p>
-                  <p>{!hasASession && "Please sign in to a web 2 account."}</p>
-                  <p>
-                    {hasASession &&
-                      isCurrentAccountLinked &&
-                      "Your account is already linked to an Ethereum address."}
-                  </p>
-                  <p>
-                    {hasASession &&
-                      !isCurrentAccountLinked &&
-                      "Your account is not linked to any Ethereum address."}
-                  </p>
-                  <p>{accountLinkingMessage}</p>
-                </div>
-                <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                  <button
-                    disabled={
-                      !connected ||
-                      !hasASession ||
-                      isCurrentAccountLinked ||
-                      !isOnProperNetwork
-                    }
-                    onClick={() => signAssociation()}
-                    type="button"
-                    className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                  >
-                    LINK ADDRESS
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="px-4 pb-5 sm:p-6 flex flex-col">
-              <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                Badges
-              </h2>
-              {!connected && <p>Please connect your wallet first.</p>}
-              <h3 className="text-base text-blue-500">Twitter</h3>
-              {tokens.length > 0 &&
-                tokens.map((token) => (
-                  <div
-                    key={token.decimalId}
-                    className="sm:flex sm:items-center sm:justify-between mb-4"
-                  >
-                    <div className="max-w-xl text-base text-gray-700">
-                      <div className="text-xs">
-                        <p>id: {token.decimalId}</p>
-                        <p>status: {token.status}</p>
+              <div className="px-4 pb-5 sm:p-6 flex flex-col">
+                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+                  Badges
+                </h2>
+                {!connected && <p>Please connect your wallet first.</p>}
+                <h3 className="text-base text-blue-500">Twitter</h3>
+                {tokens.length > 0 &&
+                  tokens.map((token) => (
+                    <div
+                      key={token.decimalId}
+                      className="sm:flex sm:items-center sm:justify-between mb-4"
+                    >
+                      <div className="max-w-xl text-base text-gray-700">
+                        <div className="text-xs">
+                          <p>id: {token.decimalId}</p>
+                          <p>status: {token.status}</p>
+                        </div>
+                      </div>
+                      <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                        {token.status === TokenStatus.NOT_MINTED && (
+                          <button
+                            disabled={
+                              token.status !== TokenStatus.NOT_MINTED ||
+                              isMintingInProgress
+                            }
+                            onClick={() => {
+                              mintTokenAndRefetch(token._id);
+                            }}
+                            type="button"
+                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-default`}
+                          >
+                            {isMintingInProgress && <Spinner />}
+                            MINT
+                          </button>
+                        )}
+                        {token.status === TokenStatus.MINTED && (
+                          <button
+                            disabled={token.status !== TokenStatus.MINTED}
+                            onClick={() =>
+                              burnToken(token.web2Provider, token.decimalId)
+                            }
+                            type="button"
+                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                          >
+                            BURN
+                          </button>
+                        )}
+                        {token.status === TokenStatus.BURNED && (
+                          <button
+                            onClick={() => unlinkAccounts(token)}
+                            type="button"
+                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                          >
+                            UNLINK ACCOUNTS
+                          </button>
+                        )}
                       </div>
                     </div>
-                    <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                      {token.status === TokenStatus.NOT_MINTED && (
-                        <button
-                          disabled={token.status !== TokenStatus.NOT_MINTED}
-                          onClick={() => {
-                            mintTokenAndRefetch(token._id);
-                          }}
-                          type="button"
-                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                        >
-                          MINT
-                        </button>
-                      )}
-                      {token.status === TokenStatus.MINTED && (
-                        <button
-                          disabled={token.status !== TokenStatus.MINTED}
-                          onClick={() =>
-                            burnToken(token.web2Provider, token.decimalId)
-                          }
-                          type="button"
-                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                        >
-                          BURN
-                        </button>
-                      )}
-                      {token.status === TokenStatus.BURNED && (
-                        <button
-                          onClick={() => unlinkAccounts(token)}
-                          type="button"
-                          className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                        >
-                          UNLINK ACCOUNTS
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+              </div>
             </div>
-          </div>
+            <DeployedContractSection />
+          </>
         )}
       </div>
     </div>

@@ -7,9 +7,9 @@ import "@typechain/hardhat";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
 import "@openzeppelin/hardhat-upgrades";
-import { getDefaultNetworkName } from "./src/utils/crypto/getDefaultNetwork";
 
 import "tsconfig-paths/register";
+import { defaultNetworkByEnv } from "src/config";
 
 task("faucet", "Sends ETH to an address")
   .addPositionalParam("receiver", "The address that will receive them")
@@ -49,7 +49,7 @@ const getNetworks = () => {
 };
 
 const config: HardhatUserConfig = {
-  defaultNetwork: getDefaultNetworkName(),
+  defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV]?.name || "hardhat",
   solidity: {
     version: "0.8.0",
   },
