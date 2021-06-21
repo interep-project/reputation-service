@@ -1,9 +1,10 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { withSentry } from "@sentry/nextjs";
 import TokenController from "src/controllers/TokenController";
 import { ITokenDocument } from "src/models/tokens/Token.types";
 import { dbConnect } from "src/utils/server/database";
 
-export default async (
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<{ tokens: Partial<ITokenDocument[]> } | void> => {
@@ -15,3 +16,5 @@ export default async (
     return TokenController.getTokenByContractAndId(req, res);
   }
 };
+
+export default withSentry(handler as NextApiHandler);

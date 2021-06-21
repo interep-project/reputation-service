@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import { withSentry } from "@sentry/nextjs";
 import jwt from "next-auth/jwt";
 import config from "src/config";
 import unlinkAccounts from "src/core/linking/unlink";
@@ -6,7 +7,7 @@ import { JWToken } from "src/types/nextAuth/token";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 
-export default async (
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
@@ -47,3 +48,5 @@ export default async (
     return res.status(500).end();
   }
 };
+
+export default withSentry(handler as NextApiHandler);
