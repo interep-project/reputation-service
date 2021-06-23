@@ -3,6 +3,7 @@ import {
   getDefaultNetworkName,
 } from "./getDefaultNetwork";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const mock = <T extends {}, K extends keyof T>(
   object: T,
   property: K,
