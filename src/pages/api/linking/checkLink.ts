@@ -31,6 +31,9 @@ const handler = async (
       .send({ isLinkedToAddress: web2Account.isLinkedToAddress });
   } catch (err) {
     logger.error(err);
+    return res
+      .status(500)
+      .send({ error: "Error while verifying if web 2 account is linked" });
   }
 };
 

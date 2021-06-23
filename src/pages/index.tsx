@@ -79,6 +79,7 @@ const mintToken = async (tokenId: string) => {
 //   chainId,
 // });
 
+// TODO: split this huge component
 export default function Home() {
   const [session] = useSession();
   const hasASession = !!session;
