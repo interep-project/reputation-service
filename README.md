@@ -17,13 +17,39 @@ To seed the database from seedTwitterUsers.ts (optional):
 yarn run seedDB
 ```
 
-**Run the development server**:
+## Running tests
+
+`yarn test`
+
+`yarn eth:test` (for smart contracts)
+
+## Running InterRep locally
+
+**NODE_ENV === 'development'**
 
 ```bash
 yarn dev
 ```
 
 The pages auto-update as you edit files.
+
+To test all the features, you will need to run and deploy InterRep smart contracts locally. Here's how:
+
+1. Start a local network in one terminal
+
+`npx hardhat node`
+
+2. In another terminal, deploy the interRep badge contract
+
+` npx hardhat run scripts/ethereum/deploy-reputation-badge.ts --network localhost`
+
+3. Give your address some ETH for gas
+
+`npx hardhat faucet YOUR_ADDRESS --network localhost`
+
+## Production
+
+**NODE_ENV === 'production'**
 
 **Build**
 
