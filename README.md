@@ -109,10 +109,18 @@ Query currently connected account
 /api/reputation/twitter/me
 ```
 
-**By Ethereum Address**
+### Tokens
+
+Get tokens by ethereum address
 
 ```
-/api/reputation/address/0x4e2B...
+/api/tokens?owner=0xba36...
+```
+
+Get token by contract address and id
+
+```
+/api/tokens/0x99FCf805C468977e0F8Ceae21935268EEceadC07/93874287420912438946...
 ```
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
