@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { signIn, signOut, useSession } from "next-auth/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { isBrowser, isMobile } from "react-device-detect";
 import ActionSection from "src/components/ActionSection/ActionSection";
 import NavBar from "src/components/NavBar/NavBar";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
@@ -317,13 +318,21 @@ export default function Home() {
   return (
     <div className="bg-black min-h-full">
       <NavBar
+        isConnectButtonDisplayed={isBrowser}
         isConnected={!!connected}
         address={address}
         networkName={currentNetworkName}
         onAddressClick={() => connect && connect()}
       />
-      <div className="max-w-7xl mx-auto mt-10 sm:px-6 lg:px-8">
-        {isOnProperNetwork && (
+      <div className="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
+        {isMobile && (
+          <p className="text-xl text-white">
+            Sorry, mobile and tablet devices are currently not supported. Please
+            access InterRep from a desktop browser with the Metamask extension
+            installed.
+          </p>
+        )}
+        {isBrowser && isOnProperNetwork && (
           <>
             <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
               <ActionSection

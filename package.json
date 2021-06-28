@@ -40,6 +40,7 @@
     "next": "10.0.9",
     "next-auth": "^3.14.6",
     "react": "17.0.1",
+    "react-device-detect": "^1.17.0",
     "react-dom": "17.0.1",
     "ts-node": "^10.0.0",
     "twitter-v2": "^1.0.8",
