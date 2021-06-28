@@ -5,7 +5,11 @@ module.exports = {
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "twitter-blue": "#1d9bf0",
+      },
+    },
   },
   variants: {
     extend: {

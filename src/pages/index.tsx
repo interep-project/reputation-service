@@ -21,6 +21,7 @@ import { getChecksummedAddress } from "src/utils/crypto/address";
 import DeployedContractSection from "src/components/DeployedContractSection/DeployedContractSection";
 import Spinner from "src/components/Spinner/Spinner";
 import { getAccountLinkingInstruction } from "src/utils/frontend/getAccountLinkingInstruction";
+import TwitterIcon from "src/components/TwitterIcon";
 
 // TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
@@ -419,12 +420,16 @@ export default function Home() {
                   Badges
                 </h2>
                 {!connected && <p>Please connect your wallet first.</p>}
-                <h3 className="text-base text-blue-500">Twitter</h3>
+                <TwitterIcon
+                  className={`w-6 fill-current ${
+                    tokens.length > 0 ? "text-twitter-blue" : "text-gray-300"
+                  }`}
+                />
                 {tokens.length > 0 &&
                   tokens.map((token) => (
                     <div
                       key={token.decimalId}
-                      className="sm:flex sm:items-center sm:justify-between mb-4"
+                      className="sm:flex sm:items-center sm:justify-between my-4"
                     >
                       <div className="max-w-xl text-base text-gray-700">
                         <div className="text-xs">
