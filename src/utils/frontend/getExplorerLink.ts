@@ -1,7 +1,8 @@
 import { SupportedChainId } from "src/config";
 
 const ETHERSCAN_PREFIXES: { [chainId: number]: string } = {
-  [SupportedChainId.KOVAN]: "kovan.",
+  [SupportedChainId.kovan]: "kovan.",
+  [SupportedChainId.ropsten]: "ropsten.",
 };
 
 export enum ExplorerDataType {
