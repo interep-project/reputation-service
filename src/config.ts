@@ -1,12 +1,10 @@
 import getConfig from "next/config";
 
-console.log(`process.env`, process.env.NODE_ENV);
+const nextConfig = getConfig();
 
 let defaultNetwork;
-if (process.env.NODE_ENV && process.env.NODE_ENV !== "test") {
-  const { publicRuntimeConfig } = getConfig();
-
-  defaultNetwork = publicRuntimeConfig.defaultNetwork;
+if (nextConfig && process.env.NODE_ENV && process.env.NODE_ENV !== "test") {
+  defaultNetwork = nextConfig.publicRuntimeConfig.defaultNetwork;
   if (!defaultNetwork) {
     throw new Error("Default network is not defined");
   }
