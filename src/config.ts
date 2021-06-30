@@ -1,7 +1,9 @@
 import getConfig from "next/config";
 
+console.log(`process.env`, process.env.NODE_ENV);
+
 let defaultNetwork;
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV && process.env.NODE_ENV !== "test") {
   const { publicRuntimeConfig } = getConfig();
 
   defaultNetwork = publicRuntimeConfig.defaultNetwork;
