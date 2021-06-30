@@ -31,16 +31,26 @@ dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 const getNetworks = () => {
   if (process.env.NODE_ENV === "production") {
-    if (!process.env.BACKEND_PRIVATE_KEY) {
-      throw new Error("Please set the private key in a .env file");
+    const infuraApiKey = process.env.INFURA_API_KEY;
+    if (!infuraApiKey) {
+      throw new Error("Please set your INFURA_API_KEY in a .env file");
     }
-    const kovanAccounts = [`0x${process.env.BACKEND_PRIVATE_KEY}`];
+
+    if (!process.env.BACKEND_PRIVATE_KEY) {
+      throw new Error("Please set BACKEND_PRIVATE_KEY in a .env file");
+    }
+    const accounts = [`0x${process.env.BACKEND_PRIVATE_KEY}`];
 
     return {
+      ropsten: {
+        url: "https://ropsten.infura.io/v3/" + infuraApiKey,
+        chainId: 3,
+        accounts: accounts,
+      },
       kovan: {
-        url: process.env.INFURA_KOVAN_RPC_URL,
+        url: "https://kovan.infura.io/v3/" + infuraApiKey,
         chainId: 42,
-        accounts: kovanAccounts,
+        accounts: accounts,
       },
     };
   }

@@ -1,6 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 
-const NEW_BADGE_NAME = "InterRepTwitterBadge";
+const NEW_BADGE_NAME = "InterRep Twitter Badge";
 const NEW_BADGE_SYMBOL = "iTWITT";
 
 async function main() {
