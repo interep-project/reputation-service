@@ -13,6 +13,10 @@ const deployedContracts: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
   },
+  3: {
+    [DeployedContracts.TWITTER_BADGE]:
+      "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
+  },
   42: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x99FCf805C468977e0F8Ceae21935268EEceadC07",
