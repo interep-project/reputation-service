@@ -31,6 +31,10 @@ const securityHeaders = [
 ];
 
 const moduleExports = {
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    defaultNetwork: process.env.DEFAULT_NETWORK,
+  },
   poweredByHeader: false,
   async headers() {
     return [
