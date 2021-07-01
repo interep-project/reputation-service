@@ -39,6 +39,8 @@ const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
     token.mintTransactions?.push({
       response: { hash, blockNumber, chainId, timestamp },
     });
+    await token.save();
+
     token.status = TokenStatus.MINT_PENDING;
     await token.save();
 
