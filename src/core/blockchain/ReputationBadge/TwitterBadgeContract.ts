@@ -24,6 +24,9 @@ export const getInstance = async (contractAddress?: string) => {
       getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
   )) as ReputationBadge;
 
+  if (!instance) {
+    throw new Error("Error while instantiating Twitter Badge contract");
+  }
   return instance;
 };
 
@@ -56,6 +59,8 @@ export const getTransferEvent = async (
   const logs = await ethers.provider.getLogs({
     address: contractAddress || instance.address,
     topics,
+    fromBlock: 0,
+    toBlock: "latest",
   });
 
   const decodedEvents = logs.map((log) => ({

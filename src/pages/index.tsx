@@ -446,7 +446,7 @@ export default function Home() {
                           <p>status: {token.status}</p>
                         </div>
                       </div>
-                      <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                      <div className="mt-5 sm:mt-0 sm:mx-auto sm:flex-shrink-0 sm:flex sm:items-center">
                         {token.status === TokenStatus.NOT_MINTED && (
                           <button
                             disabled={
