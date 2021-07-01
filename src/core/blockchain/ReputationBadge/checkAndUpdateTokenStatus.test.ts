@@ -1,6 +1,7 @@
 import createMockTokenObject from "src/mocks/createMockToken";
 import Token from "src/models/tokens/Token.model";
 import { TokenStatus } from "src/models/tokens/Token.types";
+import * as isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed";
 import {
   connect,
   dropDatabaseAndDisconnect,
@@ -82,15 +83,58 @@ describe("checkAndUpdateTokenStatus", () => {
   });
 
   it("should update MINT_PENDING -> NOT_MINTED", async () => {
+    jest
+      .spyOn(isTransactionConfirmed, "isTransactionConfirmed")
+      .mockResolvedValueOnce(true);
+
     const token = new Token(
-      createMockTokenObject({ status: TokenStatus.MINT_PENDING })
+      createMockTokenObject({
+        status: TokenStatus.MINT_PENDING,
+        mintTransactions: [
+          {
+            response: {
+              hash:
+                "0x86170358b3fc6c27d281c48a089cd383a2b7507544e76713834ab141cc2d6929",
+              chainId: 33137,
+            },
+          },
+        ],
+      })
     );
+    await token.save();
 
     await checkAndUpdateTokenStatus([token]);
 
     const tokenSaved = await Token.findById(token.id);
 
     expect(tokenSaved?.status).toEqual(TokenStatus.NOT_MINTED);
+  });
+
+  it("should still be MINT_PENDING if a transaction is pending", async () => {
+    jest
+      .spyOn(isTransactionConfirmed, "isTransactionConfirmed")
+      .mockResolvedValueOnce(false);
+    const token = new Token(
+      createMockTokenObject({
+        status: TokenStatus.MINT_PENDING,
+        mintTransactions: [
+          {
+            response: {
+              hash:
+                "0x86170358b3fc6c27d281c48a089cd383a2b7507544e76713834ab141cc2d6929",
+              chainId: 33137,
+            },
+          },
+        ],
+      })
+    );
+    await token.save();
+
+    await checkAndUpdateTokenStatus([token]);
+
+    const tokenSaved = await Token.findById(token.id);
+
+    expect(tokenSaved?.status).toEqual(TokenStatus.MINT_PENDING);
   });
 
   it("should update if token was burned", async () => {
