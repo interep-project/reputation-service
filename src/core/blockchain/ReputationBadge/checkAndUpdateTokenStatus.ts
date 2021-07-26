@@ -22,7 +22,10 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
         const tokenExistsOnChain = await TwitterBadgeContract.exists(tokenId);
 
         if (tokenExistsOnChain) {
-          if (token.status === TokenStatus.MINT_PENDING) {
+          if (
+            token.status === TokenStatus.MINT_PENDING ||
+            token.status === TokenStatus.NOT_MINTED
+          ) {
             token.status = TokenStatus.MINTED;
             await token.save();
             return;

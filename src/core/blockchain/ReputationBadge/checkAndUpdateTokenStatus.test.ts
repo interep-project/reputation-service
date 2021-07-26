@@ -56,6 +56,21 @@ describe("checkAndUpdateTokenStatus", () => {
     expect(tokenSaved?.status).toEqual(TokenStatus.MINTED);
   });
 
+  it("should update NOT_MINTED -> MINTED", async () => {
+    // @ts-ignore: mocked above
+    TwitterBadgeContract.exists.mockImplementationOnce(() => true);
+
+    const token = new Token(
+      createMockTokenObject({ status: TokenStatus.NOT_MINTED })
+    );
+
+    await checkAndUpdateTokenStatus([token]);
+
+    const tokenSaved = await Token.findById(token.id);
+
+    expect(tokenSaved?.status).toEqual(TokenStatus.MINTED);
+  });
+
   it("should not update if the status is NOT_MINTED", async () => {
     const token = new Token(
       createMockTokenObject({ status: TokenStatus.NOT_MINTED })
