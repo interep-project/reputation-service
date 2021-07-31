@@ -17,11 +17,19 @@ let instance: ReputationBadge;
 
 export const getInstance = async (contractAddress?: string) => {
   if (instance) return instance;
+  const address =
+    contractAddress ||
+    getDeployedContractAddress(DeployedContracts.TWITTER_BADGE);
+
+  if (!address) {
+    throw new Error(
+      "Address not provided for instantiating Twitter Badge contract"
+    );
+  }
 
   instance = (await ethers.getContractAt(
     "ReputationBadge",
-    contractAddress ||
-      getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
+    address
   )) as ReputationBadge;
 
   if (!instance) {

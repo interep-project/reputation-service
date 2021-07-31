@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   DeployedContracts as DeployedContractsEnum,
   getDeployedContractAddress,
@@ -15,9 +15,18 @@ import {
 const DeployedContractSection = () => {
   const networkName = getDefaultNetworkName();
   const networkId = getDefaultNetworkId();
-  const twitterContractAddress = getDeployedContractAddress(
-    DeployedContractsEnum.TWITTER_BADGE
-  );
+  const [twitterContractAddress, setTwitterContractAddress] = useState("");
+
+  useEffect(() => {
+    const address = getDeployedContractAddress(
+      DeployedContractsEnum.TWITTER_BADGE
+    );
+    if (address) {
+      setTwitterContractAddress(address);
+    } else {
+      console.error(`Can't get address of deployed Twitter badge`);
+    }
+  }, []);
 
   return (
     <div className="mt-8 text-white text-sm text-center">
