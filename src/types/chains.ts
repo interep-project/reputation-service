@@ -8,4 +8,5 @@ export const DisplayableChainNames = {
   100: "xDAI Chain",
   137: "Matic Mainnet",
   31337: "Hardhat",
+  421611: "Arbitrum Testnet",
 };

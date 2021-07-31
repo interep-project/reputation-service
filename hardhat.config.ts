@@ -45,12 +45,18 @@ const getNetworks = () => {
       ropsten: {
         url: "https://ropsten.infura.io/v3/" + infuraApiKey,
         chainId: 3,
-        accounts: accounts,
+        accounts,
       },
       kovan: {
         url: "https://kovan.infura.io/v3/" + infuraApiKey,
         chainId: 42,
-        accounts: accounts,
+        accounts,
+      },
+      arbitrum: {
+        url: "https://rinkeby.arbitrum.io/rpc",
+        chainId: 421611,
+        gasPrice: 0,
+        accounts,
       },
     };
   }
