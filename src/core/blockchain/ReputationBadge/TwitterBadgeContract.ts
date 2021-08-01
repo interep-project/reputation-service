@@ -52,6 +52,7 @@ export const getTransferEvent = async (
   tokenId?: string,
   contractAddress?: string
 ): Promise<any[]> => {
+  // console.log(`getting transfer event for ${tokenId}`);
   const instance = await getInstance(contractAddress);
   let topics: (string | string[])[] | undefined;
 
@@ -63,13 +64,19 @@ export const getTransferEvent = async (
   if (from || to || decimalId) {
     topics = instance.filters.Transfer(from, to, decimalId).topics;
   }
+  let logs;
 
-  const logs = await ethers.provider.getLogs({
-    address: contractAddress || instance.address,
-    topics,
-    fromBlock: 0,
-    toBlock: "latest",
-  });
+  try {
+    logs = await ethers.provider.getLogs({
+      address: contractAddress || instance.address,
+      topics,
+      fromBlock: 1000000,
+      toBlock: "latest",
+    });
+  } catch (e) {
+    console.error(`Error getting logs:`, e);
+  }
+  if (!logs) throw new Error("Failed to get logs");
 
   const decodedEvents = logs.map((log) => ({
     ...ReputationBadgeInterface.decodeEventLog(
@@ -79,6 +86,7 @@ export const getTransferEvent = async (
     ),
   }));
 
+  // console.log(`decodedEvents`, decodedEvents);
   return decodedEvents;
 };
 
