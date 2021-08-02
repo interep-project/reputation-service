@@ -66,6 +66,15 @@ export const getTwitterUserReputation = async ({
 
   if (botometerData) {
     twitterAccount.botometer = botometerData;
+
+    // Botometer overall display score =< 1 gets you a CONFIRMED reputation
+    if (
+      twitterAccount.botometer.display_scores &&
+      twitterAccount.botometer.display_scores.universal.overall <= 1
+    ) {
+      twitterAccount.basicReputation = BasicReputation.CONFIRMED;
+    }
+
     await twitterAccount.save();
 
     return getTwitterAccountReputationPayload(twitterAccount);
