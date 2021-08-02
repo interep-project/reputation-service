@@ -204,6 +204,39 @@ describe("checkTwitterReputation", () => {
       });
     });
 
+    it("should set reputation as CONFIRMED if bot score =< 1", async () => {
+      // Given
+      const mockBotometerDataNotABot = {
+        ...mockBotometerData,
+        display_scores: {
+          ...mockBotometerData.display_scores,
+          universal: { overall: 0.8 },
+        },
+      };
+      getBotscoreMocked.mockImplementationOnce(() =>
+        Promise.resolve(mockBotometerDataNotABot)
+      );
+
+      // When
+      await getTwitterUserReputation({
+        twitterAccount,
+        twitterUser,
+      });
+      const account = await Web2Account.findByProviderAccountId(
+        Web2Providers.TWITTER,
+        twitterUser.id
+      );
+      const userObject = (account as ITwitterAccountDocument)?.toObject();
+
+      // Expect
+      expect(account?.basicReputation).toBe(BasicReputation.CONFIRMED);
+      expect(userObject?.botometer).toEqual({
+        raw_scores: mockBotometerDataNotABot.raw_scores,
+        display_scores: mockBotometerDataNotABot.display_scores,
+        cap: mockBotometerDataNotABot.cap,
+      });
+    });
+
     it("should return null if botometer failed", async () => {
       getBotscoreMocked.mockImplementation(() => Promise.resolve(undefined));
       const result = await getTwitterUserReputation({
