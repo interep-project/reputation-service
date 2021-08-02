@@ -17,11 +17,19 @@ let instance: ReputationBadge;
 
 export const getInstance = async (contractAddress?: string) => {
   if (instance) return instance;
+  const address =
+    contractAddress ||
+    getDeployedContractAddress(DeployedContracts.TWITTER_BADGE);
+
+  if (!address) {
+    throw new Error(
+      "Address not provided for instantiating Twitter Badge contract"
+    );
+  }
 
   instance = (await ethers.getContractAt(
     "ReputationBadge",
-    contractAddress ||
-      getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
+    address
   )) as ReputationBadge;
 
   if (!instance) {
@@ -44,6 +52,7 @@ export const getTransferEvent = async (
   tokenId?: string,
   contractAddress?: string
 ): Promise<any[]> => {
+  // console.log(`getting transfer event for ${tokenId}`);
   const instance = await getInstance(contractAddress);
   let topics: (string | string[])[] | undefined;
 
@@ -55,13 +64,19 @@ export const getTransferEvent = async (
   if (from || to || decimalId) {
     topics = instance.filters.Transfer(from, to, decimalId).topics;
   }
+  let logs;
 
-  const logs = await ethers.provider.getLogs({
-    address: contractAddress || instance.address,
-    topics,
-    fromBlock: 0,
-    toBlock: "latest",
-  });
+  try {
+    logs = await ethers.provider.getLogs({
+      address: contractAddress || instance.address,
+      topics,
+      fromBlock: 1000000,
+      toBlock: "latest",
+    });
+  } catch (e) {
+    console.error(`Error getting logs:`, e);
+  }
+  if (!logs) throw new Error("Failed to get logs");
 
   const decodedEvents = logs.map((log) => ({
     ...ReputationBadgeInterface.decodeEventLog(
@@ -71,6 +86,7 @@ export const getTransferEvent = async (
     ),
   }));
 
+  // console.log(`decodedEvents`, decodedEvents);
   return decodedEvents;
 };
 

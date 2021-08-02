@@ -272,10 +272,11 @@ export default function Home() {
         return;
       }
       try {
-        const badge = new ethers.Contract(
-          getBadgeAddressByProvider(web2Provider),
-          ReputationBadge.abi
-        );
+        const badgeAddress = getBadgeAddressByProvider(web2Provider);
+        if (!badgeAddress) {
+          throw new Error("Cannot retrieve the badge's address");
+        }
+        const badge = new ethers.Contract(badgeAddress, ReputationBadge.abi);
 
         const tx = await badge.connect(signer).burn(tokenId);
         await tx.wait();

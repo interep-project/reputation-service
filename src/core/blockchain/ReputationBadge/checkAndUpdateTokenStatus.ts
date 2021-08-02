@@ -21,6 +21,7 @@ const checkAndUpdateTokenStatus = async (tokens: ITokenDocument[]) => {
         // TODO: Also it should check the right contract based on token.chainId
         const tokenExistsOnChain = await TwitterBadgeContract.exists(tokenId);
 
+        // console.log(`Token ${tokenId} exists On Chain: ${tokenExistsOnChain}`);
         if (tokenExistsOnChain) {
           if (
             token.status === TokenStatus.MINT_PENDING ||
