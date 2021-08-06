@@ -29,12 +29,12 @@ describe("getDefaultNetworkId", () => {
     expect(getDefaultNetworkId()).toBe(31337);
   });
 
-  it("should return local hardhat network id for production", () => {
+  it("should return ropsten chain id for production by default", () => {
     jest
       .spyOn(process.env, "NODE_ENV", "get")
       .mockReturnValueOnce("production");
 
-    expect(getDefaultNetworkId()).toBe(42);
+    expect(getDefaultNetworkId()).toBe(3);
   });
 });
 
@@ -55,11 +55,11 @@ describe("getDefaultNetworkName", () => {
     expect(getDefaultNetworkName()).toBe("localhost");
   });
 
-  it("should return local hardhat network id for production", () => {
+  it("should return ropsten chain id for production by default", () => {
     jest
       .spyOn(process.env, "NODE_ENV", "get")
       .mockReturnValueOnce("production");
 
-    expect(getDefaultNetworkName()).toBe("kovan");
+    expect(getDefaultNetworkName()).toBe("ropsten");
   });
 });
