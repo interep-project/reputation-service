@@ -19,7 +19,7 @@ export const SupportedChainId = {
   localhost: 31337,
   kovan: 42,
   ropsten: 3,
-  arbitrum: 421611,
+  arbitrum: 42161,
 };
 
 export const defaultNetworkByEnv = {

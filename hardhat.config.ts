@@ -53,11 +53,16 @@ const getNetworks = () => {
         accounts,
       },
       arbitrum: {
-        url: "https://rinkeby.arbitrum.io/rpc",
-        chainId: 421611,
-        gasPrice: 0,
+        url: "https://arb1.arbitrum.io/rpc",
+        chainId: 42161,
         accounts,
       },
+      // arbitrum: {
+      //   url: "https://rinkeby.arbitrum.io/rpc",
+      //   chainId: 421611,
+      //   gasPrice: 0,
+      //   accounts,
+      // },
     };
   }
 
