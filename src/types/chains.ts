@@ -9,4 +9,5 @@ export const DisplayableChainNames = {
   137: "Matic Mainnet",
   31337: "Hardhat",
   421611: "Arbitrum Testnet",
+  42161: "Arbitrum One",
 };
