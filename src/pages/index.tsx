@@ -23,6 +23,7 @@ import DeployedContractSection from "src/components/DeployedContractSection/Depl
 import Spinner from "src/components/Spinner/Spinner";
 import { getAccountLinkingInstruction } from "src/utils/frontend/getAccountLinkingInstruction";
 import TwitterIcon from "src/components/TwitterIcon";
+import semethid from "semethid";
 
 // TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
@@ -201,26 +202,31 @@ export default function Home() {
       })
       .then(async (pubKey) => {
         let userSignature;
+        let semaphoreIdentity;
+
         try {
           const message = createUserAttestationMessage({
             checksummedAddress,
             web2AccountId: session.web2AccountId,
           });
+
           userSignature = await signer.signMessage(message);
+          semaphoreIdentity = `0x${await semethid("groupId")}`;
+
           if (!userSignature)
             throw new Error(
               "Your signature is needed to register your intent to link the accounts"
             );
-          console.log(`userSignature`, userSignature);
         } catch (err) {
           console.error(err);
+
           setAccountLinkingMessage(
             "Your signature is needed to register your intent to link the accounts"
           );
         }
-        return { pubKey, userSignature };
+        return { pubKey, userSignature, semaphoreIdentity };
       })
-      .then(({ pubKey, userSignature }) => {
+      .then(({ pubKey, userSignature, semaphoreIdentity }) => {
         return fetch(`/api/linking`, {
           method: "PUT",
           body: JSON.stringify({
@@ -229,6 +235,7 @@ export default function Home() {
             web2AccountId: session.web2AccountId,
             userSignature,
             userPublicKey: pubKey,
+            semaphoreIdentity,
           }),
         });
       })
