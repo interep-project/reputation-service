@@ -1,6 +1,4 @@
 import { Schema } from "mongoose";
-import { TransactionSchema } from "../transactions/Transaction.schema";
-import { Web2Providers } from "../web2Accounts/Web2Account.types";
 import { findByGroupId } from "./Group.statics";
 import {
   IGroup,
