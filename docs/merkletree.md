@@ -19,46 +19,55 @@ Example data, including 2 leaf nodes and a 3-level tree (hashes are made up):
 ```
 [{
   "_id": {
+    "group": "TWITTER_CONFIRMED",
     "level": 0,
     "index": 1
   },
   "parent": {
+    "group": "TWITTER_CONFIRMED",
     "level": 1,
     "index": 0
   },
   "hash": "78234762346"
 },{
   "_id": {
+    "group": "TWITTER_CONFIRMED",
     "level": 0,
     "index": 0
   },
   "parent": {
+    "group": "TWITTER_CONFIRMED",
     "level": 1,
     "index": 0
   },
   "hash": "f7b823476234a6"
 },{
   "_id": {
+    "group": "TWITTER_CONFIRMED",
     "level": 1,
     "index": 0
   },
   "parent": {
+    "group": "TWITTER_CONFIRMED",
     "level": 2,
     "index": 0
   },
   "hash": "6bc2a3f4267384"
 },{
   "_id": {
+    "group": "TWITTER_CONFIRMED",
     "level": 3,
     "index": 0
   },
   "hash": "8cd79234e78f97a89"
 },{
   "_id": {
+    "group": "TWITTER_CONFIRMED",
     "level": 2,
     "index": 0
   },
   "parent": {
+    "group": "TWITTER_CONFIRMED",
     "level": 3,
     "index": 0
   },
@@ -73,17 +82,19 @@ This aggregation retrieves the path for leaf node index 0:
     '$graphLookup': {
       'from': 'tree', 
       'startWith': {
+        'group': 'TWITTER_CONFIRMED', 
         'level': 0, 
         'index': 0
       }, 
       'connectFromField': 'parent', 
       'connectToField': '_id', 
       'as': 'path', 
-      'depthField': 'l'
+      'depthField': 'height'
     }
   }, {
     '$match': {
       '_id': {
+        'group': 'TWITTER_CONFIRMED', 
         'level': 0, 
         'index': 0
       }
@@ -97,12 +108,45 @@ This aggregation retrieves the path for leaf node index 0:
     '$unwind': {
       'path': '$path'
     }
+  }, {
+    '$addFields': {
+      'hash': '$path.hash', 
+      'height': '$path.height'
+    }
+  }, {
+    '$sort': {
+      'height': 1
+    }
+  }, {
+    '$project': {
+      'path': 0
+    }
   }
-]```
+]
+```
 
-The root hash would be the last element in the resulting path.
+Output:
+```
+{
+    hash:"f7b823476234a6"
+    height:0
+},
+{
+    hash:"6bc2a3f4267384"
+    height:1
+},
+{
+    hash:"7f82e9a3c47823a4"
+    height:2
+},
+{
+    hash:"8cd79234e78f97a89"
+    height:3
+}
+```
+
+The root hash would be the last element (height=3) in the resulting output.
 
 TODO: 
-- Add groups
-- The initial setting for the tree is hash(0) at level 0, then recursively hash that value for each level increment. We can store this in a data structure, or even in this structure as a slight variation on the usual document.
- 
+- The initial setting for the tree is hash(0) at level 0, then recursively hash that value for each level increment. We can store this in a collection. They are common to all groups.
+- get sibling hashes? Need for insert/update
