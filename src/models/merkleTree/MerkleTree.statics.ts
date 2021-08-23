@@ -1,5 +1,6 @@
-import { MerkleTreeNode, MerkleTreeLeaf } from "./MerkleTree.model";
-import { IMerkleTreeNodeDocument, IMerkleTreeNodeKey, IMerkleTreeLeafDocument } from "./MerkleTree.types";
+import { ObjectId } from "mongoose";
+import { MerkleTreeLeaf, MerkleTreeNode } from "./MerkleTree.model";
+import { IMerkleTreeLeafDocument, IMerkleTreeNodeDocument, IMerkleTreeNodeKey } from "./MerkleTree.types";
 
 export async function findByLevelAndIndex(
   this: typeof MerkleTreeNode,
@@ -8,9 +9,9 @@ export async function findByLevelAndIndex(
   return this.findOne({ key });
 }
 
-// export async function findLeafByIndex(
-//   this: typeof MerkleTreeLeaf,
-//   index: number
-// ): Promise<IMerkleTreeLeafDocument | null> {
-//   return this.findOne({ index });
-// }
+export async function findLeafByNodeId(
+  this: typeof MerkleTreeLeaf,
+  nodeId: ObjectId
+): Promise<IMerkleTreeLeafDocument | null> {
+  return this.findOne({ nodeId });
+}

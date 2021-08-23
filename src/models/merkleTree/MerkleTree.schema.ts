@@ -4,7 +4,6 @@ import {
   IMerkleTreeNode,
   IMerkleTreeNodeDocument,
   IMerkleTreeNodeModel,
-  IMerkleTreeNodeKey,
   IMerkleTreeLeaf,
   IMerkleTreeLeafDocument,
   IMerkleTreeLeafModel,
