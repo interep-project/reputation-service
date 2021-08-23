@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { signIn, signOut, useSession } from "next-auth/client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { isBrowser, isMobile } from "react-device-detect";
-import ActionSection from "src/components/ActionSection/ActionSection";
-import NavBar from "src/components/NavBar/NavBar";
+import ActionSection from "src/components/ActionSection";
+import NavBar from "src/components/NavBar";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import useMyTokens from "src/hooks/useMyTokens";
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
+import { ITokenDocument } from "src/models/tokens/Token.types";
 import {
   AccountReputationByAccount,
   BasicReputation,
@@ -18,11 +18,19 @@ import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/Reputat
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
 import { getChecksummedAddress } from "src/utils/crypto/address";
-import DeployedContractSection from "src/components/DeployedContractSection/DeployedContractSection";
-import Spinner from "src/components/Spinner/Spinner";
+import Footer from "src/components/Footer";
 import { getAccountLinkingInstruction } from "src/utils/frontend/getAccountLinkingInstruction";
-import TwitterIcon from "src/components/TwitterIcon";
 import semethid from "semethid";
+import {
+  Container,
+  createStyles,
+  List,
+  makeStyles,
+  Theme,
+  Typography,
+} from "@material-ui/core";
+import { getSemaphoreGroupInstruction } from "src/utils/frontend/getSemaphoreGroupInstruction";
+import Badges from "src/components/Badges";
 
 // TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
@@ -76,13 +84,21 @@ const mintToken = async (tokenId: string) => {
   }
 };
 
-// const getDomain = (chainId: number) => ({
-//   name: "InterRep",
-//   chainId,
-// });
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "column",
+      flex: 1,
+      paddingBottom: theme.spacing(4),
+    },
+  })
+);
 
-// TODO: split this huge component
-export default function Home() {
+export default function Home(): JSX.Element {
+  const classes = useStyles();
   const [session] = useSession();
   const hasASession = !!session;
 
@@ -103,7 +119,6 @@ export default function Home() {
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
   const [semaphoreGroupMessage, setSemaphoreGroupMessage] = useState("");
-  const [isMintingInProgress, setIsMintingInProgress] = useState(false);
   const [isOnProperNetwork, setIsOnProperNetwork] = useState<boolean | null>(
     null
   );
@@ -128,7 +143,7 @@ export default function Home() {
         setIsOnProperNetwork(true);
       }
     }
-  }, [networkId, setIsOnProperNetwork]);
+  }, [networkId, isOnProperNetwork]);
 
   const currentNetworkName = useMemo(
     () =>
@@ -157,24 +172,6 @@ export default function Home() {
     }
   }, [session, accountLinkingMessage]);
 
-  // const signTypedData = async () => {
-  //   if (!networkId || !signer) return;
-  //   const domain = getDomain(networkId);
-  //   const types = {
-  //     Main: [
-  //       { name: "recipient", type: "address" },
-  //       { name: "reputable", type: "bool" },
-  //       { name: "provider", type: "string" },
-  //     ],
-  //   };
-  //   const value = {
-  //     recipient: address,
-  //     reputable: true,
-  //     provider: "twitter",
-  //   };
-  //   return await signer._signTypedData(domain, types, value);
-  // };
-
   const createSemaphoreIdentity = useCallback(async () => {
     if (!signer || !address) {
       console.error("Can't sign without a signer");
@@ -202,9 +199,7 @@ export default function Home() {
     const groupId = `TWITTER_${twitterReputation?.basicReputation}`;
     const semaphoreIdentity = await semethid(groupId);
 
-    setSemaphoreGroupMessage(
-      `Adding your Semaphore identity to the group ${groupId}`
-    );
+    setSemaphoreGroupMessage(`Adding your Semaphore identity to the group.`);
 
     try {
       const res = await fetch(`/api/groups/${groupId}`, {
@@ -223,7 +218,7 @@ export default function Home() {
         setSemaphoreGroupMessage(`Error: ${payload.error}`);
       } else {
         setSemaphoreGroupMessage(
-          `Sorry there was an error while adding your Semaphore identity`
+          `Sorry there was an error while adding your Semaphore identity.`
         );
       }
     } catch (error) {
@@ -276,7 +271,7 @@ export default function Home() {
           console.error(err);
 
           setAccountLinkingMessage(
-            "Your signature is needed to register your intent to link the accounts"
+            "Your signature is needed to register your intent to link the accounts."
           );
         }
         return { pubKey, userSignature };
@@ -301,7 +296,7 @@ export default function Home() {
           setAccountLinkingMessage(`Error: ${payload.error}`);
         } else {
           setAccountLinkingMessage(
-            `Sorry there was an error while linking your accounts`
+            `Sorry there was an error while linking your accounts.`
           );
         }
       })
@@ -314,12 +309,10 @@ export default function Home() {
 
   const mintTokenAndRefetch = useCallback(
     (tokenId) => {
-      setIsMintingInProgress(true);
       mintToken(tokenId).then((data) => {
         if (data) {
           console.log(`data`, data);
         }
-        setIsMintingInProgress(false);
         refetchTokens();
       });
     },
@@ -378,7 +371,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-black min-h-full">
+    <>
       <NavBar
         isConnectButtonDisplayed={isBrowser}
         isConnected={!!connected}
@@ -386,212 +379,78 @@ export default function Home() {
         networkName={currentNetworkName}
         onAddressClick={() => connect && connect()}
       />
-      <div className="max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8">
+      <Container className={classes.container} maxWidth="sm">
         {isMobile && (
-          <p className="text-xl text-white">
+          <Typography>
             Sorry, mobile and tablet devices are currently not supported. Please
             access InterRep from a desktop browser with the Metamask extension
             installed.
-          </p>
+          </Typography>
         )}
-        {isBrowser && isOnProperNetwork && (
+        {isBrowser && (
           <>
-            <div className="max-w-2xl mx-auto bg-white shadow sm:rounded-lg">
+            <List component="nav">
               <ActionSection
-                title="Ethereum Address"
-                onClick={() => connect && connect()}
-                isButtonDisplayed={!connected}
-                buttonText={"CONNECT WALLET"}
-                buttonClassname=" bg-blue-600 hover:bg-blue-700"
-                textChildren={
-                  <>
-                    {connected ? (
-                      <p>
-                        You are connected with{" "}
-                        <span className="font-semibold">{address}</span>
-                      </p>
-                    ) : (
-                      <p>Connect your wallet to get started</p>
-                    )}
-                  </>
+                title="Twitter account"
+                description={
+                  session
+                    ? `You are connected as ${session?.user?.name}${
+                        twitterReputation?.basicReputation
+                          ? ` and your reputation is ${twitterReputation?.basicReputation}`
+                          : ""
+                      }.`
+                    : "Sign in with Twitter to join a Semaphore group or to link your Twitter/Ethereum accounts."
                 }
+                buttonText={hasASession ? "Sign out" : "Sign in"}
+                onClick={() => (hasASession ? signOut() : signIn("twitter"))}
+                divider
               />
-              {/* Twitter section */}
-              <div className="px-4 pb-5 sm:p-6 flex flex-col">
-                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                  Twitter Account
-                </h2>
-                <div className="sm:flex sm:items-center sm:justify-between">
-                  <div className="max-w-xl text-base text-gray-700">
-                    <p>
-                      {session
-                        ? `You are connected as ${session?.user?.name}`
-                        : "Sign in with Twitter"}
-                    </p>
-                  </div>
-                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                    <button
-                      onClick={() =>
-                        hasASession ? signOut() : signIn("twitter")
-                      }
-                      type="button"
-                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm ${
-                        hasASession
-                          ? " bg-red-700 hover:bg-red-800"
-                          : " bg-blue-600 hover:bg-blue-700"
-                      }`}
-                    >
-                      {hasASession ? "LOG OUT" : "SIGN IN"}
-                    </button>
-                  </div>
-                </div>
-                {twitterReputation?.basicReputation ? (
-                  <p className="text-base text-gray-700">
-                    Twitter reputation: {twitterReputation.basicReputation}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="px-4 pb-5 sm:p-6 flex flex-col">
-                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                  Semaphore group
-                </h2>
-                <div className="sm:flex sm:items-center sm:justify-between">
-                  <div className="max-w-xl text-base text-gray-700">
-                    {!twitterReputation?.basicReputation ? (
-                      <p>
-                        Please connect your wallet and sign in to a web 2
-                        account.
-                      </p>
-                    ) : (
-                      <p>
-                        Join the{" "}
-                        {`TWITTER_${twitterReputation?.basicReputation}`} group
-                        to allow applications to verify your reputation
-                        anonymously.
-                      </p>
-                    )}
-                    <p>{semaphoreGroupMessage}</p>
-                  </div>
-                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                    <button
-                      disabled={
-                        !connected || !twitterReputation?.basicReputation
-                      }
-                      onClick={() => createSemaphoreIdentity()}
-                      type="button"
-                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                    >
-                      JOIN
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-4 pb-5 sm:p-6 flex flex-col">
-                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                  Account Linking
-                </h2>
-                <div className="sm:flex sm:items-center sm:justify-between">
-                  <div className="max-w-xl text-base text-gray-700">
-                    <p>
-                      {getAccountLinkingInstruction({
-                        connected,
-                        hasASession,
-                        isCurrentAccountLinked,
-                        hasEnoughReputation:
-                          twitterReputation?.basicReputation ===
-                          BasicReputation.CONFIRMED,
-                      })}
-                    </p>
-                    <p>{accountLinkingMessage}</p>
-                  </div>
-                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
-                    <button
-                      disabled={
-                        !connected ||
-                        twitterReputation?.basicReputation !==
-                          BasicReputation.CONFIRMED ||
-                        isCurrentAccountLinked
-                      }
-                      onClick={() => signAssociation()}
-                      type="button"
-                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                    >
-                      LINK ACCOUNTS
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="px-4 pb-5 sm:p-6 flex flex-col">
-                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
-                  Badges
-                </h2>
-                {!connected && <p>Please connect your wallet first.</p>}
-                <TwitterIcon
-                  className={`w-6 fill-current ${
-                    tokens.length > 0 ? "text-twitter-blue" : "text-gray-300"
-                  }`}
-                />
-                {tokens.length > 0 &&
-                  tokens.map((token) => (
-                    <div
-                      key={token.decimalId}
-                      className="sm:flex sm:items-center sm:justify-between my-4"
-                    >
-                      <div className="max-w-xl text-base text-gray-700">
-                        <div className="text-xs">
-                          <p>id: {token.decimalId}</p>
-                          <p>status: {token.status}</p>
-                        </div>
-                      </div>
-                      <div className="mt-5 sm:mt-0 sm:flex-shrink-0 sm:flex sm:items-center">
-                        {token.status === TokenStatus.NOT_MINTED && (
-                          <button
-                            disabled={
-                              token.status !== TokenStatus.NOT_MINTED ||
-                              isMintingInProgress
-                            }
-                            onClick={() => {
-                              mintTokenAndRefetch(token._id);
-                            }}
-                            type="button"
-                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-default`}
-                          >
-                            {isMintingInProgress && <Spinner />}
-                            MINT
-                          </button>
-                        )}
-                        {token.status === TokenStatus.MINTED && (
-                          <button
-                            disabled={token.status !== TokenStatus.MINTED}
-                            onClick={() =>
-                              burnToken(token.web2Provider, token.decimalId)
-                            }
-                            type="button"
-                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                          >
-                            BURN
-                          </button>
-                        )}
-                        {token.status === TokenStatus.BURNED && (
-                          <button
-                            onClick={() => unlinkAccounts(token)}
-                            type="button"
-                            className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
-                          >
-                            UNLINK ACCOUNTS
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            <DeployedContractSection />
+              <ActionSection
+                title="Semaphore group"
+                description={getSemaphoreGroupInstruction({
+                  connected,
+                  hasASession,
+                  twitterReputation: twitterReputation?.basicReputation,
+                })}
+                feedbackMessage={semaphoreGroupMessage}
+                buttonText={"Join"}
+                buttonDisabled={
+                  !connected || !twitterReputation?.basicReputation
+                }
+                onClick={() => createSemaphoreIdentity()}
+                divider
+              />
+              <ActionSection
+                title="Account linking"
+                description={getAccountLinkingInstruction({
+                  connected,
+                  hasASession,
+                  isCurrentAccountLinked,
+                  hasEnoughReputation:
+                    twitterReputation?.basicReputation ===
+                    BasicReputation.CONFIRMED,
+                })}
+                feedbackMessage={accountLinkingMessage}
+                buttonText="Link"
+                buttonDisabled={
+                  !connected ||
+                  twitterReputation?.basicReputation !==
+                    BasicReputation.CONFIRMED ||
+                  isCurrentAccountLinked
+                }
+                onClick={() => signAssociation()}
+              />
+            </List>
+            <Badges
+              tokens={tokens}
+              mintFunction={mintTokenAndRefetch}
+              burnFunction={burnToken}
+              unlinkFunction={unlinkAccounts}
+            />
           </>
         )}
-      </div>
-    </div>
+      </Container>
+      <Footer properNetwork={!!isOnProperNetwork} />
+    </>
   );
 }
