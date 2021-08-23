@@ -8,19 +8,19 @@ export const getAccountLinkingInstruction = ({
   hasASession: boolean;
   isCurrentAccountLinked?: boolean;
   hasEnoughReputation: boolean;
-}): string | null => {
+}): string => {
   if (!connected) return "Please connect your wallet first.";
 
-  if (!hasASession) return "Please sign in to a web 2 account.";
+  if (!hasASession) return "Please sign in with a Twitter account.";
 
   if (isCurrentAccountLinked)
-    return "Your account is already linked to an Ethereum address.";
+    return "Your account is linked to an Ethereum address.";
 
   if (!hasEnoughReputation)
     return "Sorry, we were unable to confirm the reputation of your Twitter account.";
 
   if (hasEnoughReputation)
-    return "Your account is not linked to any Ethereum address.";
+    return "You can link your account to an Ethereum address.";
 
-  return null;
+  return "";
 };
