@@ -14,7 +14,6 @@ import {
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
-
 import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
@@ -23,6 +22,7 @@ import DeployedContractSection from "src/components/DeployedContractSection/Depl
 import Spinner from "src/components/Spinner/Spinner";
 import { getAccountLinkingInstruction } from "src/utils/frontend/getAccountLinkingInstruction";
 import TwitterIcon from "src/components/TwitterIcon";
+import semethid from "semethid";
 
 // TODO: create abstraction for calls to API and error handling
 const getMyTwitterReputation = async () => {
@@ -102,6 +102,7 @@ export default function Home() {
     undefined
   );
   const [accountLinkingMessage, setAccountLinkingMessage] = useState("");
+  const [semaphoreGroupMessage, setSemaphoreGroupMessage] = useState("");
   const [isMintingInProgress, setIsMintingInProgress] = useState(false);
   const [isOnProperNetwork, setIsOnProperNetwork] = useState<boolean | null>(
     null
@@ -174,6 +175,63 @@ export default function Home() {
   //   return await signer._signTypedData(domain, types, value);
   // };
 
+  const createSemaphoreIdentity = useCallback(async () => {
+    if (!signer || !address) {
+      console.error("Can't sign without a signer");
+      return;
+    }
+    if (!session?.web2AccountId) {
+      console.error("Unknown Web 2 account");
+      return;
+    }
+
+    setSemaphoreGroupMessage("Creating your Semaphore identity...");
+
+    const checksummedAddress = getChecksummedAddress(address);
+
+    if (!checksummedAddress) {
+      console.error("Invalid address");
+      return;
+    }
+
+    if (!twitterReputation?.basicReputation) {
+      console.error("No Twitter reputation criteria");
+      return;
+    }
+
+    const groupId = `TWITTER_${twitterReputation?.basicReputation}`;
+    const semaphoreIdentity = await semethid(groupId);
+
+    setSemaphoreGroupMessage(
+      `Adding your Semaphore identity to the group ${groupId}`
+    );
+
+    try {
+      const res = await fetch(`/api/groups/${groupId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          semaphoreIdentity,
+          web2AccountId: session.web2AccountId,
+        }),
+      });
+
+      const payload = await res.json();
+
+      if (payload.status === "ok") {
+        setSemaphoreGroupMessage("Success!");
+      } else if (payload?.error) {
+        setSemaphoreGroupMessage(`Error: ${payload.error}`);
+      } else {
+        setSemaphoreGroupMessage(
+          `Sorry there was an error while adding your Semaphore identity`
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      setSemaphoreGroupMessage(JSON.stringify(error.message));
+    }
+  }, [address, session, signer, twitterReputation]);
+
   const signAssociation = useCallback(async () => {
     if (!signer || !address) {
       console.error("Can't sign without a signer");
@@ -201,19 +259,22 @@ export default function Home() {
       })
       .then(async (pubKey) => {
         let userSignature;
+
         try {
           const message = createUserAttestationMessage({
             checksummedAddress,
             web2AccountId: session.web2AccountId,
           });
+
           userSignature = await signer.signMessage(message);
+
           if (!userSignature)
             throw new Error(
               "Your signature is needed to register your intent to link the accounts"
             );
-          console.log(`userSignature`, userSignature);
         } catch (err) {
           console.error(err);
+
           setAccountLinkingMessage(
             "Your signature is needed to register your intent to link the accounts"
           );
@@ -390,6 +451,43 @@ export default function Home() {
                   </p>
                 ) : null}
               </div>
+
+              <div className="px-4 pb-5 sm:p-6 flex flex-col">
+                <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
+                  Semaphore group
+                </h2>
+                <div className="sm:flex sm:items-center sm:justify-between">
+                  <div className="max-w-xl text-base text-gray-700">
+                    {!twitterReputation?.basicReputation ? (
+                      <p>
+                        Please connect your wallet and sign in to a web 2
+                        account.
+                      </p>
+                    ) : (
+                      <p>
+                        Join the{" "}
+                        {`TWITTER_${twitterReputation?.basicReputation}`} group
+                        to allow applications to verify your reputation
+                        anonymously.
+                      </p>
+                    )}
+                    <p>{semaphoreGroupMessage}</p>
+                  </div>
+                  <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center">
+                    <button
+                      disabled={
+                        !connected || !twitterReputation?.basicReputation
+                      }
+                      onClick={() => createSemaphoreIdentity()}
+                      type="button"
+                      className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm  bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300`}
+                    >
+                      JOIN
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="px-4 pb-5 sm:p-6 flex flex-col">
                 <h2 className="text-xl mb-3 leading-6 font-medium text-gray-900">
                   Account Linking
