@@ -1,6 +1,6 @@
-import { ObjectId } from "mongoose";
-import { MerkleTreeLeaf, MerkleTreeNode } from "./MerkleTree.model";
-import { IMerkleTreeLeafDocument, IMerkleTreeNodeDocument, IMerkleTreeNodeKey } from "./MerkleTree.types";
+//import { ObjectId } from "mongoose";
+import { MerkleTreeLeaf, MerkleTreeNode, MerkleTreeZero } from "./MerkleTree.model";
+import { IMerkleTreeLeafDocument, IMerkleTreeNodeDocument, IMerkleTreeNodeKey, IMerkleTreeZeroDocument } from "./MerkleTree.types";
 
 export async function findByLevelAndIndex(
   this: typeof MerkleTreeNode,
@@ -9,9 +9,15 @@ export async function findByLevelAndIndex(
   return this.findOne({ key });
 }
 
-export async function findLeafByNodeId(
+export async function findLeafByIdCommitment(
   this: typeof MerkleTreeLeaf,
-  nodeId: ObjectId
+  idCommitment: string,
 ): Promise<IMerkleTreeLeafDocument | null> {
-  return this.findOne({ nodeId });
+  return this.findOne({ idCommitment });
+}
+
+export async function findZeroes(
+  this: typeof MerkleTreeZero
+): Promise<IMerkleTreeZeroDocument[] | null> {
+  return this.find();
 }
