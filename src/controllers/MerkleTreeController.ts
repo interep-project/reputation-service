@@ -57,16 +57,18 @@ class MerkleTreeController {
     public getPath = async (groupId: string, idCommitment: string): Promise<string[]> => {
         // find leaf
         // get path starting from leaf node
-        
+        return [];
     }
 
     public getPathByIndex = async (groupId: string, index: number): Promise<string[]> => {
         // get path and return array
+        return [];
     }
 
     public getNextIndex = async (groupId: string, level: number): Promise<number> => {
         // Count entries at the given level
         // Increment and return.
+        return 0;
     }
 }
 
