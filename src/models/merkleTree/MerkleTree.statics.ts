@@ -1,4 +1,3 @@
-//import { ObjectId } from "mongoose";
 import { MerkleTreeLeaf, MerkleTreeNode, MerkleTreeZero } from "./MerkleTree.model";
 import { IMerkleTreeLeafDocument, IMerkleTreeNodeDocument, IMerkleTreeNodeKey, IMerkleTreeZeroDocument } from "./MerkleTree.types";
 

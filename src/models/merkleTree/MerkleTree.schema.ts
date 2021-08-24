@@ -38,6 +38,10 @@ export const MerkleTreeLeafSchema = new Schema<IMerkleTreeLeafDocument, IMerkleT
 
 MerkleTreeLeafSchema.statics.findLeafByIdCommitment = findLeafByIdCommitment;
 
+MerkleTreeLeafSchema.methods.getPath = function() {
+  // TODO
+}
+
 // Zeroes
 export const MerkleTreeZeroSchemaFields: Record<keyof IMerkleTreeZero, any> = {
   level: {type: Number, unique: true },

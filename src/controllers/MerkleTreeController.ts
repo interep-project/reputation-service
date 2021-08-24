@@ -66,7 +66,7 @@ class MerkleTreeController {
             prevNode = node;
         }
         // Update contract with new root
-        const rootHash = hash;
+        //const rootHash = hash; 
 
     }
 
