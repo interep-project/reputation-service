@@ -3,6 +3,7 @@ import {
   findByLevelAndIndex,
   findLeafByIdCommitment,
   findZeroes,
+  getNumberOfNodes,
 } from "./MerkleTree.statics";
 import {
   IMerkleTreeNode,
@@ -37,6 +38,7 @@ export const MerkleTreeNodeSchema = new Schema<
 >(MerkleTreeNodeSchemaFields);
 
 MerkleTreeNodeSchema.statics.findByLevelAndIndex = findByLevelAndIndex;
+MerkleTreeNodeSchema.statics.getNumberOfNodes = getNumberOfNodes;
 
 // Leaf
 const MerkleTreeLeafSchemaFields: Record<keyof IMerkleTreeLeaf, any> = {

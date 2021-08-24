@@ -17,6 +17,14 @@ export async function findByLevelAndIndex(
   return this.findOne({ key }).populate("parent");
 }
 
+export async function getNumberOfNodes(
+  this: typeof MerkleTreeNode,
+  groupId: string,
+  level: number
+): Promise<number | null> {
+  return this.countDocuments({ "key.groupId": groupId, "key.level": level });
+}
+
 export async function findLeafByIdCommitment(
   this: typeof MerkleTreeLeaf,
   idCommitment: string

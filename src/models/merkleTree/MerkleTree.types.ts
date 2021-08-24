@@ -3,6 +3,7 @@ import {
   findByLevelAndIndex,
   findLeafByIdCommitment,
   findZeroes,
+  getNumberOfNodes,
 } from "./MerkleTree.statics";
 
 export interface IMerkleTreeNodeKey {
@@ -27,6 +28,7 @@ export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
 
 export interface IMerkleTreeNodeModel extends Model<IMerkleTreeNodeDocument> {
   findByLevelAndIndex: typeof findByLevelAndIndex;
+  getNumberOfNodes: typeof getNumberOfNodes;
 }
 
 export interface IMerkleTreeLeafDocument extends IMerkleTreeLeaf, Document {}
