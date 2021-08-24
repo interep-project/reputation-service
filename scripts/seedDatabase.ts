@@ -12,6 +12,10 @@ import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import Group from "src/models/groups/Group.model";
+import config from "src/config";
+import { zeroBytes32 } from "src/utils/crypto/constants";
+import { MerkleTreeZero } from 'src/models/merkleTree/MerkleTree.model';
+import MimcSpongeHash from "src/utils/crypto/hasher";
 
 const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   providerAccountId: twitterUser.id,
@@ -83,22 +87,38 @@ const insertTwitterUsers = async () => {
       let groupDoc = await Group.findByGroupId(group.groupId);
 
       // Already in DB?
-      if (groupDoc) return;
-
-      groupDoc = await Group.create(group);
-      
-      //
-      try {
-        console.log("Inserting in DB...");
-        await groupDoc.save();
-        console.log(`Inserted new group with ID ${groupDoc.id}`);
-      } catch (error) {
-        console.log(`Error inserting group: ${error}`);
-      }      
+      if (groupDoc) {
+        console.log(`Group already in DB`);
+      } else {
+        groupDoc = await Group.create(group);
+        
+        //
+        try {
+          console.log("Inserting in DB...");
+          await groupDoc.save();
+          console.log(`Inserted new group with ID ${groupDoc.id}`);
+        } catch (error) {
+          console.log(`Error inserting group: ${error}`);
+        }      
+      }
     }
 
     // Seed the merkle tree zeroes
-    // TODO
+    let currentHash = zeroBytes32;
+    for (let level=0; level < config.TREE_LEVELS; level++) {
+      currentHash = MimcSpongeHash(currentHash, currentHash); //TODO hash with 1 arg?
+      const doc = await MerkleTreeZero.create({
+        level, 
+        hash: currentHash,
+      });
+      try {
+        await doc.save();
+        console.log(`Inserted MT zero level ${level} with ID ${doc.id}`);
+      } catch (error) {
+        console.log(`Error inserting MT zero document: ${error}`);
+      }      
+  }
+
 
     dbDisconnect();
   } catch (e) {

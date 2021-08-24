@@ -2,6 +2,8 @@ import getConfig from "next/config";
 
 const nextConfig = getConfig();
 
+const TREE_LEVELS = 15;
+
 let defaultNetwork;
 if (nextConfig && process.env.NODE_ENV && process.env.NODE_ENV !== "test") {
   defaultNetwork = nextConfig.publicRuntimeConfig.defaultNetwork;
@@ -41,4 +43,5 @@ export default {
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
   JWT_SECRET: process.env.JWT_SECRET,
+  TREE_LEVELS,
 };
