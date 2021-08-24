@@ -16,6 +16,7 @@ import config from "src/config";
 import { zeroBytes32 } from "src/utils/crypto/constants";
 import { MerkleTreeZero } from 'src/models/merkleTree/MerkleTree.model';
 import MimcSpongeHash from "src/utils/crypto/hasher";
+//import { MerkleTreeZeroSchema } from "src/models/merkleTree/MerkleTree.schema";
 
 const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   providerAccountId: twitterUser.id,
@@ -105,7 +106,14 @@ const insertTwitterUsers = async () => {
 
     // Seed the merkle tree zeroes
     let currentHash = zeroBytes32;
-    for (let level=0; level < config.TREE_LEVELS; level++) {
+    let currentLevel = 0;
+    const zeroes = await MerkleTreeZero.findZeroes();
+    if (zeroes && zeroes.length > 0) {
+      console.log(`${zeroes.length} existing zeroes`);
+      currentLevel = zeroes.length;
+      currentHash = zeroes[currentLevel - 1].hash;
+    }
+    for (let level=currentLevel; level < config.TREE_LEVELS; level++) {
       currentHash = MimcSpongeHash(currentHash, currentHash); //TODO hash with 1 arg?
       const doc = await MerkleTreeZero.create({
         level, 
@@ -117,7 +125,7 @@ const insertTwitterUsers = async () => {
       } catch (error) {
         console.log(`Error inserting MT zero document: ${error}`);
       }      
-  }
+    }
 
 
     dbDisconnect();

@@ -1,5 +1,5 @@
-import * as circomlib from 'circomlib';
 import bigInt from 'big-integer';
+const circomlib = require('circomlib');
 const mimcsponge = circomlib.mimcsponge
 
 const MimcSpongeHash = (left: string, right: string): string => {

@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { findByLevelAndIndex, findLeafByIdCommitment } from "./MerkleTree.statics";
+import { findByLevelAndIndex, findLeafByIdCommitment, findZeroes } from "./MerkleTree.statics";
 import {
   IMerkleTreeNode,
   IMerkleTreeNodeDocument,
@@ -40,9 +40,10 @@ MerkleTreeLeafSchema.statics.findLeafByIdCommitment = findLeafByIdCommitment;
 
 // Zeroes
 export const MerkleTreeZeroSchemaFields: Record<keyof IMerkleTreeZero, any> = {
-  level: Number,
+  level: {type: Number, unique: true },
   hash: String,
 }
 
 export const MerkleTreeZeroSchema = new Schema<IMerkleTreeZeroDocument, IMerkleTreeZeroModel>(MerkleTreeZeroSchemaFields);
 
+MerkleTreeZeroSchema.statics.findZeroes = findZeroes;
