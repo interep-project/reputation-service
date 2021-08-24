@@ -21,52 +21,60 @@ const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   basicReputation: BasicReputation.CONFIRMED,
 });
 
+const insertTwitterUsers = async () => {
+      // Seed twitter users
+      for (const handle of seedTwitterUsers) {
+        let twitterAccount = await findByTwitterUsername(handle);
+        console.log(`######## Processing ${handle} #########`);
+        console.log(`${handle} already in DB?`, !!twitterAccount);
+  
+        if (!twitterAccount) {
+          const twitterUser = await getTwitterUserByUsername({
+            username: handle,
+          });
+          twitterAccount = await TwitterAccount.create(
+            createTwitterAccountObject(createTwitterSeedUser(twitterUser))
+          );
+  
+          console.log(`Created user ${twitterAccount.user.username}`);
+        }
+  
+        // Get users followed by seed user
+        const friends: TwitterUser[] = await getTwitterFriendsByUserId({
+          userId: twitterAccount.providerAccountId,
+          maxResults: 900,
+        });
+  
+        console.log("Number of friends:", friends.length);
+  
+        if (friends.length === 0) return;
+  
+        const formattedFriends = friends.map((friend) =>
+          createTwitterAccountObject(createTwitterSeedUser(friend))
+        );
+  
+        try {
+          console.log("Inserting in DB...");
+          // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
+          const docs = await TwitterAccount.insertMany(formattedFriends, {
+            ordered: false,
+          });
+          console.log(`Inserted ${docs.length} new users without errors`);
+        } catch (error) {
+          console.log(`Number of inserted docs`, error.result?.nInserted);
+          console.log("Number of write errors:", error.writeErrors?.length);
+        }
+      }
+  
+}
+
 (async () => {
   dbConnect();
 
   try {
     // Seed twitter users
-    for (const handle of seedTwitterUsers) {
-      let twitterAccount = await findByTwitterUsername(handle);
-      console.log(`######## Processing ${handle} #########`);
-      console.log(`${handle} already in DB?`, !!twitterAccount);
-
-      if (!twitterAccount) {
-        const twitterUser = await getTwitterUserByUsername({
-          username: handle,
-        });
-        twitterAccount = await TwitterAccount.create(
-          createTwitterAccountObject(createTwitterSeedUser(twitterUser))
-        );
-
-        console.log(`Created user ${twitterAccount.user.username}`);
-      }
-
-      // Get users followed by seed user
-      const friends: TwitterUser[] = await getTwitterFriendsByUserId({
-        userId: twitterAccount.providerAccountId,
-        maxResults: 900,
-      });
-
-      console.log("Number of friends:", friends.length);
-
-      if (friends.length === 0) return;
-
-      const formattedFriends = friends.map((friend) =>
-        createTwitterAccountObject(createTwitterSeedUser(friend))
-      );
-
-      try {
-        console.log("Inserting in DB...");
-        // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
-        const docs = await TwitterAccount.insertMany(formattedFriends, {
-          ordered: false,
-        });
-        console.log(`Inserted ${docs.length} new users without errors`);
-      } catch (error) {
-        console.log(`Number of inserted docs`, error.result?.nInserted);
-        console.log("Number of write errors:", error.writeErrors?.length);
-      }
+    if (false) {
+      await insertTwitterUsers();
     }
 
     // Seed groups
