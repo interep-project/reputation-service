@@ -19,7 +19,7 @@ const MerkleTreeNodeSchemaFields: Record<keyof IMerkleTreeNode, any> = {
     level: Number,
     index: Number,
   },
-  parent: { type: Schema.Types.ObjectId, required: false },
+  parent: { type: Schema.Types.ObjectId, required: false, ref: 'MerkleTreeNode' },
   hash: String,
 };
 
@@ -30,7 +30,7 @@ MerkleTreeNodeSchema.statics.findByLevelAndIndex = findByLevelAndIndex;
 // Leaf
 const MerkleTreeLeafSchemaFields: Record<keyof IMerkleTreeLeaf, any> = {  
   groupId: String,
-  nodeId: Schema.Types.ObjectId,
+  node: { type: Schema.Types.ObjectId, ref: 'MerkleTreeNode'},
   idCommitment: String,
 };
 

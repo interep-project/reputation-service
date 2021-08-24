@@ -9,7 +9,7 @@ class MerkleTreeController {
         const zeroes = await MerkleTreeZero.findZeroes();
 
         // Add a leaf. Don't add to DB yet
-        const leaf = await MerkleTreeLeaf.create({ groupId, nodeId: null, idCommitment });
+        const leaf = await MerkleTreeLeaf.create({ groupId, node: null, idCommitment });
         let hash = MimcSpongeHash(idCommitment, idCommitment); // TODO check method for 1 arg
 
         // Get next available index at level 0
@@ -27,7 +27,7 @@ class MerkleTreeController {
                     key: { groupId, level, index },
                     hash
                 });
-                leaf.nodeId = node.id;                
+                leaf.node = node.id;
                 await leaf.save();
             } else {
                 index = Math.floor(prevIndex / 2);
@@ -66,7 +66,8 @@ class MerkleTreeController {
             prevNode = node;
         }
         // Update contract with new root
-        
+        const rootHash = hash;
+
     }
 
     // public updateLeaf = async (groupId: string, idCommitment: string): Promise<any> => {

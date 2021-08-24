@@ -16,7 +16,7 @@ export interface IMerkleTreeNode {
 export interface IMerkleTreeLeaf {
   groupId: string;
   idCommitment: string;
-  nodeId: ObjectId;
+  node: ObjectId;
 }
 
 export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
