@@ -290,7 +290,7 @@ declare module "circomlib" {
 
     function hash(_xL_in: any, _xR_in: any, _k: any): any;
 
-    function multiHash(arr: any, key: any, numOutputs: any): any;
+    function multiHash(arr: any, key?: any, numOutputs?: any): any;
   }
 
   export namespace pedersenHash {

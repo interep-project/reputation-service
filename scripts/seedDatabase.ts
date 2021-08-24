@@ -15,7 +15,7 @@ import Group from "src/models/groups/Group.model";
 import config from "src/config";
 import { zeroBytes32 } from "src/utils/crypto/constants";
 import { MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model";
-import MimcSpongeHash from "src/utils/crypto/hasher";
+import mimcSpongeHash from "src/utils/crypto/hasher";
 //import { MerkleTreeZeroSchema } from "src/models/merkleTree/MerkleTree.schema";
 
 const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
@@ -113,7 +113,7 @@ const insertTwitterUsers = async () => {
       currentHash = zeroes[currentLevel - 1].hash;
     }
     for (let level = currentLevel; level < config.TREE_LEVELS; level++) {
-      currentHash = MimcSpongeHash(currentHash, currentHash); //TODO hash with 1 arg?
+      currentHash = mimcSpongeHash(currentHash, currentHash); //TODO hash with 1 arg?
       const doc = await MerkleTreeZero.create({
         level,
         hash: currentHash,
