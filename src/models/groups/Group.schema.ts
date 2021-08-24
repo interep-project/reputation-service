@@ -1,10 +1,6 @@
 import { Schema } from "mongoose";
 import { findByGroupId } from "./Group.statics";
-import {
-  IGroup,
-  IGroupDocument,
-  IGroupModel,
-} from "./Group.types";
+import { IGroup, IGroupDocument, IGroupModel } from "./Group.types";
 
 const GroupSchemaFields: Record<keyof IGroup, any> = {
   groupId: { type: String, required: true },

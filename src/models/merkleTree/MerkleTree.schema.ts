@@ -1,5 +1,9 @@
 import { Schema } from "mongoose";
-import { findByLevelAndIndex, findLeafByIdCommitment, findZeroes } from "./MerkleTree.statics";
+import {
+  findByLevelAndIndex,
+  findLeafByIdCommitment,
+  findZeroes,
+} from "./MerkleTree.statics";
 import {
   IMerkleTreeNode,
   IMerkleTreeNodeDocument,
@@ -19,35 +23,48 @@ const MerkleTreeNodeSchemaFields: Record<keyof IMerkleTreeNode, any> = {
     level: Number,
     index: Number,
   },
-  parent: { type: Schema.Types.ObjectId, required: false, ref: 'MerkleTreeNode' },
+  parent: {
+    type: Schema.Types.ObjectId,
+    required: false,
+    ref: "MerkleTreeNode",
+  },
   hash: String,
 };
 
-export const MerkleTreeNodeSchema = new Schema<IMerkleTreeNodeDocument, IMerkleTreeNodeModel>(MerkleTreeNodeSchemaFields);
+export const MerkleTreeNodeSchema = new Schema<
+  IMerkleTreeNodeDocument,
+  IMerkleTreeNodeModel
+>(MerkleTreeNodeSchemaFields);
 
 MerkleTreeNodeSchema.statics.findByLevelAndIndex = findByLevelAndIndex;
 
 // Leaf
-const MerkleTreeLeafSchemaFields: Record<keyof IMerkleTreeLeaf, any> = {  
+const MerkleTreeLeafSchemaFields: Record<keyof IMerkleTreeLeaf, any> = {
   groupId: String,
-  node: { type: Schema.Types.ObjectId, ref: 'MerkleTreeNode'},
+  node: { type: Schema.Types.ObjectId, ref: "MerkleTreeNode" },
   idCommitment: String,
 };
 
-export const MerkleTreeLeafSchema = new Schema<IMerkleTreeLeafDocument, IMerkleTreeLeafModel>(MerkleTreeLeafSchemaFields);
+export const MerkleTreeLeafSchema = new Schema<
+  IMerkleTreeLeafDocument,
+  IMerkleTreeLeafModel
+>(MerkleTreeLeafSchemaFields);
 
 MerkleTreeLeafSchema.statics.findLeafByIdCommitment = findLeafByIdCommitment;
 
-MerkleTreeLeafSchema.methods.getPath = function() {
+MerkleTreeLeafSchema.methods.getPath = function () {
   // TODO
-}
+};
 
 // Zeroes
 export const MerkleTreeZeroSchemaFields: Record<keyof IMerkleTreeZero, any> = {
-  level: {type: Number, unique: true },
+  level: { type: Number, unique: true },
   hash: String,
-}
+};
 
-export const MerkleTreeZeroSchema = new Schema<IMerkleTreeZeroDocument, IMerkleTreeZeroModel>(MerkleTreeZeroSchemaFields);
+export const MerkleTreeZeroSchema = new Schema<
+  IMerkleTreeZeroDocument,
+  IMerkleTreeZeroModel
+>(MerkleTreeZeroSchemaFields);
 
 MerkleTreeZeroSchema.statics.findZeroes = findZeroes;

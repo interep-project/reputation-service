@@ -1,7 +1,7 @@
 /* eslint no-console: 0 */
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
 import seedTwitterUsers from "./seedTwitterUsers";
-import seedGroups from './seedGroups';
+import seedGroups from "./seedGroups";
 import { TwitterUser } from "src/types/twitter";
 import {
   getTwitterFriendsByUserId,
@@ -14,7 +14,7 @@ import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import Group from "src/models/groups/Group.model";
 import config from "src/config";
 import { zeroBytes32 } from "src/utils/crypto/constants";
-import { MerkleTreeZero } from 'src/models/merkleTree/MerkleTree.model';
+import { MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model";
 import MimcSpongeHash from "src/utils/crypto/hasher";
 //import { MerkleTreeZeroSchema } from "src/models/merkleTree/MerkleTree.schema";
 
@@ -27,51 +27,50 @@ const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
 });
 
 const insertTwitterUsers = async () => {
-      // Seed twitter users
-      for (const handle of seedTwitterUsers) {
-        let twitterAccount = await findByTwitterUsername(handle);
-        console.log(`######## Processing ${handle} #########`);
-        console.log(`${handle} already in DB?`, !!twitterAccount);
-  
-        if (!twitterAccount) {
-          const twitterUser = await getTwitterUserByUsername({
-            username: handle,
-          });
-          twitterAccount = await TwitterAccount.create(
-            createTwitterAccountObject(createTwitterSeedUser(twitterUser))
-          );
-  
-          console.log(`Created user ${twitterAccount.user.username}`);
-        }
-  
-        // Get users followed by seed user
-        const friends: TwitterUser[] = await getTwitterFriendsByUserId({
-          userId: twitterAccount.providerAccountId,
-          maxResults: 900,
-        });
-  
-        console.log("Number of friends:", friends.length);
-  
-        if (friends.length === 0) return;
-  
-        const formattedFriends = friends.map((friend) =>
-          createTwitterAccountObject(createTwitterSeedUser(friend))
-        );
-  
-        try {
-          console.log("Inserting in DB...");
-          // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
-          const docs = await TwitterAccount.insertMany(formattedFriends, {
-            ordered: false,
-          });
-          console.log(`Inserted ${docs.length} new users without errors`);
-        } catch (error) {
-          console.log(`Number of inserted docs`, error.result?.nInserted);
-          console.log("Number of write errors:", error.writeErrors?.length);
-        }
-      }
-  
-}
+  // Seed twitter users
+  for (const handle of seedTwitterUsers) {
+    let twitterAccount = await findByTwitterUsername(handle);
+    console.log(`######## Processing ${handle} #########`);
+    console.log(`${handle} already in DB?`, !!twitterAccount);
+
+    if (!twitterAccount) {
+      const twitterUser = await getTwitterUserByUsername({
+        username: handle,
+      });
+      twitterAccount = await TwitterAccount.create(
+        createTwitterAccountObject(createTwitterSeedUser(twitterUser))
+      );
+
+      console.log(`Created user ${twitterAccount.user.username}`);
+    }
+
+    // Get users followed by seed user
+    const friends: TwitterUser[] = await getTwitterFriendsByUserId({
+      userId: twitterAccount.providerAccountId,
+      maxResults: 900,
+    });
+
+    console.log("Number of friends:", friends.length);
+
+    if (friends.length === 0) return;
+
+    const formattedFriends = friends.map((friend) =>
+      createTwitterAccountObject(createTwitterSeedUser(friend))
+    );
+
+    try {
+      console.log("Inserting in DB...");
+      // with ordered false, it inserts all documents it can and report errors at the end (incl. errors from duplicates)
+      const docs = await TwitterAccount.insertMany(formattedFriends, {
+        ordered: false,
+      });
+      console.log(`Inserted ${docs.length} new users without errors`);
+    } catch (error) {
+      console.log(`Number of inserted docs`, error.result?.nInserted);
+      console.log("Number of write errors:", error.writeErrors?.length);
+    }
+  }
+};
 
 (async () => {
   dbConnect();
@@ -79,7 +78,7 @@ const insertTwitterUsers = async () => {
   try {
     // Seed twitter users
     //if (false) {
-      await insertTwitterUsers();
+    await insertTwitterUsers();
     //}
 
     // Seed groups
@@ -92,7 +91,7 @@ const insertTwitterUsers = async () => {
         console.log(`Group already in DB`);
       } else {
         groupDoc = await Group.create(group);
-        
+
         //
         try {
           console.log("Inserting in DB...");
@@ -100,7 +99,7 @@ const insertTwitterUsers = async () => {
           console.log(`Inserted new group with ID ${groupDoc.id}`);
         } catch (error) {
           console.log(`Error inserting group: ${error}`);
-        }      
+        }
       }
     }
 
@@ -113,10 +112,10 @@ const insertTwitterUsers = async () => {
       currentLevel = zeroes.length;
       currentHash = zeroes[currentLevel - 1].hash;
     }
-    for (let level=currentLevel; level < config.TREE_LEVELS; level++) {
+    for (let level = currentLevel; level < config.TREE_LEVELS; level++) {
       currentHash = MimcSpongeHash(currentHash, currentHash); //TODO hash with 1 arg?
       const doc = await MerkleTreeZero.create({
-        level, 
+        level,
         hash: currentHash,
       });
       try {
@@ -124,9 +123,8 @@ const insertTwitterUsers = async () => {
         console.log(`Inserted MT zero level ${level} with ID ${doc.id}`);
       } catch (error) {
         console.log(`Error inserting MT zero document: ${error}`);
-      }      
+      }
     }
-
 
     dbDisconnect();
   } catch (e) {

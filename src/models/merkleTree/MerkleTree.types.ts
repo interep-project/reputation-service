@@ -1,5 +1,9 @@
 import { Model, Document, ObjectId } from "mongoose";
-import { findByLevelAndIndex, findLeafByIdCommitment, findZeroes } from "./MerkleTree.statics";
+import {
+  findByLevelAndIndex,
+  findLeafByIdCommitment,
+  findZeroes,
+} from "./MerkleTree.statics";
 
 export interface IMerkleTreeNodeKey {
   groupId: string;
@@ -41,7 +45,3 @@ export interface IMerkleTreeZeroDocument extends IMerkleTreeZero, Document {}
 export interface IMerkleTreeZeroModel extends Model<IMerkleTreeZeroDocument> {
   findZeroes: typeof findZeroes;
 }
-
-
-
-
