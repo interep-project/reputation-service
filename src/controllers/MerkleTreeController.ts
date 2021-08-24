@@ -1,10 +1,13 @@
-import { MerkleTreeLeaf, MerkleTreeNode } from '../models/merkleTree/MerkleTree.model';
+import { MerkleTreeLeaf, MerkleTreeNode, MerkleTreeZero } from '../models/merkleTree/MerkleTree.model';
 import { IMerkleTreeNodeDocument } from '../models/merkleTree/MerkleTree.types';
 import MimcSpongeHash from '../utils/crypto/hasher';
 import config from '../config';
 
 class MerkleTreeController {
     public appendLeaf = async (groupId: string, idCommitment: string): Promise<any> => {
+        // Get the zero hashes
+        const zeroes = await MerkleTreeZero.findZeroes();
+
         // Add a leaf. Don't add to DB yet
         const leaf = await MerkleTreeLeaf.create({ groupId, nodeId: null, idCommitment });
         let hash = MimcSpongeHash(idCommitment, idCommitment); // TODO check method for 1 arg
@@ -26,25 +29,44 @@ class MerkleTreeController {
                 });
                 leaf.nodeId = node.id;                
                 await leaf.save();
-                prevNode = node;
             } else {
                 index = Math.floor(prevIndex / 2);
                 if (index % 2 == 0) {
                     // left node
                     // hash with zero hash for this level
-                    hash = MimcSpongeHash(hash, 'TBD');
+                    hash = MimcSpongeHash(hash, zeroes[level].hash);
                     // create new node
+                    node = await MerkleTreeNode.create({ 
+                        key: { groupId, level, index },
+                        hash
+                    });
+    
                 } else {
                     // right node
                     // hash with left sibling from previous level
+                    const sibling = await MerkleTreeNode.findByLevelAndIndex({
+                        // key
+                        groupId, 
+                        level: level - 1, 
+                        index: prevIndex - 1
+                    });
+                    hash = MimcSpongeHash(sibling.hash, hash);
                     // update existing node
+                    node = await MerkleTreeNode.findByLevelAndIndex({
+                        groupId,
+                        level,
+                        index
+                    });
+                    node.hash = hash;
                 }
                 prevNode.parent = node.id;
                 await prevNode.save();
             }
             prevIndex = index;
+            prevNode = node;
         }
         // Update contract with new root
+        
     }
 
     // public updateLeaf = async (groupId: string, idCommitment: string): Promise<any> => {
