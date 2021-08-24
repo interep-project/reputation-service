@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
 import seedTwitterUsers from "./seedTwitterUsers";
+import seedGroups from './seedGroups';
 import { TwitterUser } from "src/types/twitter";
 import {
   getTwitterFriendsByUserId,
@@ -10,6 +11,7 @@ import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
+import Group from "src/models/groups/Group.model";
 
 const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   providerAccountId: twitterUser.id,
@@ -23,6 +25,7 @@ const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
   dbConnect();
 
   try {
+    // Seed twitter users
     for (const handle of seedTwitterUsers) {
       let twitterAccount = await findByTwitterUsername(handle);
       console.log(`######## Processing ${handle} #########`);
@@ -65,6 +68,30 @@ const createTwitterSeedUser = (twitterUser: TwitterUser) => ({
         console.log("Number of write errors:", error.writeErrors?.length);
       }
     }
+
+    // Seed groups
+    for (const group of seedGroups) {
+      console.log(`######## Processing group ${group.groupId} #########`);
+      let groupDoc = await Group.findByGroupId(group.groupId);
+
+      // Already in DB?
+      if (groupDoc) return;
+
+      groupDoc = await Group.create(group);
+      
+      //
+      try {
+        console.log("Inserting in DB...");
+        await groupDoc.save();
+        console.log(`Inserted new group with ID ${groupDoc.id}`);
+      } catch (error) {
+        console.log(`Error inserting group: ${error}`);
+      }      
+    }
+
+    // Seed the merkle tree zeroes
+    // TODO
+
     dbDisconnect();
   } catch (e) {
     console.error(e);
