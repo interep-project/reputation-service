@@ -73,9 +73,9 @@ const insertTwitterUsers = async () => {
 
   try {
     // Seed twitter users
-    if (false) {
+    //if (false) {
       await insertTwitterUsers();
-    }
+    //}
 
     // Seed groups
     for (const group of seedGroups) {
