@@ -5,6 +5,7 @@ module.exports = {
   modulePaths: ["<rootDir>"],
   clearMocks: true,
   collectCoverage: true,
+  setupFiles: ["dotenv/config"],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
     "!src/mocks/**",
