@@ -104,6 +104,13 @@ describe("MerkleTreeController", () => {
       await clearDatabase();
     });
 
+    it(`Should not return any path if the identity commitment does not exist`, async () => {
+      const fun = (): Promise<string[]> =>
+        MerkleTreeController.retrievePath(idCommitment);
+
+      await expect(fun).rejects.toThrow();
+    });
+
     it(`Should return a path of ${config.TREE_LEVELS} hashes`, async () => {
       await seedGroups(groups, false);
       await seedZeroHashes(false);

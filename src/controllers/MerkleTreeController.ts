@@ -129,9 +129,13 @@ class MerkleTreeController {
 
   public retrievePath = async (idCommitment: string): Promise<string[]> => {
     // Get path starting from leaf node.
-    const { key } = (await MerkleTreeNode.findByHash(
-      idCommitment
-    )) as IMerkleTreeNodeDocument;
+    const leafNode = await MerkleTreeNode.findByHash(idCommitment);
+
+    if (!leafNode) {
+      throw new Error(`The identity commitment ${idCommitment} does not exist`);
+    }
+
+    const { key } = leafNode;
 
     // Get path and return array.
     const pathQuery = MerkleTreeNode.aggregate([
