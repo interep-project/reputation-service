@@ -58,6 +58,8 @@ describe("MerkleTreeController", () => {
     it("Should append 10 leaves correctly", async () => {
       await MerkleTreeController.createZeroHashes();
 
+      const idCommitments = [];
+
       for (let i = 0; i < 10; i++) {
         const idCommitment = createFakeIdCommitment(BigInt(i));
 
@@ -65,6 +67,7 @@ describe("MerkleTreeController", () => {
           TEST_GROUP,
           idCommitment
         );
+        idCommitments.push(idCommitment);
       }
 
       const expectedNodes = [10, 5, 3, 2, 1, 1, 1];
@@ -77,9 +80,18 @@ describe("MerkleTreeController", () => {
         expect(numberOfNodes).toBe(expectedNodes[i]);
       }
 
-      const path = await MerkleTreeController.getPathByIndex(TEST_GROUP, 1);
-      console.log(`Path: ${JSON.stringify(path)}`);
+      // Test path retrieve
+      let path = await MerkleTreeController.getPathByIndex(TEST_GROUP, 1);
+      console.log(`Path (1): ${JSON.stringify(path)}`);
       expect(path).toBeDefined();
+      expect(path.length).toBe(config.TREE_LEVELS);
+
+      path = await MerkleTreeController.getPathByIndex(TEST_GROUP, 7);
+      console.log(`Path (7): ${JSON.stringify(path)}`);
+
+      // Retrieve path by ID commitment  
+      path = await MerkleTreeController.getPath(idCommitments[0]);
+      console.log(`Path for ${idCommitments[0]}: ${JSON.stringify(path)}`);
       expect(path.length).toBe(config.TREE_LEVELS);
 
     });

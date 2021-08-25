@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-import { MerkleTreeNode } from "./MerkleTree.model";
 import {
   findByLevelAndIndex,
   findLeafByIdCommitment,

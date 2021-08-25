@@ -50,7 +50,7 @@ class MerkleTreeController {
           hash,
         });
 
-        leaf.node = node.id;
+        leaf.node = node;
 
         console.debug(`Saving leaf`);
         await leaf.save();
@@ -70,6 +70,7 @@ class MerkleTreeController {
             level,
             index: nextIndex,
           });
+          // First time in a new branch these need to be created
           if (!node) {
             // create new parent node
             console.debug(`Adding node at l${level}, ${nextIndex}`);
@@ -111,8 +112,7 @@ class MerkleTreeController {
         }
 
         if (prevNode) {
-          prevNode.parent = node.id;
-
+          prevNode.parent = node;
           await prevNode.save();
         }
       }
@@ -133,11 +133,17 @@ class MerkleTreeController {
   //     // Update contract with new root
   // }
 
-  // public getPath = async (groupId: string, idCommitment: string): Promise<string[]> => {
-  //     // find leaf
-  //     // get path starting from leaf node
-  //     return [];
-  // }
+  public getPath = async (idCommitment: string): Promise<string[] | null> => {
+      // find leaf
+      const leaf = await MerkleTreeLeaf.findLeafByIdCommitment(
+        idCommitment
+      );
+      if (!leaf) return null;
+      //if (!leaf.populated("node")) leaf.populate("node");
+
+      // get path starting from leaf node
+      return this.getPathByIndex(leaf.node.key.groupId, leaf.node.key.index);
+  }
 
   public getPathByIndex = async (groupId: string, index: number): Promise<string[]> => {
       // get path and return array
@@ -146,8 +152,6 @@ class MerkleTreeController {
         level: 0,
         index: index
       };
-      //const leafNode = await MerkleTreeNode.findByLevelAndIndex(key);
-      //console.log(`Getting path: node ID = ${leafNode?.id}`);
       const pathQuery = MerkleTreeNode.aggregate([
         {
           '$match': {

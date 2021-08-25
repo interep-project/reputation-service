@@ -14,14 +14,14 @@ export interface IMerkleTreeNodeKey {
 
 export interface IMerkleTreeNode {
   key: IMerkleTreeNodeKey;
-  parent?: ObjectId; // Root node has no parent
+  parent?: IMerkleTreeNode; // Root node has no parent
   hash: string;
 }
 
 export interface IMerkleTreeLeaf {
   groupId: string;
   idCommitment: string;
-  node: ObjectId;
+  node: IMerkleTreeNode;
 }
 
 export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
