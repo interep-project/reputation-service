@@ -2,7 +2,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { withSentry } from "@sentry/nextjs";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
-import Group from "src/models/groups/Group.model";
+import MerkleTreeController from "src/controllers/MerkleTreeController";
 
 const handler = async (
   req: NextApiRequest,
@@ -14,19 +14,20 @@ const handler = async (
     return res.status(405).end();
   }
 
-  try {
-    const groups = await Group.findGroups();
+  const identityCommitment = req.query?.identityCommitment;
 
-    if (!groups) {
+  if (!identityCommitment || typeof identityCommitment !== "string") {
+    return res.status(400).end();
+  }
+
+  try {
+    const path = await MerkleTreeController.retrievePath(identityCommitment);
+
+    if (!path) {
       return res.status(200).send([]);
     }
 
-    const filteredGroups = groups.map((group) => ({
-      groupId: group.groupId,
-      description: group.description,
-    }));
-
-    return res.status(200).send(filteredGroups);
+    return res.status(200).send(path);
   } catch (error) {
     logger.error(error);
     return res.status(500).end();
