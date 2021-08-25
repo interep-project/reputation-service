@@ -50,6 +50,17 @@ describe("MerkleTreeController", () => {
       await expect(fun).rejects.toThrow();
     });
 
+    it("Should not append the same identity twice", async () => {
+      await seedGroups(groups, false);
+      await seedZeroHashes(false);
+
+      await MerkleTreeController.appendLeaf(groupId, idCommitment);
+      const fun = (): Promise<string> =>
+        MerkleTreeController.appendLeaf(groupId, idCommitment);
+
+      await expect(fun).rejects.toThrow();
+    });
+
     it("Should append two leaves and their parent hash should match the Mimc hash of the id commitments", async () => {
       await seedGroups(groups, false);
       await seedZeroHashes(false);

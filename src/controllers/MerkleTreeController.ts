@@ -12,6 +12,10 @@ class MerkleTreeController {
     groupId: string,
     idCommitment: string
   ): Promise<string> => {
+    if (await MerkleTreeNode.findByHash(idCommitment)) {
+      throw new Error(`The identity commitment ${idCommitment} already exist`);
+    }
+
     if (!(await Group.findByGroupId(groupId))) {
       throw new Error(`The group ${groupId} does not exist`);
     }
