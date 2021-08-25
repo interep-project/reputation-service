@@ -37,7 +37,6 @@ class MerkleTreeController {
     let prevNode: IMerkleTreeNodeDocument | null = null;
     let prevIndex = 0;
 
-
     // Iterate up to root.
     for (let level = 0; level < config.TREE_LEVELS; level++) {
       let node: IMerkleTreeNodeDocument | null;
@@ -82,7 +81,6 @@ class MerkleTreeController {
             node.hash = hash;
             await node.save();
           }
-
         } else {
           console.debug(`Right child node`);
           // right node
@@ -94,7 +92,8 @@ class MerkleTreeController {
             index: prevIndex - 1,
           });
 
-          if (!sibling) throw new Error(`Sibling not found for ${level - 1}, ${prevIndex}`);
+          if (!sibling)
+            throw new Error(`Sibling not found for ${level - 1}, ${prevIndex}`);
 
           hash = mimcSpongeHash(sibling.hash, hash);
 
@@ -105,7 +104,8 @@ class MerkleTreeController {
             index: nextIndex,
           });
 
-          if (!node) throw new Error(`Node not found at ${level}, ${nextIndex}`);
+          if (!node)
+            throw new Error(`Node not found at ${level}, ${nextIndex}`);
 
           node.hash = hash;
           await node.save();
@@ -134,75 +134,82 @@ class MerkleTreeController {
   // }
 
   public getPath = async (idCommitment: string): Promise<string[] | null> => {
-      // find leaf
-      const leaf = await MerkleTreeLeaf.findLeafByIdCommitment(
-        idCommitment
-      );
-      if (!leaf) return null;
-      //if (!leaf.populated("node")) leaf.populate("node");
+    // find leaf
+    const leaf = await MerkleTreeLeaf.findLeafByIdCommitment(idCommitment);
+    if (!leaf) return null;
+    //if (!leaf.populated("node")) leaf.populate("node");
 
-      // get path starting from leaf node
-      return this.getPathByIndex(leaf.node.key.groupId, leaf.node.key.index);
-  }
+    // get path starting from leaf node
+    return this.getPathByIndex(leaf.node.key.groupId, leaf.node.key.index);
+  };
 
-  public getPathByIndex = async (groupId: string, index: number): Promise<string[]> => {
-      // get path and return array
-      const key = {
-        groupId: groupId,
-        level: 0,
-        index: index
-      };
-      const pathQuery = MerkleTreeNode.aggregate([
-        {
-          '$match': {
-            'key': key
-          }
-        }, 
-        { $graphLookup: {
-            'from': 'treeNodes',
-            'startWith': '$_id',
-            'connectFromField': 'parent',
-            'connectToField': '_id',
-            'as': 'path',
-            'depthField': 'level'
-          }
-        }, {
-          '$unwind': {
-            'path': '$path'
-          }
-        }, {
-          '$project': {
-            'path': 1,
-            '_id': 0
-          }
-        }, {
-          '$addFields': {
-            'hash': '$path.hash',
-            'level': '$path.level'
-          }
-        }, {
-          '$sort': {
-            'level': 1
-          }
-        }, {
-          '$project': {
-            'path': 0
-          }
+  public getPathByIndex = async (
+    groupId: string,
+    index: number
+  ): Promise<string[]> => {
+    // get path and return array
+    const key = {
+      groupId: groupId,
+      level: 0,
+      index: index,
+    };
+    const pathQuery = MerkleTreeNode.aggregate([
+      {
+        $match: {
+          key: key,
+        },
+      },
+      {
+        $graphLookup: {
+          from: "treeNodes",
+          startWith: "$_id",
+          connectFromField: "parent",
+          connectToField: "_id",
+          as: "path",
+          depthField: "level",
+        },
+      },
+      {
+        $unwind: {
+          path: "$path",
+        },
+      },
+      {
+        $project: {
+          path: 1,
+          _id: 0,
+        },
+      },
+      {
+        $addFields: {
+          hash: "$path.hash",
+          level: "$path.level",
+        },
+      },
+      {
+        $sort: {
+          level: 1,
+        },
+      },
+      {
+        $project: {
+          path: 0,
+        },
+      },
+    ]);
+
+    return new Promise((resolve, reject) => {
+      pathQuery.exec((err, path) => {
+        if (err) {
+          console.log(`Error getting path: ${err.message}`);
+          reject(err);
         }
-      ]);
+        console.log(`Path: ${JSON.stringify(path)}`);
 
-      return new Promise((resolve, reject) => {
-        pathQuery.exec((err, path) => {
-          if (err) {
-            console.log(`Error getting path: ${err.message}`);
-            reject(err);
-          }
-          console.log(`Path: ${JSON.stringify(path)}`);
-
-          resolve(path.map(e => e.hash));
-        })
+        resolve(path.map((e) => e.hash));
       });
-  }
+    });
+  };
 
   public createZeroHashes = async (): Promise<void> => {
     let currentLevel = 0;

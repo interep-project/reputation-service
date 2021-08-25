@@ -63,15 +63,12 @@ describe("MerkleTreeController", () => {
       for (let i = 0; i < 10; i++) {
         const idCommitment = createFakeIdCommitment(BigInt(i));
 
-        await MerkleTreeController.appendLeaf(
-          TEST_GROUP,
-          idCommitment
-        );
+        await MerkleTreeController.appendLeaf(TEST_GROUP, idCommitment);
         idCommitments.push(idCommitment);
       }
 
       const expectedNodes = [10, 5, 3, 2, 1, 1, 1];
-      for (let i = 0; i<expectedNodes.length; i++) {
+      for (let i = 0; i < expectedNodes.length; i++) {
         const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(
           TEST_GROUP,
           i
@@ -89,12 +86,10 @@ describe("MerkleTreeController", () => {
       path = await MerkleTreeController.getPathByIndex(TEST_GROUP, 7);
       console.log(`Path (7): ${JSON.stringify(path)}`);
 
-      // Retrieve path by ID commitment  
+      // Retrieve path by ID commitment
       path = await MerkleTreeController.getPath(idCommitments[0]);
       console.log(`Path for ${idCommitments[0]}: ${JSON.stringify(path)}`);
       expect(path.length).toBe(config.TREE_LEVELS);
-
     });
-
   });
 });
