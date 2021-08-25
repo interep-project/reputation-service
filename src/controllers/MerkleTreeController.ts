@@ -35,7 +35,7 @@ class MerkleTreeController {
     // TODO - need to handle a full tree?
 
     let prevNode: IMerkleTreeNodeDocument | null = null;
-    let prevIndex: number = 0;
+    let prevIndex = 0;
 
 
     // Iterate up to root.
