@@ -1,4 +1,4 @@
-import { Model, Document, ObjectId } from "mongoose";
+import { Model, Document } from "mongoose";
 import {
   findByLevelAndIndex,
   findLeafByIdCommitment,
