@@ -67,7 +67,7 @@ describe("MerkleTreeController", () => {
 
       const expectedNodes = [10, 5, 3, 2, 1, 1, 1];
       for (let i = 0; i<expectedNodes.length; i++) {
-        let numberOfNodes = await MerkleTreeNode.getNumberOfNodes(
+        const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(
           "TWITTER_CONFIRMED",
           i
         );
