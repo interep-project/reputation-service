@@ -6,7 +6,7 @@ let mongod: MongoMemoryServer;
 export const connect = async () => {
   mongod = await MongoMemoryServer.create();
 
-  await mongoose.connect(mongod.getUri(), {
+  await mongoose.connect(await mongod.getUri(), {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

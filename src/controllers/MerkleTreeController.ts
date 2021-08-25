@@ -32,7 +32,7 @@ class MerkleTreeController {
 
     // Get next available index at level 0.
     let nextIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
-    // TODO - need to handle a full tree?
+    // TODO - need to handle a full tree? nextIndex >= 2 ^ TREE_LEVELS
 
     let prevNode: IMerkleTreeNodeDocument | null = null;
     let prevIndex = 0;
@@ -44,6 +44,7 @@ class MerkleTreeController {
 
       if (level == 0) {
         // Create the leaf node.
+        console.debug(`Creating leaf node at index ${nextIndex}`);
         node = await MerkleTreeNode.create({
           key: { groupId, level, index: nextIndex },
           hash,
@@ -51,21 +52,38 @@ class MerkleTreeController {
 
         leaf.node = node.id;
 
+        console.debug(`Saving leaf`);
         await leaf.save();
       } else {
         nextIndex = Math.floor(prevIndex / 2);
+        console.debug(`Level ${level}, index ${nextIndex}`);
 
-        if (nextIndex % 2 == 0) {
-          // left node
-          // hash with zero hash for this level
-          hash = mimcSpongeHash(hash, zeroes[level].hash);
+        if (prevIndex % 2 == 0) {
+          console.debug(`Left child node`);
+          // left child node
+          // hash with zero hash for that level
+          hash = mimcSpongeHash(hash, zeroes[level - 1].hash);
 
-          // create new node
-          node = await MerkleTreeNode.create({
-            key: { groupId, level, index: nextIndex },
-            hash,
+          // Get parent node
+          node = await MerkleTreeNode.findByLevelAndIndex({
+            groupId,
+            level,
+            index: nextIndex,
           });
+          if (!node) {
+            // create new parent node
+            console.debug(`Adding node at l${level}, ${nextIndex}`);
+            node = await MerkleTreeNode.create({
+              key: { groupId, level, index: nextIndex },
+              hash,
+            });
+          } else {
+            node.hash = hash;
+            await node.save();
+          }
+
         } else {
+          console.debug(`Right child node`);
           // right node
           // hash with left sibling from previous level
           const sibling = await MerkleTreeNode.findByLevelAndIndex({
@@ -89,7 +107,7 @@ class MerkleTreeController {
           if (!node) throw new Error(`Node not found at ${level}, ${nextIndex}`);
 
           node.hash = hash;
-          node.save();
+          await node.save();
         }
 
         if (prevNode) {
