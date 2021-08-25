@@ -5,27 +5,33 @@ import {
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types";
 import mimcSpongeHash from "../utils/crypto/hasher";
 import config from "../config";
-import { zeroBytes32 } from "src/utils/crypto/constants";
+import Group from "src/models/groups/Group.model";
 
 class MerkleTreeController {
   public appendLeaf = async (
     groupId: string,
     idCommitment: string
   ): Promise<string> => {
+    if (!(await Group.findByGroupId(groupId))) {
+      throw new Error(`The group ${groupId} does not exist`);
+    }
+
     // Get the zero hashes.
     const zeroes = await MerkleTreeZero.findZeroes();
 
     if (!zeroes || zeroes.length === 0) {
-      throw new Error(`Zero hashes have not yet been created`);
+      throw new Error(`The zero hashes have not yet been created`);
     }
-
-    let hash = idCommitment;
 
     // Get next available index at level 0.
     let nextIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
-    // TODO - need to handle a full tree? nextIndex >= 2 ^ TREE_LEVELS
+
+    if (nextIndex >= 2 ** config.TREE_LEVELS) {
+      throw new Error(`The tree is full`);
+    }
 
     let prevNode: IMerkleTreeNodeDocument | null = null;
+    let hash = idCommitment;
     let prevIndex = 0;
 
     // Iterate up to root.
@@ -34,17 +40,14 @@ class MerkleTreeController {
 
       if (level == 0) {
         // Create the leaf node.
-        console.debug(`Creating leaf node at index ${nextIndex}`);
         node = await MerkleTreeNode.create({
           key: { groupId, level, index: nextIndex },
           hash,
         });
       } else {
         nextIndex = Math.floor(prevIndex / 2);
-        console.debug(`Level ${level}, index ${nextIndex}`);
 
         if (prevIndex % 2 == 0) {
-          console.debug(`Left child node`);
           // left child node
           // hash with zero hash for that level
           hash = mimcSpongeHash(hash, zeroes[level - 1].hash);
@@ -58,7 +61,6 @@ class MerkleTreeController {
           // First time in a new branch these need to be created
           if (!node) {
             // create new parent node
-            console.debug(`Adding node at l${level}, ${nextIndex}`);
             node = await MerkleTreeNode.create({
               key: { groupId, level, index: nextIndex },
               hash,
@@ -68,7 +70,6 @@ class MerkleTreeController {
             await node.save();
           }
         } else {
-          console.debug(`Right child node`);
           // right node
           // hash with left sibling from previous level
           const sibling = await MerkleTreeNode.findByLevelAndIndex({
@@ -78,8 +79,9 @@ class MerkleTreeController {
             index: prevIndex - 1,
           });
 
-          if (!sibling)
+          if (!sibling) {
             throw new Error(`Sibling not found for ${level - 1}, ${prevIndex}`);
+          }
 
           hash = mimcSpongeHash(sibling.hash, hash);
 
@@ -90,8 +92,9 @@ class MerkleTreeController {
             index: nextIndex,
           });
 
-          if (!node)
+          if (!node) {
             throw new Error(`Node not found at ${level}, ${nextIndex}`);
+          }
 
           node.hash = hash;
           await node.save();
@@ -99,6 +102,7 @@ class MerkleTreeController {
 
         if (prevNode) {
           prevNode.parent = node;
+
           await prevNode.save();
         }
       }
@@ -119,28 +123,13 @@ class MerkleTreeController {
   //     // Update contract with new root
   // }
 
-  public retrievePath = async (
-    idCommitment: string
-  ): Promise<string[] | null> => {
-    const leafNode = (await MerkleTreeNode.findByHash(
+  public retrievePath = async (idCommitment: string): Promise<string[]> => {
+    // Get path starting from leaf node.
+    const { key } = (await MerkleTreeNode.findByHash(
       idCommitment
     )) as IMerkleTreeNodeDocument;
 
-    // Get path starting from leaf node.
-    return this.getPathByIndex(leafNode.key.groupId, leafNode.key.index);
-  };
-
-  public getPathByIndex = async (
-    groupId: string,
-    index: number
-  ): Promise<string[]> => {
     // Get path and return array.
-    const key = {
-      groupId: groupId,
-      level: 0,
-      index: index,
-    };
-
     const pathQuery = MerkleTreeNode.aggregate([
       {
         $match: {
@@ -187,40 +176,14 @@ class MerkleTreeController {
     ]);
 
     return new Promise((resolve, reject) => {
-      pathQuery.exec((err, path) => {
-        if (err) {
-          console.log(`Error getting path: ${err.message}`);
-          reject(err);
+      pathQuery.exec((error, path) => {
+        if (error) {
+          reject(error);
         }
-
-        console.log(`Path: ${JSON.stringify(path)}`);
 
         resolve(path.map((e) => e.hash));
       });
     });
-  };
-
-  public createZeroHashes = async (): Promise<void> => {
-    let level = 0;
-    let zeroHash = zeroBytes32;
-
-    const zeroHashes = await MerkleTreeZero.findZeroes();
-
-    if (zeroHashes && zeroHashes.length > 0) {
-      level = zeroHashes.length;
-      zeroHash = zeroHashes[level - 1].hash;
-    }
-
-    for (level; level < config.TREE_LEVELS; level++) {
-      zeroHash = mimcSpongeHash(zeroHash, zeroHash);
-
-      const zeroHashDocument = await MerkleTreeZero.create({
-        level,
-        hash: zeroHash,
-      });
-
-      await zeroHashDocument.save();
-    }
   };
 }
 
