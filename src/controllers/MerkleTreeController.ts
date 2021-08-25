@@ -32,14 +32,15 @@ class MerkleTreeController {
 
     // Get next available index at level 0.
     let nextIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
-    let prevNode: IMerkleTreeNodeDocument;
-    let prevIndex: number;
-
     // TODO - need to handle a full tree?
+
+    let prevNode: IMerkleTreeNodeDocument | null = null;
+    let prevIndex: number = 0;
+
 
     // Iterate up to root.
     for (let level = 0; level < config.TREE_LEVELS; level++) {
-      let node: IMerkleTreeNodeDocument;
+      let node: IMerkleTreeNodeDocument | null;
 
       if (level == 0) {
         // Create the leaf node.
@@ -74,6 +75,8 @@ class MerkleTreeController {
             index: prevIndex - 1,
           });
 
+          if (!sibling) throw new Error(`Sibling not found for ${level - 1}, ${prevIndex}`);
+
           hash = mimcSpongeHash(sibling.hash, hash);
 
           // update existing node
@@ -83,12 +86,17 @@ class MerkleTreeController {
             index: nextIndex,
           });
 
+          if (!node) throw new Error(`Node not found at ${level}, ${nextIndex}`);
+
           node.hash = hash;
+          node.save();
         }
 
-        prevNode.parent = node.id;
+        if (prevNode) {
+          prevNode.parent = node.id;
 
-        await prevNode.save();
+          await prevNode.save();
+        }
       }
 
       prevIndex = nextIndex;

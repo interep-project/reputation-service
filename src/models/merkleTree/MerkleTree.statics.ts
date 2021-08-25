@@ -21,7 +21,7 @@ export async function getNumberOfNodes(
   this: typeof MerkleTreeNode,
   groupId: string,
   level: number
-): Promise<number | null> {
+): Promise<number> {
   return this.countDocuments({ "key.groupId": groupId, "key.level": level });
 }
 

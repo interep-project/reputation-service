@@ -3,14 +3,14 @@ import {
   clearDatabase,
   connect,
   dropDatabaseAndDisconnect,
-} from "src/utils/server/testDatabase";
+} from "../utils/server/testDatabase";
 import MerkleTreeController from "./MerkleTreeController";
 
 import { poseidon } from "circomlib";
 import {
   MerkleTreeNode,
   MerkleTreeZero,
-} from "src/models/merkleTree/MerkleTree.model";
+} from "../models/merkleTree/MerkleTree.model";
 
 function createFakeIdCommitment(...values: BigInt[]): string {
   return poseidon(values);
