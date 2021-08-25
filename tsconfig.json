@@ -17,7 +17,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "typeRoots": ["node_modules/@types", "./src/types"]
   },
   "ts-node": {
     // these options are overrides used only by ts-node
@@ -27,6 +28,6 @@
     }
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts"],
+  "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts", "src/types"],
   "files": ["./hardhat.config.ts"]
 }
