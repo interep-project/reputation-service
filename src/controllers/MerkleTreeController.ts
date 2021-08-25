@@ -212,17 +212,17 @@ class MerkleTreeController {
   };
 
   public createZeroHashes = async (): Promise<void> => {
-    let currentLevel = 0;
+    let level = 0;
     let zeroHash = zeroBytes32;
 
     const zeroHashes = await MerkleTreeZero.findZeroes();
 
     if (zeroHashes && zeroHashes.length > 0) {
-      currentLevel = zeroHashes.length;
-      zeroHash = zeroHashes[currentLevel - 1].hash;
+      level = zeroHashes.length;
+      zeroHash = zeroHashes[level - 1].hash;
     }
 
-    for (let level = currentLevel; level < config.TREE_LEVELS; level++) {
+    for (level; level < config.TREE_LEVELS; level++) {
       zeroHash = mimcSpongeHash(zeroHash, zeroHash);
 
       const zeroHashDocument = await MerkleTreeZero.create({
@@ -230,11 +230,7 @@ class MerkleTreeController {
         hash: zeroHash,
       });
 
-      try {
-        await zeroHashDocument.save();
-      } catch (error) {
-        throw new Error(`Error inserting zero hash document: ${error}`);
-      }
+      await zeroHashDocument.save();
     }
   };
 }

@@ -14,7 +14,7 @@ All environment variables need to be provided. The format for the MongoDB URI is
 To seed the database from seedTwitterUsers.ts (optional):
 
 ```
-yarn run seedDB
+yarn seed:twitterUsers
 ```
 
 ## Running tests
