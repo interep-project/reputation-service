@@ -1,10 +1,5 @@
+import { MerkleTreeNode, MerkleTreeZero } from "./MerkleTree.model";
 import {
-  MerkleTreeLeaf,
-  MerkleTreeNode,
-  MerkleTreeZero,
-} from "./MerkleTree.model";
-import {
-  IMerkleTreeLeafDocument,
   IMerkleTreeNodeDocument,
   IMerkleTreeNodeKey,
   IMerkleTreeZeroDocument,
@@ -17,19 +12,19 @@ export async function findByLevelAndIndex(
   return this.findOne({ key }).populate("parent");
 }
 
+export async function findByHash(
+  this: typeof MerkleTreeNode,
+  hash: string
+): Promise<IMerkleTreeNodeDocument | null> {
+  return this.findOne({ hash }).populate("parent");
+}
+
 export async function getNumberOfNodes(
   this: typeof MerkleTreeNode,
   groupId: string,
   level: number
 ): Promise<number> {
   return this.countDocuments({ "key.groupId": groupId, "key.level": level });
-}
-
-export async function findLeafByIdCommitment(
-  this: typeof MerkleTreeLeaf,
-  idCommitment: string
-): Promise<IMerkleTreeLeafDocument | null> {
-  return this.findOne({ idCommitment }).populate("node");
 }
 
 export async function findZeroes(

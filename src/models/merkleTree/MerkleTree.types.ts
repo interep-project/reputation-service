@@ -1,7 +1,7 @@
 import { Model, Document } from "mongoose";
 import {
   findByLevelAndIndex,
-  findLeafByIdCommitment,
+  findByHash,
   findZeroes,
   getNumberOfNodes,
 } from "./MerkleTree.statics";
@@ -18,23 +18,12 @@ export interface IMerkleTreeNode {
   hash: string;
 }
 
-export interface IMerkleTreeLeaf {
-  groupId: string;
-  idCommitment: string;
-  node: IMerkleTreeNode;
-}
-
 export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
 
 export interface IMerkleTreeNodeModel extends Model<IMerkleTreeNodeDocument> {
   findByLevelAndIndex: typeof findByLevelAndIndex;
+  findByHash: typeof findByHash;
   getNumberOfNodes: typeof getNumberOfNodes;
-}
-
-export interface IMerkleTreeLeafDocument extends IMerkleTreeLeaf, Document {}
-
-export interface IMerkleTreeLeafModel extends Model<IMerkleTreeLeafDocument> {
-  findLeafByIdCommitment: typeof findLeafByIdCommitment;
 }
 
 export interface IMerkleTreeZero {

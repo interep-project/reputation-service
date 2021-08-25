@@ -1,5 +1,4 @@
 import {
-  MerkleTreeLeaf,
   MerkleTreeNode,
   MerkleTreeZero,
 } from "../models/merkleTree/MerkleTree.model";
@@ -20,15 +19,7 @@ class MerkleTreeController {
       throw new Error(`Zero hashes have not yet been created`);
     }
 
-    // Add a leaf. Don't add to DB yet.
-    const leaf = await MerkleTreeLeaf.create({
-      groupId,
-      node: null,
-      idCommitment,
-    });
-
-    // TODO: check method for 1 arg.
-    let hash = mimcSpongeHash(idCommitment, idCommitment);
+    let hash = idCommitment;
 
     // Get next available index at level 0.
     let nextIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
@@ -48,11 +39,6 @@ class MerkleTreeController {
           key: { groupId, level, index: nextIndex },
           hash,
         });
-
-        leaf.node = node;
-
-        console.debug(`Saving leaf`);
-        await leaf.save();
       } else {
         nextIndex = Math.floor(prevIndex / 2);
         console.debug(`Level ${level}, index ${nextIndex}`);
@@ -133,26 +119,28 @@ class MerkleTreeController {
   //     // Update contract with new root
   // }
 
-  public getPath = async (idCommitment: string): Promise<string[] | null> => {
-    // find leaf
-    const leaf = await MerkleTreeLeaf.findLeafByIdCommitment(idCommitment);
-    if (!leaf) return null;
-    //if (!leaf.populated("node")) leaf.populate("node");
+  public retrievePath = async (
+    idCommitment: string
+  ): Promise<string[] | null> => {
+    const leafNode = (await MerkleTreeNode.findByHash(
+      idCommitment
+    )) as IMerkleTreeNodeDocument;
 
-    // get path starting from leaf node
-    return this.getPathByIndex(leaf.node.key.groupId, leaf.node.key.index);
+    // Get path starting from leaf node.
+    return this.getPathByIndex(leafNode.key.groupId, leafNode.key.index);
   };
 
   public getPathByIndex = async (
     groupId: string,
     index: number
   ): Promise<string[]> => {
-    // get path and return array
+    // Get path and return array.
     const key = {
       groupId: groupId,
       level: 0,
       index: index,
     };
+
     const pathQuery = MerkleTreeNode.aggregate([
       {
         $match: {
@@ -204,6 +192,7 @@ class MerkleTreeController {
           console.log(`Error getting path: ${err.message}`);
           reject(err);
         }
+
         console.log(`Path: ${JSON.stringify(path)}`);
 
         resolve(path.map((e) => e.hash));
