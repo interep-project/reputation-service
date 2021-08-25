@@ -15054,10 +15054,10 @@ semaphore@>=1.0.1, semaphore@^1.0.3, semaphore@^1.1.0:
   resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.1.0.tgz#aaad8b86b20fe8e9b32b16dc2ee682a8cd26a8aa"
   integrity sha512-O4OZEaNtkMd/K0i6js9SL+gqy0ZCBMgUvlSqHKi4IBdjhe7wB8pwztUk1BbZ1fmrvpwFrPbHzqd2w5pTcJH6LA==
 
-semethid@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/semethid/-/semethid-0.2.0.tgz#83bfe39f5621bb257d0ea52012bcf8be2e25270d"
-  integrity sha512-pMTg/oMm/Jbjqm+TVvOp+e2fM8a6DsEF4UYZmJ4MnE8B3C6NdqzmnVZUlR8SjBV96fRPzEQwk+74IqxGKQZCzg==
+semethid@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/semethid/-/semethid-0.5.0.tgz#515b0c779c0fb7bd9f8cbd2395775782e4dc75d1"
+  integrity sha512-CKexpn805bCkXYQ0YViB0XgoouKZMUqglqG7N0sO0V0cKaorim8HaA8ygWo0nlrAL5CNzlhH9JkjbiAyxurhJA==
   dependencies:
     circomlib "^0.5.3"
     ethers "^5.4.4"

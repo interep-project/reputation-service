@@ -197,7 +197,7 @@ export default function Home(): JSX.Element {
     }
 
     const groupId = `TWITTER_${twitterReputation?.basicReputation}`;
-    const semaphoreIdentity = await semethid(groupId);
+    const semaphoreIdentity = (await semethid(groupId)).toString();
 
     setSemaphoreGroupMessage(`Adding your Semaphore identity to the group.`);
 
