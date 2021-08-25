@@ -4,7 +4,10 @@ import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 import Group from "src/models/groups/Group.model";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<any> => {
   await dbConnect();
 
   if (req.method === "GET") {
@@ -12,16 +15,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       const groups = await Group.findGroups();
 
       if (!groups) {
-        return res.status(200).send({ tokens: [] });
+        return res.status(200).send([]);
       }
 
-      return res.status(200).send(groups);
+      const filteredGroups = groups.map((group) => ({
+        groupId: group.groupId,
+        description: group.description,
+      }));
+
+      return res.status(200).send(filteredGroups);
     } catch (error) {
       logger.error(error);
       return res.status(500).end();
     }
   } else {
-    res.status(405).end();
+    return res.status(405).end();
   }
 };
 
