@@ -1,5 +1,5 @@
 import { Model, Document } from "mongoose";
-import { findByGroupId } from "./Group.statics";
+import { findByGroupId, findGroups } from "./Group.statics";
 
 export interface IGroup {
   groupId: string;
@@ -10,4 +10,5 @@ export interface IGroupDocument extends IGroup, Document {}
 
 export interface IGroupModel extends Model<IGroupDocument> {
   findByGroupId: typeof findByGroupId;
+  findGroups: typeof findGroups;
 }
