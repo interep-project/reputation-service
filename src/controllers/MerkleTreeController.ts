@@ -139,10 +139,66 @@ class MerkleTreeController {
   //     return [];
   // }
 
-  // public getPathByIndex = async (groupId: string, index: number): Promise<string[]> => {
-  //     // get path and return array
-  //     return [];
-  // }
+  public getPathByIndex = async (groupId: string, index: number): Promise<string[]> => {
+      // get path and return array
+      const key = {
+        groupId: groupId,
+        level: 0,
+        index: index
+      };
+      //const leafNode = await MerkleTreeNode.findByLevelAndIndex(key);
+      //console.log(`Getting path: node ID = ${leafNode?.id}`);
+      const pathQuery = MerkleTreeNode.aggregate([
+        {
+          '$match': {
+            'key': key
+          }
+        }, 
+        { $graphLookup: {
+            'from': 'treeNodes',
+            'startWith': '$_id',
+            'connectFromField': 'parent',
+            'connectToField': '_id',
+            'as': 'path',
+            'depthField': 'level'
+          }
+        }, {
+          '$unwind': {
+            'path': '$path'
+          }
+        }, {
+          '$project': {
+            'path': 1,
+            '_id': 0
+          }
+        }, {
+          '$addFields': {
+            'hash': '$path.hash',
+            'level': '$path.level'
+          }
+        }, {
+          '$sort': {
+            'level': 1
+          }
+        }, {
+          '$project': {
+            'path': 0
+          }
+        }
+      ]);
+
+      return new Promise((resolve, reject) => {
+        pathQuery.exec((err, path) => {
+          if (err) {
+            console.log(`Error getting path: ${err.message}`);
+            reject(err);
+          }
+          console.log(`Path: ${JSON.stringify(path)}`);
+
+          resolve(path.map(e => e.hash));
+        })
+      });
+  }
 
   public createZeroHashes = async (): Promise<void> => {
     let currentLevel = 0;

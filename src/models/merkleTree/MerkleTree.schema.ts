@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { MerkleTreeNode } from "./MerkleTree.model";
 import {
   findByLevelAndIndex,
   findLeafByIdCommitment,
@@ -53,10 +54,6 @@ export const MerkleTreeLeafSchema = new Schema<
 >(MerkleTreeLeafSchemaFields);
 
 MerkleTreeLeafSchema.statics.findLeafByIdCommitment = findLeafByIdCommitment;
-
-MerkleTreeLeafSchema.methods.getPath = function () {
-  // TODO
-};
 
 // Zeroes
 export const MerkleTreeZeroSchemaFields: Record<keyof IMerkleTreeZero, any> = {

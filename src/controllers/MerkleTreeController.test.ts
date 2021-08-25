@@ -12,6 +12,8 @@ import {
   MerkleTreeZero,
 } from "../models/merkleTree/MerkleTree.model";
 
+const TEST_GROUP = "TWITTER_CONFIRMED";
+
 function createFakeIdCommitment(...values: BigInt[]): string {
   return poseidon(values);
 }
@@ -44,7 +46,7 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should not append any leaf without first creating the zero hashes", async () => {
-      const groupId = "TWITTER_CONFIRMED";
+      const groupId = TEST_GROUP;
       const idCommitment = createFakeIdCommitment(2n, 1n);
 
       const fun = (): Promise<string> =>
@@ -60,7 +62,7 @@ describe("MerkleTreeController", () => {
         const idCommitment = createFakeIdCommitment(BigInt(i));
 
         await MerkleTreeController.appendLeaf(
-          "TWITTER_CONFIRMED",
+          TEST_GROUP,
           idCommitment
         );
       }
@@ -68,13 +70,19 @@ describe("MerkleTreeController", () => {
       const expectedNodes = [10, 5, 3, 2, 1, 1, 1];
       for (let i = 0; i<expectedNodes.length; i++) {
         const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(
-          "TWITTER_CONFIRMED",
+          TEST_GROUP,
           i
         );
 
         expect(numberOfNodes).toBe(expectedNodes[i]);
       }
 
+      const path = await MerkleTreeController.getPathByIndex(TEST_GROUP, 1);
+      console.log(`Path: ${JSON.stringify(path)}`);
+      expect(path).toBeDefined();
+      expect(path.length).toBe(config.TREE_LEVELS);
+
     });
+
   });
 });

@@ -12,6 +12,7 @@
     "test": "jest",
     "test:ci": "hardhat compile && ./node_modules/.bin/jest",
     "test:w": "jest --watch",
+    "test:tree": "npx jest src/controllers/MerkleTreeController.test.ts --coverage false",
     "eth:compile": "hardhat clean && hardhat compile",
     "eth:test": "NODE_ENV=test hardhat test",
     "eth:coverage": "hardhat coverage --solcoverjs ./.solcover.js --testfiles \"src/tests/contracts/*.ts\"",
