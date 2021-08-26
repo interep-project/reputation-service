@@ -56,9 +56,11 @@ export async function seedZeroHashes(logger = true): Promise<void> {
 
   if (level < config.TREE_LEVELS) {
     for (level; level < config.TREE_LEVELS; level++) {
+      zeroHash = mimcSpongeHash(zeroHash, zeroHash);
+
       const zeroHashDocument = await MerkleTreeZero.create({
         level,
-        hash: mimcSpongeHash(zeroHash, zeroHash),
+        hash: zeroHash,
       });
 
       await zeroHashDocument.save();
