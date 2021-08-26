@@ -124,8 +124,8 @@ describe("MerkleTreeController", () => {
       }
 
       const path = (await MerkleTreeController.retrievePath(
-        idCommitments[0]
-      )) as string[];
+        idCommitments[5]
+      )) as any[];
 
       expect(path.length).toBe(config.TREE_LEVELS);
     });

@@ -130,7 +130,7 @@ class MerkleTreeController {
   //     // Update contract with new root
   // }
 
-  public retrievePath = async (idCommitment: string): Promise<string[]> => {
+  public retrievePath = async (idCommitment: string): Promise<any[]> => {
     // Get path starting from leaf node.
     const leafNode = await MerkleTreeNode.findByHash(idCommitment);
 
@@ -170,7 +170,8 @@ class MerkleTreeController {
       },
       {
         $addFields: {
-          hash: "$path.hash",
+          sibling: "$path.siblingHash",
+          index: {$mod: ["$path.key.index",2]},
           level: "$path.level",
         },
       },
@@ -192,7 +193,7 @@ class MerkleTreeController {
           reject(error);
         }
 
-        resolve(path.map((e) => e.hash));
+        resolve(path.map((e) => {return {siblingHash: e.sibling, index: e.index}}));
       });
     });
   };
