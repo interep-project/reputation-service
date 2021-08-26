@@ -75,7 +75,15 @@ class MerkleTreeController {
 
       if (prevNode) {
         if (prevNode.siblingHash) {
-          hash = mimcSpongeHash(prevNode.hash, prevNode.siblingHash);
+          let left, right: string;
+          if (prevIndex % 2 == 0) {
+            left = prevNode.hash;
+            right = prevNode.siblingHash;
+          } else {
+            left = prevNode.siblingHash;
+            right = prevNode.hash;
+          }
+          hash = mimcSpongeHash(left, right);
         }
       }
 
