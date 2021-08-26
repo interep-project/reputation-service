@@ -15,6 +15,7 @@ export interface IMerkleTreeNodeKey {
 export interface IMerkleTreeNode {
   key: IMerkleTreeNodeKey;
   parent?: IMerkleTreeNode; // Root node has no parent
+  sibling?: IMerkleTreeNode | IMerkleTreeZero; // Root has no sibling
   hash: string;
 }
 

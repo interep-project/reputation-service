@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { MerkleTreeNode } from "./MerkleTree.model";
 import {
   findByLevelAndIndex,
   findByHash,
@@ -24,7 +25,12 @@ const MerkleTreeNodeSchemaFields: Record<keyof IMerkleTreeNode, any> = {
   parent: {
     type: Schema.Types.ObjectId,
     required: false,
-    ref: "MerkleTreeNode",
+    ref: 'MerkleTreeNode',
+  },
+  sibling: {
+    type: Schema.Types.ObjectId,
+    required: false,
+    ref: 'MerkleTreeNode', //TODO - allow MerkleTreeZero?
   },
   hash: String,
 };

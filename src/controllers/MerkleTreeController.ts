@@ -2,7 +2,7 @@ import {
   MerkleTreeNode,
   MerkleTreeZero,
 } from "../models/merkleTree/MerkleTree.model";
-import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types";
+import { IMerkleTreeNode, IMerkleTreeNodeDocument, IMerkleTreeZero } from "../models/merkleTree/MerkleTree.types";
 import mimcSpongeHash from "../utils/crypto/hasher";
 import config from "../config";
 import Group from "src/models/groups/Group.model";
@@ -28,9 +28,9 @@ class MerkleTreeController {
     }
 
     // Get next available index at level 0.
-    let nextIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
+    let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0);
 
-    if (nextIndex >= 2 ** config.TREE_LEVELS) {
+    if (currentIndex >= 2 ** config.TREE_LEVELS) {
       throw new Error(`The tree is full`);
     }
 
@@ -42,76 +42,73 @@ class MerkleTreeController {
     for (let level = 0; level < config.TREE_LEVELS; level++) {
       let node: IMerkleTreeNodeDocument | null;
 
-      if (level == 0) {
-        // Create the leaf node.
-        node = await MerkleTreeNode.create({
-          key: { groupId, level, index: nextIndex },
-          hash,
-        });
+      if (level > 0) {
+        currentIndex = Math.floor(prevIndex / 2);
+        console.debug(`Level ${level} Index: ${currentIndex}`);
+      }
+
+      let sibling: IMerkleTreeNode | IMerkleTreeZero | null = null;
+      let isLeft = false;
+      if (currentIndex % 2 == 0) {
+        // Left node. Set this level's zero as sibling
+        sibling = zeroes[level];
+        isLeft = true;
+        //console.debug(`left node: sibling is zeroes`);
       } else {
-        nextIndex = Math.floor(prevIndex / 2);
+        // Right node. Set each other as siblings.
+        sibling = await MerkleTreeNode.findByLevelAndIndex({
+          groupId, 
+          level, 
+          index: currentIndex - 1
+        });
+        //console.debug(`right node: sibling is index ${sibling?.key.index}`);
+      }
 
-        if (prevIndex % 2 == 0) {
-          // left child node
-          // hash with zero hash for that level
-          hash = mimcSpongeHash(hash, zeroes[level - 1].hash);
+      // Get parent node
+      node = await MerkleTreeNode.findByLevelAndIndex({
+        groupId,
+        level,
+        index: currentIndex,
+      });
 
-          // Get parent node
-          node = await MerkleTreeNode.findByLevelAndIndex({
-            groupId,
-            level,
-            index: nextIndex,
-          });
-          // First time in a new branch these need to be created
-          if (!node) {
-            // create new parent node
-            node = await MerkleTreeNode.create({
-              key: { groupId, level, index: nextIndex },
-              hash,
-            });
-          } else {
-            node.hash = hash;
-            await node.save();
-          }
-        } else {
-          // right node
-          // hash with left sibling from previous level
-          const sibling = await MerkleTreeNode.findByLevelAndIndex({
-            // key
-            groupId,
-            level: level - 1,
-            index: prevIndex - 1,
-          });
-
-          if (!sibling) {
-            throw new Error(`Sibling not found for ${level - 1}, ${prevIndex}`);
-          }
-
-          hash = mimcSpongeHash(sibling.hash, hash);
-
-          // update existing node
-          node = await MerkleTreeNode.findByLevelAndIndex({
-            groupId,
-            level,
-            index: nextIndex,
-          });
-
-          if (!node) {
-            throw new Error(`Node not found at ${level}, ${nextIndex}`);
-          }
-
-          node.hash = hash;
-          await node.save();
-        }
-
-        if (prevNode) {
-          prevNode.parent = node;
-
-          await prevNode.save();
+      if (prevNode !== null) {
+        if (prevNode.sibling) {
+          prevNode.populate('sibling');
+          hash = mimcSpongeHash(prevNode.hash, prevNode.sibling.hash);
         }
       }
 
-      prevIndex = nextIndex;
+      // First time in a new branch the node needs to be created
+      if (!node) {
+        console.debug(`Create new node`);
+          // Create new node.
+          try {
+            node = await MerkleTreeNode.create({
+              key: { groupId, level, index: currentIndex },
+              sibling: sibling,
+              hash,
+            });
+          } catch (err) {
+            console.error(`Error adding node: ${err.message}`);
+          }
+      } else {
+        node.hash = hash;
+        await node.save();
+      }
+
+      if (!isLeft) {
+        console.debug(`r node: setting l node sibling to self`);
+        const sib = (sibling as IMerkleTreeNodeDocument);
+        sib.sibling = node;
+        if (sib) await sib.save();
+      }
+
+      if (prevNode && !prevNode.populated('parent')) {
+        prevNode.parent = node;
+        await prevNode.save();
+      }
+
+      prevIndex = currentIndex;
       prevNode = node;
     }
 
