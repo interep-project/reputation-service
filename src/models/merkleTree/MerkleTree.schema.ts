@@ -24,7 +24,7 @@ const MerkleTreeNodeSchemaFields: Record<keyof IMerkleTreeNode, any> = {
   parent: {
     type: Schema.Types.ObjectId,
     required: false,
-    ref: 'MerkleTreeNode',
+    ref: "MerkleTreeNode",
   },
   siblingHash: String,
   hash: String,

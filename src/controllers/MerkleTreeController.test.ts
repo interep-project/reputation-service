@@ -127,6 +127,8 @@ describe("MerkleTreeController", () => {
         idCommitments[5]
       )) as any[];
 
+      console.log(path);
+
       expect(path.length).toBe(config.TREE_LEVELS);
     });
   });

@@ -58,9 +58,9 @@ class MerkleTreeController {
       } else {
         // Right node. Set each other as siblings.
         sibling = await MerkleTreeNode.findByLevelAndIndex({
-          groupId, 
-          level, 
-          index: currentIndex - 1
+          groupId,
+          level,
+          index: currentIndex - 1,
         });
         siblingHash = sibling?.hash;
         //console.debug(`right node: sibling is index ${sibling?.key.index}`);
@@ -89,16 +89,16 @@ class MerkleTreeController {
 
       // First time in a new branch the node needs to be created
       if (!node) {
-          // Create new node.
-          try {
-            node = await MerkleTreeNode.create({
-              key: { groupId, level, index: currentIndex },
-              siblingHash,
-              hash,
-            });
-          } catch (err) {
-            console.error(`Error adding node: ${err.message}`);
-          }
+        // Create new node.
+        try {
+          node = await MerkleTreeNode.create({
+            key: { groupId, level, index: currentIndex },
+            siblingHash,
+            hash,
+          });
+        } catch (err) {
+          console.error(`Error adding node: ${err.message}`);
+        }
       } else {
         node.hash = hash;
         await node.save();
@@ -109,7 +109,7 @@ class MerkleTreeController {
         await sibling.save();
       }
 
-      if (prevNode && !prevNode.populated('parent')) {
+      if (prevNode && !prevNode.populated("parent")) {
         if (node) prevNode.parent = node;
         await prevNode.save();
       }
@@ -171,7 +171,7 @@ class MerkleTreeController {
       {
         $addFields: {
           sibling: "$path.siblingHash",
-          index: {$mod: ["$path.key.index",2]},
+          index: { $mod: ["$path.key.index", 2] },
           level: "$path.level",
         },
       },
@@ -193,7 +193,11 @@ class MerkleTreeController {
           reject(error);
         }
 
-        resolve(path.map((e) => {return {siblingHash: e.sibling, index: e.index}}));
+        resolve(
+          path.map((e) => {
+            return { siblingHash: e.sibling, index: e.index };
+          })
+        );
       });
     });
   };
