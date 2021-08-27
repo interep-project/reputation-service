@@ -14,7 +14,7 @@ import {
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
-import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
 import { getChecksummedAddress } from "src/utils/crypto/address";

@@ -27,7 +27,7 @@
       "module": "commonjs"
     }
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "contracts"],
   "include": [
     "**/*.d.ts",
     "**/*.ts",

@@ -1,26 +1,19 @@
-import { resolve } from "path";
+import "@nomiclabs/hardhat-ethers";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig, task } from "hardhat/config";
-import "@nomiclabs/hardhat-waffle";
-import "@nomiclabs/hardhat-etherscan";
-import "@typechain/hardhat";
-import "solidity-coverage";
-import "hardhat-gas-reporter";
-import "@openzeppelin/hardhat-upgrades";
-
+import { resolve } from "path";
 import "tsconfig-paths/register";
 import { defaultNetworkByEnv } from "src/config";
+import hardhatConfig from "./contracts/hardhat.config";
 
 task("faucet", "Sends ETH to an address")
   .addPositionalParam("receiver", "The address that will receive them")
-  .setAction(async ({ receiver }) => {
-    // @ts-ignore: hre is defined inside a task
-    const [sender] = await hre.ethers.getSigners();
+  .setAction(async ({ receiver }, { ethers }) => {
+    const [sender] = await ethers.getSigners();
 
     const tx2 = await sender.sendTransaction({
       to: receiver,
-      // @ts-ignore: hre is defined inside a task
-      value: hre.ethers.constants.WeiPerEther,
+      value: ethers.constants.WeiPerEther,
     });
     await tx2.wait();
 
@@ -29,64 +22,15 @@ task("faucet", "Sends ETH to an address")
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const getNetworks = () => {
-  if (process.env.NODE_ENV === "production") {
-    const infuraApiKey = process.env.INFURA_API_KEY;
-    if (!infuraApiKey) {
-      throw new Error("Please set your INFURA_API_KEY in a .env file");
-    }
-
-    if (!process.env.BACKEND_PRIVATE_KEY) {
-      throw new Error("Please set BACKEND_PRIVATE_KEY in a .env file");
-    }
-    const accounts = [`0x${process.env.BACKEND_PRIVATE_KEY}`];
-
-    return {
-      ropsten: {
-        url: "https://ropsten.infura.io/v3/" + infuraApiKey,
-        chainId: 3,
-        accounts,
-      },
-      kovan: {
-        url: "https://kovan.infura.io/v3/" + infuraApiKey,
-        chainId: 42,
-        accounts,
-      },
-      arbitrum: {
-        url: "https://arb1.arbitrum.io/rpc",
-        chainId: 42161,
-        accounts,
-      },
-      // arbitrum: {
-      //   url: "https://rinkeby.arbitrum.io/rpc",
-      //   chainId: 421611,
-      //   gasPrice: 0,
-      //   accounts,
-      // },
-    };
-  }
-
-  return undefined;
-};
-
 const config: HardhatUserConfig = {
   defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV]?.name || "hardhat",
-  solidity: {
-    version: "0.8.0",
-  },
-  networks: getNetworks(),
+  networks: hardhatConfig.networks,
+  solidity: hardhatConfig.solidity,
   paths: {
-    sources: "src/contracts",
-    tests: "src/tests/contracts",
-  },
-  typechain: {
-    outDir: "typechain",
-  },
-  gasReporter: {
-    currency: "USD",
-  },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    artifacts: "contracts/artifacts",
+    sources: "contracts/contracts",
+    tests: "contracts/test",
+    cache: "contracts/cache",
   },
 };
 

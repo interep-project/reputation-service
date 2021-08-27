@@ -29,4 +29,4 @@ jobs:
         run: yarn --prefer-offline --frozen-lockfile
 
       - name: Run tests
-        run: yarn run test:ci
+        run: yarn run test

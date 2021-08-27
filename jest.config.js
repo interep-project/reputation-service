@@ -18,5 +18,4 @@ module.exports = {
     "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
   },
   transformIgnorePatterns: ["node_modules/(?!ethereum-cryptography).*"],
-  coveragePathIgnorePatterns: ["src/tests/contracts"],
 };
