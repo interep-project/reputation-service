@@ -4,7 +4,7 @@ import { HardhatUserConfig, task } from "hardhat/config";
 import { resolve } from "path";
 import "tsconfig-paths/register";
 import { defaultNetworkByEnv } from "src/config";
-import hardhatConfig from "./contracts/hardhat.config";
+import { NetworksUserConfig } from "hardhat/types";
 
 task("faucet", "Sends ETH to an address")
   .addPositionalParam("receiver", "The address that will receive them")
@@ -22,10 +22,42 @@ task("faucet", "Sends ETH to an address")
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
+function getNetworks(): NetworksUserConfig | undefined {
+  if (process.env.NODE_ENV === "production") {
+    if (!process.env.INFURA_API_KEY) {
+      throw new Error("Please set your INFURA_API_KEY in a .env file");
+    }
+
+    if (!process.env.BACKEND_PRIVATE_KEY) {
+      throw new Error("Please set your BACKEND_PRIVATE_KEY in a .env file");
+    }
+
+    const infuraApiKey = process.env.INFURA_API_KEY;
+    const accounts = [`0x${process.env.BACKEND_PRIVATE_KEY}`];
+
+    return {
+      ropsten: {
+        url: `https://ropsten.infura.io/v3/${infuraApiKey}`,
+        chainId: 3,
+        accounts,
+      },
+      kovan: {
+        url: `https://kovan.infura.io/v3/${infuraApiKey}`,
+        chainId: 42,
+        accounts,
+      },
+      arbitrum: {
+        url: "https://arb1.arbitrum.io/rpc",
+        chainId: 42161,
+        accounts,
+      },
+    };
+  }
+}
+
 const config: HardhatUserConfig = {
   defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV]?.name || "hardhat",
-  networks: hardhatConfig.networks,
-  solidity: hardhatConfig.solidity,
+  networks: getNetworks(),
   paths: {
     artifacts: "contracts/artifacts",
     sources: "contracts/contracts",
