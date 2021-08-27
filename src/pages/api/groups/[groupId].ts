@@ -1,10 +1,12 @@
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { withSentry } from "@sentry/nextjs";
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
-import { dbConnect } from "src/utils/server/database";
-import logger from "src/utils/server/logger";
-import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import MerkleTreeController from "src/controllers/MerkleTreeController";
+import { getContractInstance } from "src/core/blockchain/InterRepGroups/InterRepGroupsContract";
+import Web2Account from "src/models/web2Accounts/Web2Account.model";
+import { dbConnect } from "src/utils/server/database";
+import { ethers } from "hardhat";
+import logger from "src/utils/server/logger";
 
 const handler = async (
   req: NextApiRequest,
@@ -65,7 +67,19 @@ const handler = async (
       );
     }
 
-    await MerkleTreeController.appendLeaf(groupId, identityCommitment);
+    const rootHash = await MerkleTreeController.appendLeaf(
+      groupId,
+      identityCommitment
+    );
+
+    // Update contract with new root.
+    const interRepGroups = await getContractInstance();
+
+    await interRepGroups.addRootHash(
+      ethers.utils.formatBytes32String(groupId),
+      identityCommitment,
+      rootHash
+    );
 
     return res.status(201).send({ status: "ok" });
   } catch (error) {

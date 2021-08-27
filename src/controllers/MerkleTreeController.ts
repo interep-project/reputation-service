@@ -118,7 +118,6 @@ class MerkleTreeController {
       prevNode = node;
     }
 
-    // Update contract with new root.
     return hash;
   };
 
