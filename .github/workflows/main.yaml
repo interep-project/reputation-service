@@ -3,7 +3,7 @@ name: Reputation Service CI
 on: [pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -12,6 +12,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "14.x"
+
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -26,7 +31,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn --prefer-offline --frozen-lockfile
+        run: |
+          yarn --immutable
+          cd contracts && yarn --immutable
+          yarn compile
 
       - name: Run tests
-        run: yarn run test:ci
+        run: yarn test

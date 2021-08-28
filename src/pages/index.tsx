@@ -14,7 +14,7 @@ import {
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
-import ReputationBadge from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
+import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import useEncryption from "src/hooks/useEncryption";
 import { getChecksummedAddress } from "src/utils/crypto/address";
@@ -172,7 +172,7 @@ export default function Home(): JSX.Element {
     }
   }, [session, accountLinkingMessage]);
 
-  const createSemaphoreIdentity = useCallback(async () => {
+  const createIdentityCommitment = useCallback(async () => {
     if (!signer || !address) {
       console.error("Can't sign without a signer");
       return;
@@ -197,7 +197,7 @@ export default function Home(): JSX.Element {
     }
 
     const groupId = `TWITTER_${twitterReputation?.basicReputation}`;
-    const semaphoreIdentity = await semethid(groupId);
+    const identityCommitment = (await semethid(groupId)).toString();
 
     setSemaphoreGroupMessage(`Adding your Semaphore identity to the group.`);
 
@@ -205,7 +205,7 @@ export default function Home(): JSX.Element {
       const res = await fetch(`/api/groups/${groupId}`, {
         method: "PUT",
         body: JSON.stringify({
-          semaphoreIdentity,
+          identityCommitment,
           web2AccountId: session.web2AccountId,
         }),
       });
@@ -417,7 +417,7 @@ export default function Home(): JSX.Element {
                 buttonDisabled={
                   !connected || !twitterReputation?.basicReputation
                 }
-                onClick={() => createSemaphoreIdentity()}
+                onClick={() => createIdentityCommitment()}
                 divider
               />
               <ActionSection

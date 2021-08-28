@@ -5,6 +5,7 @@ module.exports = {
   modulePaths: ["<rootDir>"],
   clearMocks: true,
   collectCoverage: true,
+  setupFiles: ["dotenv/config"],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
     "!src/mocks/**",
@@ -17,5 +18,4 @@ module.exports = {
     "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
   },
   transformIgnorePatterns: ["node_modules/(?!ethereum-cryptography).*"],
-  coveragePathIgnorePatterns: ["src/tests/contracts"],
 };

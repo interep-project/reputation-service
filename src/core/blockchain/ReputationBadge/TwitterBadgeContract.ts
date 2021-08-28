@@ -1,19 +1,18 @@
+import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
+import { Contract } from "ethers";
 import { ethers } from "hardhat";
+import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 import {
   DeployedContracts,
   getDeployedContractAddress,
 } from "src/utils/crypto/deployedContracts";
-import { ReputationBadge } from "typechain";
-
-import ReputationBadgeArtifact from "artifacts/src/contracts/ReputationBadge.sol/ReputationBadge.json";
-import { stringToBigNumber } from "src/utils/crypto/bigNumber";
 
 const ReputationBadgeInterface = new ethers.utils.Interface(
-  ReputationBadgeArtifact.abi
+  ReputationBadge.abi
 );
 
 // TODO: Refactor this file
-let instance: ReputationBadge;
+let instance: Contract;
 
 export const getInstance = async (contractAddress?: string) => {
   if (instance) return instance;
@@ -27,10 +26,7 @@ export const getInstance = async (contractAddress?: string) => {
     );
   }
 
-  instance = (await ethers.getContractAt(
-    "ReputationBadge",
-    address
-  )) as ReputationBadge;
+  instance = await ethers.getContractAt("ReputationBadge", address);
 
   if (!instance) {
     throw new Error("Error while instantiating Twitter Badge contract");
