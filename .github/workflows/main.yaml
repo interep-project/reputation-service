@@ -34,6 +34,7 @@ jobs:
         run: |
           yarn --immutable
           cd contracts && yarn --immutable
+          yarn compile
 
       - name: Run tests
         run: yarn test
