@@ -32,8 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn --prefer-offline --frozen-lockfile
-          cd contracts && yarn --prefer-offline --frozen-lockfile
+          yarn --frozen-lockfile
+          cd contracts && yarn --frozen-lockfile
 
       - name: Run tests
         run: yarn test
