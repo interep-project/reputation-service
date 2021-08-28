@@ -32,8 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn --frozen-lockfile
-          cd contracts && yarn --frozen-lockfile
+          yarn --immutable
+          cd contracts && yarn --immutable
 
       - name: Run tests
         run: yarn test
