@@ -1,5 +1,5 @@
+import seedTwitterUsers from "src/utils/seeding/seedTwitterUsers";
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
-import { seedTwitterUsers } from "./seedingFunctions";
 
 const twitterUsernames = [
   // "twobitidiot",
@@ -30,7 +30,7 @@ const twitterUsernames = [
   dbConnect();
 
   try {
-    await seedTwitterUsers(twitterUsernames);
+    await seedTwitterUsers(twitterUsernames, true);
     dbDisconnect();
 
     process.exit(0);

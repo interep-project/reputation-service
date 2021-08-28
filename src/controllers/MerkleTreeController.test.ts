@@ -1,5 +1,6 @@
 import { poseidon } from "circomlib";
-import { seedGroups, seedZeroHashes } from "scripts/seeding/seedingFunctions";
+import seedGroups from "src/utils/seeding/seedGroups";
+import seedZeroHashes from "src/utils/seeding/seedRootHashes";
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types";
 import { MerkleTreeNode } from "../models/merkleTree/MerkleTree.model";
 import {

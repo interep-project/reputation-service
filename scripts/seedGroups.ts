@@ -1,5 +1,5 @@
+import seedGroups from "src/utils/seeding/seedGroups";
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
-import { seedGroups } from "./seedingFunctions";
 
 const groups = [
   {
@@ -22,7 +22,7 @@ const groups = [
   dbConnect();
 
   try {
-    await seedGroups(groups);
+    await seedGroups(groups, true);
     dbDisconnect();
 
     process.exit(0);

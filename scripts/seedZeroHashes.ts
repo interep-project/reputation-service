@@ -1,11 +1,11 @@
+import seedZeroHashes from "src/utils/seeding/seedRootHashes";
 import { dbConnect, dbDisconnect } from "src/utils/server/database";
-import { seedZeroHashes } from "./seedingFunctions";
 
 (async () => {
   dbConnect();
 
   try {
-    await seedZeroHashes();
+    await seedZeroHashes(true);
     dbDisconnect();
 
     process.exit(0);
