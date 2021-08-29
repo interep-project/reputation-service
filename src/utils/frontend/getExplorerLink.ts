@@ -1,6 +1,6 @@
 import { SupportedChainId } from "src/config";
 
-const ETHERSCAN_PREFIXES: { [chainId: number]: string } = {
+const ETHERSCAN_PREFIXES: { [chainId: string]: string } = {
   [SupportedChainId.kovan]: "kovan.",
   [SupportedChainId.ropsten]: "ropsten.",
 };

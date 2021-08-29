@@ -20,25 +20,25 @@ const deployedContracts: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
     [DeployedContracts.INTERREP_GROUPS]:
-      "0x18d022518c7ac0077f1406e82b054c0a96408116",
+      "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419",
   },
   42: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x99FCf805C468977e0F8Ceae21935268EEceadC07",
     [DeployedContracts.INTERREP_GROUPS]:
-      "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "0xa321683924BeBbB6Ea8e3fA5734068fbD5a63381",
   },
   421611: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
     [DeployedContracts.INTERREP_GROUPS]:
-      "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419",
   },
   42161: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
     [DeployedContracts.INTERREP_GROUPS]:
-      "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419",
   },
 };
 
