@@ -20,7 +20,7 @@ const deployedContracts: {
     [DeployedContracts.TWITTER_BADGE]:
       "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
     [DeployedContracts.INTERREP_GROUPS]:
-      "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "0x18d022518c7ac0077f1406e82b054c0a96408116",
   },
   42: {
     [DeployedContracts.TWITTER_BADGE]:
