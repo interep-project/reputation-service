@@ -34,7 +34,7 @@ describe("getDefaultNetworkId", () => {
       .spyOn(process.env, "NODE_ENV", "get")
       .mockReturnValueOnce("production");
 
-    expect(getDefaultNetworkId()).toBe(3);
+    expect(getDefaultNetworkId()).toBe(42);
   });
 });
 
@@ -60,6 +60,6 @@ describe("getDefaultNetworkName", () => {
       .spyOn(process.env, "NODE_ENV", "get")
       .mockReturnValueOnce("production");
 
-    expect(getDefaultNetworkName()).toBe("ropsten");
+    expect(getDefaultNetworkName()).toBe("kovan");
   });
 });
