@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prepare": "cd contracts && yarn && yarn compile",
     "build": "NODE_OPTIONS='--max-old-space-size=1536' next build --debug",
     "analyze": "ANALYZE=true yarn build",
     "start": "next start",
