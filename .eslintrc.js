@@ -44,6 +44,7 @@ module.exports = {
             "ts-ignore": "allow-with-description",
           },
         ],
+        "@typescript-eslint/no-explicit-any": "off",
         // Require return types on functions only where useful.
         "@typescript-eslint/explicit-function-return-type": [
           "warn",
