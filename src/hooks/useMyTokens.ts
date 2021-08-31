@@ -1,29 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
+import { getTokens } from "src/utils/frontend/api";
 
 const useMyTokens = (
   address?: string
-): { tokens: any[]; refetchTokens: () => Promise<null | undefined> } => {
+): { tokens: any[]; refetchTokens: () => Promise<void> } => {
   const [tokens, setTokens] = useState([]);
 
   const getMyTokens = useCallback(async () => {
-    let response;
-    try {
-      response = await fetch(`/api/tokens/?owner=${address}`);
-    } catch (err) {
-      console.error(err);
-    }
+    if (address) {
+      const response = await getTokens({ ownerAddress: address });
 
-    if (response?.status === 200) {
-      const { tokens } = await response.json();
-      setTokens(tokens);
-    } else {
-      return null;
+      if (response) {
+        setTokens(response.tokens);
+      }
     }
   }, [address]);
 
   useEffect(() => {
-    address && getMyTokens();
-  }, [address, getMyTokens]);
+    getMyTokens();
+  }, [getMyTokens]);
 
   return { tokens, refetchTokens: getMyTokens };
 };

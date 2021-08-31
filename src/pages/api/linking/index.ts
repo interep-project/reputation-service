@@ -9,7 +9,7 @@ import logger from "src/utils/server/logger";
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<{ isLinkedToAddress: boolean } | void | { error: string }> => {
+): Promise<void> => {
   await dbConnect();
 
   if (req.method !== "PUT") {
@@ -59,7 +59,7 @@ const handler = async (
     });
 
     return token instanceof Token
-      ? res.status(201).send({ status: "ok" })
+      ? res.status(201).send(token.toJSON())
       : res.status(500).end();
   } catch (err) {
     logger.error(err);

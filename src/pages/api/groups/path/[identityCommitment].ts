@@ -3,11 +3,12 @@ import { withSentry } from "@sentry/nextjs";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
 import MerkleTreeController from "src/controllers/MerkleTreeController";
+import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model";
 
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<any> => {
+): Promise<void> => {
   await dbConnect();
 
   if (req.method !== "GET") {
@@ -21,6 +22,10 @@ const handler = async (
   }
 
   try {
+    if (!(await MerkleTreeNode.findByHash(identityCommitment))) {
+      return res.status(400).send("The identity commitment does not exist");
+    }
+
     const path = await MerkleTreeController.retrievePath(identityCommitment);
 
     if (!path) {
@@ -30,6 +35,7 @@ const handler = async (
     return res.status(200).send(path);
   } catch (error) {
     logger.error(error);
+
     return res.status(500).end();
   }
 };

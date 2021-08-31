@@ -4,7 +4,6 @@ import { getNFTMetadataObject } from "src/core/blockchain/ReputationBadge/getNFT
 import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract";
 import mintToken from "src/core/linking/mintToken";
 import Token from "src/models/tokens/Token.model";
-import { ITokenDocument } from "src/models/tokens/Token.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import {
   DeployedContracts,
@@ -16,14 +15,14 @@ class TokenController {
   public getTokensByAddress = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     try {
       const owner = req.query.owner;
+
       if (!owner || typeof owner !== "string") {
         return res.status(400).end();
       }
+
       const ownerChecksummedAddress = getChecksummedAddress(owner);
 
       if (!ownerChecksummedAddress)
@@ -47,9 +46,7 @@ class TokenController {
   public getTokenByContractAndId = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     try {
       const contractAddress = req.query?.contractAddress;
       const decimalId = req.query?.id;
@@ -84,9 +81,7 @@ class TokenController {
   public mintToken = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     const { tokenId } = JSON.parse(req.body);
 
     if (!tokenId) return res.status(400).end();

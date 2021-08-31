@@ -28,10 +28,9 @@ const handler = async (
   const web2AccountIdFromSession = jwToken?.web2AccountId;
 
   if (!web2AccountIdFromSession) {
-    return res.status(403).send({
-      success: false,
-      error: "No web 2 account id from session. User might not be logged in.",
-    });
+    return res
+      .status(403)
+      .send("No web 2 account id from session. User might not be logged in");
   }
   const { decryptedAttestation } = JSON.parse(req.body);
   try {

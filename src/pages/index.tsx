@@ -31,58 +31,14 @@ import {
 } from "@material-ui/core";
 import { getSemaphoreGroupInstruction } from "src/utils/frontend/getSemaphoreGroupInstruction";
 import Badges from "src/components/Badges";
-
-// TODO: create abstraction for calls to API and error handling
-const getMyTwitterReputation = async () => {
-  let response;
-  try {
-    response = await fetch(`/api/reputation/twitter/me`);
-  } catch (err) {
-    console.error(err);
-  }
-
-  if (response?.status === 200) {
-    return await response.json();
-  } else {
-    return null;
-  }
-};
-
-const callCheckLink = async () => {
-  const response = await fetch(`/api/linking/checkLink`);
-
-  if (response?.status === 200) {
-    return await response.json();
-  } else {
-    console.error("Can't determine if account is already linked");
-    return null;
-  }
-};
-
-const mintToken = async (tokenId: string) => {
-  try {
-    const response = await fetch(`/api/tokens/mint`, {
-      method: "POST",
-      body: JSON.stringify({
-        tokenId,
-      }),
-    });
-
-    if (response?.status === 200) {
-      const data = await response.json();
-      return data;
-    } else if (response?.status === 400) {
-      const data = await response.json();
-      console.error(`Error: ${data.error}`);
-      return;
-    } else {
-      console.error(`Error while minting token`);
-      return;
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
+import {
+  mintToken,
+  checkLink,
+  getTwitterReputation,
+  unlinkAccounts,
+  addIdentityCommitment,
+  linkAccounts,
+} from "src/utils/frontend/api";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -101,7 +57,6 @@ export default function Home(): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
   const hasASession = !!session;
-
   const {
     connect,
     address,
@@ -122,7 +77,6 @@ export default function Home(): JSX.Element {
   const [isOnProperNetwork, setIsOnProperNetwork] = useState<boolean | null>(
     null
   );
-
   const { tokens, refetchTokens } = useMyTokens(address);
 
   useEffect(() => {
@@ -152,24 +106,13 @@ export default function Home(): JSX.Element {
     [networkId]
   );
 
-  const checkIfMyAccountIsLinked = () => {
-    callCheckLink()
-      .then((response) => {
-        response && setIsCurrentAccountLinked(response.isLinkedToAddress);
-      })
-      .catch((error) => console.error(error));
-  };
-
   useEffect(() => {
-    if (session) {
-      getMyTwitterReputation()
-        .then((reputation) => {
-          setTwitterReputation(reputation);
-        })
-        .catch((error) => console.error(error));
-
-      checkIfMyAccountIsLinked();
-    }
+    (async () => {
+      if (session) {
+        setTwitterReputation(await getTwitterReputation());
+        setIsCurrentAccountLinked(await checkLink());
+      }
+    })();
   }, [session, accountLinkingMessage]);
 
   const createIdentityCommitment = useCallback(async () => {
@@ -177,6 +120,7 @@ export default function Home(): JSX.Element {
       console.error("Can't sign without a signer");
       return;
     }
+
     if (!session?.web2AccountId) {
       console.error("Unknown Web 2 account");
       return;
@@ -201,29 +145,18 @@ export default function Home(): JSX.Element {
 
     setSemaphoreGroupMessage(`Adding your Semaphore identity to the group.`);
 
-    try {
-      const res = await fetch(`/api/groups/${groupId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          identityCommitment,
-          web2AccountId: session.web2AccountId,
-        }),
-      });
+    const rootHash = await addIdentityCommitment({
+      groupId,
+      identityCommitment,
+      web2AccountId: session.web2AccountId,
+    });
 
-      const payload = await res.json();
-
-      if (payload.status === "ok") {
-        setSemaphoreGroupMessage("Success!");
-      } else if (payload?.error) {
-        setSemaphoreGroupMessage(`Error: ${payload.error}`);
-      } else {
-        setSemaphoreGroupMessage(
-          `Sorry there was an error while adding your Semaphore identity.`
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      setSemaphoreGroupMessage(JSON.stringify(error.message));
+    if (!rootHash) {
+      setSemaphoreGroupMessage(
+        "Sorry there was an error while adding your Semaphore identity."
+      );
+    } else {
+      setSemaphoreGroupMessage("Success!");
     }
   }, [address, session, signer, twitterReputation]);
 
@@ -253,7 +186,7 @@ export default function Home(): JSX.Element {
         return pubKey;
       })
       .then(async (pubKey) => {
-        let userSignature;
+        let userSignature = "";
 
         try {
           const message = createUserAttestationMessage({
@@ -274,26 +207,23 @@ export default function Home(): JSX.Element {
             "Your signature is needed to register your intent to link the accounts."
           );
         }
+
         return { pubKey, userSignature };
       })
       .then(({ pubKey, userSignature }) => {
-        return fetch(`/api/linking`, {
-          method: "PUT",
-          body: JSON.stringify({
+        if (networkId) {
+          return linkAccounts({
             chainId: networkId,
             address,
             web2AccountId: session.web2AccountId,
             userSignature,
             userPublicKey: pubKey,
-          }),
-        });
+          });
+        }
       })
-      .then((res) => res.json())
-      .then((payload) => {
-        if (payload.status === "ok") {
+      .then((token) => {
+        if (token) {
           setAccountLinkingMessage("Success!");
-        } else if (payload?.error) {
-          setAccountLinkingMessage(`Error: ${payload.error}`);
         } else {
           setAccountLinkingMessage(
             `Sorry there was an error while linking your accounts.`
@@ -308,13 +238,9 @@ export default function Home(): JSX.Element {
   }, [address, refetchTokens, session, signer, networkId, getPublicKey]);
 
   const mintTokenAndRefetch = useCallback(
-    (tokenId) => {
-      mintToken(tokenId).then((data) => {
-        if (data) {
-          console.log(`data`, data);
-        }
-        refetchTokens();
-      });
+    async (tokenId) => {
+      await mintToken({ tokenId });
+      refetchTokens();
     },
     [refetchTokens]
   );
@@ -346,7 +272,7 @@ export default function Home(): JSX.Element {
     [refetchTokens, signer, networkId]
   );
 
-  const unlinkAccounts = async (token: ITokenDocument) => {
+  const unlink = async (token: ITokenDocument) => {
     if (!token.encryptedAttestation) {
       console.error("Error: token has no encrypted attestation");
       return;
@@ -356,16 +282,11 @@ export default function Home(): JSX.Element {
       const decryptedAttestation = await decrypt(token.encryptedAttestation);
       console.log(`decryptedAttestation`, decryptedAttestation);
 
-      await fetch(`/api/linking/unlink`, {
-        method: "POST",
-        body: JSON.stringify({
-          decryptedAttestation,
-        }),
-      });
+      await unlinkAccounts({ decryptedAttestation });
     } catch (error) {
       console.error(error);
     } finally {
-      await checkIfMyAccountIsLinked();
+      setIsCurrentAccountLinked(await checkLink());
       await refetchTokens();
     }
   };
@@ -445,7 +366,7 @@ export default function Home(): JSX.Element {
               tokens={tokens}
               mintFunction={mintTokenAndRefetch}
               burnFunction={burnToken}
-              unlinkFunction={unlinkAccounts}
+              unlinkFunction={unlink}
             />
           </>
         )}

@@ -6,7 +6,7 @@ import {
 import { InterRepGroups } from "contracts/typechain/InterRepGroups";
 
 // TODO: Refactoring.
-export async function getContractInstance(): Promise<InterRepGroups> {
+export async function getInterRepGroupsContractInstance(): Promise<InterRepGroups> {
   const address = getDeployedContractAddress(DeployedContracts.INTERREP_GROUPS);
 
   if (!address) {

@@ -8,14 +8,13 @@ import {
 } from "src/core/reputation/twitter";
 import config from "src/config";
 import { JWToken } from "src/types/nextAuth/token";
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import logger from "src/utils/server/logger";
 
 class TwitterAccountController {
   public getTwitterReputation = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<AccountReputationByAccount | void> => {
+  ): Promise<void> => {
     const { query } = req;
     let twitterReputation;
 
@@ -28,7 +27,7 @@ class TwitterAccountController {
     } else if (query?.id && typeof query.id === "string") {
       twitterReputation = await checkTwitterReputationById(query.id);
     } else {
-      return res.status(400).send({ error: "No id or username was provided" });
+      return res.status(400).send("No id or username was provided");
     }
 
     if (twitterReputation) {
@@ -44,7 +43,7 @@ class TwitterAccountController {
   public getMyTwitterReputation = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<AccountReputationByAccount | undefined> => {
+  ): Promise<void> => {
     // @ts-ignore: accepts secret
     const token: JWToken = await jwt.getToken({
       req,

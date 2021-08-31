@@ -2,7 +2,7 @@ import { withSentry } from "@sentry/nextjs";
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/client";
 import MerkleTreeController from "src/controllers/MerkleTreeController";
-import { getContractInstance } from "src/core/blockchain/InterRepGroups/InterRepGroupsContract";
+import { getInterRepGroupsContractInstance } from "src/core/blockchain/InterRepGroups/InterRepGroupsContract";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import { dbConnect } from "src/utils/server/database";
 import { ethers } from "hardhat";
@@ -11,10 +11,10 @@ import logger from "src/utils/server/logger";
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<any> => {
+): Promise<void> => {
   await dbConnect();
 
-  if (req.method !== "PUT") {
+  if (req.method !== "POST") {
     return res.status(405).end();
   }
 
@@ -41,18 +41,7 @@ const handler = async (
   }
 
   try {
-    logger.silly(
-      `Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`
-    );
-
-    let web2Account;
-
-    try {
-      web2Account = await Web2Account.findById(web2AccountId);
-    } catch (error) {
-      logger.error(error);
-      throw new Error(`Error retrieving web 2 account`);
-    }
+    const web2Account = await Web2Account.findById(web2AccountId);
 
     if (!web2Account) {
       throw new Error(`Web 2 account not found`);
@@ -63,9 +52,13 @@ const handler = async (
       `TWITTER_${web2Account.basicReputation}` !== groupId
     ) {
       throw new Error(
-        `The group id does not match the web 2 account reputation`
+        "The group id does not match the web 2 account reputation"
       );
     }
+
+    logger.silly(
+      `Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`
+    );
 
     const rootHash = await MerkleTreeController.appendLeaf(
       groupId,
@@ -73,7 +66,7 @@ const handler = async (
     );
 
     // Update contract with new root.
-    const interRepGroups = await getContractInstance();
+    const interRepGroups = await getInterRepGroupsContractInstance();
 
     await interRepGroups.addRootHash(
       ethers.utils.formatBytes32String(groupId),
@@ -81,11 +74,11 @@ const handler = async (
       rootHash
     );
 
-    return res.status(201).send({ status: "ok" });
+    return res.status(201).send(rootHash);
   } catch (error) {
     logger.error(error);
 
-    return res.status(400).end();
+    return res.status(500).end();
   }
 };
 

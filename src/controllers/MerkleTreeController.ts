@@ -134,7 +134,7 @@ class MerkleTreeController {
     const leafNode = await MerkleTreeNode.findByHash(idCommitment);
 
     if (!leafNode) {
-      throw new Error(`The identity commitment ${idCommitment} does not exist`);
+      throw new Error(`The identity commitment does not exist`);
     }
 
     const { key } = leafNode;
