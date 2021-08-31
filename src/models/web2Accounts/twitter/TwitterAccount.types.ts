@@ -1,5 +1,6 @@
 import { Model, Document } from "mongoose";
 import { botometerScoreData } from "src/types/botometer";
+import { findByTwitterUsername } from "./TwitterAccount.statics";
 import { IWeb2Account } from "../Web2Account.types";
 
 export interface IBaseTwitterAccount {
@@ -24,7 +25,9 @@ export interface ITwitterAccount extends IBaseTwitterAccount, IWeb2Account {}
 
 export interface ITwitterAccountDocument extends ITwitterAccount, Document {}
 
-export type ITwitterAccountModel = Model<ITwitterAccountDocument>;
+export interface ITwitterAccountModel extends Model<ITwitterAccountDocument> {
+  findByTwitterUsername: typeof findByTwitterUsername;
+}
 
 export type TwitterReputation = {
   botometer: ITwitterAccountDocument["botometer"];

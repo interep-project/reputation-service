@@ -1,5 +1,5 @@
 import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types";
-import { findByTwitterUsername } from "src/models/web2Accounts/twitter/utils";
+import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import {
   AccountReputationByAccount,
@@ -118,7 +118,7 @@ export const checkTwitterReputationByUsername = async (
   username: string
 ): Promise<AccountReputationByAccount | null> => {
   // Check if account is in database already
-  const twitterAccount: ITwitterAccountDocument | null = await findByTwitterUsername(
+  const twitterAccount: ITwitterAccountDocument | null = await TwitterAccount.findByTwitterUsername(
     username
   );
 

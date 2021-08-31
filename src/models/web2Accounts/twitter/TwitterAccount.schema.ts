@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import { findByTwitterUsername } from "./TwitterAccount.statics";
 import {
   IBaseTwitterAccount,
   ITwitterAccountDocument,
@@ -58,5 +59,7 @@ const TwitterAccountSchema = new Schema<
   ITwitterAccountDocument,
   ITwitterAccountModel
 >(TwitterAccountSchemaFields);
+
+TwitterAccountSchema.statics.findByTwitterUsername = findByTwitterUsername;
 
 export default TwitterAccountSchema;

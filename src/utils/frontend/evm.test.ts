@@ -1,4 +1,7 @@
-import { getChainNameFromNetworkId, shortenAddress } from "./evm";
+import {
+  getChainNameFromNetworkId,
+  shortenAddress,
+} from "src/utils/frontend/evm";
 
 describe("getChainNameFromNetworkId", () => {
   it("should return null if the network id is unknown", () => {
