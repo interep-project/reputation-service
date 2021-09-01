@@ -1,5 +1,13 @@
-export function getTwitterReputation(): Promise<any | null> {
-  return sendRequest("api/reputation/twitter/me");
+export function getMyTwitterReputation(): Promise<any | null> {
+  return sendRequest("/api/reputation/twitter/me");
+}
+
+export function getTwitterReputation({
+  username,
+}: {
+  username: string;
+}): Promise<any | null> {
+  return sendRequest(`/api/reputation/twitter/?username=${username}`);
 }
 
 export function getTokens({
@@ -7,11 +15,11 @@ export function getTokens({
 }: {
   ownerAddress: string;
 }): Promise<any | null> {
-  return sendRequest(`api/tokens/?owner=${ownerAddress}`);
+  return sendRequest(`/api/tokens/?owner=${ownerAddress}`);
 }
 
 export async function checkLink(): Promise<any | null> {
-  return sendRequest("api/linking/checkLink");
+  return sendRequest("/api/linking/checkLink");
 }
 
 export function mintToken({
@@ -19,7 +27,7 @@ export function mintToken({
 }: {
   tokenId: string;
 }): Promise<any | null> {
-  return sendRequest("api/tokens/mint", { tokenId });
+  return sendRequest("/api/tokens/mint", { tokenId });
 }
 
 export function addIdentityCommitment({
@@ -31,7 +39,7 @@ export function addIdentityCommitment({
   identityCommitment: string;
   web2AccountId: string;
 }): Promise<any | null> {
-  return sendRequest(`api/groups/${groupId}`, {
+  return sendRequest(`/api/groups/${groupId}`, {
     identityCommitment,
     web2AccountId,
   });
@@ -42,7 +50,7 @@ export function unlinkAccounts({
 }: {
   decryptedAttestation: string;
 }): Promise<any | null> {
-  return sendRequest("api/linking/unlink", { decryptedAttestation });
+  return sendRequest("/api/linking/unlink", { decryptedAttestation });
 }
 
 export function linkAccounts({
@@ -59,7 +67,7 @@ export function linkAccounts({
   userPublicKey: string;
 }): Promise<any | null> {
   return sendRequest(
-    "api/linking",
+    "/api/linking",
     {
       chainId,
       address,

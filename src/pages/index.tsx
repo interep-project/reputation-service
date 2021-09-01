@@ -34,7 +34,7 @@ import Badges from "src/components/Badges";
 import {
   mintToken,
   checkLink,
-  getTwitterReputation,
+  getMyTwitterReputation,
   unlinkAccounts,
   addIdentityCommitment,
   linkAccounts,
@@ -109,7 +109,7 @@ export default function Home(): JSX.Element {
   useEffect(() => {
     (async () => {
       if (session) {
-        setTwitterReputation(await getTwitterReputation());
+        setTwitterReputation(await getMyTwitterReputation());
         setIsCurrentAccountLinked(await checkLink());
       }
     })();
