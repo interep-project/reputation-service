@@ -8,10 +8,10 @@ const useMyTokens = (
 
   const getMyTokens = useCallback(async () => {
     if (address) {
-      const response = await getTokens({ ownerAddress: address });
+      const tokens = await getTokens({ ownerAddress: address });
 
-      if (response) {
-        setTokens(response.tokens);
+      if (tokens) {
+        setTokens(tokens);
       }
     }
   }, [address]);

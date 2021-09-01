@@ -11,9 +11,7 @@ export function getTokens({
 }
 
 export async function checkLink(): Promise<any | null> {
-  const response = await sendRequest("api/linking/checkLink");
-
-  return response.isLinkedToAddress;
+  return sendRequest("api/linking/checkLink");
 }
 
 export function mintToken({
@@ -91,5 +89,11 @@ async function sendRequest(
     return null;
   }
 
-  return response.json();
+  try {
+    const { data } = await response.json();
+
+    return data;
+  } catch {
+    return;
+  }
 }

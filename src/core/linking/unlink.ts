@@ -4,11 +4,6 @@ import { TokenStatus } from "src/models/tokens/Token.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus";
 
-const getError = (message: string) => ({
-  success: false,
-  error: message,
-});
-
 type UnlinkAccountsParams = {
   web2AccountIdFromSession: string;
   decryptedAttestation: string;
@@ -17,25 +12,21 @@ type UnlinkAccountsParams = {
 const unlinkAccounts = async ({
   web2AccountIdFromSession,
   decryptedAttestation,
-}: UnlinkAccountsParams): Promise<{
-  success: boolean;
-  error?: string;
-  message?: string;
-}> => {
+}: UnlinkAccountsParams): Promise<void> => {
   const web2Account = await Web2Account.findById(web2AccountIdFromSession);
 
   if (!web2Account) {
-    return getError("Unable to find web2Account");
+    throw new Error("Unable to find web2Account");
   }
 
   if (!web2Account.isLinkedToAddress) {
-    return getError("Web 2 account is not linked");
+    throw new Error("Web 2 account is not linked");
   }
 
   const parsedAttestation = JSON.parse(decryptedAttestation);
 
   if (!parsedAttestation.message) {
-    return getError("Invalid attestation provided");
+    throw new Error("Invalid attestation provided");
   }
 
   const { attestationMessage, backendAttestationSignature } = JSON.parse(
@@ -49,7 +40,7 @@ const unlinkAccounts = async ({
   );
 
   if (signerAddress != backendSigner.address) {
-    return getError("Attestation signature invalid");
+    throw new Error("Attestation signature invalid");
   }
 
   const { decimalId, web2Provider, providerAccountId } = JSON.parse(
@@ -68,19 +59,19 @@ const unlinkAccounts = async ({
     web2AccountFromAttestationObject._id.toString() !==
       web2Account._id.toString()
   ) {
-    return getError("Web 2 accounts don't match");
+    throw new Error("Web 2 accounts don't match");
   }
 
   const token = await Token.findOne({ decimalId: decimalId });
 
   if (!token) {
-    return getError(`Can't find token with decimalId ${decimalId}`);
+    throw new Error(`Can't find token with decimalId ${decimalId}`);
   }
 
   await checkAndUpdateTokenStatus([token]);
 
   if (token.status !== TokenStatus.BURNED) {
-    return getError(
+    throw new Error(
       "The on-chain token associated with the web 2 account you are connected with needs to be burned first."
     );
   }
@@ -90,8 +81,6 @@ const unlinkAccounts = async ({
 
   web2Account.isLinkedToAddress = false;
   await web2Account.save();
-
-  return { success: true, message: "Accounts were successfully un-linked" };
 };
 
 export default unlinkAccounts;

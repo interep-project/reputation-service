@@ -36,7 +36,7 @@ class TokenController {
 
       const tokensAsJSON = tokens.map((token) => token.toJSON());
 
-      return res.status(200).send({ tokens: tokensAsJSON });
+      return res.status(200).send({ data: tokensAsJSON });
     } catch (err) {
       logger.error(err);
       return res.status(500).end();
@@ -62,13 +62,13 @@ class TokenController {
 
         if (!tokenExists) {
           return res
-            .status(200)
+            .status(400)
             .send(`Token with id ${decimalId} does not exist`);
         }
 
-        return res
-          .status(200)
-          .send(getNFTMetadataObject(DeployedContracts.TWITTER_BADGE));
+        return res.status(200).send({
+          data: getNFTMetadataObject(DeployedContracts.TWITTER_BADGE),
+        });
       } else {
         return res.status(400).send(`Invalid contract address`);
       }
@@ -89,10 +89,10 @@ class TokenController {
     try {
       const txResponse = await mintToken(tokenId);
 
-      return res.status(200).send(txResponse);
+      return res.status(200).send({ data: txResponse });
     } catch (error) {
       logger.error(error);
-      return res.status(400).send({ error: error.message });
+      return res.status(400).send(error.message);
     }
   };
 }

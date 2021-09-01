@@ -70,7 +70,7 @@ describe("api/linking/checkLink", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(500);
-      expect(res._getData()).toEqual({ error: "Can't find web 2 account" });
+      expect(res._getData()).toEqual("Can't find web 2 account");
     });
 
     it("should return true if an account is already linked", async () => {
@@ -97,7 +97,7 @@ describe("api/linking/checkLink", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual({ isLinkedToAddress });
+      expect(res._getData().data).toEqual(isLinkedToAddress);
     });
 
     it("should return a 500 if there is an error", async () => {
@@ -114,9 +114,9 @@ describe("api/linking/checkLink", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(500);
-      expect(res._getData()).toEqual({
-        error: "Error while verifying if web 2 account is linked",
-      });
+      expect(res._getData()).toEqual(
+        "Error while verifying if web 2 account is linked"
+      );
     });
   });
 });

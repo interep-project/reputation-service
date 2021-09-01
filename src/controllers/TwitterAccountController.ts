@@ -31,7 +31,7 @@ class TwitterAccountController {
     }
 
     if (twitterReputation) {
-      return res.status(200).send(twitterReputation);
+      return res.status(200).send({ data: twitterReputation });
     } else {
       logger.error(
         `No twitter reputation returned. Query username: ${query?.username}, id: ${query?.id}`
@@ -66,7 +66,7 @@ class TwitterAccountController {
     );
 
     if (twitterReputation) {
-      res.status(200).send(twitterReputation);
+      res.status(200).send({ data: twitterReputation });
     } else {
       res.status(500).end();
       return;

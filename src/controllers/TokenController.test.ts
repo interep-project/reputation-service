@@ -96,7 +96,7 @@ describe("TokenController", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual({ tokens: [] });
+      expect(res._getData().data).toEqual([]);
     });
 
     it("should update and return found tokens", async () => {
@@ -117,7 +117,7 @@ describe("TokenController", () => {
 
       expect(checkAndUpdateTokenStatus).toHaveBeenCalled();
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual({ tokens: [tokenMock.toJSON()] });
+      expect(res._getData().data).toEqual([tokenMock.toJSON()]);
     });
 
     it("should return 500 and log the error", async () => {
@@ -194,7 +194,7 @@ describe("TokenController", () => {
 
       await TokenController.getTokenByContractAndId(req, res);
 
-      expect(res._getStatusCode()).toBe(200);
+      expect(res._getStatusCode()).toBe(400);
       expect(res._getData()).toEqual(`Token with id ${tokenId} does not exist`);
     });
 
@@ -215,7 +215,7 @@ describe("TokenController", () => {
       await TokenController.getTokenByContractAndId(req, res);
 
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual({
+      expect(res._getData().data).toEqual({
         description: "InterRep reputation badge for a Twitter account.",
         image: "",
         name: "InterRep Twitter Reputation Badge",
@@ -273,7 +273,7 @@ describe("TokenController", () => {
 
       expect(mintToken).toHaveBeenCalledWith(tokenId);
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual(txResponseMock);
+      expect(res._getData().data).toEqual(txResponseMock);
     });
 
     it("should return 400 and send the error", async () => {
@@ -292,7 +292,7 @@ describe("TokenController", () => {
       await TokenController.mintToken(req, res);
 
       expect(res._getStatusCode()).toBe(400);
-      expect(res._getData()).toEqual({ error: err.message });
+      expect(res._getData()).toEqual(err.message);
       expect(logger.error).toHaveBeenCalledWith(err);
     });
   });

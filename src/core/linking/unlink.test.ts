@@ -60,15 +60,13 @@ describe("unlink", () => {
   });
 
   it("should return an error if the web 2 account is not found", async () => {
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: "608c4a10c994a377e232df7f",
-      decryptedAttestation: "attestation",
-    });
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: "608c4a10c994a377e232df7f",
+        decryptedAttestation: "attestation",
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Unable to find web2Account",
-    });
+    await expect(fun()).rejects.toThrow("Unable to find web2Account");
   });
 
   it("should return an error is the account is not linked", async () => {
@@ -80,15 +78,13 @@ describe("unlink", () => {
       })
     );
 
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account.id,
-      decryptedAttestation: "attestation",
-    });
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account.id,
+        decryptedAttestation: "attestation",
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Web 2 account is not linked",
-    });
+    await expect(fun()).rejects.toThrow("Web 2 account is not linked");
   });
 
   it("should return an error if the attestation has no message field", async () => {
@@ -100,15 +96,13 @@ describe("unlink", () => {
       })
     );
 
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account.id,
-      decryptedAttestation: JSON.stringify({ salt: "0xef4", message: "" }),
-    });
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account.id,
+        decryptedAttestation: JSON.stringify({ salt: "0xef4", message: "" }),
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Invalid attestation provided",
-    });
+    await expect(fun()).rejects.toThrow("Invalid attestation provided");
   });
 
   it("should return an error if the message was not signed by the backend", async () => {
@@ -127,21 +121,20 @@ describe("unlink", () => {
     const backendAttestationSignature = await otherSigner.signMessage(
       attestationMessage
     );
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account.id,
-      decryptedAttestation: JSON.stringify({
-        salt: "0x4fe",
-        message: JSON.stringify({
-          attestationMessage,
-          backendAttestationSignature,
-        }),
-      }),
-    });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Attestation signature invalid",
-    });
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account.id,
+        decryptedAttestation: JSON.stringify({
+          salt: "0x4fe",
+          message: JSON.stringify({
+            attestationMessage,
+            backendAttestationSignature,
+          }),
+        }),
+      });
+
+    await expect(fun()).rejects.toThrow("Attestation signature invalid");
   });
 
   it("should return an error if the web 2 account in the attestation does not match the one provided", async () => {
@@ -168,21 +161,19 @@ describe("unlink", () => {
       providerAccountId: web2Account1.providerAccountId,
     });
 
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account2.id,
-      decryptedAttestation: JSON.stringify({
-        salt: "0x4fe",
-        message: JSON.stringify({
-          attestationMessage,
-          backendAttestationSignature,
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account2.id,
+        decryptedAttestation: JSON.stringify({
+          salt: "0x4fe",
+          message: JSON.stringify({
+            attestationMessage,
+            backendAttestationSignature,
+          }),
         }),
-      }),
-    });
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Web 2 accounts don't match",
-    });
+    await expect(fun()).rejects.toThrow("Web 2 accounts don't match");
   });
 
   it("should return an error if the token in the attestation can't be found", async () => {
@@ -201,21 +192,21 @@ describe("unlink", () => {
       providerAccountId: web2Account.providerAccountId,
     });
 
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account.id,
-      decryptedAttestation: JSON.stringify({
-        salt: "0x4fe",
-        message: JSON.stringify({
-          attestationMessage,
-          backendAttestationSignature,
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account.id,
+        decryptedAttestation: JSON.stringify({
+          salt: "0x4fe",
+          message: JSON.stringify({
+            attestationMessage,
+            backendAttestationSignature,
+          }),
         }),
-      }),
-    });
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error: "Can't find token with decimalId 573930924",
-    });
+    await expect(fun()).rejects.toThrow(
+      "Can't find token with decimalId 573930924"
+    );
   });
 
   it("should not proceed with a token that is not burned", async () => {
@@ -245,22 +236,21 @@ describe("unlink", () => {
       decimalId: token.decimalId,
     });
 
-    const result = await unlinkAccounts({
-      web2AccountIdFromSession: web2Account.id,
-      decryptedAttestation: JSON.stringify({
-        salt: "0x4fe",
-        message: JSON.stringify({
-          attestationMessage,
-          backendAttestationSignature,
+    const fun = () =>
+      unlinkAccounts({
+        web2AccountIdFromSession: web2Account.id,
+        decryptedAttestation: JSON.stringify({
+          salt: "0x4fe",
+          message: JSON.stringify({
+            attestationMessage,
+            backendAttestationSignature,
+          }),
         }),
-      }),
-    });
+      });
 
-    expect(result).toEqual({
-      success: false,
-      error:
-        "The on-chain token associated with the web 2 account you are connected with needs to be burned first.",
-    });
+    await expect(fun()).rejects.toThrow(
+      "The on-chain token associated with the web 2 account you are connected with needs to be burned first."
+    );
   });
 
   it("should update web 2 account and mark token as REVOKED", async () => {
@@ -290,7 +280,7 @@ describe("unlink", () => {
       decimalId: token.decimalId,
     });
 
-    const result = await unlinkAccounts({
+    await unlinkAccounts({
       web2AccountIdFromSession: web2Account.id,
       decryptedAttestation: JSON.stringify({
         salt: "0x4fe",
@@ -304,10 +294,6 @@ describe("unlink", () => {
     const savedToken = await Token.findById(token.id);
     const savedWeb2Account = await Web2Account.findById(web2Account.id);
 
-    expect(result).toEqual({
-      success: true,
-      message: "Accounts were successfully un-linked",
-    });
     expect(savedToken?.status).toEqual(TokenStatus.REVOKED);
     expect(savedWeb2Account?.isLinkedToAddress).toEqual(false);
   });
