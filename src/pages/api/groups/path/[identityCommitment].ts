@@ -29,10 +29,10 @@ const handler = async (
     const path = await MerkleTreeController.retrievePath(identityCommitment);
 
     if (!path) {
-      return res.status(200).send([]);
+      return res.status(200).send({ data: [] });
     }
 
-    return res.status(200).send(path);
+    return res.status(200).send({ data: path });
   } catch (error) {
     logger.error(error);
 

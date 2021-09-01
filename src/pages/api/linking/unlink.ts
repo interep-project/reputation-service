@@ -34,19 +34,15 @@ const handler = async (
   }
   const { decryptedAttestation } = JSON.parse(req.body);
   try {
-    const result = await unlinkAccounts({
+    await unlinkAccounts({
       web2AccountIdFromSession,
       decryptedAttestation,
     });
 
-    if (result.success) {
-      return res.status(200).send(result);
-    } else {
-      if (result.error) logger.error(result.error);
-      return res.status(400).send(result);
-    }
+    return res.status(200).end();
   } catch (err) {
     logger.error(err);
+
     return res.status(500).end();
   }
 };

@@ -74,7 +74,7 @@ const handler = async (
       rootHash
     );
 
-    return res.status(201).send(rootHash);
+    return res.status(201).send({ data: rootHash.toString() });
   } catch (error) {
     logger.error(error);
 

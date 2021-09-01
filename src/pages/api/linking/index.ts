@@ -59,7 +59,7 @@ const handler = async (
     });
 
     return token instanceof Token
-      ? res.status(201).send(token.toJSON())
+      ? res.status(201).send({ data: token.toJSON() })
       : res.status(500).end();
   } catch (err) {
     logger.error(err);

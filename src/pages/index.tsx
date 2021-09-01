@@ -280,7 +280,6 @@ export default function Home(): JSX.Element {
 
     try {
       const decryptedAttestation = await decrypt(token.encryptedAttestation);
-      console.log(`decryptedAttestation`, decryptedAttestation);
 
       await unlinkAccounts({ decryptedAttestation });
     } catch (error) {

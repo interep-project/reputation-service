@@ -28,9 +28,7 @@ const handler = async (
       return res.status(500).send("Can't find web 2 account");
     }
 
-    return res
-      .status(200)
-      .send({ isLinkedToAddress: web2Account.isLinkedToAddress });
+    return res.status(200).send({ data: web2Account.isLinkedToAddress });
   } catch (err) {
     logger.error(err);
     return res
