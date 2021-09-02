@@ -10,7 +10,7 @@ export function getTwitterReputation({
   return sendRequest(`/api/reputation/twitter/?username=${username}`);
 }
 
-export function getTokens({
+export function getMyTokens({
   ownerAddress,
 }: {
   ownerAddress: string;
@@ -18,8 +18,16 @@ export function getTokens({
   return sendRequest(`/api/tokens/?owner=${ownerAddress}`);
 }
 
-export async function checkLink(): Promise<any | null> {
+export async function checkLink(): Promise<boolean | null> {
   return sendRequest("/api/linking/checkLink");
+}
+
+export async function checkIdentity({
+  identityCommitment,
+}: {
+  identityCommitment: string;
+}): Promise<boolean | null> {
+  return sendRequest(`/api/groups/checkIdentity/${identityCommitment}`);
 }
 
 export function mintToken({
