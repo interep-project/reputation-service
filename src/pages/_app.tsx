@@ -14,6 +14,7 @@ import "@fontsource/roboto";
 import React from "react";
 import Head from "next/head";
 import Footer from "src/components/Footer";
+import NavBar from "src/components/NavBar";
 
 const theme = createTheme({
   palette: {
@@ -66,6 +67,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <Web3ContextProvider>
           <NextAuthProvider session={pageProps.session}>
             <Paper className={classes.container} elevation={0} square={true}>
+              <NavBar />
               <Component {...pageProps} />
               <Footer />
             </Paper>

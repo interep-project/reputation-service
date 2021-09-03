@@ -8,13 +8,15 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { isBrowser } from "react-device-detect";
+import { useRouter } from "next/router";
 import React from "react";
+import { isBrowser } from "react-device-detect";
+import { useWeb3Context } from "src/services/context/Web3Provider";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import {
   getChainNameFromNetworkId,
   shortenAddress,
 } from "src/utils/frontend/evm";
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,52 +38,46 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type Properties = {
-  isConnected: boolean;
-  networkId: number;
-  address?: string;
-  onAddressClick: () => void;
-};
-
-export default function NavBar({
-  isConnected,
-  networkId,
-  address,
-  onAddressClick,
-}: Properties): JSX.Element {
+export default function NavBar(): JSX.Element {
   const classes = useStyles();
+  const { connect, address, connected = false, networkId } = useWeb3Context();
+  const router = useRouter();
 
   return (
-    <AppBar position="static" elevation={0} color="inherit">
+    <AppBar position="fixed" elevation={0} color="inherit">
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           InterRep
         </Typography>
-        {isBrowser && isConnected && address ? (
-          <Box className={classes.walletDataBox}>
-            <Typography
-              style={{ fontWeight: "bold" }}
-              className={classes.networkName}
-              color="secondary"
-              variant="body1"
-            >
-              {getChainNameFromNetworkId(networkId)}
-            </Typography>
-            <Typography className={classes.networkName} variant="body1">
-              {networkId !== getDefaultNetworkId() && "(wrong network)"}
-            </Typography>
-            <Button
-              className={classes.addressButton}
-              onClick={onAddressClick}
-              variant="outlined"
-            >
-              {shortenAddress(address)}
-            </Button>
-          </Box>
-        ) : (
-          <Button onClick={onAddressClick} variant="outlined">
-            Connect
-          </Button>
+        {router.route === "/" && (
+          <>
+            {isBrowser && connected && address ? (
+              <Box className={classes.walletDataBox}>
+                <Typography
+                  style={{ fontWeight: "bold" }}
+                  className={classes.networkName}
+                  color="secondary"
+                  variant="body1"
+                >
+                  {networkId && getChainNameFromNetworkId(networkId)}
+                </Typography>
+                <Typography className={classes.networkName} variant="body1">
+                  {networkId !== getDefaultNetworkId() && "(wrong network)"}
+                </Typography>
+                <Button
+                  className={classes.addressButton}
+                  onClick={() => connect && connect()}
+                  variant="outlined"
+                >
+                  {shortenAddress(address)}
+                </Button>
+              </Box>
+            ) : (
+              <Button onClick={() => connect && connect()} variant="outlined">
+                Connect
+              </Button>
+            )}
+          </>
         )}
       </Toolbar>
     </AppBar>

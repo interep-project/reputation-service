@@ -12,7 +12,6 @@ import { Signer } from "ethers";
 import { useSession } from "next-auth/client";
 import React, { useEffect, useState } from "react";
 import { isBrowser, isMobile } from "react-device-detect";
-import NavBar from "src/components/NavBar";
 import ReputationBadgesTabPanel from "src/components/ReputationBadgesTabPanel";
 import SemaphoreGroupsTabPanel from "src/components/SemaphoreGroupsTabPanel";
 import TabPanelContainer from "src/components/TabPanelContainer";
@@ -29,7 +28,8 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       justifyContent: "center",
       flex: 1,
-      paddingBottom: theme.spacing(4),
+      paddingBottom: 48,
+      paddingTop: 64,
     },
     tabContainer: {
       display: "flex",
@@ -50,13 +50,7 @@ export default function Home(): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
   const [_tabIndex, setTabIndex] = React.useState<number>(0);
-  const {
-    connect,
-    address,
-    connected = false,
-    networkId,
-    signer,
-  } = useWeb3Context();
+  const { address, networkId, signer } = useWeb3Context();
   const [
     _twitterReputation,
     setTwitterReputation,
@@ -91,70 +85,62 @@ export default function Home(): JSX.Element {
   }
 
   return (
-    <>
-      <NavBar
-        isConnected={!!connected}
-        address={address}
-        networkId={networkId as number}
-        onAddressClick={() => connect && connect()}
-      />
-      <Container className={classes.container} maxWidth="sm">
-        {isMobile && (
-          <Typography>
-            Sorry, mobile and tablet devices are currently not supported. Please
-            access InterRep from a desktop browser with the Metamask extension
-            installed.
-          </Typography>
-        )}
-        {isBrowser && (
-          <Card className={classes.tabContainer}>
-            <Tabs
-              variant="fullWidth"
-              value={_tabIndex}
-              onChange={(event, newIndex) => setTabIndex(newIndex)}
-            >
-              <Tab className={classes.tabButton} label="Web2 Accounts" />
-              <Tab
-                className={classes.tabButton}
-                label="Semaphore groups"
-                disabled={!appIsReady()}
-              />
-              <Tab
-                className={classes.tabButton}
-                label="Reputation badges"
-                disabled={!appIsReady()}
-              />
-            </Tabs>
-            <TabPanelContainer value={_tabIndex} index={0}>
-              <Web2AccountsTabPanel
-                onArrowClick={appIsReady() ? updateTabIndex : undefined}
-                reputation={_twitterReputation?.basicReputation as string}
-              />
-            </TabPanelContainer>
-            {appIsReady() && (
-              <>
-                <TabPanelContainer value={_tabIndex} index={1}>
-                  <SemaphoreGroupsTabPanel
-                    onArrowClick={updateTabIndex}
-                    reputation={_twitterReputation?.basicReputation as string}
-                    web2AccountId={session?.web2AccountId as string}
-                  />
-                </TabPanelContainer>
-                <TabPanelContainer value={_tabIndex} index={2}>
-                  <ReputationBadgesTabPanel
-                    onArrowClick={updateTabIndex}
-                    signer={signer as Signer}
-                    networkId={networkId as number}
-                    address={address as string}
-                    reputation={_twitterReputation?.basicReputation as string}
-                    web2AccountId={session?.web2AccountId as string}
-                  />
-                </TabPanelContainer>
-              </>
-            )}
-          </Card>
-        )}
-      </Container>
-    </>
+    <Container className={classes.container} maxWidth="sm">
+      {isMobile && (
+        <Typography>
+          Sorry, mobile and tablet devices are currently not supported. Please
+          access InterRep from a desktop browser with the Metamask extension
+          installed.
+        </Typography>
+      )}
+      {isBrowser && (
+        <Card className={classes.tabContainer}>
+          <Tabs
+            variant="fullWidth"
+            value={_tabIndex}
+            onChange={(event, newIndex) => setTabIndex(newIndex)}
+          >
+            <Tab className={classes.tabButton} label="Web2 Accounts" />
+            <Tab
+              className={classes.tabButton}
+              label="Semaphore groups"
+              disabled={!appIsReady()}
+            />
+            <Tab
+              className={classes.tabButton}
+              label="Reputation badges"
+              disabled={!appIsReady()}
+            />
+          </Tabs>
+          <TabPanelContainer value={_tabIndex} index={0}>
+            <Web2AccountsTabPanel
+              onArrowClick={appIsReady() ? updateTabIndex : undefined}
+              reputation={_twitterReputation?.basicReputation as string}
+            />
+          </TabPanelContainer>
+          {appIsReady() && (
+            <>
+              <TabPanelContainer value={_tabIndex} index={1}>
+                <SemaphoreGroupsTabPanel
+                  onArrowClick={updateTabIndex}
+                  reputation={_twitterReputation?.basicReputation as string}
+                  web2AccountId={session?.web2AccountId as string}
+                />
+              </TabPanelContainer>
+              <TabPanelContainer value={_tabIndex} index={2}>
+                <ReputationBadgesTabPanel
+                  onArrowClick={updateTabIndex}
+                  signer={signer as Signer}
+                  networkId={networkId as number}
+                  address={address as string}
+                  reputation={_twitterReputation?.basicReputation as string}
+                  web2AccountId={session?.web2AccountId as string}
+                />
+              </TabPanelContainer>
+            </>
+          )}
+        </Card>
+      )}
+    </Container>
   );
 }
