@@ -10,9 +10,8 @@ import {
 } from "@material-ui/core";
 import { Signer } from "ethers";
 import { useSession } from "next-auth/client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { isBrowser, isMobile } from "react-device-detect";
-import Footer from "src/components/Footer";
 import NavBar from "src/components/NavBar";
 import ReputationBadgesTabPanel from "src/components/ReputationBadgesTabPanel";
 import SemaphoreGroupsTabPanel from "src/components/SemaphoreGroupsTabPanel";
@@ -22,7 +21,6 @@ import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.
 import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import { getMyTwitterReputation } from "src/utils/frontend/api";
-import { getChainNameFromNetworkId } from "src/utils/frontend/evm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,9 +44,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const defaultNetworkId = getDefaultNetworkId();
+
 export default function Home(): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
+  const [_tabIndex, setTabIndex] = React.useState<number>(0);
   const {
     connect,
     address,
@@ -57,40 +58,21 @@ export default function Home(): JSX.Element {
     signer,
   } = useWeb3Context();
   const [
-    twitterReputation,
+    _twitterReputation,
     setTwitterReputation,
   ] = useState<AccountReputationByAccount | null>(null);
-  const [isOnProperNetwork, setIsOnProperNetwork] = useState<boolean | null>(
-    null
-  );
-  const [_tabIndex, setTabIndex] = React.useState(0);
 
   useEffect(() => {
-    const expectedNetworkId = getDefaultNetworkId();
-
-    if (networkId && networkId !== expectedNetworkId) {
-      setIsOnProperNetwork(false);
-      alert(
-        `Please switch to ${getChainNameFromNetworkId(
-          expectedNetworkId
-        )} network`
-      );
-    } else if (networkId && networkId === expectedNetworkId) {
-      // user switched from wrong to right network, force-reload the page
-      if (isOnProperNetwork === false) {
-        window.location.reload();
-      } else if (isOnProperNetwork === null) {
-        setIsOnProperNetwork(true);
+    (async () => {
+      if (networkId && networkId !== defaultNetworkId) {
+        // @ts-ignore: ignore
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${defaultNetworkId.toString(16)}` }],
+        });
       }
-    }
-  }, [networkId, isOnProperNetwork]);
-
-  const currentNetworkName = useMemo(
-    () =>
-      (networkId && getChainNameFromNetworkId(networkId)) ||
-      "Unsupported network",
-    [networkId]
-  );
+    })();
+  }, [networkId]);
 
   useEffect(() => {
     (async () => {
@@ -100,13 +82,20 @@ export default function Home(): JSX.Element {
     })();
   }, [session]);
 
+  function appIsReady(): boolean {
+    return !!(session && defaultNetworkId === networkId && _twitterReputation);
+  }
+
+  function updateTabIndex(direction: number): void {
+    setTabIndex((index: number) => index + direction);
+  }
+
   return (
     <>
       <NavBar
-        isConnectButtonDisplayed={isBrowser}
         isConnected={!!connected}
         address={address}
-        networkName={currentNetworkName}
+        networkId={networkId as number}
         onAddressClick={() => connect && connect()}
       />
       <Container className={classes.container} maxWidth="sm">
@@ -128,42 +117,37 @@ export default function Home(): JSX.Element {
               <Tab
                 className={classes.tabButton}
                 label="Semaphore groups"
-                disabled={!session || !connected}
+                disabled={!appIsReady()}
               />
               <Tab
                 className={classes.tabButton}
                 label="Reputation badges"
-                disabled={!session || !connected}
+                disabled={!appIsReady()}
               />
             </Tabs>
             <TabPanelContainer value={_tabIndex} index={0}>
               <Web2AccountsTabPanel
-                onArrowClick={(direction) =>
-                  setTabIndex((index) => index + direction)
-                }
+                onArrowClick={appIsReady() ? updateTabIndex : undefined}
+                reputation={_twitterReputation?.basicReputation as string}
               />
             </TabPanelContainer>
-            {session && connected && twitterReputation && (
+            {appIsReady() && (
               <>
                 <TabPanelContainer value={_tabIndex} index={1}>
                   <SemaphoreGroupsTabPanel
-                    onArrowClick={(direction) =>
-                      setTabIndex((index) => index + direction)
-                    }
-                    reputation={twitterReputation.basicReputation as string}
-                    web2AccountId={session.web2AccountId}
+                    onArrowClick={updateTabIndex}
+                    reputation={_twitterReputation?.basicReputation as string}
+                    web2AccountId={session?.web2AccountId as string}
                   />
                 </TabPanelContainer>
                 <TabPanelContainer value={_tabIndex} index={2}>
                   <ReputationBadgesTabPanel
-                    onArrowClick={(direction) =>
-                      setTabIndex((index) => index + direction)
-                    }
+                    onArrowClick={updateTabIndex}
                     signer={signer as Signer}
                     networkId={networkId as number}
                     address={address as string}
-                    reputation={twitterReputation.basicReputation as string}
-                    web2AccountId={session.web2AccountId}
+                    reputation={_twitterReputation?.basicReputation as string}
+                    web2AccountId={session?.web2AccountId as string}
                   />
                 </TabPanelContainer>
               </>
@@ -171,7 +155,6 @@ export default function Home(): JSX.Element {
           </Card>
         )}
       </Container>
-      <Footer properNetwork={!!isOnProperNetwork} />
     </>
   );
 }
