@@ -23,11 +23,15 @@ export async function checkLink(): Promise<boolean | null> {
 }
 
 export async function checkIdentity({
+  groupId,
   identityCommitment,
 }: {
+  groupId: string;
   identityCommitment: string;
 }): Promise<boolean | null> {
-  return sendRequest(`/api/groups/checkIdentity/${identityCommitment}`);
+  return sendRequest(
+    `/api/groups/${groupId}/checkIdentity/${identityCommitment}`
+  );
 }
 
 export function mintToken({

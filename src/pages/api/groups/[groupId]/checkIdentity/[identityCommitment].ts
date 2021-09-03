@@ -14,14 +14,23 @@ const handler = async (
     return res.status(405).end();
   }
 
+  const groupId = req.query?.groupId;
   const identityCommitment = req.query?.identityCommitment;
 
-  if (!identityCommitment || typeof identityCommitment !== "string") {
+  if (
+    !groupId ||
+    typeof groupId !== "string" ||
+    !identityCommitment ||
+    typeof identityCommitment !== "string"
+  ) {
     return res.status(400).end();
   }
 
   try {
-    const node = await MerkleTreeNode.findByHash(identityCommitment);
+    const node = await MerkleTreeNode.findByGroupIdAndHash(
+      groupId,
+      identityCommitment
+    );
 
     return res.status(200).send({ data: !!node });
   } catch (error) {

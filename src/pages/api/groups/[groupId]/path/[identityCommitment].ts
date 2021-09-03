@@ -15,18 +15,29 @@ const handler = async (
     return res.status(405).end();
   }
 
+  const groupId = req.query?.groupId;
   const identityCommitment = req.query?.identityCommitment;
 
-  if (!identityCommitment || typeof identityCommitment !== "string") {
+  if (
+    !groupId ||
+    typeof groupId !== "string" ||
+    !identityCommitment ||
+    typeof identityCommitment !== "string"
+  ) {
     return res.status(400).end();
   }
 
   try {
-    if (!(await MerkleTreeNode.findByHash(identityCommitment))) {
+    if (
+      !(await MerkleTreeNode.findByGroupIdAndHash(groupId, identityCommitment))
+    ) {
       return res.status(400).send("The identity commitment does not exist");
     }
 
-    const path = await MerkleTreeController.retrievePath(identityCommitment);
+    const path = await MerkleTreeController.retrievePath(
+      groupId,
+      identityCommitment
+    );
 
     if (!path) {
       return res.status(200).send({ data: [] });

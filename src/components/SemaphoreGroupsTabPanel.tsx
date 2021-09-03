@@ -62,7 +62,7 @@ export default function SemaphoreGroupsTabPanel({
 
     const groupId = `TWITTER_${reputation}`;
     const identityCommitment = (await semethid(groupId)).toString();
-    const alreadyExist = await checkIdentity({ identityCommitment });
+    const alreadyExist = await checkIdentity({ groupId, identityCommitment });
 
     if (alreadyExist === null) {
       setMessage("Sorry, there was an unexpected error");
@@ -99,6 +99,7 @@ export default function SemaphoreGroupsTabPanel({
 
     setLoading(false);
     setOpenSnackbar(true);
+    setIdAlreadyExists(true);
   }
 
   return (

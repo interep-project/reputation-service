@@ -107,7 +107,7 @@ describe("MerkleTreeController", () => {
 
     it(`Should not return any path if the identity commitment does not exist`, async () => {
       const fun = (): Promise<string[]> =>
-        MerkleTreeController.retrievePath(idCommitment);
+        MerkleTreeController.retrievePath(groupId, idCommitment);
 
       await expect(fun).rejects.toThrow();
     });
@@ -125,6 +125,7 @@ describe("MerkleTreeController", () => {
       }
 
       const path = (await MerkleTreeController.retrievePath(
+        groupId,
         idCommitments[5]
       )) as any[];
 
