@@ -90,11 +90,16 @@ export default function TwitterReputation(): JSX.Element {
           <TextField
             className={classes.input}
             label="Username"
-            variant="filled"
+            variant="outlined"
             value={twitterUsername}
             onChange={(event) => setTwitterUsername(event.target.value)}
           />
-          <Button variant="contained" type="submit" disabled={isLoading}>
+          <Button
+            variant="outlined"
+            color="primary"
+            type="submit"
+            disabled={isLoading}
+          >
             Check
           </Button>
         </form>
