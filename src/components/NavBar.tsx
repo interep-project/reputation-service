@@ -8,8 +8,13 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import { isBrowser } from "react-device-detect";
 import React from "react";
-import { shortenAddress } from "src/utils/frontend/evm";
+import {
+  getChainNameFromNetworkId,
+  shortenAddress,
+} from "src/utils/frontend/evm";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     networkName: {
       fontWeight: "bold",
-      marginRight: theme.spacing(2),
+      marginRight: theme.spacing(1),
     },
     addressButton: {
       fontWeight: "bold",
@@ -32,18 +37,16 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Properties = {
-  isConnectButtonDisplayed: boolean;
   isConnected: boolean;
+  networkId: number;
   address?: string;
-  networkName: string;
   onAddressClick: () => void;
 };
 
 export default function NavBar({
-  isConnectButtonDisplayed = false,
   isConnected,
+  networkId,
   address,
-  networkName,
   onAddressClick,
 }: Properties): JSX.Element {
   const classes = useStyles();
@@ -54,32 +57,31 @@ export default function NavBar({
         <Typography className={classes.title} variant="h6">
           InterRep
         </Typography>
-        {isConnectButtonDisplayed && (
-          <Box>
-            {isConnected && address ? (
-              <Box className={classes.walletDataBox}>
-                <Typography
-                  style={{ fontWeight: "bold" }}
-                  className={classes.networkName}
-                  color="secondary"
-                  variant="body1"
-                >
-                  {networkName}
-                </Typography>
-                <Button
-                  className={classes.addressButton}
-                  onClick={onAddressClick}
-                  variant="outlined"
-                >
-                  {shortenAddress(address)}
-                </Button>
-              </Box>
-            ) : (
-              <Button onClick={onAddressClick} variant="outlined">
-                Connect
-              </Button>
-            )}
+        {isBrowser && isConnected && address ? (
+          <Box className={classes.walletDataBox}>
+            <Typography
+              style={{ fontWeight: "bold" }}
+              className={classes.networkName}
+              color="secondary"
+              variant="body1"
+            >
+              {getChainNameFromNetworkId(networkId)}
+            </Typography>
+            <Typography className={classes.networkName} variant="body1">
+              {networkId !== getDefaultNetworkId() && "(wrong network)"}
+            </Typography>
+            <Button
+              className={classes.addressButton}
+              onClick={onAddressClick}
+              variant="outlined"
+            >
+              {shortenAddress(address)}
+            </Button>
           </Box>
+        ) : (
+          <Button onClick={onAddressClick} variant="outlined">
+            Connect
+          </Button>
         )}
       </Toolbar>
     </AppBar>

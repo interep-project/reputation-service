@@ -29,11 +29,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Properties = {
-  onArrowClick: (direction: 1) => void;
+  onArrowClick?: (direction: 1) => void;
+  reputation?: string;
 };
 
 export default function Web2AccountsTabPanel({
   onArrowClick,
+  reputation,
 }: Properties): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
@@ -43,9 +45,10 @@ export default function Web2AccountsTabPanel({
       <TabPanelContent
         title="Web2 Accounts"
         description="Sign in with one of our supported platforms."
-        onRightArrowClick={session ? onArrowClick : undefined}
+        onRightArrowClick={onArrowClick}
         buttonText={session ? "Sign out" : "Sign in"}
         onButtonClick={() => (session ? signOut() : signIn("twitter"))}
+        reputation={reputation}
       >
         <Grid
           className={classes.web2Platforms}

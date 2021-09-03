@@ -1,9 +1,10 @@
+import { Box } from "@material-ui/core";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { ethers, Signer } from "ethers";
 import React, { useEffect } from "react";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
-import useEncryption from "src/hooks/useEncryption";
+import { ITokenDocument } from "src/models/tokens/Token.types";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
@@ -33,14 +34,14 @@ export default function ReputationBadgesTabPanel({
   signer,
   web2AccountId,
 }: Properties): JSX.Element {
-  const { getPublicKey, decrypt } = useEncryption();
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_message, setMessage] = React.useState<string>("");
-  const [_accountLinked, setAccountLinked] = React.useState<boolean>();
-  const [_token, setToken] = React.useState<any>();
+  const [_token, setToken] = React.useState<ITokenDocument>();
 
   useEffect(() => {
     (async () => {
+      setMessage("");
+
       if (reputation !== BasicReputation.CONFIRMED) {
         setMessage(
           "Sorry, you can create a badge only if your reputation is CONFIRMED"
@@ -59,17 +60,59 @@ export default function ReputationBadgesTabPanel({
       }
 
       if (accountLinked) {
-        setMessage("It seems you already have a linked account");
-
         const tokens = await getMyTokens({ ownerAddress: address });
 
         setToken(tokens[tokens.length - 1]);
       }
 
-      setAccountLinked(accountLinked);
       setLoading(false);
     })();
   }, [reputation, address]);
+
+  async function linkAccount(): Promise<void> {
+    const checksummedAddress = getChecksummedAddress(address);
+
+    if (!checksummedAddress) {
+      setMessage("Sorry, your address is not valid");
+      return;
+    }
+
+    const publicKey = await getPublicKey();
+
+    if (!publicKey) {
+      setMessage("Public key is needed to link accounts");
+      return;
+    }
+
+    const message = createUserAttestationMessage({
+      checksummedAddress,
+      web2AccountId,
+    });
+
+    const userSignature = await signer.signMessage(message);
+
+    if (!userSignature) {
+      setMessage(
+        "Your signature is needed to register your intent to link the accounts"
+      );
+      return;
+    }
+
+    const token = await linkAccounts({
+      chainId: networkId,
+      address,
+      web2AccountId,
+      userSignature,
+      userPublicKey: publicKey,
+    });
+
+    if (token) {
+      setMessage("Success");
+      setToken(token);
+    } else {
+      setMessage("Sorry there was an error while linking your accounts");
+    }
+  }
 
   async function mint(token: any): Promise<void> {
     setLoading(true);
@@ -120,89 +163,70 @@ export default function ReputationBadgesTabPanel({
       return;
     }
 
-    setAccountLinked(false);
+    setToken(undefined);
     setLoading(false);
   }
 
-  async function linkAccount(): Promise<void> {
-    const checksummedAddress = getChecksummedAddress(address);
+  async function getPublicKey(): Promise<string> {
+    // @ts-ignore: ignore
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    // @ts-ignore: ignore
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // @ts-ignore: ignore
+    const pubKey = await provider.send("eth_getEncryptionPublicKey", [
+      accounts[0],
+    ]);
 
-    if (!checksummedAddress) {
-      setMessage("Sorry, the address is not valid");
-      return;
-    }
+    return pubKey;
+  }
 
-    const publicKey = await getPublicKey();
-
-    if (!publicKey) {
-      setMessage("Public key is needed to link accounts");
-      return;
-    }
-
-    const message = createUserAttestationMessage({
-      checksummedAddress,
-      web2AccountId,
+  async function decrypt(messageToDecrypt: string): Promise<string> {
+    // @ts-ignore: ignore
+    const decrypted = await window.ethereum.request({
+      method: "eth_decrypt",
+      // @ts-ignore: ignore
+      params: [messageToDecrypt, window.ethereum.selectedAddress],
     });
 
-    const userSignature = await signer.signMessage(message);
-
-    if (!userSignature) {
-      setMessage(
-        "Your signature is needed to register your intent to link the accounts"
-      );
-      return;
-    }
-
-    const token = await linkAccounts({
-      chainId: networkId,
-      address,
-      web2AccountId,
-      userSignature,
-      userPublicKey: publicKey,
-    });
-
-    if (token) {
-      setMessage("Success");
-      setAccountLinked(true);
-      setToken(token);
-    } else {
-      setMessage("Sorry there was an error while linking your accounts.");
-    }
+    return decrypted;
   }
 
   return (
     <>
       <TabPanelContent
         title="Reputation badges"
-        description="Link your Web2 account with your Ethereum address and mint your badge to prove your reputation."
+        description="Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
         onLeftArrowClick={onArrowClick}
         message={_message}
         loading={_loading}
         buttonText={
-          !_accountLinked || _loading
+          !_token || _loading
             ? "Link your accounts"
-            : _token.status === "NOT_MINTED"
+            : _token?.status === "NOT_MINTED"
             ? "Mint token"
-            : _token.status === "MINTED"
+            : _token?.status === "MINTED"
             ? "Burn token"
             : "Unlink your accounts"
         }
         onButtonClick={() =>
-          !_accountLinked || _loading
+          !_token || _loading
             ? linkAccount()
-            : _token.status === "NOT_MINTED"
+            : _token?.status === "NOT_MINTED"
             ? mint(_token)
-            : _token.status === "MINTED"
+            : _token?.status === "MINTED"
             ? burn(_token)
             : unlinkAccount(_token)
         }
         buttonDisabled={reputation !== BasicReputation.CONFIRMED || _loading}
+        reputation={reputation}
       >
-        {_token && _token.status === "MINTED" && (
-          <div>
+        {_token && _token.status === "MINTED" ? (
+          <Box py={2}>
             <TwitterIcon style={{ color: "#D4D08E" }} fontSize="large" />
-          </div>
-        )}
+          </Box>
+        ) : undefined}
       </TabPanelContent>
     </>
   );

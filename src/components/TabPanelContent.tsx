@@ -65,6 +65,7 @@ type Properties = {
   buttonText: string;
   onButtonClick: () => void;
   buttonDisabled?: boolean;
+  reputation?: string;
 };
 
 export default function TabPanelContent({
@@ -78,6 +79,7 @@ export default function TabPanelContent({
   buttonText,
   onButtonClick,
   buttonDisabled = false,
+  reputation,
 }: Properties): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
@@ -128,6 +130,7 @@ export default function TabPanelContent({
           <TwitterIcon fontSize="small" color="primary" />
           <Typography variant="caption">
             &nbsp;{session.twitter.username}
+            &nbsp;{reputation ? `(${reputation})` : ""}
           </Typography>
         </Box>
       )}

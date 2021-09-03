@@ -75,6 +75,7 @@ export default function SemaphoreGroupsTabPanel({
           !_identityCommitment ? createSemaphoreIdentity : joinGroup
         }
         buttonDisabled={!!(_identityCommitment && _idAlreadyExists)}
+        reputation={reputation}
       />
     </>
   );
