@@ -1,22 +1,12 @@
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  IconButton,
-  Button,
-  Typography,
-  LinearProgress,
-} from "@material-ui/core";
-import React, { useEffect } from "react";
-import { getChecksummedAddress } from "src/utils/crypto/address";
-import Snackbar from "./Snackbar";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import TwitterIcon from "@material-ui/icons/Twitter";
-import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
-import useEncryption from "src/hooks/useEncryption";
+import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { ethers, Signer } from "ethers";
+import React, { useEffect } from "react";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
+import useEncryption from "src/hooks/useEncryption";
+import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
+import { getChecksummedAddress } from "src/utils/crypto/address";
+import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
 import {
   checkLink,
   getMyTokens,
@@ -24,28 +14,7 @@ import {
   mintToken,
   unlinkAccounts,
 } from "src/utils/frontend/api";
-import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    description: {
-      textAlign: "center",
-    },
-    button: {
-      marginTop: theme.spacing(3),
-      minWidth: 200,
-    },
-    spinner: {
-      position: "absolute",
-      bottom: 10,
-      width: "95%",
-    },
-    leftArrowButton: {
-      position: "absolute",
-      left: 10,
-    },
-  })
-);
+import TabPanelContent from "./TabPanelContent";
 
 type Properties = {
   onArrowClick: (direction: -1 | 1) => void;
@@ -64,11 +33,9 @@ export default function ReputationBadgesTabPanel({
   signer,
   web2AccountId,
 }: Properties): JSX.Element {
-  const classes = useStyles();
   const { getPublicKey, decrypt } = useEncryption();
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_message, setMessage] = React.useState<string>("");
-  const [_openSnackbar, setOpenSnackbar] = React.useState<boolean>(false);
   const [_accountLinked, setAccountLinked] = React.useState<boolean>();
   const [_token, setToken] = React.useState<any>();
 
@@ -78,7 +45,6 @@ export default function ReputationBadgesTabPanel({
         setMessage(
           "Sorry, you can create a badge only if your reputation is CONFIRMED"
         );
-        setOpenSnackbar(true);
         return;
       }
 
@@ -88,14 +54,12 @@ export default function ReputationBadgesTabPanel({
 
       if (accountLinked === null) {
         setMessage("Sorry, there was an unexpected error");
-        setOpenSnackbar(true);
         setLoading(false);
         return;
       }
 
       if (accountLinked) {
         setMessage("It seems you already have a linked account");
-        setOpenSnackbar(true);
 
         const tokens = await getMyTokens({ ownerAddress: address });
 
@@ -114,7 +78,6 @@ export default function ReputationBadgesTabPanel({
 
     if (response === null) {
       setMessage("Sorry, there was an unexpected error");
-      setOpenSnackbar(true);
       setLoading(false);
       return;
     }
@@ -132,7 +95,6 @@ export default function ReputationBadgesTabPanel({
 
     if (badgeAddress === null) {
       setMessage("Cannot retrieve the badge's address");
-      setOpenSnackbar(true);
       return;
     }
 
@@ -155,7 +117,6 @@ export default function ReputationBadgesTabPanel({
 
     if (response === null) {
       setMessage("Cannot retrieve the badge's address");
-      setOpenSnackbar(true);
       return;
     }
 
@@ -168,7 +129,6 @@ export default function ReputationBadgesTabPanel({
 
     if (!checksummedAddress) {
       setMessage("Sorry, the address is not valid");
-      setOpenSnackbar(true);
       return;
     }
 
@@ -176,7 +136,6 @@ export default function ReputationBadgesTabPanel({
 
     if (!publicKey) {
       setMessage("Public key is needed to link accounts");
-      setOpenSnackbar(true);
       return;
     }
 
@@ -191,7 +150,6 @@ export default function ReputationBadgesTabPanel({
       setMessage(
         "Your signature is needed to register your intent to link the accounts"
       );
-      setOpenSnackbar(true);
       return;
     }
 
@@ -210,34 +168,26 @@ export default function ReputationBadgesTabPanel({
     } else {
       setMessage("Sorry there was an error while linking your accounts.");
     }
-
-    setOpenSnackbar(true);
   }
 
   return (
     <>
-      <IconButton
-        onClick={() => onArrowClick(-1)}
-        className={classes.leftArrowButton}
-        color="secondary"
-      >
-        <KeyboardArrowLeftIcon fontSize="large" />
-      </IconButton>
-      <Typography variant="h5" gutterBottom>
-        Reputation badges
-      </Typography>
-      <Typography className={classes.description} variant="body1" gutterBottom>
-        Link your Web2 account with your Ethereum address <br />
-        and mint your badge to prove your reputation.
-      </Typography>
-      {_token && _token.status === "MINTED" && (
-        <div>
-          <TwitterIcon style={{ color: "#D4D08E" }} fontSize="large" />
-        </div>
-      )}
-      <Button
-        className={classes.button}
-        onClick={() =>
+      <TabPanelContent
+        title="Reputation badges"
+        description="Link your Web2 account with your Ethereum address and mint your badge to prove your reputation."
+        onLeftArrowClick={onArrowClick}
+        message={_message}
+        loading={_loading}
+        buttonText={
+          !_accountLinked || _loading
+            ? "Link your accounts"
+            : _token.status === "NOT_MINTED"
+            ? "Mint token"
+            : _token.status === "MINTED"
+            ? "Burn token"
+            : "Unlink your accounts"
+        }
+        onButtonClick={() =>
           !_accountLinked || _loading
             ? linkAccount()
             : _token.status === "NOT_MINTED"
@@ -246,21 +196,14 @@ export default function ReputationBadgesTabPanel({
             ? burn(_token)
             : unlinkAccount(_token)
         }
-        variant="outlined"
-        color="primary"
-        size="large"
-        disabled={reputation !== BasicReputation.CONFIRMED || _loading}
+        buttonDisabled={reputation !== BasicReputation.CONFIRMED || _loading}
       >
-        {!_accountLinked || _loading
-          ? "Link your accounts"
-          : _token.status === "NOT_MINTED"
-          ? "Mint token"
-          : _token.status === "MINTED"
-          ? "Burn token"
-          : "Unlink your accounts"}
-      </Button>
-      <Snackbar open={_openSnackbar} message={_message} />
-      {_loading && <LinearProgress className={classes.spinner} />}
+        {_token && _token.status === "MINTED" && (
+          <div>
+            <TwitterIcon style={{ color: "#D4D08E" }} fontSize="large" />
+          </div>
+        )}
+      </TabPanelContent>
     </>
   );
 }

@@ -1,18 +1,16 @@
-import { signIn, signOut, useSession } from "next-auth/client";
 import {
   createStyles,
-  makeStyles,
-  Theme,
-  Typography,
-  Button,
   Grid,
   IconButton,
+  makeStyles,
+  Theme,
 } from "@material-ui/core";
-import TwitterIcon from "@material-ui/icons/Twitter";
 import GithubIcon from "@material-ui/icons/GitHub";
 import RedditIcon from "@material-ui/icons/Reddit";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import TwitterIcon from "@material-ui/icons/Twitter";
+import { signIn, signOut, useSession } from "next-auth/client";
 import React from "react";
+import TabPanelContent from "./TabPanelContent";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type Properties = {
-  onArrowClick: (direction: -1 | 1) => void;
+  onArrowClick: (direction: 1) => void;
 };
 
 export default function Web2AccountsTabPanel({
@@ -42,52 +40,36 @@ export default function Web2AccountsTabPanel({
 
   return (
     <>
-      <Typography variant="h5" gutterBottom>
-        Web2 Accounts
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Sign in with one of our supported platforms.
-      </Typography>
-      <Grid
-        className={classes.web2Platforms}
-        container
-        justifyContent="center"
-        spacing={2}
+      <TabPanelContent
+        title="Web2 Accounts"
+        description="Sign in with one of our supported platforms."
+        onRightArrowClick={session ? onArrowClick : undefined}
+        buttonText={session ? "Sign out" : "Sign in"}
+        onButtonClick={() => (session ? signOut() : signIn("twitter"))}
       >
-        <Grid item>
-          <IconButton color="primary">
-            <TwitterIcon fontSize="large" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <IconButton disabled color="primary">
-            <GithubIcon fontSize="large" />
-          </IconButton>
-        </Grid>
-        <Grid item>
-          <IconButton disabled color="primary">
-            <RedditIcon fontSize="large" />
-          </IconButton>
-        </Grid>
-      </Grid>
-      <Button
-        className={classes.button}
-        onClick={() => (session ? signOut() : signIn("twitter"))}
-        variant="outlined"
-        color="primary"
-        size="large"
-      >
-        {session ? "Sign out" : "Sign in"}
-      </Button>
-      {session && (
-        <IconButton
-          onClick={() => onArrowClick(1)}
-          className={classes.rightArrowButton}
-          color="secondary"
+        <Grid
+          className={classes.web2Platforms}
+          container
+          justifyContent="center"
+          spacing={2}
         >
-          <KeyboardArrowRightIcon fontSize="large" />
-        </IconButton>
-      )}
+          <Grid item>
+            <IconButton color="primary">
+              <TwitterIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <IconButton disabled color="primary">
+              <GithubIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+          <Grid item>
+            <IconButton disabled color="primary">
+              <RedditIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+        </Grid>
+      </TabPanelContent>
     </>
   );
 }

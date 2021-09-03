@@ -4,21 +4,19 @@ import CloseIcon from "@material-ui/icons/Close";
 import { Snackbar as OriginalSnackbar } from "@material-ui/core";
 
 type Properties = {
-  message: string;
+  message?: string;
   duration?: number;
-  open?: boolean;
 };
 
 export default function Snackbar({
-  message,
+  message = "",
   duration = 6000,
-  open = false,
 }: Properties): JSX.Element {
-  const [_open, setOpen] = React.useState(false);
+  const [_message, setMessage] = React.useState<string>();
 
   React.useEffect(() => {
-    setOpen(open);
-  }, [open]);
+    setMessage(message);
+  }, [message]);
 
   function close(
     event: React.SyntheticEvent | React.MouseEvent,
@@ -28,7 +26,7 @@ export default function Snackbar({
       return;
     }
 
-    setOpen(false);
+    setMessage("");
   }
 
   return (
@@ -38,7 +36,7 @@ export default function Snackbar({
           vertical: "bottom",
           horizontal: "center",
         }}
-        open={_open}
+        open={!!_message}
         onClose={close}
         autoHideDuration={duration}
         message={message}

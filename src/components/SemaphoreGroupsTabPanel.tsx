@@ -1,43 +1,7 @@
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  Button,
-  IconButton,
-  Typography,
-  LinearProgress,
-} from "@material-ui/core";
 import React from "react";
 import semethid from "semethid";
 import { addIdentityCommitment, checkIdentity } from "src/utils/frontend/api";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import Snackbar from "./Snackbar";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    description: {
-      textAlign: "center",
-    },
-    button: {
-      marginTop: theme.spacing(3),
-      minWidth: 200,
-    },
-    spinner: {
-      position: "absolute",
-      bottom: 10,
-      width: "95%",
-    },
-    leftArrowButton: {
-      position: "absolute",
-      left: 10,
-    },
-    rightArrowButton: {
-      position: "absolute",
-      right: 10,
-    },
-  })
-);
+import TabPanelContent from "./TabPanelContent";
 
 type Properties = {
   onArrowClick: (direction: -1 | 1) => void;
@@ -50,12 +14,10 @@ export default function SemaphoreGroupsTabPanel({
   reputation,
   web2AccountId,
 }: Properties): JSX.Element {
-  const classes = useStyles();
   const [_identityCommitment, setIdentityCommitment] = React.useState<string>();
   const [_idAlreadyExists, setIdAlreadyExists] = React.useState<boolean>();
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_message, setMessage] = React.useState<string>("");
-  const [_openSnackbar, setOpenSnackbar] = React.useState<boolean>(false);
 
   async function createSemaphoreIdentity(): Promise<void> {
     setLoading(true);
@@ -66,14 +28,12 @@ export default function SemaphoreGroupsTabPanel({
 
     if (alreadyExist === null) {
       setMessage("Sorry, there was an unexpected error");
-      setOpenSnackbar(true);
       setLoading(false);
       return;
     }
 
     if (alreadyExist) {
-      setMessage("It seems you already joined this group!");
-      setOpenSnackbar(true);
+      setMessage("You already joined this group");
     }
 
     setIdentityCommitment(identityCommitment);
@@ -98,45 +58,24 @@ export default function SemaphoreGroupsTabPanel({
     }
 
     setLoading(false);
-    setOpenSnackbar(true);
     setIdAlreadyExists(true);
   }
 
   return (
     <>
-      <IconButton
-        onClick={() => onArrowClick(-1)}
-        className={classes.leftArrowButton}
-        color="secondary"
-      >
-        <KeyboardArrowLeftIcon fontSize="large" />
-      </IconButton>
-      <Typography variant="h5" gutterBottom>
-        Semaphore Groups
-      </Typography>
-      <Typography className={classes.description} variant="body1" gutterBottom>
-        Create your Semaphore identity and join your <br />
-        {`TWITTER_${reputation}`} Semaphore group.
-      </Typography>
-      <Button
-        className={classes.button}
-        onClick={!_identityCommitment ? createSemaphoreIdentity : joinGroup}
-        variant="outlined"
-        color="primary"
-        size="large"
-        disabled={!!(_identityCommitment && _idAlreadyExists)}
-      >
-        {!_identityCommitment ? "Create Semaphore id" : "Join group"}
-      </Button>
-      <Snackbar open={_openSnackbar} message={_message} />
-      {_loading && <LinearProgress className={classes.spinner} />}
-      <IconButton
-        onClick={() => onArrowClick(1)}
-        className={classes.rightArrowButton}
-        color="secondary"
-      >
-        <KeyboardArrowRightIcon fontSize="large" />
-      </IconButton>
+      <TabPanelContent
+        title="Semaphore Groups"
+        description={`Create your Semaphore identity and join your TWITTER_${reputation} Semaphore group.`}
+        onLeftArrowClick={onArrowClick}
+        onRightArrowClick={onArrowClick}
+        message={_message}
+        loading={_loading}
+        buttonText={!_identityCommitment ? "Create Semaphore id" : "Join group"}
+        onButtonClick={
+          !_identityCommitment ? createSemaphoreIdentity : joinGroup
+        }
+        buttonDisabled={!!(_identityCommitment && _idAlreadyExists)}
+      />
     </>
   );
 }
