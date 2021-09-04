@@ -42,18 +42,10 @@ const deployedContracts: {
   },
 };
 
-export const isNetworkWithDeployedContract = (
-  id?: number
-): id is keyof typeof deployedContracts => !!id && id in deployedContracts;
-
 export const getDeployedContractAddress = (
   contract: DeployedContracts
-): string | null => {
+): string => {
   const networkId = getDefaultNetworkId();
-
-  if (!isNetworkWithDeployedContract(networkId)) {
-    return null;
-  }
 
   return deployedContracts[networkId][contract];
 };

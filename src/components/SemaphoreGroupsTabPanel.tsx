@@ -1,5 +1,6 @@
 import React from "react";
 import semethid from "semethid";
+import { DeployedContracts } from "src/utils/crypto/deployedContracts";
 import { addIdentityCommitment, checkIdentity } from "src/utils/frontend/api";
 import TabPanelContent from "./TabPanelContent";
 
@@ -76,6 +77,7 @@ export default function SemaphoreGroupsTabPanel({
         }
         buttonDisabled={!!(_identityCommitment && _idAlreadyExists)}
         reputation={reputation}
+        contractName={DeployedContracts.INTERREP_GROUPS}
       />
     </>
   );

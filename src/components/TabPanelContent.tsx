@@ -7,12 +7,23 @@ import {
   IconButton,
   Typography,
   LinearProgress,
+  Link,
 } from "@material-ui/core";
 import { useSession } from "next-auth/client";
 import React from "react";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import {
+  DeployedContracts,
+  getDeployedContractAddress,
+} from "src/utils/crypto/deployedContracts";
+import { shortenAddress } from "src/utils/frontend/evm";
+import {
+  ExplorerDataType,
+  getExplorerLink,
+} from "src/utils/frontend/getExplorerLink";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -36,6 +47,13 @@ const useStyles = makeStyles(() =>
       opacity: 0.8,
       display: "flex",
       justifyContent: "center",
+    },
+    contractLink: {
+      position: "absolute",
+      right: 15,
+      bottom: 10,
+      fontSize: 13,
+      opacity: 0.8,
     },
     spinner: {
       position: "absolute",
@@ -66,6 +84,7 @@ type Properties = {
   onButtonClick: () => void;
   buttonDisabled?: boolean;
   reputation?: string;
+  contractName?: DeployedContracts;
 };
 
 export default function TabPanelContent({
@@ -80,6 +99,7 @@ export default function TabPanelContent({
   onButtonClick,
   buttonDisabled = false,
   reputation,
+  contractName,
 }: Properties): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
@@ -131,6 +151,25 @@ export default function TabPanelContent({
           <Typography variant="caption">
             &nbsp;{session.twitter.username}
             &nbsp;{reputation ? `(${reputation})` : ""}
+          </Typography>
+        </Box>
+      )}
+      {contractName && (
+        <Box className={classes.contractLink}>
+          <Typography variant="caption">
+            Contract:{" "}
+            <Link
+              href={getExplorerLink(
+                getDefaultNetworkId(),
+                getDeployedContractAddress(contractName),
+                ExplorerDataType.ADDRESS
+              )}
+              target="_blank"
+              rel="noreferrer"
+              color="inherit"
+            >
+              {shortenAddress(getDeployedContractAddress(contractName))}
+            </Link>
           </Typography>
         </Box>
       )}

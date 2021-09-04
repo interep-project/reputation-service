@@ -7,7 +7,10 @@ import { createUserAttestationMessage } from "src/core/signing/createUserAttesta
 import { ITokenDocument } from "src/models/tokens/Token.types";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
-import { getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts";
+import {
+  DeployedContracts,
+  getBadgeAddressByProvider,
+} from "src/utils/crypto/deployedContracts";
 import {
   checkLink,
   getMyTokens,
@@ -37,6 +40,7 @@ export default function ReputationBadgesTabPanel({
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_message, setMessage] = React.useState<string>("");
   const [_token, setToken] = React.useState<ITokenDocument>();
+  const [_error, setError] = React.useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -54,13 +58,15 @@ export default function ReputationBadgesTabPanel({
       const accountLinked = await checkLink();
 
       if (accountLinked === null) {
-        setMessage("Sorry, there was an unexpected error");
-        setLoading(false);
-        return;
+        return showUnexpectedError();
       }
 
       if (accountLinked) {
         const tokens = await getMyTokens({ ownerAddress: address });
+
+        if (tokens === null || tokens.length === 0) {
+          return showUnexpectedError();
+        }
 
         setToken(tokens[tokens.length - 1]);
       }
@@ -106,12 +112,12 @@ export default function ReputationBadgesTabPanel({
       userPublicKey: publicKey,
     });
 
-    if (token) {
-      setMessage("Success");
-      setToken(token);
-    } else {
-      setMessage("Sorry there was an error while linking your accounts");
+    if (token === null) {
+      return showUnexpectedError();
     }
+
+    setMessage("You linked your accounts with success");
+    setToken(token);
   }
 
   async function mint(token: any): Promise<void> {
@@ -120,9 +126,7 @@ export default function ReputationBadgesTabPanel({
     const response = await mintToken({ tokenId: token._id });
 
     if (response === null) {
-      setMessage("Sorry, there was an unexpected error");
-      setLoading(false);
-      return;
+      return showUnexpectedError();
     }
 
     const tokens = await getMyTokens({ ownerAddress: address });
@@ -159,8 +163,7 @@ export default function ReputationBadgesTabPanel({
     const response = await unlinkAccounts({ decryptedAttestation });
 
     if (response === null) {
-      setMessage("Cannot retrieve the badge's address");
-      return;
+      return showUnexpectedError();
     }
 
     setToken(undefined);
@@ -193,6 +196,12 @@ export default function ReputationBadgesTabPanel({
     return decrypted;
   }
 
+  function showUnexpectedError(): void {
+    setMessage("Sorry, there was an unexpected error");
+    setError(true);
+    setLoading(false);
+  }
+
   return (
     <>
       <TabPanelContent
@@ -219,8 +228,11 @@ export default function ReputationBadgesTabPanel({
             ? burn(_token)
             : unlinkAccount(_token)
         }
-        buttonDisabled={reputation !== BasicReputation.CONFIRMED || _loading}
+        buttonDisabled={
+          reputation !== BasicReputation.CONFIRMED || _loading || _error
+        }
         reputation={reputation}
+        contractName={DeployedContracts.TWITTER_BADGE}
       >
         {_token && _token.status === "MINTED" ? (
           <Box py={2}>
