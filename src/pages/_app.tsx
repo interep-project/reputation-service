@@ -1,7 +1,6 @@
 import type { AppProps } from "next/app";
 import PropTypes from "prop-types";
 import { Provider as NextAuthProvider } from "next-auth/client";
-import { Web3ContextProvider } from "src/services/context/Web3Provider";
 import {
   createStyles,
   createTheme,
@@ -15,6 +14,8 @@ import React from "react";
 import Head from "next/head";
 import Footer from "src/components/Footer";
 import NavBar from "src/components/NavBar";
+import useEthereumWallet from "src/hooks/useEthreumWallet";
+import EthereumWalletContext from "src/services/context/EthereumWalletContext";
 
 const theme = createTheme({
   palette: {
@@ -44,6 +45,7 @@ const useStyles = makeStyles(() =>
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const classes = useStyles();
+  const ethereumWallet = useEthereumWallet();
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -64,7 +66,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         />
       </Head>
       <ThemeProvider theme={theme}>
-        <Web3ContextProvider>
+        <EthereumWalletContext.Provider value={ethereumWallet}>
           <NextAuthProvider session={pageProps.session}>
             <Paper className={classes.container} elevation={0} square={true}>
               <NavBar />
@@ -72,7 +74,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
               <Footer />
             </Paper>
           </NextAuthProvider>
-        </Web3ContextProvider>
+        </EthereumWalletContext.Provider>
       </ThemeProvider>
     </React.Fragment>
   );

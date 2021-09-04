@@ -42,6 +42,10 @@ const deployedContracts: {
   },
 };
 
+export const isNetworkWithDeployedContract = (
+  id?: number
+): id is keyof typeof deployedContracts => !!id && id in deployedContracts;
+
 export const getDeployedContractAddress = (
   contract: DeployedContracts
 ): string => {

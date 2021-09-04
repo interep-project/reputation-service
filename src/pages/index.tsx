@@ -10,16 +10,18 @@ import {
 } from "@material-ui/core";
 import { Signer } from "ethers";
 import { useSession } from "next-auth/client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isBrowser, isMobile } from "react-device-detect";
 import ReputationBadgesTabPanel from "src/components/ReputationBadgesTabPanel";
 import SemaphoreGroupsTabPanel from "src/components/SemaphoreGroupsTabPanel";
 import TabPanelContainer from "src/components/TabPanelContainer";
 import Web2AccountsTabPanel from "src/components/Web2AccountsTabPanel";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
-import { useWeb3Context } from "src/services/context/Web3Provider";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import { getMyTwitterReputation } from "src/utils/frontend/api";
+import EthereumWalletContext, {
+  EthereumWalletContextType,
+} from "src/services/context/EthereumWalletContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,23 +52,13 @@ export default function Home(): JSX.Element {
   const classes = useStyles();
   const [session] = useSession();
   const [_tabIndex, setTabIndex] = React.useState<number>(0);
-  const { address, networkId, signer } = useWeb3Context();
+  const { _networkId, _address, _signer } = useContext(
+    EthereumWalletContext
+  ) as EthereumWalletContextType;
   const [
     _twitterReputation,
     setTwitterReputation,
   ] = useState<AccountReputationByAccount | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      if (networkId && networkId !== defaultNetworkId) {
-        // @ts-ignore: ignore
-        await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: `0x${defaultNetworkId.toString(16)}` }],
-        });
-      }
-    })();
-  }, [networkId]);
 
   useEffect(() => {
     (async () => {
@@ -76,9 +68,9 @@ export default function Home(): JSX.Element {
     })();
   }, [session]);
 
-  function appIsReady(): boolean {
-    return !!(session && defaultNetworkId === networkId && _twitterReputation);
-  }
+  const appIsReady = useCallback(async () => {
+    return !!(session && defaultNetworkId === _networkId && _twitterReputation);
+  }, [session, _networkId, _twitterReputation]);
 
   function updateTabIndex(direction: number): void {
     setTabIndex((index: number) => index + direction);
@@ -130,9 +122,9 @@ export default function Home(): JSX.Element {
               <TabPanelContainer value={_tabIndex} index={2}>
                 <ReputationBadgesTabPanel
                   onArrowClick={updateTabIndex}
-                  signer={signer as Signer}
-                  networkId={networkId as number}
-                  address={address as string}
+                  signer={_signer as Signer}
+                  networkId={_networkId as number}
+                  address={_address as string}
                   reputation={_twitterReputation?.basicReputation as string}
                   web2AccountId={session?.web2AccountId as string}
                 />

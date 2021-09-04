@@ -9,14 +9,16 @@ import {
   Typography,
 } from "@material-ui/core";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useContext } from "react";
 import { isBrowser } from "react-device-detect";
-import { useWeb3Context } from "src/services/context/Web3Provider";
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
+import { isDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import {
   getChainNameFromNetworkId,
   shortenAddress,
 } from "src/utils/frontend/evm";
+import EthereumWalletContext, {
+  EthereumWalletContextType,
+} from "src/services/context/EthereumWalletContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,14 +35,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     addressButton: {
       fontWeight: "bold",
-      textTransform: "lowercase",
     },
   })
 );
 
 export default function NavBar(): JSX.Element {
   const classes = useStyles();
-  const { connect, address, connected = false, networkId } = useWeb3Context();
+  const { connect, check, _networkId, _address } = useContext(
+    EthereumWalletContext
+  ) as EthereumWalletContextType;
   const router = useRouter();
 
   return (
@@ -51,7 +54,7 @@ export default function NavBar(): JSX.Element {
         </Typography>
         {router.route === "/" && (
           <>
-            {isBrowser && connected && address ? (
+            {isBrowser && _address && _networkId ? (
               <Box className={classes.walletDataBox}>
                 <Typography
                   style={{ fontWeight: "bold" }}
@@ -59,21 +62,25 @@ export default function NavBar(): JSX.Element {
                   color="secondary"
                   variant="body1"
                 >
-                  {networkId && getChainNameFromNetworkId(networkId)}
+                  {_networkId && getChainNameFromNetworkId(_networkId)}
                 </Typography>
                 <Typography className={classes.networkName} variant="body1">
-                  {networkId !== getDefaultNetworkId() && "(wrong network)"}
+                  {!isDefaultNetworkId(_networkId) && "(wrong network)"}
                 </Typography>
                 <Button
                   className={classes.addressButton}
-                  onClick={() => connect && connect()}
+                  onClick={() =>
+                    isDefaultNetworkId(_networkId) ? connect() : check()
+                  }
                   variant="outlined"
                 >
-                  {shortenAddress(address)}
+                  {isDefaultNetworkId(_networkId)
+                    ? shortenAddress(_address)
+                    : "Switch"}
                 </Button>
               </Box>
             ) : (
-              <Button onClick={() => connect && connect()} variant="outlined">
+              <Button onClick={connect} variant="outlined">
                 Connect
               </Button>
             )}
