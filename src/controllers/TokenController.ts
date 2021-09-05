@@ -4,7 +4,6 @@ import { getNFTMetadataObject } from "src/core/blockchain/ReputationBadge/getNFT
 import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract";
 import mintToken from "src/core/linking/mintToken";
 import Token from "src/models/tokens/Token.model";
-import { ITokenDocument } from "src/models/tokens/Token.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import {
   DeployedContracts,
@@ -16,14 +15,14 @@ class TokenController {
   public getTokensByAddress = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     try {
       const owner = req.query.owner;
+
       if (!owner || typeof owner !== "string") {
         return res.status(400).end();
       }
+
       const ownerChecksummedAddress = getChecksummedAddress(owner);
 
       if (!ownerChecksummedAddress)
@@ -37,7 +36,7 @@ class TokenController {
 
       const tokensAsJSON = tokens.map((token) => token.toJSON());
 
-      return res.status(200).send({ tokens: tokensAsJSON });
+      return res.status(200).send({ data: tokensAsJSON });
     } catch (err) {
       logger.error(err);
       return res.status(500).end();
@@ -47,9 +46,7 @@ class TokenController {
   public getTokenByContractAndId = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     try {
       const contractAddress = req.query?.contractAddress;
       const decimalId = req.query?.id;
@@ -65,13 +62,13 @@ class TokenController {
 
         if (!tokenExists) {
           return res
-            .status(200)
+            .status(400)
             .send(`Token with id ${decimalId} does not exist`);
         }
 
-        return res
-          .status(200)
-          .send(getNFTMetadataObject(DeployedContracts.TWITTER_BADGE));
+        return res.status(200).send({
+          data: getNFTMetadataObject(DeployedContracts.TWITTER_BADGE),
+        });
       } else {
         return res.status(400).send(`Invalid contract address`);
       }
@@ -84,9 +81,7 @@ class TokenController {
   public mintToken = async (
     req: NextApiRequest,
     res: NextApiResponse
-  ): Promise<{
-    tokens: ITokenDocument[];
-  } | void> => {
+  ): Promise<void> => {
     const { tokenId } = JSON.parse(req.body);
 
     if (!tokenId) return res.status(400).end();
@@ -94,10 +89,10 @@ class TokenController {
     try {
       const txResponse = await mintToken(tokenId);
 
-      return res.status(200).send(txResponse);
+      return res.status(200).send({ data: txResponse });
     } catch (error) {
       logger.error(error);
-      return res.status(400).send({ error: error.message });
+      return res.status(400).send(error.message);
     }
   };
 }

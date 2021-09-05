@@ -97,11 +97,6 @@ describe("api/linking/unlink", () => {
     });
 
     it("should send back result if it succeeded", async () => {
-      const result = { success: true, foo: "bar" };
-      unlinkAccountsMocked.mockImplementationOnce(() =>
-        Promise.resolve(result)
-      );
-
       const { req, res } = createNextMocks({
         method: "PUT",
         body: ({
@@ -114,14 +109,13 @@ describe("api/linking/unlink", () => {
 
       // Expect
       expect(res._getStatusCode()).toBe(200);
-      expect(res._getData()).toEqual(result);
     });
 
     it("should send back the result if it did not suceed", async () => {
-      const result = { success: false, error: "error" };
-      unlinkAccountsMocked.mockImplementationOnce(() =>
-        Promise.resolve(result)
-      );
+      const errorMessage = "error";
+      unlinkAccountsMocked.mockImplementationOnce(() => {
+        throw new Error(errorMessage);
+      });
 
       const { req, res } = createNextMocks({
         method: "PUT",
@@ -134,9 +128,7 @@ describe("api/linking/unlink", () => {
       await handler(req, res);
 
       // Expect
-      expect(res._getStatusCode()).toBe(400);
-      expect(res._getData()).toEqual(result);
-      expect(logger.error).toHaveBeenCalledWith(result.error);
+      expect(res._getStatusCode()).toBe(500);
     });
 
     it("should catch an error", async () => {

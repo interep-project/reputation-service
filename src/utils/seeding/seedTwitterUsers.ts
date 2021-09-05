@@ -50,7 +50,7 @@ export default async function seedTwitterUsers(
       log(colors.white(`Number of write errors: ${error.writeErrors?.length}`));
     }
 
-    log("/n");
+    log("\n");
   }
 }
 

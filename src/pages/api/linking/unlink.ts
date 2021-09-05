@@ -28,26 +28,21 @@ const handler = async (
   const web2AccountIdFromSession = jwToken?.web2AccountId;
 
   if (!web2AccountIdFromSession) {
-    return res.status(403).send({
-      success: false,
-      error: "No web 2 account id from session. User might not be logged in.",
-    });
+    return res
+      .status(403)
+      .send("No web 2 account id from session. User might not be logged in");
   }
   const { decryptedAttestation } = JSON.parse(req.body);
   try {
-    const result = await unlinkAccounts({
+    await unlinkAccounts({
       web2AccountIdFromSession,
       decryptedAttestation,
     });
 
-    if (result.success) {
-      return res.status(200).send(result);
-    } else {
-      if (result.error) logger.error(result.error);
-      return res.status(400).send(result);
-    }
+    return res.status(200).end();
   } catch (err) {
     logger.error(err);
+
     return res.status(500).end();
   }
 };

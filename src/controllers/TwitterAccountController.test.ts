@@ -94,8 +94,8 @@ describe("getTwitterReputation", () => {
     await TwitterAccountController.getTwitterReputation(req, res);
 
     // Expect
-    expect(res._getData().user.username).toBe(username);
-    expect(res._getData().basicReputation).toBe(
+    expect(res._getData().data.user.username).toBe(username);
+    expect(res._getData().data.basicReputation).toBe(
       accountReputation.basicReputation
     );
   });
@@ -120,8 +120,8 @@ describe("getTwitterReputation", () => {
     await TwitterAccountController.getTwitterReputation(req, res);
 
     // Expect
-    expect(res._getData().user.id).toBe(id);
-    expect(res._getData().basicReputation).toBe(
+    expect(res._getData().data.user.id).toBe(id);
+    expect(res._getData().data.basicReputation).toBe(
       accountReputation.basicReputation
     );
   });
@@ -179,7 +179,7 @@ describe("getMyTwitterReputation", () => {
     expect(checkTwitterReputationByIdMocked).toHaveBeenCalledWith(
       twitterUserId
     );
-    expect(res._getData()).toEqual(accountReputation);
+    expect(res._getData().data).toEqual(accountReputation);
   });
 
   it("should return a 500 if an error occurs", async () => {

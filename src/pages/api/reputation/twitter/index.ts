@@ -3,13 +3,16 @@ import { withSentry } from "@sentry/nextjs";
 import TwitterAccountController from "src/controllers/TwitterAccountController";
 import { dbConnect } from "src/utils/server/database";
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   await dbConnect();
 
   if (req.method === "GET") {
     return TwitterAccountController.getTwitterReputation(req, res);
   } else {
-    res.status(405).end();
+    return res.status(405).end();
   }
 };
 

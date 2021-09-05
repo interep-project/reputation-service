@@ -12,11 +12,12 @@ export async function findByLevelAndIndex(
   return this.findOne({ key }).populate("parent");
 }
 
-export async function findByHash(
+export async function findByGroupIdAndHash(
   this: typeof MerkleTreeNode,
+  groupId: string,
   hash: string
 ): Promise<IMerkleTreeNodeDocument | null> {
-  return this.findOne({ hash }).populate("parent");
+  return this.findOne({ "key.groupId": groupId, hash }).populate("parent");
 }
 
 export async function getNumberOfNodes(

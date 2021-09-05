@@ -32,6 +32,7 @@ export async function dbConnect() {
   database.once("open", () => {
     logger.info("🗄️ Connected to database");
   });
+
   database.on("error", (err) => {
     logger.error("Database connection error:", err);
   });

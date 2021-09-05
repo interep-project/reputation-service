@@ -1,7 +1,7 @@
 import { Model, Document } from "mongoose";
 import {
   findByLevelAndIndex,
-  findByHash,
+  findByGroupIdAndHash,
   findZeroes,
   getNumberOfNodes,
 } from "./MerkleTree.statics";
@@ -14,8 +14,8 @@ export interface IMerkleTreeNodeKey {
 
 export interface IMerkleTreeNode {
   key: IMerkleTreeNodeKey;
-  parent?: IMerkleTreeNode; // Root node has no parent
-  siblingHash?: string; // Root has no sibling
+  parent?: IMerkleTreeNode; // Root node has no parent.
+  siblingHash?: string; // Root has no sibling.
   hash: string;
 }
 
@@ -23,7 +23,7 @@ export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
 
 export interface IMerkleTreeNodeModel extends Model<IMerkleTreeNodeDocument> {
   findByLevelAndIndex: typeof findByLevelAndIndex;
-  findByHash: typeof findByHash;
+  findByGroupIdAndHash: typeof findByGroupIdAndHash;
   getNumberOfNodes: typeof getNumberOfNodes;
 }
 

@@ -1,5 +1,9 @@
 import { defaultNetworkByEnv } from "src/config";
 
+export const isDefaultNetworkId = (networkId: number): boolean => {
+  return networkId === getDefaultNetworkId();
+};
+
 export const getDefaultNetworkId = (): number => {
   const env = process.env.NODE_ENV;
 

@@ -130,7 +130,6 @@ describe("api/linking", () => {
       // Expect
       expect(linkAccounts).toHaveBeenCalledWith(bodyParams);
       expect(res._getStatusCode()).toBe(201);
-      expect(res._getData()).toEqual({ status: "ok" });
     });
 
     it("should return a 500 if linkAccount did not return a token", async () => {

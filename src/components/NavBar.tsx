@@ -8,8 +8,17 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import React from "react";
-import { shortenAddress } from "src/utils/frontend/evm";
+import { useRouter } from "next/router";
+import React, { useContext } from "react";
+import { isBrowser } from "react-device-detect";
+import { isDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
+import {
+  getChainNameFromNetworkId,
+  shortenAddress,
+} from "src/utils/frontend/evm";
+import EthereumWalletContext, {
+  EthereumWalletContextType,
+} from "src/services/context/EthereumWalletContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,41 +31,30 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     networkName: {
       fontWeight: "bold",
-      marginRight: theme.spacing(2),
+      marginRight: theme.spacing(1),
     },
     addressButton: {
       fontWeight: "bold",
-      textTransform: "lowercase",
     },
   })
 );
 
-type Properties = {
-  isConnectButtonDisplayed: boolean;
-  isConnected: boolean;
-  address?: string;
-  networkName: string;
-  onAddressClick: () => void;
-};
-
-export default function NavBar({
-  isConnectButtonDisplayed = false,
-  isConnected,
-  address,
-  networkName,
-  onAddressClick,
-}: Properties): JSX.Element {
+export default function NavBar(): JSX.Element {
   const classes = useStyles();
+  const { connect, check, _networkId, _address } = useContext(
+    EthereumWalletContext
+  ) as EthereumWalletContextType;
+  const router = useRouter();
 
   return (
-    <AppBar position="static" elevation={0} color="inherit">
+    <AppBar position="fixed" elevation={0} color="inherit">
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           InterRep
         </Typography>
-        {isConnectButtonDisplayed && (
-          <Box>
-            {isConnected && address ? (
+        {router.route === "/" && (
+          <>
+            {isBrowser && _address && _networkId ? (
               <Box className={classes.walletDataBox}>
                 <Typography
                   style={{ fontWeight: "bold" }}
@@ -64,22 +62,29 @@ export default function NavBar({
                   color="secondary"
                   variant="body1"
                 >
-                  {networkName}
+                  {_networkId && getChainNameFromNetworkId(_networkId)}
+                </Typography>
+                <Typography className={classes.networkName} variant="body1">
+                  {!isDefaultNetworkId(_networkId) && "(wrong network)"}
                 </Typography>
                 <Button
                   className={classes.addressButton}
-                  onClick={onAddressClick}
+                  onClick={() =>
+                    isDefaultNetworkId(_networkId) ? connect() : check()
+                  }
                   variant="outlined"
                 >
-                  {shortenAddress(address)}
+                  {isDefaultNetworkId(_networkId)
+                    ? shortenAddress(_address)
+                    : "Switch"}
                 </Button>
               </Box>
             ) : (
-              <Button onClick={onAddressClick} variant="outlined">
+              <Button onClick={connect} variant="outlined">
                 Connect
               </Button>
             )}
-          </Box>
+          </>
         )}
       </Toolbar>
     </AppBar>

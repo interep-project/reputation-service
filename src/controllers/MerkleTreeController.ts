@@ -12,7 +12,7 @@ class MerkleTreeController {
     groupId: string,
     idCommitment: string
   ): Promise<string> => {
-    if (await MerkleTreeNode.findByHash(idCommitment)) {
+    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
       throw new Error(`The identity commitment ${idCommitment} already exist`);
     }
 
@@ -129,12 +129,18 @@ class MerkleTreeController {
   //     // Update contract with new root
   // }
 
-  public retrievePath = async (idCommitment: string): Promise<any[]> => {
+  public retrievePath = async (
+    groupId: string,
+    idCommitment: string
+  ): Promise<any[]> => {
     // Get path starting from leaf node.
-    const leafNode = await MerkleTreeNode.findByHash(idCommitment);
+    const leafNode = await MerkleTreeNode.findByGroupIdAndHash(
+      groupId,
+      idCommitment
+    );
 
     if (!leafNode) {
-      throw new Error(`The identity commitment ${idCommitment} does not exist`);
+      throw new Error(`The identity commitment does not exist`);
     }
 
     const { key } = leafNode;

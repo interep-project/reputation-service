@@ -48,12 +48,8 @@ export const isNetworkWithDeployedContract = (
 
 export const getDeployedContractAddress = (
   contract: DeployedContracts
-): string | null => {
+): string => {
   const networkId = getDefaultNetworkId();
-
-  if (!isNetworkWithDeployedContract(networkId)) {
-    return null;
-  }
 
   return deployedContracts[networkId][contract];
 };

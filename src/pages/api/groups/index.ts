@@ -7,7 +7,7 @@ import Group from "src/models/groups/Group.model";
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse
-): Promise<any> => {
+): Promise<void> => {
   await dbConnect();
 
   if (req.method !== "GET") {
@@ -18,7 +18,7 @@ const handler = async (
     const groups = await Group.findGroups();
 
     if (!groups) {
-      return res.status(200).send([]);
+      return res.status(200).send({ data: [] });
     }
 
     const filteredGroups = groups.map((group) => ({
@@ -26,9 +26,10 @@ const handler = async (
       description: group.description,
     }));
 
-    return res.status(200).send(filteredGroups);
+    return res.status(200).send({ data: filteredGroups });
   } catch (error) {
     logger.error(error);
+
     return res.status(500).end();
   }
 };
