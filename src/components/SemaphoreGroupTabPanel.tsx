@@ -10,7 +10,7 @@ type Properties = {
   web2AccountId: string;
 };
 
-export default function SemaphoreGroupsTabPanel({
+export default function SemaphoreGroupTabPanel({
   onArrowClick,
   reputation,
   web2AccountId,
@@ -18,23 +18,35 @@ export default function SemaphoreGroupsTabPanel({
   const [_identityCommitment, setIdentityCommitment] = React.useState<string>();
   const [_idAlreadyExists, setIdAlreadyExists] = React.useState<boolean>();
   const [_loading, setLoading] = React.useState<boolean>(false);
-  const [_message, setMessage] = React.useState<string>("");
+  const [_warningMessage, setWarningMessage] = React.useState<string>("");
+  const [_infoMessage, setInfoMessage] = React.useState<string>("");
 
-  async function createSemaphoreIdentity(): Promise<void> {
+  async function retrieveAndCheckIdentityCommitment(): Promise<void> {
+    setWarningMessage("");
     setLoading(true);
 
     const groupId = `TWITTER_${reputation}`;
-    const identityCommitment = (await semethid(groupId)).toString();
+
+    const identityCommitment = await retrieveIdentityCommitment(groupId);
+
+    if (!identityCommitment) {
+      setWarningMessage(
+        "Your signature is needed to create the identity commitment"
+      );
+      setLoading(false);
+      return;
+    }
+
     const alreadyExist = await checkIdentity({ groupId, identityCommitment });
 
     if (alreadyExist === null) {
-      setMessage("Sorry, there was an unexpected error");
+      setWarningMessage("Sorry, there was an unexpected error");
       setLoading(false);
       return;
     }
 
     if (alreadyExist) {
-      setMessage("You already joined this group");
+      setWarningMessage("You already joined this group");
     }
 
     setIdentityCommitment(identityCommitment);
@@ -52,28 +64,41 @@ export default function SemaphoreGroupsTabPanel({
       web2AccountId: web2AccountId,
     });
 
-    if (rootHash) {
-      setMessage("You joined the group with success");
-    } else {
-      setMessage("Sorry, there was an unexpected error");
+    if (!rootHash) {
+      setWarningMessage("Sorry, there was an unexpected error");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    setInfoMessage("You successfully joined the group");
     setIdAlreadyExists(true);
+    setLoading(false);
+  }
+
+  async function retrieveIdentityCommitment(
+    groupId: string
+  ): Promise<string | null> {
+    try {
+      return (await semethid(groupId)).toString();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   return (
     <>
       <TabPanelContent
-        title="Semaphore Groups"
+        title="Semaphore Group"
         description={`Create your Semaphore identity and join your TWITTER_${reputation} Semaphore group.`}
         onLeftArrowClick={onArrowClick}
         onRightArrowClick={onArrowClick}
-        message={_message}
+        warningMessage={_warningMessage}
+        infoMessage={_infoMessage}
         loading={_loading}
         buttonText={!_identityCommitment ? "Create Semaphore id" : "Join group"}
         onButtonClick={
-          !_identityCommitment ? createSemaphoreIdentity : joinGroup
+          !_identityCommitment ? retrieveAndCheckIdentityCommitment : joinGroup
         }
         buttonDisabled={!!(_identityCommitment && _idAlreadyExists)}
         reputation={reputation}

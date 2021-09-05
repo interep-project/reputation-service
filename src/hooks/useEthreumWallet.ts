@@ -1,6 +1,7 @@
 import Onboard from "bnc-onboard";
 import { Wallet, API } from "bnc-onboard/dist/src/interfaces";
 import { ethers, Signer } from "ethers";
+import { getAddress } from "ethers/lib/utils";
 import { useCallback, useEffect, useState } from "react";
 import { EthereumWalletContextType } from "src/services/context/EthereumWalletContext";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
@@ -35,9 +36,15 @@ export default function useEthereumWallet(): EthereumWalletContextType {
             if (!address) {
               onboard.walletReset();
               setSigner(undefined);
+              setAddress(undefined);
+              return;
             }
 
-            setAddress(address);
+            try {
+              setAddress(getAddress(address));
+            } catch (error) {
+              console.error(error);
+            }
           },
           wallet: (wallet: Wallet) => {
             if (wallet?.provider) {

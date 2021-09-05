@@ -10,7 +10,7 @@ type Properties = {
 
 export default function Snackbar({
   message = "",
-  duration = 6000,
+  duration = 3000,
 }: Properties): JSX.Element {
   const [_message, setMessage] = React.useState<string>();
 

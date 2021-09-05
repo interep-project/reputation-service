@@ -24,6 +24,7 @@ import {
   getExplorerLink,
 } from "src/utils/frontend/getExplorerLink";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
+import Snackbar from "./Snackbar";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -77,7 +78,8 @@ type Properties = {
   onLeftArrowClick?: (direction: -1) => void;
   title: string;
   description: string;
-  message?: string;
+  warningMessage?: string;
+  infoMessage?: string;
   children?: React.ReactElement;
   loading?: boolean;
   buttonText: string;
@@ -92,7 +94,8 @@ export default function TabPanelContent({
   onLeftArrowClick,
   title,
   description,
-  message = "",
+  warningMessage = "",
+  infoMessage = "",
   children,
   loading = false,
   buttonText,
@@ -119,7 +122,7 @@ export default function TabPanelContent({
       <Typography variant="h5" gutterBottom>
         {title}
       </Typography>
-      <Typography className={classes.description} variant="body1" gutterBottom>
+      <Typography className={classes.description} variant="body1">
         {description}
       </Typography>
       {children || <Box height={25} />}
@@ -134,7 +137,7 @@ export default function TabPanelContent({
         {buttonText}
       </Button>
       <FormHelperText className={classes.message} error>
-        {message}
+        {warningMessage}
       </FormHelperText>
       {onRightArrowClick && (
         <IconButton
@@ -173,6 +176,7 @@ export default function TabPanelContent({
           </Typography>
         </Box>
       )}
+      <Snackbar message={infoMessage} />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Box } from "@material-ui/core";
+import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
 import { ethers, Signer } from "ethers";
@@ -6,11 +6,11 @@ import React, { useEffect } from "react";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import { ITokenDocument } from "src/models/tokens/Token.types";
 import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
-import { getChecksummedAddress } from "src/utils/crypto/address";
 import {
   DeployedContracts,
   getBadgeAddressByProvider,
 } from "src/utils/crypto/deployedContracts";
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import {
   checkLink,
   getMyTokens,
@@ -18,7 +18,25 @@ import {
   mintToken,
   unlinkAccounts,
 } from "src/utils/frontend/api";
+import {
+  ExplorerDataType,
+  getExplorerLink,
+} from "src/utils/frontend/getExplorerLink";
 import TabPanelContent from "./TabPanelContent";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    token: {
+      borderWidth: 4,
+      borderColor: "#D4D08E",
+      borderStyle: "solid dashed",
+      margin: theme.spacing(3),
+    },
+    tokenIcon: {
+      color: "#D4D08E",
+    },
+  })
+);
 
 type Properties = {
   onArrowClick: (direction: -1 | 1) => void;
@@ -29,7 +47,7 @@ type Properties = {
   web2AccountId: string;
 };
 
-export default function ReputationBadgesTabPanel({
+export default function ReputationBadgeTabPanel({
   onArrowClick,
   reputation,
   networkId,
@@ -37,17 +55,19 @@ export default function ReputationBadgesTabPanel({
   signer,
   web2AccountId,
 }: Properties): JSX.Element {
+  const classes = useStyles();
   const [_loading, setLoading] = React.useState<boolean>(false);
-  const [_message, setMessage] = React.useState<string>("");
+  const [_warningMessage, setWarningMessage] = React.useState<string>("");
+  const [_infoMessage, setInfoMessage] = React.useState<string>("");
   const [_token, setToken] = React.useState<ITokenDocument>();
   const [_error, setError] = React.useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
-      setMessage("");
+      setWarningMessage("");
 
       if (reputation !== BasicReputation.CONFIRMED) {
-        setMessage(
+        setWarningMessage(
           "Sorry, you can create a badge only if your reputation is CONFIRMED"
         );
         return;
@@ -76,31 +96,29 @@ export default function ReputationBadgesTabPanel({
   }, [reputation, address]);
 
   async function linkAccount(): Promise<void> {
-    const checksummedAddress = getChecksummedAddress(address);
-
-    if (!checksummedAddress) {
-      setMessage("Sorry, your address is not valid");
-      return;
-    }
+    setWarningMessage("");
+    setLoading(true);
 
     const publicKey = await getPublicKey();
 
     if (!publicKey) {
-      setMessage("Public key is needed to link accounts");
+      setWarningMessage("Public key is needed to link accounts");
+      setLoading(false);
       return;
     }
 
     const message = createUserAttestationMessage({
-      checksummedAddress,
+      checksummedAddress: address,
       web2AccountId,
     });
 
-    const userSignature = await signer.signMessage(message);
+    const userSignature = await sign(message);
 
     if (!userSignature) {
-      setMessage(
+      setWarningMessage(
         "Your signature is needed to register your intent to link the accounts"
       );
+      setLoading(false);
       return;
     }
 
@@ -116,11 +134,13 @@ export default function ReputationBadgesTabPanel({
       return showUnexpectedError();
     }
 
-    setMessage("You linked your accounts with success");
+    setInfoMessage("You successfully linked your accounts");
     setToken(token);
+    setLoading(false);
   }
 
   async function mint(token: any): Promise<void> {
+    setWarningMessage("");
     setLoading(true);
 
     const response = await mintToken({ tokenId: token._id });
@@ -131,73 +151,121 @@ export default function ReputationBadgesTabPanel({
 
     const tokens = await getMyTokens({ ownerAddress: address });
 
+    if (tokens === null) {
+      return showUnexpectedError();
+    }
+
+    setInfoMessage("You successfully minted your token");
     setToken(tokens[tokens.length - 1]);
     setLoading(false);
   }
 
   async function burn(token: any): Promise<void> {
+    setWarningMessage("");
     setLoading(true);
 
     const badgeAddress = getBadgeAddressByProvider(token.web2Provider);
 
     if (badgeAddress === null) {
-      setMessage("Cannot retrieve the badge's address");
+      setWarningMessage("Cannot retrieve the badge's address");
+      setLoading(false);
       return;
     }
 
     const badge = new ethers.Contract(badgeAddress, ReputationBadge.abi);
-    const tx = await badge.connect(signer).burn(token.decimalId);
 
-    await tx.wait();
+    try {
+      const tx = await badge.connect(signer).burn(token.decimalId);
+      await tx.wait();
+    } catch (error) {
+      console.error(error);
+
+      setWarningMessage("Sorry, there was a transaction error");
+      setLoading(false);
+      return;
+    }
 
     const tokens = await getMyTokens({ ownerAddress: address });
 
+    if (tokens === null) {
+      return showUnexpectedError();
+    }
+
+    setInfoMessage("You successfully burned your token");
     setToken(tokens[tokens.length - 1]);
     setLoading(false);
   }
 
   async function unlinkAccount(token: any): Promise<void> {
+    setWarningMessage("");
     setLoading(true);
 
     const decryptedAttestation = await decrypt(token.encryptedAttestation);
+
+    if (!decryptedAttestation) {
+      setWarningMessage("Public key is needed to link accounts");
+      setLoading(false);
+      return;
+    }
+
     const response = await unlinkAccounts({ decryptedAttestation });
 
     if (response === null) {
       return showUnexpectedError();
     }
 
+    setInfoMessage("You successfully unlinked your token");
     setToken(undefined);
     setLoading(false);
   }
 
-  async function getPublicKey(): Promise<string> {
-    // @ts-ignore: ignore
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    // @ts-ignore: ignore
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // @ts-ignore: ignore
-    const pubKey = await provider.send("eth_getEncryptionPublicKey", [
-      accounts[0],
-    ]);
+  async function getPublicKey(): Promise<string | null> {
+    try {
+      // @ts-ignore: ignore
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      // @ts-ignore: ignore
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // @ts-ignore: ignore
+      const pubKey = await provider.send("eth_getEncryptionPublicKey", [
+        accounts[0],
+      ]);
 
-    return pubKey;
+      return pubKey;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
-  async function decrypt(messageToDecrypt: string): Promise<string> {
-    // @ts-ignore: ignore
-    const decrypted = await window.ethereum.request({
-      method: "eth_decrypt",
+  async function decrypt(messageToDecrypt: string): Promise<string | null> {
+    try {
       // @ts-ignore: ignore
-      params: [messageToDecrypt, window.ethereum.selectedAddress],
-    });
+      const decrypted = await window.ethereum.request({
+        method: "eth_decrypt",
+        // @ts-ignore: ignore
+        params: [messageToDecrypt, window.ethereum.selectedAddress],
+      });
 
-    return decrypted;
+      return decrypted;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  async function sign(message: string): Promise<string | null> {
+    try {
+      return await signer.signMessage(message);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   function showUnexpectedError(): void {
-    setMessage("Sorry, there was an unexpected error");
+    setWarningMessage("Sorry, there was an unexpected error");
     setError(true);
     setLoading(false);
   }
@@ -205,10 +273,11 @@ export default function ReputationBadgesTabPanel({
   return (
     <>
       <TabPanelContent
-        title="Reputation badges"
+        title="Reputation badge"
         description="Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
         onLeftArrowClick={onArrowClick}
-        message={_message}
+        warningMessage={_warningMessage}
+        infoMessage={_infoMessage}
         loading={_loading}
         buttonText={
           !_token || _loading
@@ -234,10 +303,22 @@ export default function ReputationBadgesTabPanel({
         reputation={reputation}
         contractName={DeployedContracts.TWITTER_BADGE}
       >
-        {_token && _token.status === "MINTED" ? (
-          <Box py={2}>
-            <TwitterIcon style={{ color: "#D4D08E" }} fontSize="large" />
-          </Box>
+        {_token &&
+        _token.status === "MINTED" &&
+        _token.mintTransactions &&
+        _token.mintTransactions[0] ? (
+          <IconButton
+            className={classes.token}
+            href={getExplorerLink(
+              getDefaultNetworkId(),
+              _token.mintTransactions[0].response.hash,
+              ExplorerDataType.TRANSACTION
+            )}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <TwitterIcon className={classes.tokenIcon} fontSize="large" />
+          </IconButton>
         ) : undefined}
       </TabPanelContent>
     </>

@@ -12,8 +12,8 @@ import { Signer } from "ethers";
 import { useSession } from "next-auth/client";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isBrowser, isMobile } from "react-device-detect";
-import ReputationBadgesTabPanel from "src/components/ReputationBadgesTabPanel";
-import SemaphoreGroupsTabPanel from "src/components/SemaphoreGroupsTabPanel";
+import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel";
+import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel";
 import TabPanelContainer from "src/components/TabPanelContainer";
 import Web2AccountsTabPanel from "src/components/Web2AccountsTabPanel";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
@@ -68,9 +68,14 @@ export default function Home(): JSX.Element {
     })();
   }, [session]);
 
-  const appIsReady = useCallback(async () => {
-    return !!(session && defaultNetworkId === _networkId && _twitterReputation);
-  }, [session, _networkId, _twitterReputation]);
+  const appIsReady = useCallback(() => {
+    return !!(
+      session &&
+      defaultNetworkId === _networkId &&
+      _address &&
+      _twitterReputation
+    );
+  }, [session, _networkId, _address, _twitterReputation]);
 
   function updateTabIndex(direction: number): void {
     setTabIndex((index: number) => index + direction);
@@ -95,12 +100,12 @@ export default function Home(): JSX.Element {
             <Tab className={classes.tabButton} label="Web2 Accounts" />
             <Tab
               className={classes.tabButton}
-              label="Semaphore groups"
+              label="Semaphore group"
               disabled={!appIsReady()}
             />
             <Tab
               className={classes.tabButton}
-              label="Reputation badges"
+              label="Reputation badge"
               disabled={!appIsReady()}
             />
           </Tabs>
@@ -113,14 +118,14 @@ export default function Home(): JSX.Element {
           {appIsReady() && (
             <>
               <TabPanelContainer value={_tabIndex} index={1}>
-                <SemaphoreGroupsTabPanel
+                <SemaphoreGroupTabPanel
                   onArrowClick={updateTabIndex}
                   reputation={_twitterReputation?.basicReputation as string}
                   web2AccountId={session?.web2AccountId as string}
                 />
               </TabPanelContainer>
               <TabPanelContainer value={_tabIndex} index={2}>
-                <ReputationBadgesTabPanel
+                <ReputationBadgeTabPanel
                   onArrowClick={updateTabIndex}
                   signer={_signer as Signer}
                   networkId={_networkId as number}
