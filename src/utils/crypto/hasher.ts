@@ -1,6 +1,5 @@
-import bigInt from "big-integer";
-import { mimcsponge } from "circomlib";
+import { poseidon } from "circomlib";
 
-export default function mimcSpongeHash(left: string, right: string): string {
-  return mimcsponge.multiHash([bigInt(left), bigInt(right)]).toString();
+export default function poseidonHash(left: string, right: string): string {
+  return poseidon([BigInt(left), BigInt(right)]).toString();
 }
