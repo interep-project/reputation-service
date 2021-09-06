@@ -1,19 +1,20 @@
 import { poseidon } from "circomlib";
+import { IncrementalQuinTree } from "incrementalquintree";
+import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types";
 import seedGroups from "src/utils/seeding/seedGroups";
 import seedZeroHashes from "src/utils/seeding/seedRootHashes";
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types";
+import config from "../config";
 import { MerkleTreeNode } from "../models/merkleTree/MerkleTree.model";
+import poseidonHash from "../utils/crypto/hasher";
 import {
   clearDatabase,
   connect,
   dropDatabaseAndDisconnect,
 } from "../utils/server/testDatabase";
-import mimcSpongeHash from "../utils/crypto/hasher";
 import MerkleTreeController from "./MerkleTreeController";
-import config from "../config";
 
 describe("MerkleTreeController", () => {
-  const idCommitment = poseidon([2n, 1n]);
+  const idCommitment = poseidon([2n, 1n]).toString();
   const groupId = "TWITTER_CONFIRMED";
   const groups = [
     {
@@ -65,7 +66,10 @@ describe("MerkleTreeController", () => {
     it("Should append two leaves and their parent hash should match the Mimc hash of the id commitments", async () => {
       await seedGroups(groups, false);
       await seedZeroHashes(false);
-      const idCommitments = [poseidon([1]), poseidon([2])];
+      const idCommitments = [
+        poseidon([1]).toString(),
+        poseidon([2]).toString(),
+      ];
 
       await MerkleTreeController.appendLeaf(groupId, idCommitments[0]);
       await MerkleTreeController.appendLeaf(groupId, idCommitments[1]);
@@ -75,7 +79,7 @@ describe("MerkleTreeController", () => {
         level: 1,
         index: 0,
       })) as IMerkleTreeNodeDocument;
-      const hash = mimcSpongeHash(idCommitments[0], idCommitments[1]);
+      const hash = poseidonHash(idCommitments[0], idCommitments[1]);
 
       expect(hash).toBe(node.hash);
     });
@@ -85,7 +89,7 @@ describe("MerkleTreeController", () => {
       await seedZeroHashes(false);
 
       for (let i = 0; i < 10; i++) {
-        const idCommitment = poseidon([BigInt(i)]);
+        const idCommitment = poseidon([BigInt(i)]).toString();
 
         await MerkleTreeController.appendLeaf(groupId, idCommitment);
       }
@@ -119,19 +123,51 @@ describe("MerkleTreeController", () => {
       const idCommitments = [];
 
       for (let i = 0; i < 10; i++) {
-        idCommitments.push(poseidon([BigInt(i)]));
+        idCommitments.push(poseidon([BigInt(i)]).toString());
 
         await MerkleTreeController.appendLeaf(groupId, idCommitments[i]);
       }
 
-      const path = (await MerkleTreeController.retrievePath(
+      const path = await MerkleTreeController.retrievePath(
         groupId,
         idCommitments[5]
-      )) as any[];
+      );
 
-      console.log(path);
+      expect(path.pathElements.length).toBe(config.TREE_LEVELS);
+      expect(path.indices.length).toBe(config.TREE_LEVELS);
+    });
 
-      expect(path.length).toBe(config.TREE_LEVELS);
+    it("Should match the path obtained with the 'incrementalquintree' library", async () => {
+      await seedGroups(groups, false);
+      await seedZeroHashes(false);
+
+      const tree = new IncrementalQuinTree(
+        config.TREE_LEVELS,
+        0,
+        2,
+        (inputs: BigInt[]) => poseidon(inputs)
+      );
+      const idCommitments = [];
+
+      for (let i = 0; i < 10; i++) {
+        idCommitments.push(poseidon([BigInt(i)]).toString());
+
+        await MerkleTreeController.appendLeaf(groupId, idCommitments[i]);
+        tree.insert(BigInt(idCommitments[i]));
+      }
+
+      const path1 = await MerkleTreeController.retrievePath(
+        groupId,
+        idCommitments[5]
+      );
+
+      const path2 = tree.genMerklePath(5);
+      const path2Elements = path2.pathElements.map((e: BigInt[]) =>
+        e[0].toString()
+      );
+
+      expect(path1.indices).toStrictEqual(path2.indices);
+      expect(path1.pathElements).toStrictEqual(path2Elements);
     });
   });
 });

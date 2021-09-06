@@ -3,7 +3,7 @@ import {
   MerkleTreeZero,
 } from "../models/merkleTree/MerkleTree.model";
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types";
-import mimcSpongeHash from "../utils/crypto/hasher";
+import poseidonHash from "../utils/crypto/hasher";
 import config from "../config";
 import Group from "src/models/groups/Group.model";
 
@@ -83,7 +83,7 @@ class MerkleTreeController {
             left = prevNode.siblingHash;
             right = prevNode.hash;
           }
-          hash = mimcSpongeHash(left, right);
+          hash = poseidonHash(left, right);
         }
       }
 
@@ -132,7 +132,7 @@ class MerkleTreeController {
   public retrievePath = async (
     groupId: string,
     idCommitment: string
-  ): Promise<any[]> => {
+  ): Promise<any> => {
     // Get path starting from leaf node.
     const leafNode = await MerkleTreeNode.findByGroupIdAndHash(
       groupId,
@@ -198,11 +198,10 @@ class MerkleTreeController {
           reject(error);
         }
 
-        resolve(
-          path.map((e) => {
-            return { siblingHash: e.sibling, index: e.index };
-          })
-        );
+        const pathElements = path.map((n) => n.sibling);
+        const indices = path.map((n) => n.index);
+
+        resolve({ pathElements, indices });
       });
     });
   };
