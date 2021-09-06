@@ -1,18 +1,22 @@
+import { Signer } from "ethers";
 import React from "react";
 import semethid from "semethid";
 import { DeployedContracts } from "src/utils/crypto/deployedContracts";
 import { addIdentityCommitment, checkIdentity } from "src/utils/frontend/api";
 import TabPanelContent from "./TabPanelContent";
+import { poseidon, babyJub } from "circomlib";
 
 type Properties = {
   onArrowClick: (direction: -1 | 1) => void;
   reputation: string;
+  signer: Signer;
   web2AccountId: string;
 };
 
 export default function SemaphoreGroupTabPanel({
   onArrowClick,
   reputation,
+  signer,
   web2AccountId,
 }: Properties): JSX.Element {
   const [_identityCommitment, setIdentityCommitment] = React.useState<string>();
@@ -79,7 +83,16 @@ export default function SemaphoreGroupTabPanel({
     groupId: string
   ): Promise<string | null> {
     try {
-      return (await semethid(groupId)).toString();
+      const identity = await semethid(
+        (message) => signer.signMessage(message),
+        groupId
+      );
+
+      return poseidon([
+        babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
+        identity.identityNullifier,
+        identity.identityTrapdoor,
+      ]).toString();
     } catch (error) {
       console.error(error);
       return null;

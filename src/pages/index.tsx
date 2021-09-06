@@ -121,6 +121,7 @@ export default function Home(): JSX.Element {
                 <SemaphoreGroupTabPanel
                   onArrowClick={updateTabIndex}
                   reputation={_twitterReputation?.basicReputation as string}
+                  signer={_signer as Signer}
                   web2AccountId={session?.web2AccountId as string}
                 />
               </TabPanelContainer>
