@@ -32,7 +32,9 @@ export default NextAuth({
       // console.log(`profile`, profile);
       if (account?.provider === "twitter") {
         try {
-          await handleTwitterSignIn(account as NextAuthTwitterAccount);
+          await handleTwitterSignIn(
+            (account as unknown) as NextAuthTwitterAccount
+          );
         } catch (err) {
           logger.error(err);
           return false;
@@ -45,9 +47,10 @@ export default NextAuth({
     async jwt(token, _user, account) {
       if (
         account?.provider === "twitter" &&
-        (account as NextAuthTwitterAccount)?.results.user_id
+        ((account as unknown) as NextAuthTwitterAccount)?.results.user_id
       ) {
-        const userId = (account as NextAuthTwitterAccount).results.user_id;
+        const userId = ((account as unknown) as NextAuthTwitterAccount).results
+          .user_id;
         const web2Account = await Web2Account.findByProviderAccountId(
           Web2Providers.TWITTER,
           userId
@@ -55,7 +58,7 @@ export default NextAuth({
         if (web2Account) {
           token.web2AccountId = web2Account.id;
           token.twitter = {
-            username: (account as NextAuthTwitterAccount)?.results?.screen_name.toLowerCase(),
+            username: ((account as unknown) as NextAuthTwitterAccount)?.results?.screen_name.toLowerCase(),
             userId,
           };
         }

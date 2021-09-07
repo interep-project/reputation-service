@@ -43,7 +43,7 @@ export default async function seedTwitterUsers(
       });
 
       log(colors.green.bold(`${docs.length} ${username}'s friends inserted ✓`));
-    } catch (error) {
+    } catch (error: any) {
       log(
         colors.white(`${error.result?.nInserted} documents have been inserted`)
       );

@@ -292,7 +292,7 @@ describe("TokenController", () => {
       await TokenController.mintToken(req, res);
 
       expect(res._getStatusCode()).toBe(400);
-      expect(res._getData()).toEqual(err.message);
+      expect(res._getData()).toEqual(err);
       expect(logger.error).toHaveBeenCalledWith(err);
     });
   });

@@ -96,8 +96,8 @@ class MerkleTreeController {
             siblingHash,
             hash,
           });
-        } catch (err) {
-          console.error(`Error adding node: ${err.message}`);
+        } catch (error) {
+          console.error(`Error adding node: ${error}`);
         }
       } else {
         node.hash = hash;
