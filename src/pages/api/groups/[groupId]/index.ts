@@ -60,12 +60,13 @@ const handler = async (
       `Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`
     );
 
-    const rootHash = await MerkleTreeController.appendLeaf(
+    // Get the value of the next root hash without saving anything in the db.
+    const rootHash = await MerkleTreeController.previewNewRoot(
       groupId,
       identityCommitment
     );
 
-    // Update contract with new root.
+    // Update the contract with new root.
     const interRepGroups = await getInterRepGroupsContractInstance();
 
     await interRepGroups.addRootHash(
@@ -73,6 +74,9 @@ const handler = async (
       identityCommitment,
       rootHash
     );
+
+    // Update the db with the new merkle tree.
+    await MerkleTreeController.appendLeaf(groupId, identityCommitment);
 
     return res.status(201).send({ data: rootHash.toString() });
   } catch (error) {
