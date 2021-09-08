@@ -4,7 +4,7 @@ import linkAccounts from "src/core/linking";
 import createNextMocks from "src/mocks/createNextMocks";
 import { mockSession } from "src/mocks/session";
 import Token from "src/models/tokens/Token.model";
-import handler from "src/pages/api/linking";
+import handler from "src/pages/api/linking/link";
 import logger from "src/utils/server/logger";
 import {
   clearDatabase,

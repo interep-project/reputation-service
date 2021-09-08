@@ -63,7 +63,7 @@ describe("MerkleTreeController", () => {
       await expect(fun).rejects.toThrow();
     });
 
-    it("Should append two leaves and their parent hash should match the Mimc hash of the id commitments", async () => {
+    it("Should append two leaves and their parent hash should match the hash of the id commitments", async () => {
       await seedGroups(groups, false);
       await seedZeroHashes(false);
       const idCommitments = [
@@ -100,6 +100,50 @@ describe("MerkleTreeController", () => {
         const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(groupId, i);
 
         expect(numberOfNodes).toBe(expectedNumberOfNodes[i]);
+      }
+    });
+  });
+
+  describe("previewNewRoot", () => {
+    beforeEach(async () => {
+      await clearDatabase();
+    });
+
+    it("Should not return the root hash if the group id does not exist", async () => {
+      await seedZeroHashes(false);
+
+      const fun = (): Promise<string> =>
+        MerkleTreeController.previewNewRoot(groupId, idCommitment);
+
+      await expect(fun).rejects.toThrow();
+    });
+
+    it("Should not calculate the root hash without first creating the zero hashes", async () => {
+      await seedGroups(groups, false);
+
+      const fun = (): Promise<string> =>
+        MerkleTreeController.previewNewRoot(groupId, idCommitment);
+
+      await expect(fun).rejects.toThrow();
+    });
+
+    it("Should return the right root hash", async () => {
+      await seedGroups(groups, false);
+      await seedZeroHashes(false);
+
+      for (let i = 0; i < 10; i++) {
+        const idCommitment = poseidon([BigInt(i)]).toString();
+
+        const expectedRootHash = await MerkleTreeController.previewNewRoot(
+          groupId,
+          idCommitment
+        );
+        const rootHash = await MerkleTreeController.appendLeaf(
+          groupId,
+          idCommitment
+        );
+
+        expect(rootHash).toBe(expectedRootHash);
       }
     });
   });

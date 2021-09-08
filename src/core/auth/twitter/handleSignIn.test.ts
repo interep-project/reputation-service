@@ -7,7 +7,7 @@ import {
   connect,
   dropDatabaseAndDisconnect,
 } from "src/utils/server/testDatabase";
-import handleSignIn from "./handleSignIn";
+import handleSignIn from "src/core/auth/twitter/handleSignIn";
 
 const providerAccountId = "user_id";
 const providerAccountUsername = "screenName";

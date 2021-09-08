@@ -19,19 +19,17 @@ export function getMyTokens({
 }
 
 export async function checkLink(): Promise<boolean | null> {
-  return sendRequest("/api/linking/checkLink");
+  return sendRequest("/api/linking/check");
 }
 
-export async function checkIdentity({
+export async function checkIdentityCommitment({
   groupId,
   identityCommitment,
 }: {
   groupId: string;
   identityCommitment: string;
 }): Promise<boolean | null> {
-  return sendRequest(
-    `/api/groups/${groupId}/checkIdentity/${identityCommitment}`
-  );
+  return sendRequest(`/api/groups/${groupId}/${identityCommitment}/check`);
 }
 
 export function mintToken({
@@ -51,8 +49,7 @@ export function addIdentityCommitment({
   identityCommitment: string;
   web2AccountId: string;
 }): Promise<any | null> {
-  return sendRequest(`/api/groups/${groupId}`, {
-    identityCommitment,
+  return sendRequest(`/api/groups/${groupId}/${identityCommitment}`, {
     web2AccountId,
   });
 }
@@ -79,7 +76,7 @@ export function linkAccounts({
   userPublicKey: string;
 }): Promise<any | null> {
   return sendRequest(
-    "/api/linking",
+    "/api/linking/link",
     {
       chainId,
       address,
