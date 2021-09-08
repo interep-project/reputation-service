@@ -2,7 +2,7 @@ import { getSession } from "next-auth/client";
 import createNextMocks from "src/mocks/createNextMocks";
 import { mockSession } from "src/mocks/session";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
-import handler from "src/pages/api/linking/checkLink";
+import handler from "src/pages/api/linking/check";
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 import {
   clearDatabase,
