@@ -35,18 +35,11 @@
 Clone this repository and install the dependencies:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/InterRep/reputation-service.git interrep-reputation-service
-$ cd interrep-reputation-service && yarn
-$ cd contracts && yarn
+$ git clone --recurse-submodules https://github.com/InterRep/reputation-service.git
+$ cd reputation-service && yarn
 ```
 
 ## Usage
-
-Compile the contracts in the `contracts` folder:
-
-```bash
-$ cd contracts && yarn compile
-```
 
 Copy the `.env.example` file and rename it `.env`.
 
@@ -92,7 +85,7 @@ $ cd contracts && yarn start
 $ cd contracts && yarn deploy:mocks --network localhost
 ```
 
-3. Give your address some ETH for gas
+3. If it is necessary give your address some ETH for gas:
 
 ```bash
 $ npx hardhat faucet YOUR_ADDRESS --network localhost
@@ -105,56 +98,60 @@ $ npx hardhat faucet YOUR_ADDRESS --network localhost
 **Build**
 
 ```bash
-yarn build
+$ yarn build
 ```
 
 **Start the server**
 
 ```bash
-yarn start
+$ yarn start
 ```
-
-### Reputation Scale
-
-There are 3 possible values for the `basicReputation` associated with a Web 2 account:
-
-- NOT_SUFFICIENT
-- UNCLEAR
-- CONFIRMED
-
-#### Twitter Criteria
-
-- Any of the following will result in a `NOT_SUFFICIENT` reputation:
-  - Default profile picture
-  - 0 tweets
-  - 2 followers or less
-- Any of the following will result in a `CONFIRMED` reputation:
-
-  - Verified by Twitter
-  - More than 7000 followers
-  - Is among the list of seed users
-
-- Otherwise the reputation is `UNCLEAR` and data from [botometer](https://botometer.osome.iu.edu/) is provided
 
 ## APIs
 
-### Fetch the reputation
+### Semaphore groups
+
+Get the list of groups:
+
+```
+/api/groups
+```
+
+Get a specific group:
+
+```
+/api/groups/:groupId
+```
+
+Get a Merkle tree path:
+
+```
+/api/groups/:groupId/:identityCommitment/path
+```
+
+Check whether an identity commitment exists:
+
+```
+/api/groups/:groupId/:identityCommitment/check
+```
+
+### Reputation
 
 **By Twitter account**
 
-Query by username
+Query by username:
 
 ```
 /api/reputation/twitter?username=
 ```
 
-Query by Twitter id
+Query by Twitter id:
 
 ```
 /api/reputation/twitter?id=
 ```
 
-Query currently connected account
+Query currently connected account:
 
 ```
 /api/reputation/twitter/me
@@ -162,16 +159,16 @@ Query currently connected account
 
 ### Tokens
 
-Get tokens by ethereum address
+Get tokens by ethereum address:
 
 ```
 /api/tokens?owner=0xba36...
 ```
 
-Get token by contract address and id
+Get token by contract address and id:
 
 ```
 /api/tokens/0x99FCf805C468977e0F8Ceae21935268EEceadC07/93874287420912438946...
 ```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+**Notice**: The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
