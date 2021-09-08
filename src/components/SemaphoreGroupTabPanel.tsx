@@ -2,7 +2,10 @@ import { Signer } from "ethers";
 import React from "react";
 import semethid from "semethid";
 import { DeployedContracts } from "src/utils/crypto/deployedContracts";
-import { addIdentityCommitment, checkIdentity } from "src/utils/frontend/api";
+import {
+  addIdentityCommitment,
+  checkIdentityCommitment,
+} from "src/utils/frontend/api";
 import TabPanelContent from "./TabPanelContent";
 import { poseidon, babyJub } from "circomlib";
 
@@ -41,7 +44,10 @@ export default function SemaphoreGroupTabPanel({
       return;
     }
 
-    const alreadyExist = await checkIdentity({ groupId, identityCommitment });
+    const alreadyExist = await checkIdentityCommitment({
+      groupId,
+      identityCommitment,
+    });
 
     if (alreadyExist === null) {
       setWarningMessage("Sorry, there was an unexpected error");
