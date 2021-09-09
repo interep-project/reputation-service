@@ -24,9 +24,9 @@ export default function SemaphoreGroupTabPanel({
 }: Properties): JSX.Element {
   const [_identityCommitment, setIdentityCommitment] = React.useState<string>();
   const [_idAlreadyExists, setIdAlreadyExists] = React.useState<boolean>();
+  const [_hasJoined, setHasJoined] = React.useState<boolean>();
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_warningMessage, setWarningMessage] = React.useState<string>("");
-  const [_infoMessage, setInfoMessage] = React.useState<string>("");
 
   async function retrieveAndCheckIdentityCommitment(): Promise<void> {
     setWarningMessage("");
@@ -80,8 +80,7 @@ export default function SemaphoreGroupTabPanel({
       return;
     }
 
-    setInfoMessage("You successfully joined the group");
-    setIdAlreadyExists(true);
+    setHasJoined(true);
     setLoading(false);
   }
 
@@ -109,17 +108,22 @@ export default function SemaphoreGroupTabPanel({
     <>
       <TabPanelContent
         title="Semaphore Group"
-        description={`Create your Semaphore identity and join your TWITTER_${reputation} Semaphore group.`}
+        description={
+          !_hasJoined
+            ? `Create your Semaphore identity and join the TWITTER_${reputation} Semaphore group.`
+            : `You successfully joined the TWITTER_${reputation} Semaphore group.`
+        }
         onLeftArrowClick={onArrowClick}
         onRightArrowClick={onArrowClick}
         warningMessage={_warningMessage}
-        infoMessage={_infoMessage}
         loading={_loading}
-        buttonText={!_identityCommitment ? "Create Semaphore id" : "Join group"}
+        buttonText={!_identityCommitment ? "Create identity" : "Join group"}
         onButtonClick={
           !_identityCommitment ? retrieveAndCheckIdentityCommitment : joinGroup
         }
-        buttonDisabled={!!(_identityCommitment && _idAlreadyExists)}
+        buttonDisabled={
+          !!(_identityCommitment && _idAlreadyExists) || _hasJoined
+        }
         reputation={reputation}
         contractName={DeployedContracts.INTERREP_GROUPS}
       />

@@ -31,10 +31,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     networkName: {
       fontWeight: "bold",
-      marginRight: theme.spacing(1),
+      marginRight: theme.spacing(2),
     },
-    addressButton: {
+    address: {
       fontWeight: "bold",
+      padding: "8px 16px",
+      borderRadius: 4,
+      backgroundColor: theme.palette.background.default,
     },
   })
 );
@@ -64,20 +67,20 @@ export default function NavBar(): JSX.Element {
                 >
                   {_networkId && getChainNameFromNetworkId(_networkId)}
                 </Typography>
-                <Typography className={classes.networkName} variant="body1">
-                  {!isDefaultNetworkId(_networkId) && "(wrong network)"}
-                </Typography>
-                <Button
-                  className={classes.addressButton}
-                  onClick={() =>
-                    isDefaultNetworkId(_networkId) ? connect() : check()
-                  }
-                  variant="outlined"
-                >
-                  {isDefaultNetworkId(_networkId)
-                    ? shortenAddress(_address)
-                    : "Switch"}
-                </Button>
+                {!isDefaultNetworkId(_networkId) && (
+                  <Typography className={classes.networkName} variant="body1">
+                    (wrong network)
+                  </Typography>
+                )}
+                {isDefaultNetworkId(_networkId) ? (
+                  <Typography className={classes.address} variant="body1">
+                    {shortenAddress(_address)}
+                  </Typography>
+                ) : (
+                  <Button onClick={check} variant="outlined">
+                    Switch
+                  </Button>
+                )}
               </Box>
             ) : (
               <Button onClick={connect} variant="outlined">

@@ -33,7 +33,7 @@ type Properties = {
   reputation?: string;
 };
 
-export default function Web2AccountsTabPanel({
+export default function Web2LoginTabPanel({
   onArrowClick,
   reputation,
 }: Properties): JSX.Element {
@@ -43,8 +43,12 @@ export default function Web2AccountsTabPanel({
   return (
     <>
       <TabPanelContent
-        title="Web2 Accounts"
-        description="Sign in with one of our supported platforms."
+        title="Web2 Login"
+        description={
+          !session
+            ? "Sign in with one of our supported platforms."
+            : `You are logged in as ${session.user?.name} on Twitter.`
+        }
         onRightArrowClick={onArrowClick}
         buttonText={session ? "Sign out" : "Sign in"}
         onButtonClick={() => (session ? signOut() : signIn("twitter"))}

@@ -15,7 +15,7 @@ import { isBrowser, isMobile } from "react-device-detect";
 import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel";
 import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel";
 import TabPanelContainer from "src/components/TabPanelContainer";
-import Web2AccountsTabPanel from "src/components/Web2AccountsTabPanel";
+import Web2LoginTabPanel from "src/components/Web2LoginTabPanel";
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import { getMyTwitterReputation } from "src/utils/frontend/api";
@@ -97,7 +97,7 @@ export default function Home(): JSX.Element {
             value={_tabIndex}
             onChange={(event, newIndex) => setTabIndex(newIndex)}
           >
-            <Tab className={classes.tabButton} label="Web2 Accounts" />
+            <Tab className={classes.tabButton} label="Web2 Login" />
             <Tab
               className={classes.tabButton}
               label="Semaphore group"
@@ -110,7 +110,7 @@ export default function Home(): JSX.Element {
             />
           </Tabs>
           <TabPanelContainer value={_tabIndex} index={0}>
-            <Web2AccountsTabPanel
+            <Web2LoginTabPanel
               onArrowClick={appIsReady() ? updateTabIndex : undefined}
               reputation={_twitterReputation?.basicReputation as string}
             />
