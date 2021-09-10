@@ -1496,6 +1496,14 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
+"@interrep/semethid@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.7.0.tgz#866ec52360d8ce07697de85072db832d82fe2b5f"
+  integrity sha512-/Qdd1d76mRcrENdHXA5dYsTmqqoOfnx9Ur6c3Gobp2RDqtaYZz8y07jxUBwEvJ09ipWBea3V7AyVeQS5yjzrUg==
+  dependencies:
+    circomlib "^0.5.3"
+    js-sha256 "^0.9.0"
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
@@ -13214,14 +13222,6 @@ semaphore@>=1.0.1, semaphore@^1.0.3:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.1.0.tgz#aaad8b86b20fe8e9b32b16dc2ee682a8cd26a8aa"
   integrity sha512-O4OZEaNtkMd/K0i6js9SL+gqy0ZCBMgUvlSqHKi4IBdjhe7wB8pwztUk1BbZ1fmrvpwFrPbHzqd2w5pTcJH6LA==
-
-semethid@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/semethid/-/semethid-0.7.0.tgz#f00afa0fc5d210bb2c7bfee501190148f3de6cb2"
-  integrity sha512-N+H7OOOOccG3EtoukoJ6ahGRi6SWuxpwsKw2MEnCMoR86Rsv3w0CHOQKkPusrEgYWrYDcHqcCs5jw+S1JPR4xg==
-  dependencies:
-    circomlib "^0.5.3"
-    js-sha256 "^0.9.0"
 
 semver-compare@^1.0.0:
   version "1.0.0"

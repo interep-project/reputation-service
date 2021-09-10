@@ -1,6 +1,6 @@
 import { Signer } from "ethers";
 import React from "react";
-import semethid from "semethid";
+import semethid from "@interrep/semethid";
 import { DeployedContracts } from "src/utils/crypto/deployedContracts";
 import {
   addIdentityCommitment,
