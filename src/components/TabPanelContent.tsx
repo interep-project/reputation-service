@@ -24,7 +24,6 @@ import {
   getExplorerLink,
 } from "src/utils/frontend/getExplorerLink";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
-import Snackbar from "./Snackbar";
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -79,7 +78,6 @@ type Properties = {
   title: string;
   description: string;
   warningMessage?: string;
-  infoMessage?: string;
   children?: React.ReactElement;
   loading?: boolean;
   buttonText: string;
@@ -95,7 +93,6 @@ export default function TabPanelContent({
   title,
   description,
   warningMessage = "",
-  infoMessage = "",
   children,
   loading = false,
   buttonText,
@@ -176,7 +173,6 @@ export default function TabPanelContent({
           </Typography>
         </Box>
       )}
-      <Snackbar message={infoMessage} />
     </>
   );
 }

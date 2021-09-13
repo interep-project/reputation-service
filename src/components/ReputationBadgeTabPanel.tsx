@@ -58,7 +58,6 @@ export default function ReputationBadgeTabPanel({
   const classes = useStyles();
   const [_loading, setLoading] = React.useState<boolean>(false);
   const [_warningMessage, setWarningMessage] = React.useState<string>("");
-  const [_infoMessage, setInfoMessage] = React.useState<string>("");
   const [_token, setToken] = React.useState<ITokenDocument>();
   const [_error, setError] = React.useState<boolean>(false);
 
@@ -134,7 +133,6 @@ export default function ReputationBadgeTabPanel({
       return showUnexpectedError();
     }
 
-    setInfoMessage("You successfully linked your accounts");
     setToken(token);
     setLoading(false);
   }
@@ -155,7 +153,6 @@ export default function ReputationBadgeTabPanel({
       return showUnexpectedError();
     }
 
-    setInfoMessage("You successfully minted your token");
     setToken(tokens[tokens.length - 1]);
     setLoading(false);
   }
@@ -191,7 +188,6 @@ export default function ReputationBadgeTabPanel({
       return showUnexpectedError();
     }
 
-    setInfoMessage("You successfully burned your token");
     setToken(tokens[tokens.length - 1]);
     setLoading(false);
   }
@@ -214,7 +210,6 @@ export default function ReputationBadgeTabPanel({
       return showUnexpectedError();
     }
 
-    setInfoMessage("You successfully unlinked your token");
     setToken(undefined);
     setLoading(false);
   }
@@ -274,13 +269,20 @@ export default function ReputationBadgeTabPanel({
     <>
       <TabPanelContent
         title="Reputation badge"
-        description="Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
+        description={
+          !_token
+            ? "Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
+            : _token?.status === "NOT_MINTED"
+            ? "Your Twitter account is linked to your Ethereum address. Mint your token to prove your reputation."
+            : _token?.status === "MINTED"
+            ? "You have a minted token! Click on it to see the transaction on Etherscan."
+            : "You burnt your token. Unlink your accounts and link them another time to mint a new token."
+        }
         onLeftArrowClick={onArrowClick}
         warningMessage={_warningMessage}
-        infoMessage={_infoMessage}
         loading={_loading}
         buttonText={
-          !_token || _loading
+          !_token
             ? "Link your accounts"
             : _token?.status === "NOT_MINTED"
             ? "Mint token"
