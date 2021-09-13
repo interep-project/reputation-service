@@ -1,10 +1,8 @@
+import { Reputation } from "@interrep/reputation-criteria";
 import { mockBotometerData } from "src/mocks/botometerData";
 import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
-import {
-  BasicReputation,
-  Web2Providers,
-} from "src/models/web2Accounts/Web2Account.types";
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types";
 import { getBotScore } from "src/services/botometer";
 import { getTwitterUserById } from "src/services/twitter";
 import { TwitterUser } from "src/types/twitter";
@@ -49,7 +47,7 @@ describe("checkTwitterReputation", () => {
       provider: Web2Providers.TWITTER,
       providerAccountId: "1",
       user: { username: "vitalik", id: "1" },
-      basicReputation: BasicReputation.CONFIRMED,
+      basicReputation: Reputation.GOLD,
       isLinkedToAddress: false,
     };
     const mockTwitterUserId = mockUser.user.id;
@@ -175,7 +173,7 @@ describe("checkTwitterReputation", () => {
       });
 
       // Expect
-      expect(response?.basicReputation).toBe(BasicReputation.UNCLEAR);
+      expect(response?.basicReputation).toBe(Reputation.NOT_SUFFICIENT);
       expect(response?.botometer).toEqual({
         raw_scores: mockBotometerData.raw_scores,
         display_scores: mockBotometerData.display_scores,
@@ -196,7 +194,7 @@ describe("checkTwitterReputation", () => {
       const userObject = (account as ITwitterAccountDocument)?.toObject();
 
       // Expect
-      expect(account?.basicReputation).toBe(BasicReputation.UNCLEAR);
+      expect(account?.basicReputation).toBe(Reputation.NOT_SUFFICIENT);
       expect(userObject?.botometer).toEqual({
         raw_scores: mockBotometerData.raw_scores,
         display_scores: mockBotometerData.display_scores,
@@ -204,7 +202,7 @@ describe("checkTwitterReputation", () => {
       });
     });
 
-    it("should set reputation as CONFIRMED if bot score =< 1", async () => {
+    it("should set reputation as GOLD if bot score =< 1", async () => {
       // Given
       const mockBotometerDataNotABot = {
         ...mockBotometerData,
@@ -229,7 +227,7 @@ describe("checkTwitterReputation", () => {
       const userObject = (account as ITwitterAccountDocument)?.toObject();
 
       // Expect
-      expect(account?.basicReputation).toBe(BasicReputation.CONFIRMED);
+      expect(account?.basicReputation).toBe(Reputation.GOLD);
       expect(userObject?.botometer).toEqual({
         raw_scores: mockBotometerDataNotABot.raw_scores,
         display_scores: mockBotometerDataNotABot.display_scores,

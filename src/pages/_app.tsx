@@ -15,7 +15,7 @@ import Head from "next/head";
 import Footer from "src/components/Footer";
 import NavBar from "src/components/NavBar";
 import useEthereumWallet from "src/hooks/useEthreumWallet";
-import EthereumWalletContext from "src/services/context/EthereumWalletContext";
+import EthereumWalletContext from "src/context/EthereumWalletContext";
 
 const theme = createTheme({
   palette: {

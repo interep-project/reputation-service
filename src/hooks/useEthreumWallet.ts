@@ -3,7 +3,7 @@ import { Wallet, API } from "bnc-onboard/dist/src/interfaces";
 import { ethers, Signer } from "ethers";
 import { getAddress } from "ethers/lib/utils";
 import { useCallback, useEffect, useState } from "react";
-import { EthereumWalletContextType } from "src/services/context/EthereumWalletContext";
+import { EthereumWalletContextType } from "src/context/EthereumWalletContext";
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 
 const defaultNetworkId = getDefaultNetworkId();

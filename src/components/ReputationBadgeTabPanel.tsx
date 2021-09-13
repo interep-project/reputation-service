@@ -1,3 +1,4 @@
+import { Reputation } from "@interrep/reputation-criteria";
 import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
@@ -5,7 +6,6 @@ import { ethers, Signer } from "ethers";
 import React, { useEffect } from "react";
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage";
 import { ITokenDocument } from "src/models/tokens/Token.types";
-import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import {
   DeployedContracts,
   getBadgeAddressByProvider,
@@ -65,9 +65,9 @@ export default function ReputationBadgeTabPanel({
     (async () => {
       setWarningMessage("");
 
-      if (reputation !== BasicReputation.CONFIRMED) {
+      if (reputation !== Reputation.GOLD) {
         setWarningMessage(
-          "Sorry, you can create a badge only if your reputation is CONFIRMED"
+          `Sorry, you can create a badge only if your reputation is ${Reputation.GOLD}`
         );
         return;
       }
@@ -299,9 +299,7 @@ export default function ReputationBadgeTabPanel({
             ? burn(_token)
             : unlinkAccount(_token)
         }
-        buttonDisabled={
-          reputation !== BasicReputation.CONFIRMED || _loading || _error
-        }
+        buttonDisabled={reputation !== Reputation.GOLD || _loading || _error}
         reputation={reputation}
         contractName={DeployedContracts.TWITTER_BADGE}
       >

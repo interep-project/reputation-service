@@ -1,3 +1,4 @@
+import { Reputation } from "@interrep/reputation-criteria";
 import { NextApiRequest } from "next";
 import { getToken, JWT, JWTDecodeParams } from "next-auth/jwt";
 import { WithAdditionalParams } from "next-auth/_utils";
@@ -9,7 +10,6 @@ import { mockBotometerScores } from "src/mocks/botometerData";
 import createNextMocks from "src/mocks/createNextMocks";
 import {
   AccountReputationByAccount,
-  BasicReputation,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
 import TwitterAccountController from "./TwitterAccountController";
@@ -79,7 +79,7 @@ describe("getTwitterReputation", () => {
     const username = "username";
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: BasicReputation.NOT_SUFFICIENT,
+      basicReputation: Reputation.NOT_SUFFICIENT,
       user: { username, id: "id" },
       botometer: mockBotometerScores,
     };
@@ -105,7 +105,7 @@ describe("getTwitterReputation", () => {
     const id = "id";
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: BasicReputation.NOT_SUFFICIENT,
+      basicReputation: Reputation.NOT_SUFFICIENT,
       user: { username: "username", id },
       botometer: mockBotometerScores,
     };
@@ -163,7 +163,7 @@ describe("getMyTwitterReputation", () => {
 
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: BasicReputation.NOT_SUFFICIENT,
+      basicReputation: Reputation.NOT_SUFFICIENT,
       user: { username: "username", id: twitterUserId },
       botometer: mockBotometerScores,
     };

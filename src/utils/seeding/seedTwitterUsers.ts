@@ -6,7 +6,7 @@ import {
 } from "src/services/twitter";
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model";
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
-import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
+import { Reputation } from "@interrep/reputation-criteria";
 
 export default async function seedTwitterUsers(
   twitterUsernames: string[],
@@ -60,6 +60,6 @@ function createTwitterSeedUser(twitterUser: TwitterUser): any {
     user: twitterUser,
     isSeedUser: true,
     isLinkedToAddress: false,
-    basicReputation: BasicReputation.CONFIRMED,
+    basicReputation: Reputation.GOLD,
   };
 }

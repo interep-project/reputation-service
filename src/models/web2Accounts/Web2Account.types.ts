@@ -1,3 +1,4 @@
+import { Reputation } from "@interrep/reputation-criteria";
 import { Model, Document } from "mongoose";
 import {
   ITwitterAccountDocument,
@@ -9,17 +10,11 @@ export enum Web2Providers {
   TWITTER = "twitter",
 }
 
-export enum BasicReputation {
-  CONFIRMED = "CONFIRMED",
-  UNCLEAR = "UNCLEAR",
-  NOT_SUFFICIENT = "NOT_SUFFICIENT",
-}
-
 export interface IWeb2Account {
   provider: Web2Providers;
   providerAccountId: string;
   uniqueKey: string;
-  basicReputation?: BasicReputation;
+  basicReputation?: Reputation;
   isLinkedToAddress: boolean;
   refreshToken?: string;
   accessToken?: string;
@@ -43,11 +38,11 @@ export function isTwitterAccount(
 // Response of a query which should NOT reveal information that can be used to identify the account
 export type AccountReputationByAddress = {
   provider: Web2Providers;
-  basicReputation?: BasicReputation;
+  basicReputation?: Reputation;
 };
 
 // Response of a query, knowing the account already
 export type AccountReputationByAccount = {
   provider: Web2Providers;
-  basicReputation?: BasicReputation;
+  basicReputation?: Reputation;
 } & TwitterReputation;

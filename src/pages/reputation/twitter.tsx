@@ -1,3 +1,4 @@
+import { Reputation } from "@interrep/reputation-criteria";
 import {
   Card,
   CardContent,
@@ -11,10 +12,7 @@ import {
 } from "@material-ui/core";
 import Head from "next/head";
 import { FormEvent, useState } from "react";
-import {
-  AccountReputationByAccount,
-  BasicReputation,
-} from "src/models/web2Accounts/Web2Account.types";
+import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types";
 import { getTwitterReputation } from "src/utils/frontend/api";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -112,7 +110,7 @@ export default function TwitterReputation(): JSX.Element {
               </Typography>
             )}
 
-            {twitterUserData?.basicReputation === BasicReputation.UNCLEAR && (
+            {twitterUserData?.basicReputation === Reputation.UNCLEAR && (
               <Card>
                 <CardContent className={classes.cardContent}>
                   <Typography color="textSecondary">Bot Score</Typography>

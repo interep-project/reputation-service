@@ -21,7 +21,7 @@ import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
 import { getMyTwitterReputation } from "src/utils/frontend/api";
 import EthereumWalletContext, {
   EthereumWalletContextType,
-} from "src/services/context/EthereumWalletContext";
+} from "src/context/EthereumWalletContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

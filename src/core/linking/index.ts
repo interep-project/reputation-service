@@ -1,6 +1,5 @@
 import { ethers } from "hardhat";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
-import { BasicReputation } from "src/models/web2Accounts/Web2Account.types";
 import { getChecksummedAddress } from "src/utils/crypto/address";
 import logger from "src/utils/server/logger";
 import { checkIfUserSignatureIsValid } from "src/core/signing/checkIfUserSignatureIsValid";
@@ -13,6 +12,7 @@ import {
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 import { stringToBigNumber } from "src/utils/crypto/bigNumber";
+import { Reputation } from "@interrep/reputation-criteria";
 
 type LinkAccountsParams = {
   chainId: number;
@@ -67,7 +67,7 @@ const linkAccounts = async ({
 
   if (
     !web2Account.basicReputation ||
-    web2Account.basicReputation !== BasicReputation.CONFIRMED
+    web2Account.basicReputation !== Reputation.GOLD
   ) {
     throw new Error(`Insufficient account's reputation`);
   }

@@ -3,7 +3,6 @@ import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
 import {
   AccountReputationByAccount,
-  BasicReputation,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
 import {
@@ -13,8 +12,11 @@ import {
 import { TwitterUser } from "src/types/twitter";
 import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount";
 import logger from "src/utils/server/logger";
-import { checkBasicTwitterUserReputation } from "./basicChecks";
 import getBotometerScores from "./botometer/getBotometerScores";
+import {
+  getReputation,
+  TwitterParameters,
+} from "@interrep/reputation-criteria";
 
 const getTwitterAccountReputationPayload = (
   account: ITwitterAccountDocument
@@ -32,55 +34,33 @@ export const getTwitterUserReputation = async ({
   twitterAccount: ITwitterAccountDocument | null;
   twitterUser: TwitterUser;
 }): Promise<AccountReputationByAccount | null> => {
-  const twitterReputation = checkBasicTwitterUserReputation(twitterUser);
-
   if (!twitterAccount) {
     twitterAccount = instantiateNewTwitterAccount({
       providerAccountId: twitterUser.id,
       user: twitterUser,
-      basicReputation: twitterReputation,
       isLinkedToAddress: false,
     });
     // update existing twitter account
   } else {
     twitterAccount.user = { ...twitterAccount.user, ...twitterUser };
-    twitterAccount.basicReputation = twitterReputation;
   }
 
-  try {
-    await twitterAccount.save();
-  } catch (err) {
-    logger.error(err);
-    return null;
-  }
-
-  if (
-    twitterReputation === BasicReputation.CONFIRMED ||
-    twitterReputation === BasicReputation.NOT_SUFFICIENT
-  ) {
-    return getTwitterAccountReputationPayload(twitterAccount);
-  }
-
-  // Further checks needed: query botometer
+  const twitterParameters: TwitterParameters = {
+    followers: twitterUser.public_metrics.followers_count,
+    verifiedProfile: twitterUser.verified,
+  };
   const botometerData = await getBotometerScores(twitterAccount.user.username);
 
-  if (botometerData) {
-    twitterAccount.botometer = botometerData;
-
-    // Botometer overall display score =< 1 gets you a CONFIRMED reputation
-    if (
-      twitterAccount.botometer.display_scores &&
-      twitterAccount.botometer.display_scores.universal.overall <= 1
-    ) {
-      twitterAccount.basicReputation = BasicReputation.CONFIRMED;
-    }
-
-    await twitterAccount.save();
-
-    return getTwitterAccountReputationPayload(twitterAccount);
+  if (botometerData && botometerData.display_scores) {
+    twitterParameters.botometerOverallScore =
+      botometerData.display_scores.universal.overall;
   }
 
-  return null;
+  twitterAccount.basicReputation = getReputation("twitter", twitterParameters);
+
+  await twitterAccount.save();
+
+  return getTwitterAccountReputationPayload(twitterAccount);
 };
 
 export const checkTwitterReputationById = async (

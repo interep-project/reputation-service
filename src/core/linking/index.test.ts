@@ -2,10 +2,7 @@ import { describe, expect, beforeAll, afterAll } from "@jest/globals";
 import { ContractTransaction } from "@ethersproject/contracts";
 import linkAccounts from "src/core/linking";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
-import {
-  BasicReputation,
-  IWeb2AccountDocument,
-} from "src/models/web2Accounts/Web2Account.types";
+import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types";
 import {
   connect,
   dropDatabaseAndDisconnect,
@@ -15,6 +12,7 @@ import { checkIfUserSignatureIsValid } from "../signing/checkIfUserSignatureIsVa
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 import Token from "src/models/tokens/Token.model";
+import { Reputation } from "@interrep/reputation-criteria";
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4";
 const getParams = (override?: Record<string, unknown>) => ({
@@ -141,12 +139,12 @@ describe("linkAccounts", () => {
             providerAccountId: "2",
             user: { id: "2", username: "new name" },
             isLinkedToAddress: false,
-            basicReputation: BasicReputation.UNCLEAR,
+            basicReputation: Reputation.NOT_SUFFICIENT,
           })
         );
       });
 
-      it("should throw if the account's reputation is not CONFIRMED", async () => {
+      it("should throw if the account's reputation is not GOLD", async () => {
         expect(
           linkAccounts({
             web2AccountId: web2AccountNotLinked.id,
@@ -168,7 +166,7 @@ describe("linkAccounts", () => {
           providerAccountId: "999",
           user: { id: "999", username: "username" },
           isLinkedToAddress: false,
-          basicReputation: BasicReputation.CONFIRMED,
+          basicReputation: Reputation.GOLD,
         })
       );
     });

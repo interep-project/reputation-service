@@ -9,11 +9,11 @@ import {
 import createNextMocks from "src/mocks/createNextMocks";
 import {
   AccountReputationByAccount,
-  BasicReputation,
   Web2Providers,
 } from "src/models/web2Accounts/Web2Account.types";
 import { mockBotometerScores } from "src/mocks/botometerData";
 import TwitterAccountController from "src/controllers/TwitterAccountController";
+import { Reputation } from "@interrep/reputation-criteria";
 
 jest.mock("src/controllers/TwitterAccountController", () => ({
   getTwitterReputation: jest.fn(),
@@ -55,7 +55,7 @@ describe("api/reputation/twitter", () => {
       const username = "username";
       const accountReputation: AccountReputationByAccount = {
         provider: Web2Providers.TWITTER,
-        basicReputation: BasicReputation.NOT_SUFFICIENT,
+        basicReputation: Reputation.NOT_SUFFICIENT,
         user: { username, id: "id" },
         botometer: mockBotometerScores,
       };
