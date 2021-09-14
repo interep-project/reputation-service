@@ -97,6 +97,9 @@ describe("checkTwitterReputation", () => {
       getTwitterUserByIdMocked.mockImplementation(() =>
         Promise.resolve(twitterUser)
       );
+      getBotscoreMocked.mockImplementation(() =>
+        Promise.resolve(mockBotometerData)
+      );
     });
 
     it("should perform basic checks and return user", async () => {
@@ -111,7 +114,7 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         // @ts-ignore: basicReputation is defined
-        Object.values(BasicReputation).includes(result?.basicReputation)
+        Object.values(Reputation).includes(result?.basicReputation)
       ).toBeTruthy();
     });
 
@@ -133,7 +136,7 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         // @ts-expect-error: should be defined
-        Object.values(BasicReputation).includes(account?.basicReputation)
+        Object.values(Reputation).includes(account?.basicReputation)
       ).toBeTruthy();
     });
   });
@@ -152,7 +155,7 @@ describe("checkTwitterReputation", () => {
         profile_image_url: "img_url",
         public_metrics: {
           tweet_count: 3000,
-          followers_count: 5342,
+          followers_count: 400,
           following_count: 2349,
           listed_count: 34,
         },
@@ -165,6 +168,7 @@ describe("checkTwitterReputation", () => {
         Promise.resolve(mockBotometerData)
       );
     });
+
     it("should return botometer data when reputation is not obvious", async () => {
       // When
       const response = await getTwitterUserReputation({

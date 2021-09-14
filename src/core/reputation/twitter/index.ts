@@ -51,11 +51,16 @@ export const getTwitterUserReputation = async ({
   };
   const botometerData = await getBotometerScores(twitterAccount.user.username);
 
-  if (botometerData && botometerData.display_scores) {
+  if (!botometerData) {
+    return null;
+  }
+
+  if (botometerData.display_scores?.universal?.overall) {
     twitterParameters.botometerOverallScore =
       botometerData.display_scores.universal.overall;
   }
 
+  twitterAccount.botometer = botometerData;
   twitterAccount.basicReputation = getReputation("twitter", twitterParameters);
 
   await twitterAccount.save();

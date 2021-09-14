@@ -62,7 +62,7 @@ export const mockBotometerData = {
       fake_follower: 0.4,
       financial: 0,
       other: 1.2,
-      overall: 2,
+      overall: 2.5,
       self_declared: 0,
       spammer: 0,
     },
