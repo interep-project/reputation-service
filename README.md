@@ -57,7 +57,6 @@ To seed the database (optional) you can run:
 
 ```bash
 $ yarn seed:twitterUsers
-$ yarn seed:groups
 $ yarn seed:zeroHashes
 ```
 
@@ -111,16 +110,10 @@ $ yarn start
 
 ### Semaphore groups
 
-Get the list of groups:
+Get the list of group ids:
 
 ```
 /api/groups
-```
-
-Get a specific group:
-
-```
-/api/groups/:groupId
 ```
 
 Get a Merkle tree path:

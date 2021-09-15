@@ -2,7 +2,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { withSentry } from "@sentry/nextjs";
 import { dbConnect } from "src/utils/server/database";
 import logger from "src/utils/server/logger";
-import Group from "src/models/groups/Group.model";
+import getGroupIds from "src/core/groups/getGroupIds";
 
 const handler = async (
   req: NextApiRequest,
@@ -15,18 +15,9 @@ const handler = async (
   }
 
   try {
-    const groups = await Group.findGroups();
+    const groupIds = getGroupIds();
 
-    if (!groups) {
-      return res.status(200).send({ data: [] });
-    }
-
-    const filteredGroups = groups.map((group) => ({
-      groupId: group.groupId,
-      description: group.description,
-    }));
-
-    return res.status(200).send({ data: filteredGroups });
+    return res.status(200).send({ data: groupIds });
   } catch (error) {
     logger.error(error);
 

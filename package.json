@@ -10,7 +10,6 @@
     "start": "next start",
     "script": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register",
     "seed:zeroHashes": "npm run script -- scripts/seedZeroHashes.ts",
-    "seed:groups": "npm run script -- scripts/seedGroups.ts",
     "seed:twitterUsers": "npm run script -- scripts/seedTwitterUsers.ts",
     "test": "jest",
     "test:w": "jest --watch",

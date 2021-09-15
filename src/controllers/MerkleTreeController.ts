@@ -5,19 +5,19 @@ import {
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types";
 import poseidonHash from "../utils/crypto/hasher";
 import config from "../config";
-import Group from "src/models/groups/Group.model";
+import checkGroupId from "src/core/groups/checkGroupId";
 
 class MerkleTreeController {
   public appendLeaf = async (
     groupId: string,
     idCommitment: string
   ): Promise<string> => {
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
-      throw new Error(`The identity commitment ${idCommitment} already exist`);
+    if (!checkGroupId(groupId)) {
+      throw new Error(`The group ${groupId} does not exist`);
     }
 
-    if (!(await Group.findByGroupId(groupId))) {
-      throw new Error(`The group ${groupId} does not exist`);
+    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
+      throw new Error(`The identity commitment ${idCommitment} already exist`);
     }
 
     // Get the zero hashes.
@@ -106,12 +106,12 @@ class MerkleTreeController {
     groupId: string,
     idCommitment: string
   ): Promise<string> => {
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
-      throw new Error(`The identity commitment ${idCommitment} already exist`);
+    if (!checkGroupId(groupId)) {
+      throw new Error(`The group ${groupId} does not exist`);
     }
 
-    if (!(await Group.findByGroupId(groupId))) {
-      throw new Error(`The group ${groupId} does not exist`);
+    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
+      throw new Error(`The identity commitment ${idCommitment} already exist`);
     }
 
     // Get the zero hashes.
@@ -155,6 +155,10 @@ class MerkleTreeController {
     groupId: string,
     idCommitment: string
   ): Promise<any> => {
+    if (!checkGroupId(groupId)) {
+      throw new Error(`The group ${groupId} does not exist`);
+    }
+
     // Get path starting from leaf node.
     const leafNode = await MerkleTreeNode.findByGroupIdAndHash(
       groupId,

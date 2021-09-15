@@ -1,8 +1,8 @@
-import { ReputationLevel } from "@interrep/reputation-criteria";
+import { Platform } from "@interrep/reputation-criteria";
 import { poseidon } from "circomlib";
 import { IncrementalQuinTree } from "incrementalquintree";
+import getGroupIds from "src/core/groups/getGroupIds";
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types";
-import seedGroups from "src/utils/seeding/seedGroups";
 import seedZeroHashes from "src/utils/seeding/seedRootHashes";
 import config from "../config";
 import { MerkleTreeNode } from "../models/merkleTree/MerkleTree.model";
@@ -16,13 +16,7 @@ import MerkleTreeController from "./MerkleTreeController";
 
 describe("MerkleTreeController", () => {
   const idCommitment = poseidon([2n, 1n]).toString();
-  const groupId = `TWITTER_${ReputationLevel.GOLD}`;
-  const groups = [
-    {
-      groupId,
-      description: "Twitter users with more than 7000 followers",
-    },
-  ];
+  const groupId = getGroupIds(Platform.TWITTER)[0];
 
   beforeAll(async () => {
     await connect();
@@ -39,14 +33,12 @@ describe("MerkleTreeController", () => {
       await seedZeroHashes(false);
 
       const fun = (): Promise<string> =>
-        MerkleTreeController.appendLeaf(groupId, idCommitment);
+        MerkleTreeController.appendLeaf("WRONG_GROUP_ID", idCommitment);
 
       await expect(fun).rejects.toThrow();
     });
 
     it("Should not append any leaf without first creating the zero hashes", async () => {
-      await seedGroups(groups, false);
-
       const fun = (): Promise<string> =>
         MerkleTreeController.appendLeaf(groupId, idCommitment);
 
@@ -54,7 +46,6 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should not append the same identity twice", async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
 
       await MerkleTreeController.appendLeaf(groupId, idCommitment);
@@ -65,7 +56,6 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should append two leaves and their parent hash should match the hash of the id commitments", async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
       const idCommitments = [
         poseidon([1]).toString(),
@@ -86,7 +76,6 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should append 10 leaves correctly", async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
 
       for (let i = 0; i < 10; i++) {
@@ -114,14 +103,12 @@ describe("MerkleTreeController", () => {
       await seedZeroHashes(false);
 
       const fun = (): Promise<string> =>
-        MerkleTreeController.previewNewRoot(groupId, idCommitment);
+        MerkleTreeController.previewNewRoot("WRONG_GROUP_ID", idCommitment);
 
       await expect(fun).rejects.toThrow();
     });
 
     it("Should not calculate the root hash without first creating the zero hashes", async () => {
-      await seedGroups(groups, false);
-
       const fun = (): Promise<string> =>
         MerkleTreeController.previewNewRoot(groupId, idCommitment);
 
@@ -129,7 +116,6 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should return the right root hash", async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
 
       for (let i = 0; i < 10; i++) {
@@ -162,7 +148,6 @@ describe("MerkleTreeController", () => {
     });
 
     it(`Should return a path of ${config.TREE_LEVELS} hashes`, async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
 
       const idCommitments = [];
@@ -183,7 +168,6 @@ describe("MerkleTreeController", () => {
     });
 
     it("Should match the path obtained with the 'incrementalquintree' library", async () => {
-      await seedGroups(groups, false);
       await seedZeroHashes(false);
 
       const tree = new IncrementalQuinTree(
