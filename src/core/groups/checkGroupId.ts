@@ -1,7 +1,7 @@
-import getGroupIds from "./getGroupIds";
+import getGroupIds from "./getGroupIds"
 
 export default function checkGroupId(groupId: string): boolean {
-  const groups = getGroupIds();
+    const groups = getGroupIds()
 
-  return groups.indexOf(groupId) !== -1;
+    return groups.indexOf(groupId) !== -1
 }
