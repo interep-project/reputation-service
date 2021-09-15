@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { NextApiRequest } from "next";
 import { getToken, JWT, JWTDecodeParams } from "next-auth/jwt";
 import { WithAdditionalParams } from "next-auth/_utils";
@@ -79,7 +79,7 @@ describe("getTwitterReputation", () => {
     const username = "username";
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: Reputation.NOT_SUFFICIENT,
+      basicReputation: ReputationLevel.NOT_SUFFICIENT,
       user: { username, id: "id" },
       botometer: mockBotometerScores,
     };
@@ -105,7 +105,7 @@ describe("getTwitterReputation", () => {
     const id = "id";
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: Reputation.NOT_SUFFICIENT,
+      basicReputation: ReputationLevel.NOT_SUFFICIENT,
       user: { username: "username", id },
       botometer: mockBotometerScores,
     };
@@ -163,7 +163,7 @@ describe("getMyTwitterReputation", () => {
 
     const accountReputation: AccountReputationByAccount = {
       provider: Web2Providers.TWITTER,
-      basicReputation: Reputation.NOT_SUFFICIENT,
+      basicReputation: ReputationLevel.NOT_SUFFICIENT,
       user: { username: "username", id: twitterUserId },
       botometer: mockBotometerScores,
     };

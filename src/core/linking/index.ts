@@ -12,7 +12,7 @@ import {
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 import { stringToBigNumber } from "src/utils/crypto/bigNumber";
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 
 type LinkAccountsParams = {
   chainId: number;
@@ -67,7 +67,7 @@ const linkAccounts = async ({
 
   if (
     !web2Account.basicReputation ||
-    web2Account.basicReputation !== Reputation.GOLD
+    web2Account.basicReputation !== ReputationLevel.GOLD
   ) {
     throw new Error(`Insufficient account's reputation`);
   }

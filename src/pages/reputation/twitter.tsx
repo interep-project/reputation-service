@@ -1,4 +1,3 @@
-import { Reputation } from "@interrep/reputation-criteria";
 import {
   Card,
   CardContent,
@@ -105,24 +104,23 @@ export default function TwitterReputation(): JSX.Element {
         {!isLoading && (
           <>
             {twitterUserData?.basicReputation && (
-              <Typography variant="h6" gutterBottom>
-                Reputation: {twitterUserData.basicReputation}
-              </Typography>
-            )}
-
-            {twitterUserData?.basicReputation === Reputation.UNCLEAR && (
-              <Card>
-                <CardContent className={classes.cardContent}>
-                  <Typography color="textSecondary">Bot Score</Typography>
-                  <Typography variant="h5" component="h2">
-                    {
-                      twitterUserData.botometer?.display_scores?.universal
-                        .overall
-                    }
-                    /5
-                  </Typography>
-                </CardContent>
-              </Card>
+              <>
+                <Typography variant="h6" gutterBottom>
+                  Reputation: {twitterUserData.basicReputation}
+                </Typography>
+                <Card>
+                  <CardContent className={classes.cardContent}>
+                    <Typography color="textSecondary">Bot Score</Typography>
+                    <Typography variant="h5" component="h2">
+                      {
+                        twitterUserData.botometer?.display_scores?.universal
+                          .overall
+                      }
+                      /5
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </>
             )}
           </>
         )}

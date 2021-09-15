@@ -1,6 +1,5 @@
 import indexHandler from "src/pages/api/reputation/twitter";
 import meHandler from "src/pages/api/reputation/twitter/me";
-
 import {
   clearDatabase,
   connect,
@@ -13,7 +12,7 @@ import {
 } from "src/models/web2Accounts/Web2Account.types";
 import { mockBotometerScores } from "src/mocks/botometerData";
 import TwitterAccountController from "src/controllers/TwitterAccountController";
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 
 jest.mock("src/controllers/TwitterAccountController", () => ({
   getTwitterReputation: jest.fn(),
@@ -55,7 +54,7 @@ describe("api/reputation/twitter", () => {
       const username = "username";
       const accountReputation: AccountReputationByAccount = {
         provider: Web2Providers.TWITTER,
-        basicReputation: Reputation.NOT_SUFFICIENT,
+        basicReputation: ReputationLevel.NOT_SUFFICIENT,
         user: { username, id: "id" },
         botometer: mockBotometerScores,
       };

@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { poseidon } from "circomlib";
 import { IncrementalQuinTree } from "incrementalquintree";
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types";
@@ -16,7 +16,7 @@ import MerkleTreeController from "./MerkleTreeController";
 
 describe("MerkleTreeController", () => {
   const idCommitment = poseidon([2n, 1n]).toString();
-  const groupId = `TWITTER_${Reputation.GOLD}`;
+  const groupId = `TWITTER_${ReputationLevel.GOLD}`;
   const groups = [
     {
       groupId,

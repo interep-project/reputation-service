@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { Schema } from "mongoose";
 import { findByProviderAccountId } from "./Web2Account.statics";
 import {
@@ -16,7 +16,7 @@ const Web2AccountSchemaFields: Record<keyof IWeb2Account, any> = {
   },
   providerAccountId: { type: String, index: true, required: true },
   uniqueKey: { type: String, index: true, unique: true },
-  basicReputation: { type: String, enum: Object.values(Reputation) },
+  basicReputation: { type: String, enum: Object.values(ReputationLevel) },
   isLinkedToAddress: { type: Boolean, required: true },
   createdAt: { type: Date, default: Date.now, required: true },
   updatedAt: { type: Date, default: Date.now },

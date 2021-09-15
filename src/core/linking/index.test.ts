@@ -12,7 +12,7 @@ import { checkIfUserSignatureIsValid } from "../signing/checkIfUserSignatureIsVa
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount";
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption";
 import Token from "src/models/tokens/Token.model";
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4";
 const getParams = (override?: Record<string, unknown>) => ({
@@ -139,7 +139,7 @@ describe("linkAccounts", () => {
             providerAccountId: "2",
             user: { id: "2", username: "new name" },
             isLinkedToAddress: false,
-            basicReputation: Reputation.NOT_SUFFICIENT,
+            basicReputation: ReputationLevel.NOT_SUFFICIENT,
           })
         );
       });
@@ -166,7 +166,7 @@ describe("linkAccounts", () => {
           providerAccountId: "999",
           user: { id: "999", username: "username" },
           isLinkedToAddress: false,
-          basicReputation: Reputation.GOLD,
+          basicReputation: ReputationLevel.GOLD,
         })
       );
     });

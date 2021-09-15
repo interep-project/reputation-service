@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { mockBotometerData } from "src/mocks/botometerData";
 import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types";
 import Web2Account from "src/models/web2Accounts/Web2Account.model";
@@ -47,7 +47,7 @@ describe("checkTwitterReputation", () => {
       provider: Web2Providers.TWITTER,
       providerAccountId: "1",
       user: { username: "vitalik", id: "1" },
-      basicReputation: Reputation.GOLD,
+      basicReputation: ReputationLevel.GOLD,
       isLinkedToAddress: false,
     };
     const mockTwitterUserId = mockUser.user.id;
@@ -114,7 +114,7 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         // @ts-ignore: basicReputation is defined
-        Object.values(Reputation).includes(result?.basicReputation)
+        Object.values(ReputationLevel).includes(result?.basicReputation)
       ).toBeTruthy();
     });
 
@@ -136,7 +136,7 @@ describe("checkTwitterReputation", () => {
       });
       expect(
         // @ts-expect-error: should be defined
-        Object.values(Reputation).includes(account?.basicReputation)
+        Object.values(ReputationLevel).includes(account?.basicReputation)
       ).toBeTruthy();
     });
   });
@@ -177,7 +177,7 @@ describe("checkTwitterReputation", () => {
       });
 
       // Expect
-      expect(response?.basicReputation).toBe(Reputation.NOT_SUFFICIENT);
+      expect(response?.basicReputation).toBe(ReputationLevel.NOT_SUFFICIENT);
       expect(response?.botometer).toEqual({
         raw_scores: mockBotometerData.raw_scores,
         display_scores: mockBotometerData.display_scores,
@@ -198,7 +198,7 @@ describe("checkTwitterReputation", () => {
       const userObject = (account as ITwitterAccountDocument)?.toObject();
 
       // Expect
-      expect(account?.basicReputation).toBe(Reputation.NOT_SUFFICIENT);
+      expect(account?.basicReputation).toBe(ReputationLevel.NOT_SUFFICIENT);
       expect(userObject?.botometer).toEqual({
         raw_scores: mockBotometerData.raw_scores,
         display_scores: mockBotometerData.display_scores,
@@ -231,7 +231,7 @@ describe("checkTwitterReputation", () => {
       const userObject = (account as ITwitterAccountDocument)?.toObject();
 
       // Expect
-      expect(account?.basicReputation).toBe(Reputation.GOLD);
+      expect(account?.basicReputation).toBe(ReputationLevel.GOLD);
       expect(userObject?.botometer).toEqual({
         raw_scores: mockBotometerDataNotABot.raw_scores,
         display_scores: mockBotometerDataNotABot.display_scores,

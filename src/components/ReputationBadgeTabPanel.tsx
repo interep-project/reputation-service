@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json";
@@ -65,9 +65,9 @@ export default function ReputationBadgeTabPanel({
     (async () => {
       setWarningMessage("");
 
-      if (reputation !== Reputation.GOLD) {
+      if (reputation !== ReputationLevel.GOLD) {
         setWarningMessage(
-          `Sorry, you can create a badge only if your reputation is ${Reputation.GOLD}`
+          `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}`
         );
         return;
       }
@@ -299,7 +299,9 @@ export default function ReputationBadgeTabPanel({
             ? burn(_token)
             : unlinkAccount(_token)
         }
-        buttonDisabled={reputation !== Reputation.GOLD || _loading || _error}
+        buttonDisabled={
+          reputation !== ReputationLevel.GOLD || _loading || _error
+        }
         reputation={reputation}
         contractName={DeployedContracts.TWITTER_BADGE}
       >

@@ -14,8 +14,9 @@ import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterA
 import logger from "src/utils/server/logger";
 import getBotometerScores from "./botometer/getBotometerScores";
 import {
-  getReputation,
   TwitterParameters,
+  calculateReputation,
+  Platform,
 } from "@interrep/reputation-criteria";
 
 const getTwitterAccountReputationPayload = (
@@ -61,7 +62,10 @@ export const getTwitterUserReputation = async ({
   }
 
   twitterAccount.botometer = botometerData;
-  twitterAccount.basicReputation = getReputation("twitter", twitterParameters);
+  twitterAccount.basicReputation = calculateReputation(
+    Platform.TWITTER,
+    twitterParameters
+  );
 
   await twitterAccount.save();
 

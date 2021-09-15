@@ -1,4 +1,4 @@
-import { Reputation } from "@interrep/reputation-criteria";
+import { ReputationLevel } from "@interrep/reputation-criteria";
 import { Model, Document } from "mongoose";
 import {
   ITwitterAccountDocument,
@@ -14,7 +14,7 @@ export interface IWeb2Account {
   provider: Web2Providers;
   providerAccountId: string;
   uniqueKey: string;
-  basicReputation?: Reputation;
+  basicReputation?: ReputationLevel;
   isLinkedToAddress: boolean;
   refreshToken?: string;
   accessToken?: string;
@@ -38,11 +38,11 @@ export function isTwitterAccount(
 // Response of a query which should NOT reveal information that can be used to identify the account
 export type AccountReputationByAddress = {
   provider: Web2Providers;
-  basicReputation?: Reputation;
+  basicReputation?: ReputationLevel;
 };
 
 // Response of a query, knowing the account already
 export type AccountReputationByAccount = {
   provider: Web2Providers;
-  basicReputation?: Reputation;
+  basicReputation?: ReputationLevel;
 } & TwitterReputation;
