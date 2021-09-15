@@ -34,91 +34,72 @@ class MerkleTreeController {
       throw new Error(`The tree is full`);
     }
 
-    let prevNode: IMerkleTreeNodeDocument | null = null;
-    let hash = idCommitment;
-    let prevIndex = 0;
+    let node = await MerkleTreeNode.create({
+      key: { groupId, level: 0, index: currentIndex },
+      hash: idCommitment,
+    });
 
-    // Iterate up to root.
     for (let level = 0; level < config.TREE_LEVELS; level++) {
-      let node: IMerkleTreeNodeDocument | null;
-
-      if (level > 0) {
-        currentIndex = Math.floor(prevIndex / 2);
-        //console.debug(`Level ${level} Index: ${currentIndex}`);
-      }
-
-      let siblingHash: string | undefined;
-      let sibling: IMerkleTreeNodeDocument | null = null;
-      let isLeft = false;
       if (currentIndex % 2 == 0) {
-        // Left node. Set this level's zero as sibling
-        siblingHash = zeroes[level].hash;
-        isLeft = true;
-        //console.debug(`left node: sibling is zeroes`);
+        node.siblingHash = zeroes[level].hash;
+
+        let parentNode = await MerkleTreeNode.findByLevelAndIndex({
+          groupId,
+          level: level + 1,
+          index: Math.floor(currentIndex / 2),
+        });
+
+        if (parentNode) {
+          parentNode.hash = poseidonHash(node.hash, node.siblingHash);
+
+          await parentNode.save();
+        } else {
+          parentNode = await MerkleTreeNode.create({
+            key: {
+              groupId,
+              level: level + 1,
+              index: Math.floor(currentIndex / 2),
+            },
+            hash: poseidonHash(node.hash, node.siblingHash),
+          });
+        }
+
+        node.parent = parentNode;
+
+        await node.save();
+
+        node = parentNode;
       } else {
-        // Right node. Set each other as siblings.
-        sibling = await MerkleTreeNode.findByLevelAndIndex({
+        const siblingNode = (await MerkleTreeNode.findByLevelAndIndex({
           groupId,
           level,
           index: currentIndex - 1,
-        });
-        siblingHash = sibling?.hash;
-        //console.debug(`right node: sibling is index ${sibling?.key.index}`);
-      }
+        })) as IMerkleTreeNodeDocument;
 
-      // Get parent node
-      node = await MerkleTreeNode.findByLevelAndIndex({
-        groupId,
-        level,
-        index: currentIndex,
-      });
+        node.siblingHash = siblingNode.hash;
+        siblingNode.siblingHash = node.hash;
 
-      if (prevNode) {
-        if (prevNode.siblingHash) {
-          let left, right: string;
-          if (prevIndex % 2 == 0) {
-            left = prevNode.hash;
-            right = prevNode.siblingHash;
-          } else {
-            left = prevNode.siblingHash;
-            right = prevNode.hash;
-          }
-          hash = poseidonHash(left, right);
-        }
-      }
+        const parentNode = (await MerkleTreeNode.findByLevelAndIndex({
+          groupId,
+          level: level + 1,
+          index: Math.floor(currentIndex / 2),
+        })) as IMerkleTreeNodeDocument;
 
-      // First time in a new branch the node needs to be created
-      if (!node) {
-        // Create new node.
-        try {
-          node = await MerkleTreeNode.create({
-            key: { groupId, level, index: currentIndex },
-            siblingHash,
-            hash,
-          });
-        } catch (error) {
-          console.error(`Error adding node: ${error}`);
-        }
-      } else {
-        node.hash = hash;
+        parentNode.hash = poseidonHash(siblingNode.hash, node.hash);
+
+        node.parent = parentNode;
+
         await node.save();
+        await parentNode.save();
+        await siblingNode.save();
+
+        node = parentNode;
       }
 
-      if (!isLeft && sibling) {
-        sibling.siblingHash = node?.hash;
-        await sibling.save();
-      }
-
-      if (prevNode && !prevNode.populated("parent")) {
-        if (node) prevNode.parent = node;
-        await prevNode.save();
-      }
-
-      prevIndex = currentIndex;
-      prevNode = node;
+      currentIndex = Math.floor(currentIndex / 2);
     }
 
-    return hash;
+    return node.hash;
   };
 
   public previewNewRoot = async (
@@ -149,7 +130,7 @@ class MerkleTreeController {
 
     let hash = idCommitment;
 
-    for (let level = 0; level < config.TREE_LEVELS - 1; level++) {
+    for (let level = 0; level < config.TREE_LEVELS; level++) {
       if (currentIndex % 2 == 0) {
         const siblingHash = zeroes[level].hash;
 
@@ -169,14 +150,6 @@ class MerkleTreeController {
 
     return hash;
   };
-
-  // public updateLeaf = async (groupId: string, idCommitment: string): Promise<any> => {
-  //     // update leaf
-  //     // Get index
-  //     // Update hash
-  //     // Iterate up to root
-  //     // Update contract with new root
-  // }
 
   public retrievePath = async (
     groupId: string,
@@ -224,6 +197,7 @@ class MerkleTreeController {
       },
       {
         $addFields: {
+          hash: "$path.hash",
           sibling: "$path.siblingHash",
           index: { $mod: ["$path.key.index", 2] },
           level: "$path.level",
@@ -247,10 +221,11 @@ class MerkleTreeController {
           reject(error);
         }
 
+        const root = path.pop().hash;
         const pathElements = path.map((n) => n.sibling);
         const indices = path.map((n) => n.index);
 
-        resolve({ pathElements, indices });
+        resolve({ pathElements, indices, root });
       });
     });
   };
