@@ -9,6 +9,9 @@
     <a href="https://github.com/InterRep" target="_blank">
         <img src="https://img.shields.io/badge/project-InterRep-blue.svg?style=flat-square">
     </a>
+    <a href="https://github.com/InterRep/reputation-service/actions/workflows/main.yaml">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/Reputation%20Service%20CI?label=test&logo=github">
+    </a>
     <a href="https://eslint.org/" target="_blank">
         <img alt="Linter eslint" src="https://img.shields.io/badge/linter-eslint-8080f2?style=flat-square&logo=eslint">
     </a>
@@ -18,17 +21,23 @@
     <img alt="Repository top language" src="https://img.shields.io/github/languages/top/InterRep/reputation-service?style=flat-square">
 </p>
 
----
+<div align="center">
+    <h4>
+        <a href="https://docs.interrep.link/contributing">
+            👥 Contributing
+        </a>
+        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="https://docs.interrep.link/code-of-conduct">
+            🤝 Code of conduct
+        </a>
+        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="https://t.me/interrep">
+            🗣️ Chat &amp; Support
+        </a>
+    </h4>
+</div>
 
-## Table of Contents
-
--   🛠 [Install](#install)
--   🕹 [Usage](#usage)
--   🔌 [APIs](#apis)
--   🔬 Development
-    -   Rules
-        -   [Commits](https://github.com/cedoor/cedoor/tree/main/git#commits-rules)
-        -   [Branches](https://github.com/cedoor/cedoor/tree/main/git#branch-rules)
+___
 
 ## Install
 
