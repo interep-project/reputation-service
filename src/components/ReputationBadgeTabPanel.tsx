@@ -49,155 +49,6 @@ export default function ReputationBadgeTabPanel({
     const [_token, setToken] = React.useState<ITokenDocument>()
     const [_error, setError] = React.useState<boolean>(false)
 
-    useEffect(() => {
-        (async () => {
-            setWarningMessage("")
-
-            if (reputation !== ReputationLevel.GOLD) {
-                setWarningMessage(`Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}`)
-                return
-            }
-
-            setLoading(true)
-
-            const accountLinked = await checkLink()
-
-            if (accountLinked === null) {
-                return showUnexpectedError()
-            }
-
-            if (accountLinked) {
-                const tokens = await getMyTokens({ ownerAddress: address })
-
-                if (tokens === null || tokens.length === 0) {
-                    return showUnexpectedError()
-                }
-
-                setToken(tokens[tokens.length - 1])
-            }
-
-            setLoading(false)
-        })()
-    }, [reputation, address])
-
-    async function linkAccount(): Promise<void> {
-        setWarningMessage("")
-        setLoading(true)
-
-        const publicKey = await getPublicKey()
-
-        if (!publicKey) {
-            setWarningMessage("Public key is needed to link accounts")
-            setLoading(false)
-            return
-        }
-
-        const message = createUserAttestationMessage({
-            checksummedAddress: address,
-            web2AccountId
-        })
-
-        const userSignature = await sign(message)
-
-        if (!userSignature) {
-            setWarningMessage("Your signature is needed to register your intent to link the accounts")
-            setLoading(false)
-            return
-        }
-
-        const token = await linkAccounts({
-            chainId: networkId,
-            address,
-            web2AccountId,
-            userSignature,
-            userPublicKey: publicKey
-        })
-
-        if (token === null) {
-            return showUnexpectedError()
-        }
-
-        setToken(token)
-        setLoading(false)
-    }
-
-    async function mint(token: any): Promise<void> {
-        setWarningMessage("")
-        setLoading(true)
-
-        const response = await mintToken({ tokenId: token._id })
-
-        if (response === null) {
-            return showUnexpectedError()
-        }
-
-        const tokens = await getMyTokens({ ownerAddress: address })
-
-        if (tokens === null) {
-            return showUnexpectedError()
-        }
-
-        setToken(tokens[tokens.length - 1])
-        setLoading(false)
-    }
-
-    async function burn(token: any): Promise<void> {
-        setWarningMessage("")
-        setLoading(true)
-
-        const badgeAddress = getBadgeAddressByProvider(token.web2Provider)
-
-        if (badgeAddress === null) {
-            setWarningMessage("Cannot retrieve the badge's address")
-            setLoading(false)
-            return
-        }
-
-        const badge = new ethers.Contract(badgeAddress, ReputationBadge.abi)
-
-        try {
-            const tx = await badge.connect(signer).burn(token.decimalId)
-            await tx.wait()
-        } catch (error) {
-            console.error(error)
-
-            setWarningMessage("Sorry, there was a transaction error")
-            setLoading(false)
-            return
-        }
-
-        const tokens = await getMyTokens({ ownerAddress: address })
-
-        if (tokens === null) {
-            return showUnexpectedError()
-        }
-
-        setToken(tokens[tokens.length - 1])
-        setLoading(false)
-    }
-
-    async function unlinkAccount(token: any): Promise<void> {
-        setWarningMessage("")
-        setLoading(true)
-
-        const decryptedAttestation = await decrypt(token.encryptedAttestation)
-
-        if (!decryptedAttestation) {
-            setWarningMessage("Public key is needed to link accounts")
-            setLoading(false)
-            return
-        }
-
-        const response = await unlinkAccounts({ decryptedAttestation })
-
-        if (response === null) {
-            return showUnexpectedError()
-        }
-
-        setToken(undefined)
-        setLoading(false)
-    }
-
     async function getPublicKey(): Promise<string | null> {
         try {
             // @ts-ignore: ignore
@@ -244,6 +95,169 @@ export default function ReputationBadgeTabPanel({
     function showUnexpectedError(): void {
         setWarningMessage("Sorry, there was an unexpected error")
         setError(true)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        ;(async () => {
+            setWarningMessage("")
+
+            if (reputation !== ReputationLevel.GOLD) {
+                setWarningMessage(`Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}`)
+                return
+            }
+
+            setLoading(true)
+
+            const accountLinked = await checkLink()
+
+            if (accountLinked === null) {
+                showUnexpectedError()
+
+                return
+            }
+
+            if (accountLinked) {
+                const tokens = await getMyTokens({ ownerAddress: address })
+
+                if (tokens === null || tokens.length === 0) {
+                    showUnexpectedError()
+
+                    return
+                }
+
+                setToken(tokens[tokens.length - 1])
+            }
+
+            setLoading(false)
+        })()
+    }, [reputation, address])
+
+    async function linkAccount(): Promise<void> {
+        setWarningMessage("")
+        setLoading(true)
+
+        const publicKey = await getPublicKey()
+
+        if (!publicKey) {
+            setWarningMessage("Public key is needed to link accounts")
+            setLoading(false)
+            return
+        }
+
+        const message = createUserAttestationMessage({
+            checksummedAddress: address,
+            web2AccountId
+        })
+
+        const userSignature = await sign(message)
+
+        if (!userSignature) {
+            setWarningMessage("Your signature is needed to register your intent to link the accounts")
+            setLoading(false)
+            return
+        }
+
+        const newToken = await linkAccounts({
+            chainId: networkId,
+            address,
+            web2AccountId,
+            userSignature,
+            userPublicKey: publicKey
+        })
+
+        if (newToken === null) {
+            showUnexpectedError()
+
+            return
+        }
+
+        setToken(newToken)
+        setLoading(false)
+    }
+
+    async function mint(token: any): Promise<void> {
+        setWarningMessage("")
+        setLoading(true)
+
+        const response = await mintToken({ tokenId: token._id })
+
+        if (response === null) {
+            showUnexpectedError()
+
+            return
+        }
+
+        const tokens = await getMyTokens({ ownerAddress: address })
+
+        if (tokens === null) {
+            showUnexpectedError()
+
+            return
+        }
+
+        setToken(tokens[tokens.length - 1])
+        setLoading(false)
+    }
+
+    async function burn(token: any): Promise<void> {
+        setWarningMessage("")
+        setLoading(true)
+
+        const badgeAddress = getBadgeAddressByProvider(token.web2Provider)
+
+        if (badgeAddress === null) {
+            setWarningMessage("Cannot retrieve the badge's address")
+            setLoading(false)
+            return
+        }
+
+        const badge = new ethers.Contract(badgeAddress, ReputationBadge.abi)
+
+        try {
+            const tx = await badge.connect(signer).burn(token.decimalId)
+            await tx.wait()
+        } catch (error) {
+            console.error(error)
+
+            setWarningMessage("Sorry, there was a transaction error")
+            setLoading(false)
+            return
+        }
+
+        const tokens = await getMyTokens({ ownerAddress: address })
+
+        if (tokens === null) {
+            showUnexpectedError()
+
+            return
+        }
+
+        setToken(tokens[tokens.length - 1])
+        setLoading(false)
+    }
+
+    async function unlinkAccount(token: any): Promise<void> {
+        setWarningMessage("")
+        setLoading(true)
+
+        const decryptedAttestation = await decrypt(token.encryptedAttestation)
+
+        if (!decryptedAttestation) {
+            setWarningMessage("Public key is needed to link accounts")
+            setLoading(false)
+            return
+        }
+
+        const response = await unlinkAccounts({ decryptedAttestation })
+
+        if (response === null) {
+            showUnexpectedError()
+
+            return
+        }
+
+        setToken(undefined)
         setLoading(false)
     }
 

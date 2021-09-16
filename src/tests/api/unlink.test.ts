@@ -19,7 +19,9 @@ describe("api/linking/unlink", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     beforeEach(async () => {
         await clearDatabase()

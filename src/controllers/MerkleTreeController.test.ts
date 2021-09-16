@@ -18,7 +18,9 @@ describe("MerkleTreeController", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     describe("appendLeaf", () => {
         beforeEach(async () => {
@@ -141,8 +143,8 @@ describe("MerkleTreeController", () => {
 
             const path = await MerkleTreeController.retrievePath(groupId, idCommitments[5])
 
-            expect(path.pathElements.length).toBe(config.TREE_LEVELS)
-            expect(path.indices.length).toBe(config.TREE_LEVELS)
+            expect(path.pathElements).toHaveLength(config.TREE_LEVELS)
+            expect(path.indices).toHaveLength(config.TREE_LEVELS)
         })
 
         it("Should match the path obtained with the 'incrementalquintree' library", async () => {

@@ -6,11 +6,11 @@ import { dbConnect } from "src/utils/server/database"
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()
 
-    if (req.method === "GET") {
-        return TwitterAccountController.getMyTwitterReputation(req, res)
-    } else {
+    if (req.method !== "GET") {
         res.status(405).end()
     }
+
+    return TwitterAccountController.getMyTwitterReputation(req, res)
 }
 
 export default withSentry(handler as NextApiHandler)

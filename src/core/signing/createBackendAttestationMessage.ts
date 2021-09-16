@@ -16,5 +16,5 @@ export const createBackendAttestationMessage = ({
         decimalId,
         userAddress: address,
         web2Provider: provider,
-        providerAccountId: providerAccountId
+        providerAccountId
     })

@@ -7,10 +7,10 @@ import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel"
 import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
 import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
+import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { getMyTwitterReputation } from "src/utils/frontend/api"
-import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -45,16 +45,17 @@ export default function Home(): JSX.Element {
     const [_twitterReputation, setTwitterReputation] = useState<AccountReputationByAccount | null>(null)
 
     useEffect(() => {
-        (async () => {
+        ;(async () => {
             if (session) {
                 setTwitterReputation(await getMyTwitterReputation())
             }
         })()
     }, [session])
 
-    const appIsReady = useCallback(() => {
-        return !!(session && defaultNetworkId === _networkId && _address && _twitterReputation)
-    }, [session, _networkId, _address, _twitterReputation])
+    const appIsReady = useCallback(
+        () => !!(session && defaultNetworkId === _networkId && _address && _twitterReputation),
+        [session, _networkId, _address, _twitterReputation]
+    )
 
     function updateTabIndex(direction: number): void {
         setTabIndex((index: number) => index + direction)
@@ -85,7 +86,7 @@ export default function Home(): JSX.Element {
                         <>
                             <TabPanelContainer value={_tabIndex} index={1}>
                                 <SemaphoreGroupTabPanel
-                                    onArrowClick={updateTabIndex}
+                                    onArrowClick={(d) => updateTabIndex(d)}
                                     reputation={_twitterReputation?.basicReputation as string}
                                     signer={_signer as Signer}
                                     web2AccountId={session?.web2AccountId as string}
@@ -93,7 +94,7 @@ export default function Home(): JSX.Element {
                             </TabPanelContainer>
                             <TabPanelContainer value={_tabIndex} index={2}>
                                 <ReputationBadgeTabPanel
-                                    onArrowClick={updateTabIndex}
+                                    onArrowClick={(d) => updateTabIndex(d)}
                                     signer={_signer as Signer}
                                     networkId={_networkId as number}
                                     address={_address as string}

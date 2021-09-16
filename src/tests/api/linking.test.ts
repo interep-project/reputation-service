@@ -2,7 +2,7 @@ import { getSession } from "next-auth/client"
 import { RequestMethod } from "node-mocks-http"
 import linkAccounts from "src/core/linking"
 import createNextMocks from "src/mocks/createNextMocks"
-import { mockSession } from "src/mocks/session"
+import mockSession from "src/mocks/session"
 import Token from "src/models/tokens/Token.model"
 import handler from "src/pages/api/linking/link"
 import logger from "src/utils/server/logger"
@@ -39,7 +39,9 @@ describe("api/linking", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     beforeEach(async () => {
         await clearDatabase()
@@ -118,7 +120,7 @@ describe("api/linking", () => {
         })
 
         it("should return a 500 if linkAccount did not return a token", async () => {
-            //@ts-expect-error: should return a token
+            // @ts-expect-error: should return a token
             linkAccountsMocked.mockImplementation(() => Promise.resolve(undefined))
 
             const { req, res } = createNextMocks(createCall())

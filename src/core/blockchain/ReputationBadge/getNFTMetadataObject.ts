@@ -8,9 +8,10 @@ const metadataByBadge = {
     }
 }
 
-export const getNFTMetadataObject = (deployedContract: DeployedContracts) => {
+export default function getNFTMetadataObject(deployedContract: DeployedContracts): any {
     if (deployedContract === DeployedContracts.TWITTER_BADGE) {
-        return metadataByBadge["twitter"]
+        return metadataByBadge.twitter
     }
+
     return null
 }

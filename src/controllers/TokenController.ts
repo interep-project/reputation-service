@@ -1,17 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import { getNFTMetadataObject } from "src/core/blockchain/ReputationBadge/getNFTMetadataObject"
+import getNFTMetadataObject from "src/core/blockchain/ReputationBadge/getNFTMetadataObject"
 import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract"
 import mintToken from "src/core/linking/mintToken"
 import Token from "src/models/tokens/Token.model"
-import { getChecksummedAddress } from "src/utils/crypto/address"
+import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
 import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/deployedContracts"
 import logger from "src/utils/server/logger"
 
 class TokenController {
     public getTokensByAddress = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         try {
-            const owner = req.query.owner
+            const { owner } = req.query
 
             if (!owner || typeof owner !== "string") {
                 return res.status(400).end()
@@ -54,9 +54,9 @@ class TokenController {
                 return res.status(200).send({
                     data: getNFTMetadataObject(DeployedContracts.TWITTER_BADGE)
                 })
-            } else {
-                return res.status(400).send(`Invalid contract address`)
             }
+
+            return res.status(400).send(`Invalid contract address`)
         } catch (err) {
             logger.error(err)
             return res.status(500).end()

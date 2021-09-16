@@ -8,11 +8,11 @@ type CheckIfUserSignatureIsValidParams = {
     userSignature: string
 }
 
-export const checkIfUserSignatureIsValid = ({
+export default function checkIfUserSignatureIsValid({
     checksummedAddress,
     web2AccountId,
     userSignature
-}: CheckIfUserSignatureIsValidParams): boolean => {
+}: CheckIfUserSignatureIsValidParams): boolean {
     const recreatedMessageSignedByUser = createUserAttestationMessage({
         checksummedAddress,
         web2AccountId

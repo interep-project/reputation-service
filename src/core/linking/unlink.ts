@@ -34,7 +34,7 @@ const unlinkAccounts = async ({
     const [backendSigner] = await ethers.getSigners()
     const signerAddress = ethers.utils.verifyMessage(attestationMessage, backendAttestationSignature)
 
-    if (signerAddress != backendSigner.address) {
+    if (signerAddress !== backendSigner.address) {
         throw new Error("Attestation signature invalid")
     }
 
@@ -51,7 +51,7 @@ const unlinkAccounts = async ({
         throw new Error("Web 2 accounts don't match")
     }
 
-    const token = await Token.findOne({ decimalId: decimalId })
+    const token = await Token.findOne({ decimalId })
 
     if (!token) {
         throw new Error(`Can't find token with decimalId ${decimalId}`)

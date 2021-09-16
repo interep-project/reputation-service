@@ -1,24 +1,31 @@
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
-import * as isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
+import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
 import { connect, dropDatabaseAndDisconnect, clearDatabase } from "src/utils/server/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
-import TwitterBadgeContract from "./TwitterBadgeContract"
+import { exists, getTransferEvent } from "./TwitterBadgeContract"
 
 jest.mock("./TwitterBadgeContract", () => ({
     exists: jest.fn(),
     getTransferEvent: jest.fn()
 }))
 
+jest.mock("src/utils/crypto/isTransactionConfirmed", () => ({
+    __esModule: true,
+    default: jest.fn()
+}))
+
 describe("checkAndUpdateTokenStatus", () => {
     beforeAll(async () => {
         await connect()
         // @ts-ignore: mocked above
-        TwitterBadgeContract.exists.mockImplementation(() => false)
+        exists.mockImplementation(() => false)
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     afterEach(async () => {
         await clearDatabase()
@@ -26,18 +33,20 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should return undefined if no tokens were passed", async () => {
         // @ts-expect-error: argument not provided
-        expect(await checkAndUpdateTokenStatus()).toBeUndefined()
+        expect(await checkAndUpdateTokenStatus()).toBeNull()
     })
 
     it("should throw if a token has no decimalId", async () => {
         const token = new Token(createMockTokenObject({ decimalId: undefined }))
 
-        expect(checkAndUpdateTokenStatus([token])).rejects.toThrowError(`Token with id ${token.id} has no decimalId`)
+        await expect(() => checkAndUpdateTokenStatus([token])).rejects.toThrow(
+            `Token with id ${token.id} has no decimalId`
+        )
     })
 
     it("should update MINT_PENDING -> MINTED", async () => {
         // @ts-ignore: mocked above
-        TwitterBadgeContract.exists.mockImplementationOnce(() => true)
+        exists.mockImplementationOnce(() => true)
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.MINT_PENDING }))
 
@@ -50,7 +59,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update NOT_MINTED -> MINTED", async () => {
         // @ts-ignore: mocked above
-        TwitterBadgeContract.exists.mockImplementationOnce(() => true)
+        exists.mockImplementationOnce(() => true)
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.NOT_MINTED }))
 
@@ -84,7 +93,8 @@ describe("checkAndUpdateTokenStatus", () => {
     })
 
     it("should update MINT_PENDING -> NOT_MINTED", async () => {
-        jest.spyOn(isTransactionConfirmed, "isTransactionConfirmed").mockResolvedValueOnce(true)
+        // @ts-ignore: mocked above
+        isTransactionConfirmed.mockImplementationOnce(() => true)
 
         const token = new Token(
             createMockTokenObject({
@@ -109,7 +119,9 @@ describe("checkAndUpdateTokenStatus", () => {
     })
 
     it("should still be MINT_PENDING if a transaction is pending", async () => {
-        jest.spyOn(isTransactionConfirmed, "isTransactionConfirmed").mockResolvedValueOnce(false)
+        // @ts-ignore: mocked above
+        isTransactionConfirmed.mockImplementationOnce(() => false)
+
         const token = new Token(
             createMockTokenObject({
                 status: TokenStatus.MINT_PENDING,
@@ -134,7 +146,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update if token was burned", async () => {
         // @ts-ignore: mocked above
-        TwitterBadgeContract.getTransferEvent.mockImplementationOnce(() => Promise.resolve([{ mock: "event" }]))
+        getTransferEvent.mockImplementationOnce(() => Promise.resolve([{ mock: "event" }]))
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.MINTED }))
 
@@ -145,9 +157,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should throw if no burn event was found", async () => {
         // @ts-ignore: mocked above
-        TwitterBadgeContract.getTransferEvent.mockImplementationOnce(() =>
-            Promise.reject(new Error("Can't find events"))
-        )
+        getTransferEvent.mockImplementationOnce(() => Promise.reject(new Error("Can't find events")))
 
         const token1 = new Token(createMockTokenObject({ status: TokenStatus.MINTED }))
 
@@ -155,6 +165,6 @@ describe("checkAndUpdateTokenStatus", () => {
 
         const check = () => checkAndUpdateTokenStatus([token1, token2])
 
-        expect(check()).rejects.toThrowError("Can't find events")
+        await expect(check()).rejects.toThrow("Can't find events")
     })
 })

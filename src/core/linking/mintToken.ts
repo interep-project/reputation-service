@@ -33,20 +33,20 @@ const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
 
     logger.silly(`[MINTING TX] Tx Response: ${JSON.stringify(txResponse)}`)
 
-    if (txResponse) {
-        const { hash, blockNumber, chainId, timestamp } = txResponse
-        token.mintTransactions?.push({
-            response: { hash, blockNumber, chainId, timestamp }
-        })
-        await token.save()
-
-        token.status = TokenStatus.MINT_PENDING
-        await token.save()
-
-        return txResponse
-    } else {
+    if (!txResponse) {
         throw new Error(`Error while submitting mint transaction`)
     }
+
+    const { hash, blockNumber, chainId, timestamp } = txResponse
+    token.mintTransactions?.push({
+        response: { hash, blockNumber, chainId, timestamp }
+    })
+    await token.save()
+
+    token.status = TokenStatus.MINT_PENDING
+    await token.save()
+
+    return txResponse
 }
 
 export default mintToken

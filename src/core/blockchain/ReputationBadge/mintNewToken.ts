@@ -1,6 +1,6 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { ethers } from "hardhat"
-import { stringToBigNumber } from "src/utils/crypto/bigNumber"
+import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 
 type MintNewTokenProps = {
     badgeAddress: string

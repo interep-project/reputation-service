@@ -38,7 +38,9 @@ describe("TokenController", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     describe("getTokensByAddress", () => {
         beforeEach(async () => {

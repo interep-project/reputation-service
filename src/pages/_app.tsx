@@ -51,7 +51,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     }, [])
 
     return (
-        <React.Fragment>
+        <>
             <Head>
                 <title>InterRep</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
@@ -59,7 +59,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
             <ThemeProvider theme={theme}>
                 <EthereumWalletContext.Provider value={ethereumWallet}>
                     <NextAuthProvider session={pageProps.session}>
-                        <Paper className={classes.container} elevation={0} square={true}>
+                        <Paper className={classes.container} elevation={0} square>
                             <NavBar />
                             <Component {...pageProps} />
                             <Footer />
@@ -67,11 +67,12 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
                     </NextAuthProvider>
                 </EthereumWalletContext.Provider>
             </ThemeProvider>
-        </React.Fragment>
+        </>
     )
 }
 
 MyApp.propTypes = {
     Component: PropTypes.elementType.isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
     pageProps: PropTypes.object.isRequired
 }

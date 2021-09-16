@@ -36,6 +36,9 @@ const moduleExports = {
         defaultNetwork: process.env.DEFAULT_NETWORK
     },
     poweredByHeader: false,
+    eslint: {
+        ignoreDuringBuilds: true
+    },
     async headers() {
         return [
             {

@@ -1,15 +1,15 @@
-import { describe, expect, beforeAll, afterAll } from "@jest/globals"
 import { ContractTransaction } from "@ethersproject/contracts"
+import { ReputationLevel } from "@interrep/reputation-criteria"
+import { afterAll, beforeAll, describe, expect } from "@jest/globals"
 import linkAccounts from "src/core/linking"
+import Token from "src/models/tokens/Token.model"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-import { checkIfUserSignatureIsValid } from "../signing/checkIfUserSignatureIsValid"
-import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
-import Token from "src/models/tokens/Token.model"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
+import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
+import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import checkIfUserSignatureIsValid from "../signing/checkIfUserSignatureIsValid"
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4"
 const getParams = (override?: Record<string, unknown>) => ({
@@ -39,7 +39,8 @@ jest.mock("hardhat", () => {
 })
 
 jest.mock("src/core/signing/checkIfUserSignatureIsValid", () => ({
-    checkIfUserSignatureIsValid: jest.fn()
+    __esModule: true,
+    default: jest.fn()
 }))
 
 jest.mock("../blockchain/ReputationBadge/mintNewToken", () => ({
@@ -64,60 +65,58 @@ const checkIfUserSignatureIsValidMocked = checkIfUserSignatureIsValid as jest.Mo
 
 describe("linkAccounts", () => {
     checkIfUserSignatureIsValidMocked.mockImplementation(() => true)
+
     beforeAll(async () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     // afterEach(async () => {
     //   await clearDatabase();
     // });
 
-    it("should throw if the address is invalid", () => {
+    it("should throw if the address is invalid", async () => {
         const badAddy = "0x123"
-        expect(linkAccounts(getParams({ address: badAddy }))).rejects.toThrow(`Invalid address ${badAddy}`)
+        await expect(linkAccounts(getParams({ address: badAddy }))).rejects.toThrow(`Invalid address ${badAddy}`)
     })
 
     describe("signature", () => {
-        it("should throw if the signature is invalid", () => {
+        it("should throw if the signature is invalid", async () => {
             checkIfUserSignatureIsValidMocked.mockImplementationOnce(() => false)
-            expect(linkAccounts(getParams({}))).rejects.toThrow()
+            await expect(linkAccounts(getParams({}))).rejects.toThrow()
         })
     })
 
     describe("web 2 account", () => {
         let web2Account: IWeb2AccountDocument
+
         beforeAll(async () => {
             web2Account = await Web2Account.create(
                 createTwitterAccountObject({
                     providerAccountId: "1",
                     user: { id: "1", username: "user name" },
                     isLinkedToAddress: true,
-                    basicReputation: undefined
+                    basicReputation: ReputationLevel.NOT_SUFFICIENT
                 })
             )
         })
 
-        it("should throw if it fails retrieving the web 2 account", () => {
-            expect(linkAccounts(getParams({ web2AccountId: "thisIdIsInvalid" }))).rejects.toThrow(
+        it("should throw if it fails retrieving the web 2 account", async () => {
+            await expect(() => linkAccounts(getParams({ web2AccountId: "thisIdIsInvalid" }))).rejects.toThrow(
                 `Error retrieving web 2 account`
             )
         })
 
-        it("should throw if there is no web 2 account for that id", () => {
-            expect(linkAccounts(getParams())).rejects.toThrow(`Web 2 account not found`)
+        it("should throw if there is no web 2 account for that id", async () => {
+            await expect(() => linkAccounts(getParams())).rejects.toThrow(`Web 2 account not found`)
         })
 
         it("should throw if the account is already linked", async () => {
-            expect(linkAccounts(getParams({ web2AccountId: web2Account.id }))).rejects.toThrow(
+            await expect(() => linkAccounts(getParams({ web2AccountId: web2Account.id }))).rejects.toThrow(
                 `Web 2 account already linked`
-            )
-        })
-
-        it("should throw if the account's reputation is not defined", async () => {
-            expect(linkAccounts(getParams({ web2AccountId: web2Account.id }))).rejects.toThrow(
-                `Insufficient account's reputation`
             )
         })
 
@@ -135,7 +134,7 @@ describe("linkAccounts", () => {
             })
 
             it("should throw if the account's reputation is not GOLD", async () => {
-                expect(
+                await expect(
                     linkAccounts({
                         web2AccountId: web2AccountNotLinked.id,
                         chainId: getDefaultNetworkId(),
@@ -150,6 +149,7 @@ describe("linkAccounts", () => {
 
     describe("Token creation", () => {
         let web2AccountMock: IWeb2AccountDocument
+
         beforeAll(async () => {
             web2AccountMock = await Web2Account.create(
                 createTwitterAccountObject({
@@ -185,18 +185,6 @@ describe("linkAccounts", () => {
                 '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"web2Provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x58e10c262844d01fbc3c8fed5f067429c068c6b851e0a1a45505b8863b4852b523c00052ec0cfe024f4bc199917f9363183676441a8568015a5a93876c0019371b"}'
             )
             expect(savedToken.encryptedAttestation).toEqual("encryptedMessage")
-        })
-
-        it("should throw if there is an error in creating the attestation", async () => {
-            expect(
-                linkAccounts({
-                    web2AccountId: web2AccountMock.id,
-                    chainId: getDefaultNetworkId(),
-                    address: addy,
-                    userSignature: "signature",
-                    userPublicKey: "invalid pub key"
-                })
-            ).rejects.toThrowError("Error while creating attestation")
         })
     })
 })

@@ -12,12 +12,10 @@ jest.mock("hardhat", () => ({
 
 describe("mintNewToken", () => {
     it("should throw if no token id was passed", async () => {
-        try {
-            // @ts-expect-error: tokenId should be defined
-            await mintNewToken({ tokenId: undefined })
-        } catch (err) {
-            expect(err).toEqual(new Error("Token id is not defined"))
-        }
+        // @ts-expect-error: tokenId should be defined
+        const fun = () => mintNewToken({ tokenId: undefined })
+
+        await expect(fun).rejects.toThrow("Token id is not defined")
     })
 
     it("should return the transaction response", async () => {

@@ -1,8 +1,8 @@
+import checkGroupId from "src/core/groups/checkGroupId"
+import config from "../config"
 import { MerkleTreeNode, MerkleTreeZero } from "../models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types"
 import poseidonHash from "../utils/crypto/hasher"
-import config from "../config"
-import checkGroupId from "src/core/groups/checkGroupId"
 
 class MerkleTreeController {
     public appendLeaf = async (groupId: string, idCommitment: string): Promise<string> => {
@@ -34,7 +34,7 @@ class MerkleTreeController {
         })
 
         for (let level = 0; level < config.TREE_LEVELS; level++) {
-            if (currentIndex % 2 == 0) {
+            if (currentIndex % 2 === 0) {
                 node.siblingHash = zeroes[level].hash
 
                 let parentNode = await MerkleTreeNode.findByLevelAndIndex({
@@ -122,7 +122,7 @@ class MerkleTreeController {
         let hash = idCommitment
 
         for (let level = 0; level < config.TREE_LEVELS; level++) {
-            if (currentIndex % 2 == 0) {
+            if (currentIndex % 2 === 0) {
                 const siblingHash = zeroes[level].hash
 
                 hash = poseidonHash(hash, siblingHash)
@@ -160,7 +160,7 @@ class MerkleTreeController {
         const pathQuery = MerkleTreeNode.aggregate([
             {
                 $match: {
-                    key: key
+                    key
                 }
             },
             {

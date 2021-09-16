@@ -1,14 +1,14 @@
 import { ethers } from "hardhat"
-import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model"
-import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
-import { dropDatabaseAndDisconnect, clearDatabase, connect } from "src/utils/server/testDatabase"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
+import createMockTokenObject from "src/mocks/createMockToken"
+import Token from "src/models/tokens/Token.model"
+import { TokenStatus } from "src/models/tokens/Token.types"
+import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model"
+import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
-import Token from "src/models/tokens/Token.model"
-import createMockTokenObject from "src/mocks/createMockToken"
-import { TokenStatus } from "src/models/tokens/Token.types"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
 
 jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
@@ -44,7 +44,9 @@ describe("unlink", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     afterEach(async () => {
         await clearDatabase()

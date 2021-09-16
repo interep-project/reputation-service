@@ -1,6 +1,6 @@
 import winston from "winston"
 
-let logger: winston.Logger | undefined = undefined
+let logger: winston.Logger | undefined
 
 const colors = {
     error: "red",

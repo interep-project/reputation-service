@@ -3,7 +3,7 @@ import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/
 import { InterRepGroups } from "contracts/typechain/InterRepGroups"
 
 // TODO: Refactoring.
-export async function getInterRepGroupsContractInstance(): Promise<InterRepGroups> {
+export default async function getInterRepGroupsContractInstance(): Promise<InterRepGroups> {
     const address = getDeployedContractAddress(DeployedContracts.INTERREP_GROUPS)
 
     if (!address) {

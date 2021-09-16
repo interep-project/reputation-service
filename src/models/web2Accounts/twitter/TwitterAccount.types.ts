@@ -1,7 +1,7 @@
-import { Model, Document } from "mongoose"
+import { Document, Model } from "mongoose"
 import { botometerScoreData } from "src/types/botometer"
-import { findByTwitterUsername } from "./TwitterAccount.statics"
 import { IWeb2Account } from "../Web2Account.types"
+import { findByTwitterUsername } from "./TwitterAccount.statics"
 
 export interface IBaseTwitterAccount {
     user: {

@@ -1,4 +1,4 @@
-import { checkIfUserSignatureIsValid } from "src/core/signing/checkIfUserSignatureIsValid"
+import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 
 const address = "0xEefc6026a202EA1B5129e84fEF229eBD412C3a5A"
 

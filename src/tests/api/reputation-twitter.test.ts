@@ -21,7 +21,9 @@ describe("api/reputation/twitter", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     afterEach(async () => {
         await clearDatabase()

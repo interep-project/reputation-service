@@ -5,6 +5,16 @@ import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 
+function createTwitterSeedUser(twitterUser: TwitterUser): any {
+    return {
+        providerAccountId: twitterUser.id,
+        user: twitterUser,
+        isSeedUser: true,
+        isLinkedToAddress: false,
+        basicReputation: ReputationLevel.GOLD
+    }
+}
+
 export default async function seedTwitterUsers(twitterUsernames: string[], logger = false): Promise<void> {
     const log = logger ? console.log : (message: string) => message
 
@@ -41,15 +51,5 @@ export default async function seedTwitterUsers(twitterUsernames: string[], logge
         }
 
         log("\n")
-    }
-}
-
-function createTwitterSeedUser(twitterUser: TwitterUser): any {
-    return {
-        providerAccountId: twitterUser.id,
-        user: twitterUser,
-        isSeedUser: true,
-        isLinkedToAddress: false,
-        basicReputation: ReputationLevel.GOLD
     }
 }

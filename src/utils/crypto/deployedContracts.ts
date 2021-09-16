@@ -42,11 +42,11 @@ export const getDeployedContractAddress = (contract: DeployedContracts): string 
 }
 
 export const getBadgeAddressByProvider = (web2Provider: Web2Providers): string | null => {
-    if (web2Provider == Web2Providers.TWITTER) {
-        return getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
-    } else {
+    if (web2Provider !== Web2Providers.TWITTER) {
         throw new Error("Unsupported provider")
     }
+
+    return getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
 }
 
 export default deployedContracts

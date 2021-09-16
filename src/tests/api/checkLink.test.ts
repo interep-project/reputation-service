@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
-import { mockSession } from "src/mocks/session"
+import mockSession from "src/mocks/session"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import handler from "src/pages/api/linking/check"
 import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
@@ -17,7 +17,9 @@ describe("api/linking/checkLink", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     beforeEach(async () => {
         await clearDatabase()

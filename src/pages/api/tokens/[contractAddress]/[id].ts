@@ -8,9 +8,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     if (req.method !== "GET") {
         return res.status(405).end()
-    } else {
-        return TokenController.getTokenByContractAndId(req, res)
     }
+
+    return TokenController.getTokenByContractAndId(req, res)
 }
 
 export default withSentry(handler as NextApiHandler)

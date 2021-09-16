@@ -1,10 +1,10 @@
+import semethid from "@interrep/semethid"
+import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React from "react"
-import semethid from "@interrep/semethid"
 import { DeployedContracts } from "src/utils/crypto/deployedContracts"
 import { addIdentityCommitment, checkIdentityCommitment } from "src/utils/frontend/api"
 import TabPanelContent from "./TabPanelContent"
-import { poseidon, babyJub } from "circomlib"
 
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
@@ -24,6 +24,21 @@ export default function SemaphoreGroupTabPanel({
     const [_hasJoined, setHasJoined] = React.useState<boolean>()
     const [_loading, setLoading] = React.useState<boolean>(false)
     const [_warningMessage, setWarningMessage] = React.useState<string>("")
+
+    async function retrieveIdentityCommitment(groupId: string): Promise<string | null> {
+        try {
+            const identity = await semethid((message) => signer.signMessage(message), groupId)
+
+            return poseidon([
+                babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
+                identity.identityNullifier,
+                identity.identityTrapdoor
+            ]).toString()
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    }
 
     async function retrieveAndCheckIdentityCommitment(): Promise<void> {
         setWarningMessage("")
@@ -66,7 +81,7 @@ export default function SemaphoreGroupTabPanel({
         const rootHash = await addIdentityCommitment({
             groupId,
             identityCommitment: _identityCommitment as string,
-            web2AccountId: web2AccountId
+            web2AccountId
         })
 
         if (!rootHash) {
@@ -77,21 +92,6 @@ export default function SemaphoreGroupTabPanel({
 
         setHasJoined(true)
         setLoading(false)
-    }
-
-    async function retrieveIdentityCommitment(groupId: string): Promise<string | null> {
-        try {
-            const identity = await semethid((message) => signer.signMessage(message), groupId)
-
-            return poseidon([
-                babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
-                identity.identityNullifier,
-                identity.identityTrapdoor
-            ]).toString()
-        } catch (error) {
-            console.error(error)
-            return null
-        }
     }
 
     return (

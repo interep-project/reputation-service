@@ -3,15 +3,15 @@ import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, Next
 import React from "react"
 import { CSP } from "src/types/csp"
 
-//const cspHashOf = (text: string): string => {
-//const hash = crypto.createHash("sha256");
-//hash.update(text);
-//return `'sha256-${hash.digest("base64")}'`;
-//};
+// const cspHashOf = (text: string): string => {
+// const hash = crypto.createHash("sha256");
+// hash.update(text);
+// return `'sha256-${hash.digest("base64")}'`;
+// };
 
-//const generateNonce = (): string => {
-//return randomBytes(16).toString("base64");
-//};
+// const generateNonce = (): string => {
+// return randomBytes(16).toString("base64");
+// };
 
 // Return a Content Security Policy string.
 // If the website is completely static, it's likely CSP are not necessary.

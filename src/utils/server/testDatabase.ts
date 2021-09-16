@@ -6,7 +6,7 @@ let mongod: MongoMemoryServer
 export const connect = async () => {
     mongod = await MongoMemoryServer.create()
 
-    await mongoose.connect(await mongod.getUri(), {
+    await mongoose.connect(mongod.getUri(), {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
@@ -22,10 +22,16 @@ export const dropDatabaseAndDisconnect = async () => {
 }
 
 export const clearDatabase = async () => {
-    const collections = mongoose.connection.collections
+    const { collections } = mongoose.connection
+    const promises: Promise<any>[] = []
 
     for (const key in collections) {
-        const collection = collections[key]
-        await collection.deleteMany({})
+        if (Object.prototype.hasOwnProperty.call(collections, key)) {
+            const collection = collections[key]
+
+            promises.push(collection.deleteMany({}))
+        }
     }
+
+    await Promise.all(promises)
 }

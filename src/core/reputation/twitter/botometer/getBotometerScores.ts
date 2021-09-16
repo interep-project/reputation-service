@@ -1,4 +1,4 @@
-import { getBotScore } from "src/services/botometer"
+import getBotScore from "src/services/botometer"
 import logger from "src/utils/server/logger"
 
 const getBotometerScores = async (username: string) => {

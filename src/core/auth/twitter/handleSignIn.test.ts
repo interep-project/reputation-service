@@ -25,15 +25,16 @@ describe("handleSignIn", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     afterEach(async () => {
         await clearDatabase()
     })
 
     it("should throw if the reponse has no user id", async () => {
-        //
-        expect(async () => await handleSignIn(createNexAuthAccount({ results: { user_id: "" } }))).rejects.toThrowError(
+        await expect(() => handleSignIn(createNexAuthAccount({ results: { user_id: "" } }))).rejects.toThrow(
             "Invalid account response"
         )
     })

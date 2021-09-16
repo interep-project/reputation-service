@@ -3,7 +3,7 @@ import { mockBotometerData } from "src/mocks/botometerData"
 import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
-import { getBotScore } from "src/services/botometer"
+import getBotScore from "src/services/botometer"
 import { getTwitterUserById } from "src/services/twitter"
 import { TwitterUser } from "src/types/twitter"
 import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount"
@@ -15,7 +15,8 @@ jest.mock("src/services/twitter", () => ({
 }))
 
 jest.mock("src/services/botometer", () => ({
-    getBotScore: jest.fn()
+    __esModule: true,
+    default: jest.fn()
 }))
 
 const getTwitterUserByIdMocked = getTwitterUserById as jest.MockedFunction<typeof getTwitterUserById>
@@ -26,7 +27,9 @@ describe("checkTwitterReputation", () => {
         await connect()
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     beforeEach(async () => {
         jest.clearAllMocks()
@@ -86,6 +89,7 @@ describe("checkTwitterReputation", () => {
                 },
                 verified: false
             }
+
             getTwitterUserByIdMocked.mockImplementation(() => Promise.resolve(twitterUser))
             getBotscoreMocked.mockImplementation(() => Promise.resolve(mockBotometerData))
         })
@@ -111,7 +115,8 @@ describe("checkTwitterReputation", () => {
             await checkTwitterReputationById(twitterUser.id)
 
             const account = await Web2Account.findByProviderAccountId(Web2Providers.TWITTER, twitterUser.id)
-            if (!account) throw Error
+
+            if (!account) throw new Error()
 
             // Expect
             expect((account as ITwitterAccountDocument).user).toMatchObject({
@@ -150,7 +155,7 @@ describe("checkTwitterReputation", () => {
             getBotscoreMocked.mockImplementation(() => Promise.resolve(mockBotometerData))
         })
 
-        it("should return botometer data when reputation is not obvious", async () => {
+        it("Should return botometer data when reputation is not obvious", async () => {
             // When
             const response = await getTwitterUserReputation({
                 twitterAccount,
@@ -166,7 +171,7 @@ describe("checkTwitterReputation", () => {
             })
         })
 
-        it("should save botometer data when reputation is not obvious ", async () => {
+        it("Should save botometer data when reputation is not obvious", async () => {
             // When
             await getTwitterUserReputation({
                 twitterAccount,

@@ -53,6 +53,8 @@ function getNetworks(): NetworksUserConfig | undefined {
             }
         }
     }
+
+    return undefined
 }
 
 const config: HardhatUserConfig = {

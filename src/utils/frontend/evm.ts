@@ -1,11 +1,10 @@
 import { DisplayableChainNames } from "src/types/chains"
-import { getChecksummedAddress } from "src/utils/crypto/address"
+import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
 
 const isKnownChainId = (id: number): id is keyof typeof DisplayableChainNames => id in DisplayableChainNames
 
-export const getChainNameFromNetworkId = (id: number): string | null => {
-    return isKnownChainId(id) ? DisplayableChainNames[id] : null
-}
+export const getChainNameFromNetworkId = (id: number): string | null =>
+    isKnownChainId(id) ? DisplayableChainNames[id] : null
 
 // shorten the checksummed version of the input address to have 0x + 4 characters at start and end
 export function shortenAddress(address: string, chars = 4): string {

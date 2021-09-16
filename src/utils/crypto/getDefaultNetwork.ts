@@ -1,9 +1,5 @@
 import { defaultNetworkByEnv } from "src/config"
 
-export const isDefaultNetworkId = (networkId: number): boolean => {
-    return networkId === getDefaultNetworkId()
-}
-
 export const getDefaultNetworkId = (): number => {
     const env = process.env.NODE_ENV
 
@@ -19,3 +15,5 @@ export const getDefaultNetworkName = (): string => {
 
     return env in defaultNetworkByEnv ? defaultNetworkByEnv[env].name : "hardhat"
 }
+
+export const isDefaultNetworkId = (networkId: number): boolean => networkId === getDefaultNetworkId()

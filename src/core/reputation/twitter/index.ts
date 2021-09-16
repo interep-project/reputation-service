@@ -1,5 +1,6 @@
-import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types"
+import { calculateReputation, Platform, TwitterParameters } from "@interrep/reputation-criteria"
 import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model"
+import { ITwitterAccountDocument } from "src/models/web2Accounts/twitter/TwitterAccount.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { AccountReputationByAccount, Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { getTwitterUserById, getTwitterUserByUsername } from "src/services/twitter"
@@ -7,7 +8,6 @@ import { TwitterUser } from "src/types/twitter"
 import { instantiateNewTwitterAccount } from "src/utils/server/createNewTwitterAccount"
 import logger from "src/utils/server/logger"
 import getBotometerScores from "./botometer/getBotometerScores"
-import { TwitterParameters, calculateReputation, Platform } from "@interrep/reputation-criteria"
 
 const getTwitterAccountReputationPayload = (account: ITwitterAccountDocument): AccountReputationByAccount => ({
     provider: Web2Providers.TWITTER,
@@ -101,7 +101,7 @@ export const checkTwitterReputationByUsername = async (
     let twitterUser: TwitterUser
     try {
         twitterUser = await getTwitterUserByUsername({
-            username: username
+            username
         })
     } catch (err) {
         logger.error(err)

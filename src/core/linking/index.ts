@@ -1,14 +1,14 @@
 import { ethers } from "hardhat"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { getChecksummedAddress } from "src/utils/crypto/address"
+import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
 import logger from "src/utils/server/logger"
-import { checkIfUserSignatureIsValid } from "src/core/signing/checkIfUserSignatureIsValid"
+import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import Token from "src/models/tokens/Token.model"
 import { getBadgeAddressByProvider, isNetworkWithDeployedContract } from "src/utils/crypto/deployedContracts"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
-import { stringToBigNumber } from "src/utils/crypto/bigNumber"
+import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 
 type LinkAccountsParams = {

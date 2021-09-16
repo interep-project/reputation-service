@@ -1,10 +1,10 @@
-import { dropDatabaseAndDisconnect, connect } from "src/utils/server/testDatabase"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import mintToken from "./mintToken"
+import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
-import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
+import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import mintToken from "./mintToken"
 
 const mockTxResponse = {
     hash: "hash",
@@ -34,26 +34,27 @@ describe("mintToken", () => {
         mockToken = await Token.create(createMockTokenObject())
     })
 
-    afterAll(async () => await dropDatabaseAndDisconnect())
+    afterAll(async () => {
+        await dropDatabaseAndDisconnect()
+    })
 
     it("should throw if token is not found", async () => {
-        expect(async () => await mintToken("60b12200d5053f71362feed0")).rejects.toThrowError(
+        await expect(() => mintToken("60b12200d5053f71362feed0")).rejects.toThrow(
             "token with id 60b12200d5053f71362feed0 not found"
         )
     })
 
     it("should only mint a token with a status of NOT_MINTED", async () => {
-        checkAndUpdateTokenStatusMocked.mockImplementationOnce(([token]) => {
-            token.status = TokenStatus.MINT_PENDING
-            token.save()
-            return Promise.resolve(undefined)
+        checkAndUpdateTokenStatusMocked.mockImplementationOnce((tokens) => {
+            tokens[0].status = TokenStatus.MINT_PENDING
+            tokens[0].save()
+
+            return Promise.resolve(null)
         })
 
-        try {
-            await mintToken(mockToken.id)
-        } catch (err) {
-            expect(err).toEqual(Error("Can't mint a token with status MINT_PENDING"))
-        }
+        const fun = () => mintToken(mockToken.id)
+
+        await expect(fun).rejects.toThrow("Can't mint a token with status MINT_PENDING")
     })
 
     it("should call mintNewToken with the right arguments and update the token status", async () => {

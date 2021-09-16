@@ -1,12 +1,12 @@
 import { DeployedContracts } from "src/utils/crypto/deployedContracts"
-import { getNFTMetadataObject } from "./getNFTMetadataObject"
+import getNFTMetadataObject from "./getNFTMetadataObject"
 
 describe("getNFTMetadataObject", () => {
     it("should return null for an invalid contract", () => {
-        // @ts-expect-error: invalid contract address
+        // @ts-ignore
         const result = getNFTMetadataObject("0x")
 
-        expect(result).toBe(null)
+        expect(result).toBeNull()
     })
 
     it("should return the right metadata for the Twitter badge", () => {

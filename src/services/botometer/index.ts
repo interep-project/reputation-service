@@ -11,14 +11,12 @@ const botometer = new Botometer({
     usePro: true
 })
 
-export const getBotScore = async (handle: string) => {
-    let result
-
+export default async function getBotScore(handle: string): Promise<any | null> {
     try {
-        result = await botometer.getScore(handle)
+        return botometer.getScore(handle)
     } catch (err) {
         logger.error(err)
-    }
 
-    return result
+        return null
+    }
 }

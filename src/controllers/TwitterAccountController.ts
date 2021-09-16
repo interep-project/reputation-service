@@ -22,10 +22,11 @@ class TwitterAccountController {
 
         if (twitterReputation) {
             return res.status(200).send({ data: twitterReputation })
-        } else {
-            logger.error(`No twitter reputation returned. Query username: ${query?.username}, id: ${query?.id}`)
-            return res.status(500).end()
         }
+
+        logger.error(`No twitter reputation returned. Query username: ${query?.username}, id: ${query?.id}`)
+
+        return res.status(500).end()
     }
 
     public getMyTwitterReputation = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
