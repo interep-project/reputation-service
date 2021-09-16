@@ -1,6 +1,10 @@
 name: Reputation Service CI
 
-on: [pull_request]
+on:
+    pull_request:
+    push:
+        branches:
+            - develop
 
 jobs:
   test:
