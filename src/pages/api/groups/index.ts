@@ -2,7 +2,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
 import { dbConnect } from "src/utils/server/database"
 import logger from "src/utils/server/logger"
-import getGroupIds from "src/core/groups/getGroupIds"
+import { getGroups } from "src/core/groups"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()
@@ -12,9 +12,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     try {
-        const groupIds = getGroupIds()
+        const groups = await getGroups()
 
-        return res.status(200).send({ data: groupIds })
+        return res.status(200).send({ data: groups })
     } catch (error) {
         logger.error(error)
 
