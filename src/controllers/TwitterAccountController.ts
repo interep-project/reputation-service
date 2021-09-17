@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import jwt from "next-auth/jwt"
+import jwt, { JWT } from "next-auth/jwt"
 import { checkTwitterReputationById, checkTwitterReputationByUsername } from "src/core/reputation/twitter"
 import config from "src/config"
-import { JWToken } from "src/types/nextAuth/token"
 import logger from "src/utils/server/logger"
 
 class TwitterAccountController {
@@ -30,11 +29,10 @@ class TwitterAccountController {
     }
 
     public getMyTwitterReputation = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
-        // @ts-ignore: accepts secret
-        const token: JWToken = await jwt.getToken({
+        const token: JWT = (await jwt.getToken({
             req,
             secret: config.JWT_SECRET
-        })
+        })) as JWT
 
         if (!token) {
             // Not Signed in
@@ -42,12 +40,12 @@ class TwitterAccountController {
             return
         }
 
-        if (!token?.twitter?.userId) {
+        if (!token?.user?.id) {
             res.status(401).end()
             return
         }
 
-        const twitterReputation = await checkTwitterReputationById(token.twitter.userId)
+        const twitterReputation = await checkTwitterReputationById(token.user.id)
 
         if (twitterReputation) {
             res.status(200).send({ data: twitterReputation })

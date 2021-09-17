@@ -1,5 +1,5 @@
 import { Document, Model } from "mongoose"
-import { botometerScoreData } from "src/types/botometer"
+import { BotometerScoreData } from "botometer"
 import { IWeb2Account } from "../Web2Account.types"
 import { findByTwitterUsername } from "./TwitterAccount.statics"
 
@@ -18,7 +18,7 @@ export interface IBaseTwitterAccount {
         profile_image_url?: string
         created_at?: string
     }
-    botometer?: botometerScoreData
+    botometer?: BotometerScoreData
 }
 
 export interface ITwitterAccount extends IBaseTwitterAccount, IWeb2Account {}

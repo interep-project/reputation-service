@@ -5,6 +5,7 @@ import { WithAdditionalParams } from "next-auth/_utils"
 import { checkTwitterReputationById, checkTwitterReputationByUsername } from "src/core/reputation/twitter"
 import { mockBotometerScores } from "src/mocks/botometerData"
 import createNextMocks from "src/mocks/createNextMocks"
+import mockSession from "src/mocks/session"
 import { AccountReputationByAccount, Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import TwitterAccountController from "./TwitterAccountController"
 
@@ -126,7 +127,9 @@ describe("getMyTwitterReputation", () => {
     it("should return 401 if user has no twitter id in token", async () => {
         const { req, res } = createNextMocks()
 
-        getTokenMocked.mockImplementationOnce(() => Promise.resolve({ web2AccountId: "web2Id" }))
+        getTokenMocked.mockImplementationOnce(() =>
+            Promise.resolve({ ...mockSession, user: { id: "", username: "username" } })
+        )
 
         await TwitterAccountController.getMyTwitterReputation(req, res)
 
@@ -137,10 +140,7 @@ describe("getMyTwitterReputation", () => {
         const twitterUserId = "twitterUserId"
 
         getTokenMocked.mockImplementationOnce(() =>
-            Promise.resolve({
-                web2AccountId: "web2Id",
-                twitter: { userId: twitterUserId }
-            })
+            Promise.resolve({ ...mockSession, user: { id: twitterUserId, username: "username" } })
         )
 
         const accountReputation: AccountReputationByAccount = {
@@ -161,12 +161,7 @@ describe("getMyTwitterReputation", () => {
     })
 
     it("should return a 500 if an error occurs", async () => {
-        getTokenMocked.mockImplementationOnce(() =>
-            Promise.resolve({
-                web2AccountId: "web2Id",
-                twitter: { userId: "userId" }
-            })
-        )
+        getTokenMocked.mockImplementationOnce(() => Promise.resolve(mockSession))
 
         checkTwitterReputationByIdMocked.mockImplementation(() => Promise.resolve(null))
 

@@ -77,7 +77,7 @@ export default function Home(): JSX.Element {
             )}
             {isBrowser && (
                 <Card className={classes.tabContainer}>
-                    <Tabs variant="fullWidth" value={_tabIndex} onChange={(event, newIndex) => setTabIndex(newIndex)}>
+                    <Tabs variant="fullWidth" value={_tabIndex} onChange={(_event, newIndex) => setTabIndex(newIndex)}>
                         <Tab className={classes.tabButton} label="Web2 Login" />
                         <Tab
                             className={classes.tabButton}
