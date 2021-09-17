@@ -33,6 +33,10 @@ export function getMyTokens({ ownerAddress }: { ownerAddress: string }): Promise
     return sendRequest(`/api/tokens/?owner=${ownerAddress}`)
 }
 
+export function getGroup({ groupId }: { groupId: string }): Promise<any | null> {
+    return sendRequest(`/api/groups/${groupId}`)
+}
+
 export async function checkLink(): Promise<boolean | null> {
     return sendRequest("/api/linking/check")
 }

@@ -2,6 +2,7 @@ import semethid from "@interrep/semethid"
 import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React from "react"
+import { Group } from "src/types/groups"
 import { DeployedContracts } from "src/utils/crypto/deployedContracts"
 import { addIdentityCommitment, checkIdentityCommitment } from "src/utils/frontend/api"
 import TabPanelContent from "./TabPanelContent"
@@ -9,6 +10,7 @@ import TabPanelContent from "./TabPanelContent"
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
     reputation: string
+    group: Group
     signer: Signer
     web2AccountId: string
 }
@@ -16,6 +18,7 @@ type Properties = {
 export default function SemaphoreGroupTabPanel({
     onArrowClick,
     reputation,
+    group,
     signer,
     web2AccountId
 }: Properties): JSX.Element {
@@ -44,9 +47,7 @@ export default function SemaphoreGroupTabPanel({
         setWarningMessage("")
         setLoading(true)
 
-        const groupId = `TWITTER_${reputation}`
-
-        const identityCommitment = await retrieveIdentityCommitment(groupId)
+        const identityCommitment = await retrieveIdentityCommitment(group.id)
 
         if (!identityCommitment) {
             setWarningMessage("Your signature is needed to create the identity commitment")
@@ -55,7 +56,7 @@ export default function SemaphoreGroupTabPanel({
         }
 
         const alreadyExist = await checkIdentityCommitment({
-            groupId,
+            groupId: group.id,
             identityCommitment
         })
 
@@ -77,9 +78,8 @@ export default function SemaphoreGroupTabPanel({
     async function joinGroup(): Promise<void> {
         setLoading(true)
 
-        const groupId = `TWITTER_${reputation}`
         const rootHash = await addIdentityCommitment({
-            groupId,
+            groupId: group.id,
             identityCommitment: _identityCommitment as string,
             web2AccountId
         })
@@ -100,15 +100,15 @@ export default function SemaphoreGroupTabPanel({
                 title="Semaphore Group"
                 description={
                     !_hasJoined
-                        ? `Create your Semaphore identity and join the TWITTER_${reputation} Semaphore group.`
-                        : `You successfully joined the TWITTER_${reputation} Semaphore group.`
+                        ? `The ${reputation} group of Twitter has ${group?.size} members. Create your Semaphore identity if you want to join this group.`
+                        : `You successfully joined the Twitter ${reputation} Semaphore group.`
                 }
                 onLeftArrowClick={onArrowClick}
                 onRightArrowClick={onArrowClick}
                 warningMessage={_warningMessage}
                 loading={_loading}
                 buttonText={!_identityCommitment ? "Create identity" : "Join group"}
-                onButtonClick={!_identityCommitment ? retrieveAndCheckIdentityCommitment : joinGroup}
+                onButtonClick={() => (!_identityCommitment ? retrieveAndCheckIdentityCommitment() : joinGroup())}
                 buttonDisabled={!!(_identityCommitment && _idAlreadyExists) || _hasJoined}
                 reputation={reputation}
                 contractName={DeployedContracts.INTERREP_GROUPS}
