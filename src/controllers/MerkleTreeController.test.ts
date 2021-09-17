@@ -1,7 +1,7 @@
 import { Platform } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
-import getGroupIds from "src/core/groups/getGroupIds"
+import { getGroupIds } from "src/core/groups"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
 import seedZeroHashes from "src/utils/seeding/seedRootHashes"
 import config from "../config"

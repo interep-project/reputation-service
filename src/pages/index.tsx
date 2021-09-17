@@ -9,8 +9,9 @@ import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types"
+import { Group } from "src/types/groups"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-import { getMyTwitterReputation } from "src/utils/frontend/api"
+import { getGroup, getMyTwitterReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -43,11 +44,16 @@ export default function Home(): JSX.Element {
     const [_tabIndex, setTabIndex] = React.useState<number>(0)
     const { _networkId, _address, _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_twitterReputation, setTwitterReputation] = useState<AccountReputationByAccount | null>(null)
+    const [_group, setGroup] = React.useState<Group>()
 
     useEffect(() => {
         ;(async () => {
             if (session) {
-                setTwitterReputation(await getMyTwitterReputation())
+                const reputation = await getMyTwitterReputation()
+                const group = await getGroup({ groupId: `TWITTER_${reputation.basicReputation}` })
+
+                setTwitterReputation(reputation)
+                setGroup(group)
             }
         })()
     }, [session])
@@ -73,7 +79,11 @@ export default function Home(): JSX.Element {
                 <Card className={classes.tabContainer}>
                     <Tabs variant="fullWidth" value={_tabIndex} onChange={(event, newIndex) => setTabIndex(newIndex)}>
                         <Tab className={classes.tabButton} label="Web2 Login" />
-                        <Tab className={classes.tabButton} label="Semaphore group" disabled={!appIsReady()} />
+                        <Tab
+                            className={classes.tabButton}
+                            label="Semaphore group"
+                            disabled={!appIsReady() || !_group}
+                        />
                         <Tab className={classes.tabButton} label="Reputation badge" disabled={!appIsReady()} />
                     </Tabs>
                     <TabPanelContainer value={_tabIndex} index={0}>
@@ -84,14 +94,17 @@ export default function Home(): JSX.Element {
                     </TabPanelContainer>
                     {appIsReady() && (
                         <>
-                            <TabPanelContainer value={_tabIndex} index={1}>
-                                <SemaphoreGroupTabPanel
-                                    onArrowClick={(d) => updateTabIndex(d)}
-                                    reputation={_twitterReputation?.basicReputation as string}
-                                    signer={_signer as Signer}
-                                    web2AccountId={session?.web2AccountId as string}
-                                />
-                            </TabPanelContainer>
+                            {_group && (
+                                <TabPanelContainer value={_tabIndex} index={1}>
+                                    <SemaphoreGroupTabPanel
+                                        onArrowClick={(d) => updateTabIndex(d)}
+                                        reputation={_twitterReputation?.basicReputation as string}
+                                        group={_group}
+                                        signer={_signer as Signer}
+                                        web2AccountId={session?.web2AccountId as string}
+                                    />
+                                </TabPanelContainer>
+                            )}
                             <TabPanelContainer value={_tabIndex} index={2}>
                                 <ReputationBadgeTabPanel
                                     onArrowClick={(d) => updateTabIndex(d)}

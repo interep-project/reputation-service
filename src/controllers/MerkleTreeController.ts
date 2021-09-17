@@ -1,4 +1,4 @@
-import checkGroupId from "src/core/groups/checkGroupId"
+import { checkGroup } from "src/core/groups"
 import config from "../config"
 import { MerkleTreeNode, MerkleTreeZero } from "../models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types"
@@ -6,7 +6,7 @@ import poseidonHash from "../utils/crypto/hasher"
 
 class MerkleTreeController {
     public appendLeaf = async (groupId: string, idCommitment: string): Promise<string> => {
-        if (!checkGroupId(groupId)) {
+        if (!checkGroup(groupId)) {
             throw new Error(`The group ${groupId} does not exist`)
         }
 
@@ -97,7 +97,7 @@ class MerkleTreeController {
     }
 
     public previewNewRoot = async (groupId: string, idCommitment: string): Promise<string> => {
-        if (!checkGroupId(groupId)) {
+        if (!checkGroup(groupId)) {
             throw new Error(`The group ${groupId} does not exist`)
         }
 
@@ -143,7 +143,7 @@ class MerkleTreeController {
     }
 
     public retrievePath = async (groupId: string, idCommitment: string): Promise<any> => {
-        if (!checkGroupId(groupId)) {
+        if (!checkGroup(groupId)) {
             throw new Error(`The group ${groupId} does not exist`)
         }
 
