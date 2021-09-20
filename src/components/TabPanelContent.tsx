@@ -135,7 +135,7 @@ export default function TabPanelContent({
                 <Box className={classes.web2AccountInformation}>
                     <TwitterIcon fontSize="small" color="primary" />
                     <Typography variant="caption">
-                        &nbsp;{session.user.username}
+                        &nbsp;{session.user.name}
                         &nbsp;{reputation ? `(${reputation})` : ""}
                     </Typography>
                 </Box>

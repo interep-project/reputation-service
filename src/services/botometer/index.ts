@@ -1,6 +1,5 @@
 import { Botometer } from "botometer"
 import config from "src/config"
-import logger from "src/utils/server/logger"
 
 const botometer = new Botometer({
     consumerKey: config.TWITTER_CONSUMER_KEY,
@@ -11,12 +10,6 @@ const botometer = new Botometer({
     usePro: true
 })
 
-export default async function getBotScore(handle: string): Promise<any | null> {
-    try {
-        return botometer.getScore(handle)
-    } catch (err) {
-        logger.error(err)
-
-        return null
-    }
+export default async function getBotometerScore(username: string): Promise<any> {
+    return botometer.getScore(username)
 }

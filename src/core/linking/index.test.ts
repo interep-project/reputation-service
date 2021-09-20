@@ -4,10 +4,9 @@ import { afterAll, beforeAll, describe, expect } from "@jest/globals"
 import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
+import { IWeb2AccountDocument, Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import checkIfUserSignatureIsValid from "../signing/checkIfUserSignatureIsValid"
 
@@ -94,14 +93,14 @@ describe("linkAccounts", () => {
         let web2Account: IWeb2AccountDocument
 
         beforeAll(async () => {
-            web2Account = await Web2Account.create(
-                createTwitterAccountObject({
-                    providerAccountId: "1",
-                    user: { id: "1", username: "user name" },
-                    isLinkedToAddress: true,
-                    basicReputation: ReputationLevel.NOT_SUFFICIENT
-                })
-            )
+            web2Account = await Web2Account.create({
+                provider: Web2Providers.TWITTER,
+                uniqueKey: `${Web2Providers.TWITTER}:1`,
+                createdAt: Date.now(),
+                providerAccountId: "1",
+                isLinkedToAddress: true,
+                basicReputation: ReputationLevel.NOT_SUFFICIENT
+            })
         })
 
         it("should throw if it fails retrieving the web 2 account", async () => {
@@ -123,14 +122,15 @@ describe("linkAccounts", () => {
         describe("link", () => {
             let web2AccountNotLinked: IWeb2AccountDocument
             beforeAll(async () => {
-                web2AccountNotLinked = await Web2Account.create(
-                    createTwitterAccountObject({
-                        providerAccountId: "2",
-                        user: { id: "2", username: "new name" },
-                        isLinkedToAddress: false,
-                        basicReputation: ReputationLevel.NOT_SUFFICIENT
-                    })
-                )
+                web2AccountNotLinked = await Web2Account.create({
+                    provider: Web2Providers.TWITTER,
+                    uniqueKey: `${Web2Providers.TWITTER}:2`,
+                    createdAt: Date.now(),
+                    providerAccountId: "2",
+                    user: { id: "2", username: "new name" },
+                    isLinkedToAddress: false,
+                    basicReputation: ReputationLevel.NOT_SUFFICIENT
+                })
             })
 
             it("should throw if the account's reputation is not GOLD", async () => {
@@ -151,14 +151,15 @@ describe("linkAccounts", () => {
         let web2AccountMock: IWeb2AccountDocument
 
         beforeAll(async () => {
-            web2AccountMock = await Web2Account.create(
-                createTwitterAccountObject({
-                    providerAccountId: "999",
-                    user: { id: "999", username: "username" },
-                    isLinkedToAddress: false,
-                    basicReputation: ReputationLevel.GOLD
-                })
-            )
+            web2AccountMock = await Web2Account.create({
+                provider: Web2Providers.TWITTER,
+                uniqueKey: `${Web2Providers.TWITTER}:999`,
+                createdAt: Date.now(),
+                providerAccountId: "999",
+                user: { id: "999", username: "username" },
+                isLinkedToAddress: false,
+                basicReputation: ReputationLevel.GOLD
+            })
         })
 
         it("should change isLinkedToAddress to true and create a new token", async () => {

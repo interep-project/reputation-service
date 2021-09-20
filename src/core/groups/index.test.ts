@@ -2,7 +2,7 @@ import { Platform } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
 import seedZeroHashes from "src/utils/seeding/seedRootHashes"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import { checkGroup, getGroup, getGroupIds, getGroups } from "./index"
 
 describe("Core group functions", () => {
@@ -81,6 +81,10 @@ describe("Core group functions", () => {
 
         afterAll(async () => {
             await dropDatabaseAndDisconnect()
+        })
+
+        afterEach(async () => {
+            await clearDatabase()
         })
 
         it("Should return all the existing groups", async () => {

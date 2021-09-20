@@ -2,8 +2,8 @@ import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import handler from "src/pages/api/linking/check"
-import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 
 jest.mock("next-auth/client", () => ({
@@ -73,14 +73,14 @@ describe("api/linking/checkLink", () => {
 
         it("should return true if an account is already linked", async () => {
             const isLinkedToAddress = true
-            const web2Account = await Web2Account.create(
-                createTwitterAccountObject({
-                    providerAccountId: "1",
-                    user: { id: "1", username: "user name" },
-                    isLinkedToAddress,
-                    basicReputation: undefined
-                })
-            )
+            const web2Account = await Web2Account.create({
+                provider: Web2Providers.TWITTER,
+                uniqueKey: `${Web2Providers.TWITTER}:1`,
+                createdAt: Date.now(),
+                providerAccountId: "1",
+                isLinkedToAddress,
+                basicReputation: undefined
+            })
 
             getSessionMocked.mockImplementationOnce(() =>
                 Promise.resolve({ ...mockSession, web2AccountId: web2Account.id })

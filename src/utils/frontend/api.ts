@@ -22,11 +22,11 @@ async function sendRequest(url: string, body?: any, method = body ? "POST" : "GE
 }
 
 export function getMyTwitterReputation(): Promise<any | null> {
-    return sendRequest("/api/reputation/twitter/me")
+    return sendRequest("/api/reputation/twitter")
 }
 
 export function getTwitterReputation({ username }: { username: string }): Promise<any | null> {
-    return sendRequest(`/api/reputation/twitter/?username=${username}`)
+    return sendRequest(`/api/reputation/twitter/${username}`)
 }
 
 export function getMyTokens({ ownerAddress }: { ownerAddress: string }): Promise<any | null> {

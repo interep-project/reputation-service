@@ -1,3 +1,4 @@
+import { ReputationLevel } from "@interrep/reputation-criteria"
 import { Card, Container, createStyles, makeStyles, Tab, Tabs, Theme, Typography } from "@material-ui/core"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
@@ -8,7 +9,6 @@ import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
 import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types"
 import { Group } from "src/types/groups"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { getGroup, getMyTwitterReputation } from "src/utils/frontend/api"
@@ -43,25 +43,27 @@ export default function Home(): JSX.Element {
     const [session] = useSession()
     const [_tabIndex, setTabIndex] = React.useState<number>(0)
     const { _networkId, _address, _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
-    const [_twitterReputation, setTwitterReputation] = useState<AccountReputationByAccount | null>(null)
+    const [_reputation, setReputation] = useState<ReputationLevel>()
     const [_group, setGroup] = React.useState<Group>()
 
     useEffect(() => {
         ;(async () => {
             if (session) {
                 const reputation = await getMyTwitterReputation()
-                const group = await getGroup({ groupId: `TWITTER_${reputation.basicReputation}` })
+                const group = await getGroup({ groupId: `TWITTER_${reputation}` })
 
-                setTwitterReputation(reputation)
+                setReputation(reputation)
                 setGroup(group)
             }
         })()
     }, [session])
 
-    const appIsReady = useCallback(
-        () => !!(session && defaultNetworkId === _networkId && _address && _twitterReputation),
-        [session, _networkId, _address, _twitterReputation]
-    )
+    const appIsReady = useCallback(() => !!(session && defaultNetworkId === _networkId && _address && _reputation), [
+        session,
+        _networkId,
+        _address,
+        _reputation
+    ])
 
     function updateTabIndex(direction: number): void {
         setTabIndex((index: number) => index + direction)
@@ -89,7 +91,7 @@ export default function Home(): JSX.Element {
                     <TabPanelContainer value={_tabIndex} index={0}>
                         <Web2LoginTabPanel
                             onArrowClick={appIsReady() ? updateTabIndex : undefined}
-                            reputation={_twitterReputation?.basicReputation as string}
+                            reputation={_reputation as string}
                         />
                     </TabPanelContainer>
                     {appIsReady() && (
@@ -98,7 +100,7 @@ export default function Home(): JSX.Element {
                                 <TabPanelContainer value={_tabIndex} index={1}>
                                     <SemaphoreGroupTabPanel
                                         onArrowClick={(d) => updateTabIndex(d)}
-                                        reputation={_twitterReputation?.basicReputation as string}
+                                        reputation={_reputation as string}
                                         group={_group}
                                         signer={_signer as Signer}
                                         web2AccountId={session?.web2AccountId as string}
@@ -111,7 +113,7 @@ export default function Home(): JSX.Element {
                                     signer={_signer as Signer}
                                     networkId={_networkId as number}
                                     address={_address as string}
-                                    reputation={_twitterReputation?.basicReputation as string}
+                                    reputation={_reputation as string}
                                     web2AccountId={session?.web2AccountId as string}
                                 />
                             </TabPanelContainer>
