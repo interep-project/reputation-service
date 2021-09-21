@@ -1,8 +1,8 @@
-import getReputation from "src/pages/api/reputation/[platform]/[username]"
-import getMyReputation from "src/pages/api/reputation/[platform]"
+import getReputation from "src/pages/api/reputation/[web2Provider]/[username]"
+import getMyReputation from "src/pages/api/reputation/[web2Provider]"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import createNextMocks from "src/mocks/createNextMocks"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 
 jest.mock("src/core/reputation/twitter", () => ({
     getTwitterParametersByUsername: jest.fn(() => ({
@@ -73,11 +73,11 @@ describe("Reputation APIs", () => {
         })
 
         it("Should return the user reputation", async () => {
-            const platform = "twitter"
+            const web2Provider = Web2Provider.TWITTER
             const username = "username"
 
             const { req, res } = createNextMocks({
-                query: { platform, username }
+                query: { web2Provider, username }
             })
 
             await getReputation(req, res)

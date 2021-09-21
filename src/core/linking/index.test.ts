@@ -1,10 +1,10 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { afterAll, beforeAll, describe, expect } from "@jest/globals"
 import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { IWeb2AccountDocument, Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
@@ -94,8 +94,8 @@ describe("linkAccounts", () => {
 
         beforeAll(async () => {
             web2Account = await Web2Account.create({
-                provider: Web2Providers.TWITTER,
-                uniqueKey: `${Web2Providers.TWITTER}:1`,
+                provider: Web2Provider.TWITTER,
+                uniqueKey: `${Web2Provider.TWITTER}:1`,
                 createdAt: Date.now(),
                 providerAccountId: "1",
                 isLinkedToAddress: true,
@@ -123,8 +123,8 @@ describe("linkAccounts", () => {
             let web2AccountNotLinked: IWeb2AccountDocument
             beforeAll(async () => {
                 web2AccountNotLinked = await Web2Account.create({
-                    provider: Web2Providers.TWITTER,
-                    uniqueKey: `${Web2Providers.TWITTER}:2`,
+                    provider: Web2Provider.TWITTER,
+                    uniqueKey: `${Web2Provider.TWITTER}:2`,
                     createdAt: Date.now(),
                     providerAccountId: "2",
                     user: { id: "2", username: "new name" },
@@ -152,8 +152,8 @@ describe("linkAccounts", () => {
 
         beforeAll(async () => {
             web2AccountMock = await Web2Account.create({
-                provider: Web2Providers.TWITTER,
-                uniqueKey: `${Web2Providers.TWITTER}:999`,
+                provider: Web2Provider.TWITTER,
+                uniqueKey: `${Web2Provider.TWITTER}:999`,
                 createdAt: Date.now(),
                 providerAccountId: "999",
                 user: { id: "999", username: "username" },

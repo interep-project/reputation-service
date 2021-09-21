@@ -1,17 +1,17 @@
-import { getPlatforms, getReputationLevels, Platform } from "@interrep/reputation-criteria"
+import { getWeb2Providers, getReputationLevels, Web2Provider } from "@interrep/reputation-criteria"
 
-export default function getGroupIds(platform?: Platform): string[] {
-    if (platform) {
-        const reputationLevels = getReputationLevels(platform)
+export default function getGroupIds(web2Provider?: Web2Provider): string[] {
+    if (web2Provider) {
+        const reputationLevels = getReputationLevels(web2Provider)
 
-        return reputationLevels.map((reputation) => `${platform.toUpperCase()}_${reputation}`)
+        return reputationLevels.map((reputation) => `${web2Provider.toUpperCase()}_${reputation}`)
     }
 
-    const platforms = getPlatforms()
+    const web2Providers = getWeb2Providers()
     let groups: string[] = []
 
-    for (const platform of platforms) {
-        groups = groups.concat(getGroupIds(platform))
+    for (const web2Provider of web2Providers) {
+        groups = groups.concat(getGroupIds(web2Provider))
     }
 
     return groups

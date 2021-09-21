@@ -8,7 +8,7 @@ import TabPanelContent from "./TabPanelContent"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
-        web2Platforms: {
+        web2Providers: {
             marginTop: theme.spacing(2),
             marginBottom: theme.spacing(3)
         },
@@ -37,7 +37,7 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation }: Properti
                 title="Web2 Login"
                 description={
                     !session
-                        ? "Sign in with one of our supported platforms."
+                        ? "Sign in with one of our supported Web2 providers."
                         : `You are logged in as ${session.user?.name} on Twitter.`
                 }
                 onRightArrowClick={onArrowClick}
@@ -45,7 +45,7 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation }: Properti
                 onButtonClick={() => (session ? signOut() : signIn("twitter"))}
                 reputation={reputation}
             >
-                <Grid className={classes.web2Platforms} container justifyContent="center" spacing={2}>
+                <Grid className={classes.web2Providers} container justifyContent="center" spacing={2}>
                     <Grid item>
                         <IconButton color="primary">
                             <TwitterIcon fontSize="large" />

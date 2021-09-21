@@ -1,6 +1,6 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { Model, Document } from "mongoose"
 import { ITransaction } from "../transactions/Transaction.types"
-import { Web2Providers } from "../web2Accounts/Web2Account.types"
 import { findByUserAddress } from "./Token.statics"
 
 export enum TokenStatus {
@@ -21,7 +21,7 @@ export interface IToken {
     decimalId: string
     status: TokenStatus
     mintTransactions?: ITransaction[]
-    web2Provider: Web2Providers
+    web2Provider: Web2Provider
 }
 
 export interface ITokenDocument extends IToken, Document {}

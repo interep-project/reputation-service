@@ -1,8 +1,8 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
 import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React, { useEffect } from "react"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { Group } from "src/types/groups"
 import { DeployedContracts } from "src/utils/crypto/deployedContracts"
 import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
@@ -12,7 +12,7 @@ type Properties = {
     onArrowClick: (direction: -1 | 1) => void
     reputation: string
     signer: Signer
-    web2Provider: Web2Providers
+    web2Provider: Web2Provider
     web2AccountId: string
 }
 

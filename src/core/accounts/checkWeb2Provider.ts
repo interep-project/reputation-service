@@ -1,7 +1,7 @@
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { Web2Provider } from "@interrep/reputation-criteria"
 
-export default function checkWeb2Provider(web2Provider: Web2Providers): boolean {
-    const web2Providers = Object.values(Web2Providers)
+export default function checkWeb2Provider(web2Provider: Web2Provider): boolean {
+    const web2Providers = Object.values(Web2Provider)
 
     return web2Providers.includes(web2Provider)
 }

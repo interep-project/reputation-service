@@ -1,4 +1,4 @@
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { Web2Provider } from "@interrep/reputation-criteria"
 
 async function sendRequest(url: string, body?: any, method = body ? "POST" : "GET"): Promise<any | null> {
     const response = await fetch(url, {
@@ -23,7 +23,7 @@ async function sendRequest(url: string, body?: any, method = body ? "POST" : "GE
     }
 }
 
-export function getMyReputation({ web2Provider }: { web2Provider: Web2Providers }): Promise<any | null> {
+export function getMyReputation({ web2Provider }: { web2Provider: Web2Provider }): Promise<any | null> {
     return sendRequest(`/api/reputation/${web2Provider}`)
 }
 
@@ -31,7 +31,7 @@ export function getReputation({
     web2Provider,
     username
 }: {
-    web2Provider: Web2Providers
+    web2Provider: Web2Provider
     username: string
 }): Promise<any | null> {
     return sendRequest(`/api/reputation/${web2Provider}/${username}`)

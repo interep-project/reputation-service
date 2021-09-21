@@ -1,11 +1,10 @@
-import { calculateReputation, Platform } from "@interrep/reputation-criteria"
+import { calculateReputation, Web2Provider } from "@interrep/reputation-criteria"
 import { Account } from "next-auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { dbConnect } from "src/utils/server/database"
 import { getTwitterParametersById } from "../reputation/twitter"
 
-export default async function createWeb2Account(account: Account, provider: Web2Providers): Promise<void> {
+export default async function createWeb2Account(account: Account, provider: Web2Provider): Promise<void> {
     await dbConnect()
 
     if (!account.id) {
@@ -27,9 +26,9 @@ export default async function createWeb2Account(account: Account, provider: Web2
             })
 
             switch (provider) {
-                case Web2Providers.TWITTER: {
+                case Web2Provider.TWITTER: {
                     const parameters = await getTwitterParametersById(account.id)
-                    web2Account.basicReputation = calculateReputation(Platform.TWITTER, parameters)
+                    web2Account.basicReputation = calculateReputation(provider, parameters)
 
                     break
                 }

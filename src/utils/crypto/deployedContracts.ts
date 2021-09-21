@@ -1,4 +1,4 @@
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { getDefaultNetworkId } from "./getDefaultNetwork"
 
 export enum DeployedContracts {
@@ -41,8 +41,8 @@ export const getDeployedContractAddress = (contract: DeployedContracts): string 
     return deployedContracts[networkId][contract]
 }
 
-export const getBadgeAddressByProvider = (web2Provider: Web2Providers): string | null => {
-    if (web2Provider !== Web2Providers.TWITTER) {
+export const getBadgeAddressByProvider = (web2Provider: Web2Provider): string | null => {
+    if (web2Provider !== Web2Provider.TWITTER) {
         throw new Error("Unsupported provider")
     }
 

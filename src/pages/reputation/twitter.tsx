@@ -1,3 +1,4 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import {
     Button,
     Card,
@@ -11,7 +12,6 @@ import {
 } from "@material-ui/core"
 import Head from "next/head"
 import React, { FormEvent, useState } from "react"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { getReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -55,7 +55,7 @@ export default function TwitterReputation(): JSX.Element {
         setIsLoading(true)
 
         const reputation = await getReputation({
-            web2Provider: Web2Providers.TWITTER,
+            web2Provider: Web2Provider.TWITTER,
             username: _twitterUsername
         })
 

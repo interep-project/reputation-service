@@ -1,3 +1,4 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
@@ -48,7 +49,7 @@ export default NextAuth({
 
                 if (web2Account) {
                     token.web2AccountId = web2Account.id
-                    token.provider = account.provider
+                    token.web2Provider = account.provider as Web2Provider
                     token.user = {
                         id: account.id
                     }
@@ -66,9 +67,9 @@ export default NextAuth({
                 return session
             }
 
-            if (token.provider) {
+            if (token.web2Provider) {
                 session.web2AccountId = token.web2AccountId
-                session.provider = token.provider
+                session.web2Provider = token.web2Provider
                 session.user.id = token.user.id
             }
 

@@ -1,4 +1,4 @@
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { Card, Container, createStyles, makeStyles, Tab, Tabs, Theme, Typography } from "@material-ui/core"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
@@ -9,7 +9,6 @@ import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
 import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { getMyReputation } from "src/utils/frontend/api"
 
@@ -48,7 +47,7 @@ export default function Home(): JSX.Element {
     useEffect(() => {
         ;(async () => {
             if (session) {
-                const reputation = await getMyReputation({ web2Provider: Web2Providers.TWITTER })
+                const reputation = await getMyReputation({ web2Provider: Web2Provider.TWITTER })
 
                 setReputation(reputation)
             }
@@ -94,7 +93,7 @@ export default function Home(): JSX.Element {
                                     onArrowClick={(d) => updateTabIndex(d)}
                                     reputation={_reputation as string}
                                     signer={_signer as Signer}
-                                    web2Provider={session?.provider as any}
+                                    web2Provider={session?.web2Provider as Web2Provider}
                                     web2AccountId={session?.web2AccountId as string}
                                 />
                             </TabPanelContainer>

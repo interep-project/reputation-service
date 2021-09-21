@@ -1,10 +1,10 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { ethers } from "hardhat"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
@@ -63,8 +63,8 @@ describe("unlink", () => {
 
     it("should return an error is the account is not linked", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:twitter`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: false,
             providerAccountId: "twitter"
@@ -81,8 +81,8 @@ describe("unlink", () => {
 
     it("should return an error if the attestation has no message field", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:twitter`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -99,8 +99,8 @@ describe("unlink", () => {
 
     it("should return an error if the message was not signed by the backend", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:twitter`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -129,16 +129,16 @@ describe("unlink", () => {
 
     it("should return an error if the web 2 account in the attestation does not match the one provided", async () => {
         const web2Account1 = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:id1`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:id1`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id1"
         })
 
         const web2Account2 = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:id2`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:id2`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id2"
@@ -165,8 +165,8 @@ describe("unlink", () => {
 
     it("should return an error if the token in the attestation can't be found", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:id3`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
@@ -203,8 +203,8 @@ describe("unlink", () => {
         })
 
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:id3`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
@@ -244,8 +244,8 @@ describe("unlink", () => {
         })
 
         const web2Account = await Web2Account.create({
-            provider: Web2Providers.TWITTER,
-            uniqueKey: `${Web2Providers.TWITTER}:id3`,
+            provider: Web2Provider.TWITTER,
+            uniqueKey: `${Web2Provider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"

@@ -5,7 +5,7 @@ import jwt from "next-auth/jwt"
 import config from "src/config"
 import logger from "src/utils/server/logger"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { Web2Provider } from "@interrep/reputation-criteria"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()
@@ -14,9 +14,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(405).end()
     }
 
-    const platform = req.query?.platform
+    const web2Provider = req.query?.web2Provider
 
-    if (!platform || typeof platform !== "string") {
+    if (!web2Provider || typeof web2Provider !== "string") {
         return res.status(400).end()
     }
 
@@ -30,10 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
             return res.status(401).end()
         }
 
-        const web2Account = await Web2Account.findByProviderAccountId(
-            (platform as unknown) as Web2Providers,
-            token.user.id
-        )
+        const web2Account = await Web2Account.findByProviderAccountId(web2Provider as Web2Provider, token.user.id)
 
         if (!web2Account) {
             return res.status(404).end()

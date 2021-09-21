@@ -1,13 +1,9 @@
-import { Platform, ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { Model, Document } from "mongoose"
 import { findByProviderAccountId } from "./Web2Account.statics"
 
-export enum Web2Providers {
-    TWITTER = Platform.TWITTER
-}
-
 export interface IWeb2Account {
-    provider: Web2Providers
+    provider: Web2Provider
     providerAccountId: string
     uniqueKey: string
     basicReputation?: ReputationLevel

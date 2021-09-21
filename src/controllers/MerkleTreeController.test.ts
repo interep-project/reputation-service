@@ -1,4 +1,4 @@
-import { Platform } from "@interrep/reputation-criteria"
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import { getGroupIds } from "src/core/groups"
@@ -12,7 +12,7 @@ import MerkleTreeController from "./MerkleTreeController"
 
 describe("MerkleTreeController", () => {
     const idCommitment = poseidon([2n, 1n]).toString()
-    const groupId = getGroupIds(Platform.TWITTER)[0]
+    const groupId = getGroupIds(Web2Provider.TWITTER)[0]
 
     beforeAll(async () => {
         await connect()
