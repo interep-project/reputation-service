@@ -1,6 +1,6 @@
 import getNextConfig from "next/config"
 
-const TREE_LEVELS = 15
+const TREE_LEVELS = 16
 const nextConfig = getNextConfig()
 
 let defaultNetwork
