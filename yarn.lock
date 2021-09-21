@@ -1515,10 +1515,10 @@
   resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.5.0.tgz#a98722efc590833498443157055270be74d4c95a"
   integrity sha512-St8fWwaUo6FZwVwpDGGOwbat5K+4buYKCrmw2ZsGYOsvFgyp6eka1q6QswLjNSc8j0Hr4elIH2zxC90votsNGA==
 
-"@interrep/semethid@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.7.0.tgz#866ec52360d8ce07697de85072db832d82fe2b5f"
-  integrity sha512-/Qdd1d76mRcrENdHXA5dYsTmqqoOfnx9Ur6c3Gobp2RDqtaYZz8y07jxUBwEvJ09ipWBea3V7AyVeQS5yjzrUg==
+"@interrep/semethid@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.8.0.tgz#db1e44aa6484d7f796f0d881f1db88639423ff29"
+  integrity sha512-09oUOtHVZ2cWPW/4c0fPosFykabBUUDSPJEnfEFWnwwwv35ugAOOYnitVxWFY9ahSMHG/xksVzedP9fLNf4F6w==
   dependencies:
     circomlib "^0.5.3"
     js-sha256 "^0.9.0"
