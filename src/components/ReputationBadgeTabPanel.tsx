@@ -219,9 +219,7 @@ export default function ReputationBadgeTabPanel({
             await tx.wait()
         } catch (error) {
             console.error(error)
-
-            setWarningMessage("Sorry, there was a transaction error")
-            setLoading(false)
+            showUnexpectedError()
             return
         }
 
@@ -266,7 +264,11 @@ export default function ReputationBadgeTabPanel({
             <TabPanelContent
                 title="Reputation badge"
                 description={
-                    !_token
+                    _error
+                        ? ""
+                        : _loading
+                        ? "Loading..."
+                        : !_token
                         ? "Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
                         : _token?.status === "NOT_MINTED"
                         ? "Your Twitter account is linked to your Ethereum address. Mint your token to prove your reputation."

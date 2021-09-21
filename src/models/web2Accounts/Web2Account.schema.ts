@@ -13,6 +13,7 @@ const Web2AccountSchemaFields: Record<keyof IWeb2Account, any> = {
     uniqueKey: { type: String, index: true, unique: true },
     basicReputation: { type: String, enum: Object.values(ReputationLevel) },
     isLinkedToAddress: { type: Boolean, required: true },
+    hasJoinedAGroup: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now, required: true },
     updatedAt: { type: Date, default: Date.now },
     refreshToken: String,

@@ -46,8 +46,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
             throw new Error(`Web 2 account not found`)
         }
 
-        if (!web2Account.basicReputation || `TWITTER_${web2Account.basicReputation}` !== groupId) {
+        if (
+            !web2Account.basicReputation ||
+            `${web2Account.provider.toString().toUpperCase()}_${web2Account.basicReputation}` !== groupId
+        ) {
             throw new Error("The group id does not match the web 2 account reputation")
+        }
+
+        if (web2Account.hasJoinedAGroup) {
+            throw new Error(`Web 2 account already joined a ${web2Account.provider} group`)
         }
 
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
@@ -62,6 +69,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
 
         // Update the db with the new merkle tree.
         await MerkleTreeController.appendLeaf(groupId, identityCommitment)
+
+        web2Account.hasJoinedAGroup = true
+
+        await web2Account.save()
 
         return res.status(201).send({ data: rootHash.toString() })
     } catch (error) {

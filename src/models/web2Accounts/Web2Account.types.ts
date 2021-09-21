@@ -12,6 +12,7 @@ export interface IWeb2Account {
     uniqueKey: string
     basicReputation?: ReputationLevel
     isLinkedToAddress: boolean
+    hasJoinedAGroup?: boolean
     refreshToken?: string
     accessToken?: string
     createdAt: number
