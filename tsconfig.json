@@ -17,7 +17,12 @@
         "strict": true,
         "target": "esnext",
         "baseUrl": ".",
-        "typeRoots": ["node_modules/@types", "src/types"]
+        "typeRoots": [
+            "node_modules/@types",
+            "src/types/botometer",
+            "src/types/incrementalquintree",
+            "src/types/circomlib"
+        ]
     },
     "ts-node": {
         // these options are overrides used only by ts-node
