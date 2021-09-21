@@ -11,7 +11,8 @@ import {
 } from "@material-ui/core"
 import Head from "next/head"
 import React, { FormEvent, useState } from "react"
-import { getTwitterReputation } from "src/utils/frontend/api"
+import { Web2Providers } from "src/models/web2Accounts/Web2Account.types"
+import { getReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -53,7 +54,8 @@ export default function TwitterReputation(): JSX.Element {
 
         setIsLoading(true)
 
-        const reputation = await getTwitterReputation({
+        const reputation = await getReputation({
+            web2Provider: Web2Providers.TWITTER,
             username: _twitterUsername
         })
 
