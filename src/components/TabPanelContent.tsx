@@ -75,7 +75,7 @@ type Properties = {
     children?: React.ReactElement
     loading?: boolean
     buttonText: string
-    onButtonClick: () => void
+    onButtonClick?: () => void
     buttonDisabled?: boolean
     reputation?: string
     contractName?: DeployedContracts
@@ -113,16 +113,18 @@ export default function TabPanelContent({
                 {description}
             </Typography>
             {children || <Box height={25} />}
-            <Button
-                className={classes.button}
-                onClick={onButtonClick}
-                variant="outlined"
-                color="primary"
-                size="large"
-                disabled={buttonDisabled}
-            >
-                {buttonText}
-            </Button>
+            {onButtonClick && (
+                <Button
+                    className={classes.button}
+                    onClick={onButtonClick}
+                    variant="outlined"
+                    color="primary"
+                    size="large"
+                    disabled={buttonDisabled}
+                >
+                    {buttonText}
+                </Button>
+            )}
             <FormHelperText className={classes.message} error>
                 {warningMessage}
             </FormHelperText>

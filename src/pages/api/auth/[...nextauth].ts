@@ -25,12 +25,12 @@ export default NextAuth({
     },
     callbacks: {
         async signIn(_user, account: Account) {
-            if (!account?.provider || !checkWeb2Provider(account.provider as any)) {
+            if (!account?.provider || !checkWeb2Provider(account.provider as Web2Provider)) {
                 return false
             }
 
             try {
-                await createWeb2Account(account, account.provider as any)
+                await createWeb2Account(account, account.provider as Web2Provider)
 
                 return true
             } catch (err) {
@@ -40,12 +40,15 @@ export default NextAuth({
             }
         },
         async jwt(token: JWT, _user, account: Account) {
-            if (!account?.provider || !checkWeb2Provider(account.provider as any)) {
+            if (!account?.provider || !checkWeb2Provider(account.provider as Web2Provider)) {
                 return token
             }
 
             try {
-                const web2Account = await Web2Account.findByProviderAccountId(account.provider as any, account.id)
+                const web2Account = await Web2Account.findByProviderAccountId(
+                    account.provider as Web2Provider,
+                    account.id
+                )
 
                 if (web2Account) {
                     token.web2AccountId = web2Account.id

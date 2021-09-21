@@ -41,23 +41,23 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation }: Properti
                         : `You are logged in as ${session.user?.name} on Twitter.`
                 }
                 onRightArrowClick={onArrowClick}
-                buttonText={session ? "Sign out" : "Sign in"}
-                onButtonClick={() => (session ? signOut() : signIn("twitter"))}
+                buttonText="Sign out"
+                onButtonClick={session ? () => signOut() : undefined}
                 reputation={reputation}
             >
                 <Grid className={classes.web2Providers} container justifyContent="center" spacing={2}>
                     <Grid item>
-                        <IconButton color="primary">
-                            <TwitterIcon fontSize="large" />
+                        <IconButton onClick={() => signIn("twitter")} disabled={!!session}>
+                            <TwitterIcon style={{ color: "#79BAC3" }} fontSize="large" />
                         </IconButton>
                     </Grid>
                     <Grid item>
-                        <IconButton disabled color="primary">
-                            <GithubIcon fontSize="large" />
+                        <IconButton onClick={() => signIn("github")} disabled={!!session}>
+                            <GithubIcon style={{ color: "#E0E0E0" }} fontSize="large" />
                         </IconButton>
                     </Grid>
                     <Grid item>
-                        <IconButton disabled color="primary">
+                        <IconButton disabled>
                             <RedditIcon fontSize="large" />
                         </IconButton>
                     </Grid>
