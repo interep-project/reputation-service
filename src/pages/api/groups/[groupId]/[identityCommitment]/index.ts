@@ -2,9 +2,11 @@ import { withSentry } from "@sentry/nextjs"
 import { ethers } from "hardhat"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
+import { ContractName } from "src/config"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
-import getInterRepGroupsContractInstance from "src/core/blockchain/InterRepGroups/InterRepGroupsContract"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import getContractAddress from "src/utils/crypto/getContractAddress"
+import getContractInstance from "src/utils/crypto/getContractInstance"
 import { dbConnect } from "src/utils/server/database"
 import logger from "src/utils/server/logger"
 
@@ -63,9 +65,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         const rootHash = await MerkleTreeController.previewNewRoot(groupId, identityCommitment)
 
         // Update the contract with new root.
-        const interRepGroups = await getInterRepGroupsContractInstance()
+        const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
+        const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
 
-        await interRepGroups.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
+        await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 
         // Update the db with the new merkle tree.
         await MerkleTreeController.appendLeaf(groupId, identityCommitment)

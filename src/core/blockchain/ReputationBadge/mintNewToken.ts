@@ -1,5 +1,6 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { ethers } from "hardhat"
+import { ContractName } from "src/config"
+import getContractInstance from "src/utils/crypto/getContractInstance"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 
 type MintNewTokenProps = {
@@ -12,14 +13,9 @@ const mintNewToken = async ({ badgeAddress, to, tokenId }: MintNewTokenProps): P
     if (!tokenId) throw new Error("Token id is not defined")
 
     const decimalId = stringToBigNumber(tokenId)
+    const contractInstance = await getContractInstance(ContractName.REPUTATION_BADGE, badgeAddress)
 
-    const [backend] = await ethers.getSigners()
-
-    const reputationBadge = await ethers.getContractAt("ReputationBadge", badgeAddress)
-
-    const mintTx: ContractTransaction = await reputationBadge.connect(backend).safeMint(to, decimalId)
-
-    return mintTx
+    return contractInstance.safeMint(to, decimalId)
 }
 
 export default mintNewToken

@@ -86,13 +86,11 @@ export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation:
 }
 
 export function linkAccounts({
-    chainId,
     address,
     web2AccountId,
     userSignature,
     userPublicKey
 }: {
-    chainId: number
     address: string
     web2AccountId: string
     userSignature: string
@@ -101,7 +99,6 @@ export function linkAccounts({
     return sendRequest(
         "/api/linking/link",
         {
-            chainId,
             address,
             web2AccountId,
             userSignature,

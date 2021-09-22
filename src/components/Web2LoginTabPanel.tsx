@@ -1,3 +1,4 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { createStyles, Grid, IconButton, makeStyles, Theme } from "@material-ui/core"
 import GithubIcon from "@material-ui/icons/GitHub"
 import RedditIcon from "@material-ui/icons/Reddit"
@@ -25,9 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
 type Properties = {
     onArrowClick?: (direction: 1) => void
     reputation?: string
+    web2Provider?: Web2Provider
 }
 
-export default function Web2LoginTabPanel({ onArrowClick, reputation }: Properties): JSX.Element {
+export default function Web2LoginTabPanel({ onArrowClick, reputation, web2Provider }: Properties): JSX.Element {
     const classes = useStyles()
     const [session] = useSession()
 
@@ -44,6 +46,7 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation }: Properti
                 buttonText="Sign out"
                 onButtonClick={session ? () => signOut() : undefined}
                 reputation={reputation}
+                web2Provider={web2Provider}
             >
                 <Grid className={classes.web2Providers} container justifyContent="center" spacing={2}>
                     <Grid item>

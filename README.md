@@ -37,7 +37,7 @@
     </h4>
 </div>
 
-___
+---
 
 ## Install
 
@@ -165,12 +165,6 @@ Get tokens by ethereum address:
 
 ```
 /api/tokens?owner=0xba36...
-```
-
-Get token by contract address and id:
-
-```
-/api/tokens/0x99FCf805C468977e0F8Ceae21935268EEceadC07/93874287420912438946...
 ```
 
 **Notice**: The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.

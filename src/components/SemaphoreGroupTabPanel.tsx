@@ -4,8 +4,8 @@ import { capitalize } from "@material-ui/core"
 import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React, { useEffect } from "react"
+import { ContractName } from "src/config"
 import { Group } from "src/types/groups"
-import { DeployedContracts } from "src/utils/crypto/deployedContracts"
 import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 import TabPanelContent from "./TabPanelContent"
 
@@ -153,7 +153,8 @@ export default function SemaphoreGroupTabPanel({
                 }
                 buttonDisabled={_loading || !_group || _error}
                 reputation={reputation}
-                contractName={DeployedContracts.INTERREP_GROUPS}
+                contractName={ContractName.INTERREP_GROUPS}
+                web2Provider={web2Provider}
             />
         </>
     )

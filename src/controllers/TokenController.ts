@@ -1,11 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import getNFTMetadataObject from "src/core/blockchain/ReputationBadge/getNFTMetadataObject"
-import TwitterBadgeContract from "src/core/blockchain/ReputationBadge/TwitterBadgeContract"
 import mintToken from "src/core/linking/mintToken"
 import Token from "src/models/tokens/Token.model"
 import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
-import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/deployedContracts"
 import logger from "src/utils/server/logger"
 
 class TokenController {
@@ -30,33 +27,6 @@ class TokenController {
             const tokensAsJSON = tokens.map((token) => token.toJSON())
 
             return res.status(200).send({ data: tokensAsJSON })
-        } catch (err) {
-            logger.error(err)
-            return res.status(500).end()
-        }
-    }
-
-    public getTokenByContractAndId = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
-        try {
-            const contractAddress = req.query?.contractAddress
-            const decimalId = req.query?.id
-            if (!contractAddress || !decimalId || typeof decimalId !== "string") {
-                return res.status(400).end()
-            }
-
-            if (contractAddress === getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)) {
-                const tokenExists = await TwitterBadgeContract.exists(decimalId)
-
-                if (!tokenExists) {
-                    return res.status(400).send(`Token with id ${decimalId} does not exist`)
-                }
-
-                return res.status(200).send({
-                    data: getNFTMetadataObject(DeployedContracts.TWITTER_BADGE)
-                })
-            }
-
-            return res.status(400).send(`Invalid contract address`)
         } catch (err) {
             logger.error(err)
             return res.status(500).end()

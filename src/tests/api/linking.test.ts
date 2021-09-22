@@ -20,7 +20,6 @@ const getSessionMocked = getSession as jest.MockedFunction<typeof getSession>
 const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
 
 const bodyParams = {
-    chainId: 33137,
     web2AccountId: mockSession.web2AccountId,
     address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
     userSignature: "0xSignature",

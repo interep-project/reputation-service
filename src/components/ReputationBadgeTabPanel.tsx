@@ -4,9 +4,10 @@ import TwitterIcon from "@material-ui/icons/Twitter"
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
 import React, { useEffect } from "react"
+import { ContractName } from "src/config"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument } from "src/models/tokens/Token.types"
-import { DeployedContracts, getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts"
+import getContractAddress from "src/utils/crypto/getContractAddress"
 import { checkLink, getMyTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 import TabPanelContent from "./TabPanelContent"
@@ -28,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
     reputation: string
-    networkId: number
     address: string
     signer: Signer
     web2Provider: Web2Provider
@@ -38,7 +38,6 @@ type Properties = {
 export default function ReputationBadgeTabPanel({
     onArrowClick,
     reputation,
-    networkId,
     address,
     signer,
     web2Provider,
@@ -160,7 +159,6 @@ export default function ReputationBadgeTabPanel({
         }
 
         const newToken = await linkAccounts({
-            chainId: networkId,
             address,
             web2AccountId,
             userSignature,
@@ -205,7 +203,7 @@ export default function ReputationBadgeTabPanel({
         setWarningMessage("")
         setLoading(true)
 
-        const badgeAddress = getBadgeAddressByProvider(token.web2Provider)
+        const badgeAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
 
         if (badgeAddress === null) {
             setWarningMessage("Cannot retrieve the badge's address")
@@ -302,7 +300,8 @@ export default function ReputationBadgeTabPanel({
                 }
                 buttonDisabled={reputation !== ReputationLevel.GOLD || _loading || _error}
                 reputation={reputation}
-                contractName={DeployedContracts.TWITTER_BADGE}
+                contractName={ContractName.REPUTATION_BADGE}
+                web2Provider={web2Provider}
             >
                 {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] ? (
                     <IconButton

@@ -15,9 +15,11 @@ import TwitterIcon from "@material-ui/icons/Twitter"
 import GitHubIcon from "@material-ui/icons/GitHub"
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft"
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight"
-import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/deployedContracts"
+import getContractAddress from "src/utils/crypto/getContractAddress"
 import shortenAddress from "src/utils/frontend/shortenAddress"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
+import { Web2Provider } from "@interrep/reputation-criteria"
+import { ContractName } from "src/config"
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -78,7 +80,8 @@ type Properties = {
     onButtonClick?: () => void
     buttonDisabled?: boolean
     reputation?: string
-    contractName?: DeployedContracts
+    contractName?: ContractName
+    web2Provider?: Web2Provider
 }
 
 export default function TabPanelContent({
@@ -93,7 +96,8 @@ export default function TabPanelContent({
     onButtonClick,
     buttonDisabled = false,
     reputation,
-    contractName
+    contractName,
+    web2Provider
 }: Properties): JSX.Element {
     const classes = useStyles()
     const [session] = useSession()
@@ -133,33 +137,38 @@ export default function TabPanelContent({
                     <KeyboardArrowRightIcon fontSize="large" />
                 </IconButton>
             )}
-            {session && (
-                <Box className={classes.web2AccountInformation}>
-                    {session.web2Provider === "twitter" ? (
-                        <TwitterIcon fontSize="small" />
-                    ) : (
-                        <GitHubIcon fontSize="small" />
+            {web2Provider && (
+                <>
+                    <Box className={classes.web2AccountInformation}>
+                        {web2Provider === "twitter" ? (
+                            <TwitterIcon fontSize="small" />
+                        ) : (
+                            <GitHubIcon fontSize="small" />
+                        )}
+                        <Typography style={{ marginLeft: 5 }} variant="caption">
+                            &nbsp;{session?.user.name}
+                            &nbsp;{reputation ? `(${reputation})` : ""}
+                        </Typography>
+                    </Box>
+                    {contractName && (
+                        <Box className={classes.contractLink}>
+                            <Typography variant="caption">
+                                Contract:{" "}
+                                <Link
+                                    href={getExplorerLink(
+                                        getContractAddress(contractName, web2Provider),
+                                        ExplorerDataType.ADDRESS
+                                    )}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    color="inherit"
+                                >
+                                    {shortenAddress(getContractAddress(contractName, web2Provider))}
+                                </Link>
+                            </Typography>
+                        </Box>
                     )}
-                    <Typography style={{ marginLeft: 5 }} variant="caption">
-                        &nbsp;{session.user.name}
-                        &nbsp;{reputation ? `(${reputation})` : ""}
-                    </Typography>
-                </Box>
-            )}
-            {contractName && (
-                <Box className={classes.contractLink}>
-                    <Typography variant="caption">
-                        Contract:{" "}
-                        <Link
-                            href={getExplorerLink(getDeployedContractAddress(contractName), ExplorerDataType.ADDRESS)}
-                            target="_blank"
-                            rel="noreferrer"
-                            color="inherit"
-                        >
-                            {shortenAddress(getDeployedContractAddress(contractName))}
-                        </Link>
-                    </Typography>
-                </Box>
+                </>
             )}
         </>
     )

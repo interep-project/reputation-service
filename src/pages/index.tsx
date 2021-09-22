@@ -82,6 +82,7 @@ export default function Home(): JSX.Element {
                         <Web2LoginTabPanel
                             onArrowClick={appIsReady() ? updateTabIndex : undefined}
                             reputation={_reputation as string}
+                            web2Provider={session?.web2Provider as Web2Provider}
                         />
                     </TabPanelContainer>
                     {appIsReady() && (
@@ -99,7 +100,6 @@ export default function Home(): JSX.Element {
                                 <ReputationBadgeTabPanel
                                     onArrowClick={(d) => updateTabIndex(d)}
                                     signer={_signer as Signer}
-                                    networkId={_networkId as number}
                                     address={_address as string}
                                     reputation={_reputation as string}
                                     web2Provider={session?.web2Provider as Web2Provider}
