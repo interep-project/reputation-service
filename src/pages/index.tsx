@@ -8,8 +8,8 @@ import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel"
 import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
 import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
+import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { getMyReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -35,8 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-const defaultNetworkId = getDefaultNetworkId()
-
 export default function Home(): JSX.Element {
     const classes = useStyles()
     const [session] = useSession()
@@ -47,14 +45,14 @@ export default function Home(): JSX.Element {
     useEffect(() => {
         ;(async () => {
             if (session) {
-                const reputation = await getMyReputation({ web2Provider: Web2Provider.TWITTER })
+                const reputation = await getMyReputation({ web2Provider: session.web2Provider })
 
                 setReputation(reputation)
             }
         })()
     }, [session])
 
-    const appIsReady = useCallback(() => !!(session && defaultNetworkId === _networkId && _address && _reputation), [
+    const appIsReady = useCallback(() => !!(session && currentNetwork.id === _networkId && _address && _reputation), [
         session,
         _networkId,
         _address,
@@ -104,6 +102,7 @@ export default function Home(): JSX.Element {
                                     networkId={_networkId as number}
                                     address={_address as string}
                                     reputation={_reputation as string}
+                                    web2Provider={session?.web2Provider as Web2Provider}
                                     web2AccountId={session?.web2AccountId as string}
                                 />
                             </TabPanelContainer>

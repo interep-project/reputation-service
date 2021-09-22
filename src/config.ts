@@ -1,36 +1,54 @@
 import getNextConfig from "next/config"
+import { SupportedNetwork } from "./types/network"
 
-const TREE_LEVELS = 16
-const nextConfig = getNextConfig()
-
-let defaultNetwork
-
-if (nextConfig && process.env.NODE_ENV && process.env.NODE_ENV !== "test") {
-    defaultNetwork = nextConfig.publicRuntimeConfig.defaultNetwork
-
-    if (!defaultNetwork) {
-        throw new Error("Default network is not defined")
-    }
-} else {
-    defaultNetwork = "kovan"
+export enum Environment {
+    TEST = "test",
+    DEVELOPMENT = "development",
+    PRODUCTION = "production"
 }
 
-export enum SupportedChainId {
-    hardhat = 31337,
-    localhost = 31337,
-    kovan = 42,
-    ropsten = 3,
-    arbitrum = 42161
-}
-
-export const defaultNetworkByEnv = {
-    test: { id: SupportedChainId.hardhat, name: "hardhat" },
-    development: { id: SupportedChainId.localhost, name: "localhost" },
-    production: {
-        id: SupportedChainId[defaultNetwork],
-        name: defaultNetwork
+export const supportedNetworks: Record<string, SupportedNetwork> = {
+    hardhat: {
+        name: "hardhat",
+        id: 31337
+    },
+    localhost: {
+        name: "localhost",
+        id: 31337
+    },
+    kovan: {
+        name: "hardhat",
+        id: 42
+    },
+    ropsten: {
+        name: "ropsten",
+        id: 3
+    },
+    arbitrum: {
+        name: "arbitrum",
+        id: 42161
     }
 }
+
+export const currentNetwork = (function IIFE() {
+    switch (process.env.NODE_ENV as Environment) {
+        case Environment.TEST:
+            return supportedNetworks.hardhat
+        case Environment.DEVELOPMENT:
+            return supportedNetworks.localhost
+        case Environment.PRODUCTION: {
+            const { defaultNetwork } = getNextConfig().publicRuntimeConfig
+
+            if (!(defaultNetwork in Object.keys(supportedNetworks))) {
+                throw new Error("DEFAULT_NETWORK variable has not been defined correctly")
+            }
+
+            return supportedNetworks[defaultNetwork]
+        }
+        default:
+            throw new Error("NODE_ENV variable has not been defined correctly")
+    }
+})()
 
 export default {
     MONGO_URL: process.env.MONGO_URL,
@@ -44,5 +62,5 @@ export default {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
-    TREE_LEVELS
+    MERKLE_TREE_LEVELS: Number(process.env.MERKLE_TREE_LEVELS) || 16
 }

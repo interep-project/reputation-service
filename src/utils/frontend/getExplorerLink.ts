@@ -1,8 +1,8 @@
-import { SupportedChainId } from "src/config"
+import { currentNetwork, supportedNetworks } from "src/config"
 
 const ETHERSCAN_PREFIXES: { [chainId: string]: string } = {
-    [SupportedChainId.kovan]: "kovan.",
-    [SupportedChainId.ropsten]: "ropsten."
+    [supportedNetworks.kovan.id]: "kovan.",
+    [supportedNetworks.ropsten.id]: "ropsten."
 }
 
 export enum ExplorerDataType {
@@ -13,13 +13,13 @@ export enum ExplorerDataType {
 }
 
 /**
- * Return the explorer link for the given data and data type
- * @param chainId the ID of the chain for which to return the data
- * @param data the data to return a link for
- * @param type the type of the data
+ * Return the explorer link for the given data and data type.
+ * @param data The data to return a link for.
+ * @param type The type of the data.
+ * @returns the explorer link.
  */
-export function getExplorerLink(chainId: number, data: string, type: ExplorerDataType): string {
-    const prefix = `https://${ETHERSCAN_PREFIXES[chainId] ?? ""}etherscan.io`
+export function getExplorerLink(data: string, type: ExplorerDataType): string {
+    const prefix = `https://${ETHERSCAN_PREFIXES[currentNetwork.id] ?? ""}etherscan.io`
 
     switch (type) {
         case ExplorerDataType.TRANSACTION:

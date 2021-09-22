@@ -3,10 +3,8 @@ import { Wallet, API } from "bnc-onboard/dist/src/interfaces"
 import { ethers, Signer } from "ethers"
 import { getAddress } from "ethers/lib/utils"
 import { useCallback, useEffect, useState } from "react"
+import { currentNetwork } from "src/config"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-
-const defaultNetworkId = getDefaultNetworkId()
 
 export default function useEthereumWallet(): EthereumWalletContextType {
     const [_onboard, setOnboard] = useState<API>()
@@ -15,13 +13,13 @@ export default function useEthereumWallet(): EthereumWalletContextType {
     const [_networkId, setNetworkId] = useState<number>()
 
     useEffect(() => {
-        (async () => {
+        ;(async () => {
             if (_onboard) {
                 return
             }
 
             const onboard = Onboard({
-                networkId: defaultNetworkId,
+                networkId: currentNetwork.id,
                 hideBranding: true,
                 walletSelect: {
                     wallets: [{ walletName: "metamask", preferred: true }]

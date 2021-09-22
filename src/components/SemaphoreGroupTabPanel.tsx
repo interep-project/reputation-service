@@ -1,5 +1,6 @@
 import { Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
+import { capitalize } from "@material-ui/core"
 import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React, { useEffect } from "react"
@@ -52,7 +53,7 @@ export default function SemaphoreGroupTabPanel({
                 return
             }
 
-            const group = await getGroup({ groupId: `${web2Provider.toString().toUpperCase()}_${reputation}` })
+            const group = await getGroup({ groupId: `${web2Provider.toUpperCase()}_${reputation}` })
 
             setGroup(group)
             setLoading(false)
@@ -61,7 +62,7 @@ export default function SemaphoreGroupTabPanel({
 
     async function retrieveIdentityCommitment(): Promise<string | null> {
         try {
-            const identity = await semethid((message) => signer.signMessage(message), web2Provider.toString())
+            const identity = await semethid((message) => signer.signMessage(message), capitalize(web2Provider))
 
             return poseidon([
                 babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
@@ -97,7 +98,7 @@ export default function SemaphoreGroupTabPanel({
         }
 
         if (alreadyExist) {
-            setWarningMessage(`You already joined this group with another ${web2Provider} account`)
+            setWarningMessage(`You already joined this group with another ${capitalize(web2Provider)} account`)
             setError(true)
         }
 
@@ -133,8 +134,10 @@ export default function SemaphoreGroupTabPanel({
                         : _loading
                         ? "Loading..."
                         : _group
-                        ? `The ${reputation} group of Twitter has ${_group?.size} members. Create your Semaphore identity if you want to join this group.`
-                        : `You joined the Twitter ${reputation} Semaphore group.`
+                        ? `The ${reputation} ${capitalize(web2Provider)} group has ${
+                              _group?.size
+                          } members. Create your Semaphore identity if you want to join this group.`
+                        : `You joined the ${capitalize(web2Provider)} ${reputation} group.`
                 }
                 onLeftArrowClick={onArrowClick}
                 onRightArrowClick={onArrowClick}

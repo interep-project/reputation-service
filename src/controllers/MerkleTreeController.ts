@@ -24,7 +24,7 @@ class MerkleTreeController {
         // Get next available index at level 0.
         let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
 
-        if (currentIndex >= 2 ** config.TREE_LEVELS) {
+        if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
             throw new Error(`The tree is full`)
         }
 
@@ -33,7 +33,7 @@ class MerkleTreeController {
             hash: idCommitment
         })
 
-        for (let level = 0; level < config.TREE_LEVELS; level++) {
+        for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
             if (currentIndex % 2 === 0) {
                 node.siblingHash = zeroes[level].hash
 
@@ -115,13 +115,13 @@ class MerkleTreeController {
         // Get next available index at level 0.
         let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
 
-        if (currentIndex >= 2 ** config.TREE_LEVELS) {
+        if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
             throw new Error(`The tree is full`)
         }
 
         let hash = idCommitment
 
-        for (let level = 0; level < config.TREE_LEVELS; level++) {
+        for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
             if (currentIndex % 2 === 0) {
                 const siblingHash = zeroes[level].hash
 

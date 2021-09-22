@@ -74,6 +74,7 @@ const linkAccounts = async ({
 
     try {
         web2Account.isLinkedToAddress = true
+
         await web2Account.save()
 
         const token = new Token({
@@ -115,6 +116,7 @@ const linkAccounts = async ({
         )
 
         token.encryptedAttestation = encryptedAttestation
+
         await token.save()
 
         return token

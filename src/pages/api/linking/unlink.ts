@@ -12,11 +12,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
     let jwToken: JWT
 
     try {
-        // @ts-ignore: secret exists
-        jwToken = await jwt.getToken({
+        jwToken = (await jwt.getToken({
             req,
             secret: config.JWT_SECRET
-        })
+        })) as JWT
     } catch (err) {
         logger.error(err)
         return res.status(500).end()

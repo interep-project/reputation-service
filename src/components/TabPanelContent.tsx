@@ -12,12 +12,12 @@ import {
 import { useSession } from "next-auth/client"
 import React from "react"
 import TwitterIcon from "@material-ui/icons/Twitter"
+import GitHubIcon from "@material-ui/icons/GitHub"
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft"
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight"
 import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/deployedContracts"
-import { shortenAddress } from "src/utils/frontend/evm"
+import shortenAddress from "src/utils/frontend/shortenAddress"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -135,8 +135,12 @@ export default function TabPanelContent({
             )}
             {session && (
                 <Box className={classes.web2AccountInformation}>
-                    <TwitterIcon fontSize="small" color="primary" />
-                    <Typography variant="caption">
+                    {session.web2Provider === "twitter" ? (
+                        <TwitterIcon fontSize="small" />
+                    ) : (
+                        <GitHubIcon fontSize="small" />
+                    )}
+                    <Typography style={{ marginLeft: 5 }} variant="caption">
                         &nbsp;{session.user.name}
                         &nbsp;{reputation ? `(${reputation})` : ""}
                     </Typography>
@@ -147,11 +151,7 @@ export default function TabPanelContent({
                     <Typography variant="caption">
                         Contract:{" "}
                         <Link
-                            href={getExplorerLink(
-                                getDefaultNetworkId(),
-                                getDeployedContractAddress(contractName),
-                                ExplorerDataType.ADDRESS
-                            )}
+                            href={getExplorerLink(getDeployedContractAddress(contractName), ExplorerDataType.ADDRESS)}
                             target="_blank"
                             rel="noreferrer"
                             color="inherit"

@@ -2,9 +2,10 @@ import { AppBar, Box, Button, createStyles, makeStyles, Theme, Toolbar, Typograp
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { isBrowser } from "react-device-detect"
-import { isDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-import { getChainNameFromNetworkId, shortenAddress } from "src/utils/frontend/evm"
+import shortenAddress from "src/utils/frontend/shortenAddress"
+import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import getNetworkFullName from "src/utils/crypto/getNetworkFullName"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -49,21 +50,21 @@ export default function NavBar(): JSX.Element {
                                     color="secondary"
                                     variant="body1"
                                 >
-                                    {_networkId && getChainNameFromNetworkId(_networkId)}
+                                    {_networkId && getNetworkFullName(_networkId)}
                                 </Typography>
-                                {!isDefaultNetworkId(_networkId) && (
-                                    <Typography className={classes.networkName} variant="body1">
-                                        (wrong network)
-                                    </Typography>
-                                )}
-                                {isDefaultNetworkId(_networkId) ? (
+                                {_networkId === currentNetwork.id ? (
                                     <Typography className={classes.address} variant="body1">
                                         {shortenAddress(_address)}
                                     </Typography>
                                 ) : (
-                                    <Button onClick={check} variant="outlined">
-                                        Switch
-                                    </Button>
+                                    <>
+                                        <Typography className={classes.networkName} variant="body1">
+                                            (wrong network)
+                                        </Typography>
+                                        <Button onClick={check} variant="outlined">
+                                            Switch
+                                        </Button>
+                                    </>
                                 )}
                             </Box>
                         ) : (

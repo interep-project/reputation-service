@@ -17,7 +17,7 @@ export const getInstance = async (contractAddress?: string) => {
     const address = contractAddress || getDeployedContractAddress(DeployedContracts.TWITTER_BADGE)
 
     if (!address) {
-        throw new Error("Address not provided for instantiating Twitter Badge contract")
+        throw new Error("Address not provided for instantiating Reputation Badge contract")
     }
 
     instance = await ethers.getContractAt("ReputationBadge", address)

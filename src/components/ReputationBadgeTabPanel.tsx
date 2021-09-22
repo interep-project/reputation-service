@@ -1,5 +1,5 @@
-import { ReputationLevel } from "@interrep/reputation-criteria"
-import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { capitalize, createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
 import TwitterIcon from "@material-ui/icons/Twitter"
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
@@ -7,7 +7,6 @@ import React, { useEffect } from "react"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument } from "src/models/tokens/Token.types"
 import { DeployedContracts, getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
 import { checkLink, getMyTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 import TabPanelContent from "./TabPanelContent"
@@ -32,6 +31,7 @@ type Properties = {
     networkId: number
     address: string
     signer: Signer
+    web2Provider: Web2Provider
     web2AccountId: string
 }
 
@@ -41,6 +41,7 @@ export default function ReputationBadgeTabPanel({
     networkId,
     address,
     signer,
+    web2Provider,
     web2AccountId
 }: Properties): JSX.Element {
     const classes = useStyles()
@@ -271,7 +272,9 @@ export default function ReputationBadgeTabPanel({
                         : !_token
                         ? "Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
                         : _token?.status === "NOT_MINTED"
-                        ? "Your Twitter account is linked to your Ethereum address. Mint your token to prove your reputation."
+                        ? `Your ${capitalize(
+                              web2Provider
+                          )} account is linked to your Ethereum address. Mint your token to prove your reputation.`
                         : _token?.status === "MINTED"
                         ? "You have a minted token! Click on it to see the transaction on Etherscan."
                         : "You burnt your token. Unlink your accounts and link them another time to mint a new token."
@@ -304,11 +307,7 @@ export default function ReputationBadgeTabPanel({
                 {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] ? (
                     <IconButton
                         className={classes.token}
-                        href={getExplorerLink(
-                            getDefaultNetworkId(),
-                            _token.mintTransactions[0].response.hash,
-                            ExplorerDataType.TRANSACTION
-                        )}
+                        href={getExplorerLink(_token.mintTransactions[0].response.hash, ExplorerDataType.TRANSACTION)}
                         target="_blank"
                         rel="noreferrer"
                     >

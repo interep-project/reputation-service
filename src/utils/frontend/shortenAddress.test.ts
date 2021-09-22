@@ -1,14 +1,4 @@
-import { getChainNameFromNetworkId, shortenAddress } from "src/utils/frontend/evm"
-
-describe("getChainNameFromNetworkId", () => {
-    it("should return null if the network id is unknown", () => {
-        expect(getChainNameFromNetworkId(0)).toBeNull()
-    })
-
-    it("should return the network name from the id", () => {
-        expect(getChainNameFromNetworkId(1)).toBe("Ethereum Mainnet")
-    })
-})
+import shortenAddress from "src/utils/frontend/shortenAddress"
 
 describe("#shortenAddress", () => {
     it("throws on invalid address", () => {
