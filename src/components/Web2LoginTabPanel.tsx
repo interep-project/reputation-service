@@ -1,5 +1,5 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
-import { createStyles, Grid, IconButton, makeStyles, Theme } from "@material-ui/core"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { capitalize, createStyles, Grid, IconButton, makeStyles, Theme } from "@material-ui/core"
 import GithubIcon from "@material-ui/icons/GitHub"
 import RedditIcon from "@material-ui/icons/Reddit"
 import TwitterIcon from "@material-ui/icons/Twitter"
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Properties = {
     onArrowClick?: (direction: 1) => void
-    reputation?: string
+    reputation?: ReputationLevel
     web2Provider?: Web2Provider
 }
 
@@ -40,7 +40,7 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation, web2Provid
                 description={
                     !session
                         ? "Sign in with one of our supported Web2 providers."
-                        : `You are logged in as ${session.user?.name} on Twitter.`
+                        : `You are logged in as ${session.user?.username} on ${capitalize(session.web2Provider)}.`
                 }
                 onRightArrowClick={onArrowClick}
                 buttonText="Sign out"
@@ -60,8 +60,8 @@ export default function Web2LoginTabPanel({ onArrowClick, reputation, web2Provid
                         </IconButton>
                     </Grid>
                     <Grid item>
-                        <IconButton disabled>
-                            <RedditIcon fontSize="large" />
+                        <IconButton onClick={() => signIn("reddit")} disabled={!!session}>
+                            <RedditIcon style={{ color: "#D6A1A1" }} fontSize="large" />
                         </IconButton>
                     </Grid>
                 </Grid>

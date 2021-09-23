@@ -1,5 +1,4 @@
 import getReputation from "src/pages/api/reputation/[web2Provider]/[username]"
-import getMyReputation from "src/pages/api/reputation/[web2Provider]"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import createNextMocks from "src/mocks/createNextMocks"
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
@@ -25,30 +24,6 @@ describe("Reputation APIs", () => {
         await clearDatabase()
     })
 
-    describe("Get my reputation", () => {
-        it("Should return a 405 if the method is not GET", async () => {
-            const { req, res } = createNextMocks({
-                query: {},
-                method: "PUT"
-            })
-
-            await getMyReputation(req, res)
-
-            expect(res._getStatusCode()).toBe(405)
-        })
-
-        it("Should return a 400 if some query parameter is missing", async () => {
-            const { req, res } = createNextMocks({
-                query: {},
-                method: "GET"
-            })
-
-            await getMyReputation(req, res)
-
-            expect(res._getStatusCode()).toBe(400)
-        })
-    })
-
     describe("Get user reputation", () => {
         it("Should return a 405 if the method is not GET", async () => {
             const { req, res } = createNextMocks({
@@ -67,7 +42,7 @@ describe("Reputation APIs", () => {
                 method: "GET"
             })
 
-            await getMyReputation(req, res)
+            await getReputation(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
