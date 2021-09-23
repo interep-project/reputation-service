@@ -2,9 +2,11 @@ import { withSentry } from "@sentry/nextjs"
 import { ethers } from "hardhat"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
+import { ContractName } from "src/config"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
-import getInterRepGroupsContractInstance from "src/core/blockchain/InterRepGroups/InterRepGroupsContract"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import getContractAddress from "src/utils/crypto/getContractAddress"
+import getContractInstance from "src/utils/crypto/getContractInstance"
 import { dbConnect } from "src/utils/server/database"
 import logger from "src/utils/server/logger"
 
@@ -46,8 +48,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
             throw new Error(`Web 2 account not found`)
         }
 
-        if (!web2Account.basicReputation || `TWITTER_${web2Account.basicReputation}` !== groupId) {
+        if (
+            !web2Account.basicReputation ||
+            `${web2Account.provider.toString().toUpperCase()}_${web2Account.basicReputation}` !== groupId
+        ) {
             throw new Error("The group id does not match the web 2 account reputation")
+        }
+
+        if (web2Account.hasJoinedAGroup) {
+            throw new Error(`Web 2 account already joined a ${web2Account.provider} group`)
         }
 
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
@@ -56,12 +65,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         const rootHash = await MerkleTreeController.previewNewRoot(groupId, identityCommitment)
 
         // Update the contract with new root.
-        const interRepGroups = await getInterRepGroupsContractInstance()
+        const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
+        const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
 
-        await interRepGroups.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
+        await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 
         // Update the db with the new merkle tree.
         await MerkleTreeController.appendLeaf(groupId, identityCommitment)
+
+        web2Account.hasJoinedAGroup = true
+
+        await web2Account.save()
 
         return res.status(201).send({ data: rootHash.toString() })
     } catch (error) {

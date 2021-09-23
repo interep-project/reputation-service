@@ -1,14 +1,22 @@
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
+import getContractInstance from "src/utils/crypto/getContractInstance"
+import getContractEvents from "src/utils/crypto/getContractEvents"
 import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
-import { connect, dropDatabaseAndDisconnect, clearDatabase } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
-import { exists, getTransferEvent } from "./TwitterBadgeContract"
 
-jest.mock("./TwitterBadgeContract", () => ({
-    exists: jest.fn(),
-    getTransferEvent: jest.fn()
+jest.mock("src/utils/crypto/getContractInstance", () => ({
+    __esModule: true,
+    default: jest.fn(() => ({
+        exists: () => false
+    }))
+}))
+
+jest.mock("src/utils/crypto/getContractEvents", () => ({
+    __esModule: true,
+    default: jest.fn()
 }))
 
 jest.mock("src/utils/crypto/isTransactionConfirmed", () => ({
@@ -19,8 +27,6 @@ jest.mock("src/utils/crypto/isTransactionConfirmed", () => ({
 describe("checkAndUpdateTokenStatus", () => {
     beforeAll(async () => {
         await connect()
-        // @ts-ignore: mocked above
-        exists.mockImplementation(() => false)
     })
 
     afterAll(async () => {
@@ -46,7 +52,9 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update MINT_PENDING -> MINTED", async () => {
         // @ts-ignore: mocked above
-        exists.mockImplementationOnce(() => true)
+        getContractInstance.mockImplementationOnce(() => ({
+            exists: () => true
+        }))
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.MINT_PENDING }))
 
@@ -59,7 +67,9 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update NOT_MINTED -> MINTED", async () => {
         // @ts-ignore: mocked above
-        exists.mockImplementationOnce(() => true)
+        getContractInstance.mockImplementationOnce(() => ({
+            exists: () => true
+        }))
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.NOT_MINTED }))
 
@@ -146,7 +156,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update if token was burned", async () => {
         // @ts-ignore: mocked above
-        getTransferEvent.mockImplementationOnce(() => Promise.resolve([{ mock: "event" }]))
+        getContractEvents.mockImplementationOnce(() => Promise.resolve([{ mock: "event" }]))
 
         const token = new Token(createMockTokenObject({ status: TokenStatus.MINTED }))
 
@@ -157,7 +167,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should throw if no burn event was found", async () => {
         // @ts-ignore: mocked above
-        getTransferEvent.mockImplementationOnce(() => Promise.reject(new Error("Can't find events")))
+        getContractEvents.mockImplementationOnce(() => Promise.reject(new Error("Can't find events")))
 
         const token1 = new Token(createMockTokenObject({ status: TokenStatus.MINTED }))
 

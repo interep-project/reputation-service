@@ -1,3 +1,4 @@
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { Card, Container, createStyles, makeStyles, Tab, Tabs, Theme, Typography } from "@material-ui/core"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
@@ -7,11 +8,9 @@ import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel"
 import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
 import TabPanelContainer from "src/components/TabPanelContainer"
 import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
+import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types"
-import { Group } from "src/types/groups"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
-import { getGroup, getMyTwitterReputation } from "src/utils/frontend/api"
+import { getMyReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -36,32 +35,29 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-const defaultNetworkId = getDefaultNetworkId()
-
 export default function Home(): JSX.Element {
     const classes = useStyles()
     const [session] = useSession()
     const [_tabIndex, setTabIndex] = React.useState<number>(0)
     const { _networkId, _address, _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
-    const [_twitterReputation, setTwitterReputation] = useState<AccountReputationByAccount | null>(null)
-    const [_group, setGroup] = React.useState<Group>()
+    const [_reputation, setReputation] = useState<ReputationLevel>()
 
     useEffect(() => {
         ;(async () => {
             if (session) {
-                const reputation = await getMyTwitterReputation()
-                const group = await getGroup({ groupId: `TWITTER_${reputation.basicReputation}` })
+                const reputation = await getMyReputation({ web2Provider: session.web2Provider })
 
-                setTwitterReputation(reputation)
-                setGroup(group)
+                setReputation(reputation)
             }
         })()
     }, [session])
 
-    const appIsReady = useCallback(
-        () => !!(session && defaultNetworkId === _networkId && _address && _twitterReputation),
-        [session, _networkId, _address, _twitterReputation]
-    )
+    const appIsReady = useCallback(() => !!(session && currentNetwork.id === _networkId && _address && _reputation), [
+        session,
+        _networkId,
+        _address,
+        _reputation
+    ])
 
     function updateTabIndex(direction: number): void {
         setTabIndex((index: number) => index + direction)
@@ -77,41 +73,36 @@ export default function Home(): JSX.Element {
             )}
             {isBrowser && (
                 <Card className={classes.tabContainer}>
-                    <Tabs variant="fullWidth" value={_tabIndex} onChange={(event, newIndex) => setTabIndex(newIndex)}>
+                    <Tabs variant="fullWidth" value={_tabIndex} onChange={(_event, newIndex) => setTabIndex(newIndex)}>
                         <Tab className={classes.tabButton} label="Web2 Login" />
-                        <Tab
-                            className={classes.tabButton}
-                            label="Semaphore group"
-                            disabled={!appIsReady() || !_group}
-                        />
+                        <Tab className={classes.tabButton} label="Semaphore group" disabled={!appIsReady()} />
                         <Tab className={classes.tabButton} label="Reputation badge" disabled={!appIsReady()} />
                     </Tabs>
                     <TabPanelContainer value={_tabIndex} index={0}>
                         <Web2LoginTabPanel
                             onArrowClick={appIsReady() ? updateTabIndex : undefined}
-                            reputation={_twitterReputation?.basicReputation as string}
+                            reputation={_reputation as string}
+                            web2Provider={session?.web2Provider as Web2Provider}
                         />
                     </TabPanelContainer>
                     {appIsReady() && (
                         <>
-                            {_group && (
-                                <TabPanelContainer value={_tabIndex} index={1}>
-                                    <SemaphoreGroupTabPanel
-                                        onArrowClick={(d) => updateTabIndex(d)}
-                                        reputation={_twitterReputation?.basicReputation as string}
-                                        group={_group}
-                                        signer={_signer as Signer}
-                                        web2AccountId={session?.web2AccountId as string}
-                                    />
-                                </TabPanelContainer>
-                            )}
+                            <TabPanelContainer value={_tabIndex} index={1}>
+                                <SemaphoreGroupTabPanel
+                                    onArrowClick={(d) => updateTabIndex(d)}
+                                    reputation={_reputation as string}
+                                    signer={_signer as Signer}
+                                    web2Provider={session?.web2Provider as Web2Provider}
+                                    web2AccountId={session?.web2AccountId as string}
+                                />
+                            </TabPanelContainer>
                             <TabPanelContainer value={_tabIndex} index={2}>
                                 <ReputationBadgeTabPanel
                                     onArrowClick={(d) => updateTabIndex(d)}
                                     signer={_signer as Signer}
-                                    networkId={_networkId as number}
                                     address={_address as string}
-                                    reputation={_twitterReputation?.basicReputation as string}
+                                    reputation={_reputation as string}
+                                    web2Provider={session?.web2Provider as Web2Provider}
                                     web2AccountId={session?.web2AccountId as string}
                                 />
                             </TabPanelContainer>

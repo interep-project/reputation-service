@@ -1,8 +1,8 @@
-import { Platform } from "@interrep/reputation-criteria"
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
 import seedZeroHashes from "src/utils/seeding/seedRootHashes"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import { checkGroup, getGroup, getGroupIds, getGroups } from "./index"
 
 describe("Core group functions", () => {
@@ -14,8 +14,8 @@ describe("Core group functions", () => {
             expect(expectedGroupIds).toContain("GITHUB_GOLD")
         })
 
-        it("Should return all the group ids of an existing platform", () => {
-            const expectedGroupIds = getGroupIds(Platform.TWITTER)
+        it("Should return all the group ids of an existing Web2 provider", () => {
+            const expectedGroupIds = getGroupIds(Web2Provider.TWITTER)
 
             expect(expectedGroupIds).toStrictEqual([
                 "TWITTER_GOLD",
@@ -41,7 +41,7 @@ describe("Core group functions", () => {
     })
 
     describe("Get group", () => {
-        const groupId = getGroupIds(Platform.TWITTER)[0]
+        const groupId = getGroupIds(Web2Provider.TWITTER)[0]
 
         beforeAll(async () => {
             await connect()
@@ -73,7 +73,7 @@ describe("Core group functions", () => {
     })
 
     describe("Get groups", () => {
-        const groupId = getGroupIds(Platform.TWITTER)[0]
+        const groupId = getGroupIds(Web2Provider.TWITTER)[0]
 
         beforeAll(async () => {
             await connect()
@@ -81,6 +81,10 @@ describe("Core group functions", () => {
 
         afterAll(async () => {
             await dropDatabaseAndDisconnect()
+        })
+
+        afterEach(async () => {
+            await clearDatabase()
         })
 
         it("Should return all the existing groups", async () => {

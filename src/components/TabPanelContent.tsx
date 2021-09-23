@@ -12,12 +12,14 @@ import {
 import { useSession } from "next-auth/client"
 import React from "react"
 import TwitterIcon from "@material-ui/icons/Twitter"
+import GitHubIcon from "@material-ui/icons/GitHub"
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft"
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight"
-import { DeployedContracts, getDeployedContractAddress } from "src/utils/crypto/deployedContracts"
-import { shortenAddress } from "src/utils/frontend/evm"
+import getContractAddress from "src/utils/crypto/getContractAddress"
+import shortenAddress from "src/utils/frontend/shortenAddress"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
+import { Web2Provider } from "@interrep/reputation-criteria"
+import { ContractName } from "src/config"
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -75,10 +77,11 @@ type Properties = {
     children?: React.ReactElement
     loading?: boolean
     buttonText: string
-    onButtonClick: () => void
+    onButtonClick?: () => void
     buttonDisabled?: boolean
     reputation?: string
-    contractName?: DeployedContracts
+    contractName?: ContractName
+    web2Provider?: Web2Provider
 }
 
 export default function TabPanelContent({
@@ -93,7 +96,8 @@ export default function TabPanelContent({
     onButtonClick,
     buttonDisabled = false,
     reputation,
-    contractName
+    contractName,
+    web2Provider
 }: Properties): JSX.Element {
     const classes = useStyles()
     const [session] = useSession()
@@ -113,16 +117,18 @@ export default function TabPanelContent({
                 {description}
             </Typography>
             {children || <Box height={25} />}
-            <Button
-                className={classes.button}
-                onClick={onButtonClick}
-                variant="outlined"
-                color="primary"
-                size="large"
-                disabled={buttonDisabled}
-            >
-                {buttonText}
-            </Button>
+            {onButtonClick && (
+                <Button
+                    className={classes.button}
+                    onClick={onButtonClick}
+                    variant="outlined"
+                    color="primary"
+                    size="large"
+                    disabled={buttonDisabled}
+                >
+                    {buttonText}
+                </Button>
+            )}
             <FormHelperText className={classes.message} error>
                 {warningMessage}
             </FormHelperText>
@@ -131,33 +137,38 @@ export default function TabPanelContent({
                     <KeyboardArrowRightIcon fontSize="large" />
                 </IconButton>
             )}
-            {session && (
-                <Box className={classes.web2AccountInformation}>
-                    <TwitterIcon fontSize="small" color="primary" />
-                    <Typography variant="caption">
-                        &nbsp;{session.twitter.username}
-                        &nbsp;{reputation ? `(${reputation})` : ""}
-                    </Typography>
-                </Box>
-            )}
-            {contractName && (
-                <Box className={classes.contractLink}>
-                    <Typography variant="caption">
-                        Contract:{" "}
-                        <Link
-                            href={getExplorerLink(
-                                getDefaultNetworkId(),
-                                getDeployedContractAddress(contractName),
-                                ExplorerDataType.ADDRESS
-                            )}
-                            target="_blank"
-                            rel="noreferrer"
-                            color="inherit"
-                        >
-                            {shortenAddress(getDeployedContractAddress(contractName))}
-                        </Link>
-                    </Typography>
-                </Box>
+            {web2Provider && (
+                <>
+                    <Box className={classes.web2AccountInformation}>
+                        {web2Provider === "twitter" ? (
+                            <TwitterIcon fontSize="small" />
+                        ) : (
+                            <GitHubIcon fontSize="small" />
+                        )}
+                        <Typography style={{ marginLeft: 5 }} variant="caption">
+                            &nbsp;{session?.user.name}
+                            &nbsp;{reputation ? `(${reputation})` : ""}
+                        </Typography>
+                    </Box>
+                    {contractName && (
+                        <Box className={classes.contractLink}>
+                            <Typography variant="caption">
+                                Contract:{" "}
+                                <Link
+                                    href={getExplorerLink(
+                                        getContractAddress(contractName, web2Provider),
+                                        ExplorerDataType.ADDRESS
+                                    )}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    color="inherit"
+                                >
+                                    {shortenAddress(getContractAddress(contractName, web2Provider))}
+                                </Link>
+                            </Typography>
+                        </Box>
+                    )}
+                </>
             )}
         </>
     )

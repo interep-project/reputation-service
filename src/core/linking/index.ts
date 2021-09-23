@@ -5,14 +5,14 @@ import logger from "src/utils/server/logger"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import Token from "src/models/tokens/Token.model"
-import { getBadgeAddressByProvider, isNetworkWithDeployedContract } from "src/utils/crypto/deployedContracts"
+import getContractAddress from "src/utils/crypto/getContractAddress"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ContractName, currentNetwork } from "src/config"
 
 type LinkAccountsParams = {
-    chainId: number
     address: string
     web2AccountId: string
     userSignature: string
@@ -20,16 +20,11 @@ type LinkAccountsParams = {
 }
 
 const linkAccounts = async ({
-    chainId,
     address,
     web2AccountId,
     userSignature,
     userPublicKey
 }: LinkAccountsParams): Promise<ITokenDocument> => {
-    if (!isNetworkWithDeployedContract(chainId)) {
-        throw new Error(`Invalid network id ${chainId}`)
-    }
-
     const checksummedAddress = getChecksummedAddress(address)
 
     if (!checksummedAddress) {
@@ -47,6 +42,7 @@ const linkAccounts = async ({
     }
 
     let web2Account
+
     try {
         web2Account = await Web2Account.findById(web2AccountId)
     } catch (e) {
@@ -66,19 +62,20 @@ const linkAccounts = async ({
         throw new Error(`Insufficient account's reputation`)
     }
 
-    const badgeAddress = getBadgeAddressByProvider(web2Account.provider)
+    const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, web2Account.provider)
 
-    if (!badgeAddress) {
-        throw new Error(`Invalid badge address ${badgeAddress}`)
+    if (!contractAddress) {
+        throw new Error(`Invalid badge address ${contractAddress}`)
     }
 
     try {
         web2Account.isLinkedToAddress = true
+
         await web2Account.save()
 
         const token = new Token({
-            chainId,
-            contractAddress: badgeAddress,
+            chainId: currentNetwork.id,
+            contractAddress,
             userAddress: checksummedAddress,
             web2Provider: web2Account.provider,
             issuanceTimestamp: Date.now(),
@@ -115,6 +112,7 @@ const linkAccounts = async ({
         )
 
         token.encryptedAttestation = encryptedAttestation
+
         await token.save()
 
         return token

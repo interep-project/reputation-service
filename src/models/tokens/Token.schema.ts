@@ -1,6 +1,6 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { Schema } from "mongoose"
 import { TransactionSchema } from "../transactions/Transaction.schema"
-import { Web2Providers } from "../web2Accounts/Web2Account.types"
 import { findByUserAddress } from "./Token.statics"
 import { IToken, ITokenDocument, ITokenModel, TokenStatus } from "./Token.types"
 
@@ -15,7 +15,7 @@ const TokenSchemaFields: Record<keyof IToken, any> = {
     mintTransactions: [TransactionSchema],
     web2Provider: {
         type: String,
-        enum: Object.values(Web2Providers),
+        enum: Object.values(Web2Provider),
         required: true
     }
 }

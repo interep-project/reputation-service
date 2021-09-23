@@ -1,13 +1,14 @@
-import { ReputationLevel } from "@interrep/reputation-criteria"
-import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { capitalize, createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
 import TwitterIcon from "@material-ui/icons/Twitter"
+import GitHubIcon from "@material-ui/icons/GitHub"
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
 import React, { useEffect } from "react"
+import { ContractName } from "src/config"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument } from "src/models/tokens/Token.types"
-import { DeployedContracts, getBadgeAddressByProvider } from "src/utils/crypto/deployedContracts"
-import { getDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork"
+import getContractAddress from "src/utils/crypto/getContractAddress"
 import { checkLink, getMyTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 import TabPanelContent from "./TabPanelContent"
@@ -29,18 +30,18 @@ const useStyles = makeStyles((theme: Theme) =>
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
     reputation: string
-    networkId: number
     address: string
     signer: Signer
+    web2Provider: Web2Provider
     web2AccountId: string
 }
 
 export default function ReputationBadgeTabPanel({
     onArrowClick,
     reputation,
-    networkId,
     address,
     signer,
+    web2Provider,
     web2AccountId
 }: Properties): JSX.Element {
     const classes = useStyles()
@@ -159,7 +160,6 @@ export default function ReputationBadgeTabPanel({
         }
 
         const newToken = await linkAccounts({
-            chainId: networkId,
             address,
             web2AccountId,
             userSignature,
@@ -204,7 +204,7 @@ export default function ReputationBadgeTabPanel({
         setWarningMessage("")
         setLoading(true)
 
-        const badgeAddress = getBadgeAddressByProvider(token.web2Provider)
+        const badgeAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
 
         if (badgeAddress === null) {
             setWarningMessage("Cannot retrieve the badge's address")
@@ -219,9 +219,7 @@ export default function ReputationBadgeTabPanel({
             await tx.wait()
         } catch (error) {
             console.error(error)
-
-            setWarningMessage("Sorry, there was a transaction error")
-            setLoading(false)
+            showUnexpectedError()
             return
         }
 
@@ -266,10 +264,16 @@ export default function ReputationBadgeTabPanel({
             <TabPanelContent
                 title="Reputation badge"
                 description={
-                    !_token
+                    _error
+                        ? ""
+                        : _loading
+                        ? "Loading..."
+                        : !_token
                         ? "Link your Web2 account with your Ethereum address and mint your token to prove your reputation."
                         : _token?.status === "NOT_MINTED"
-                        ? "Your Twitter account is linked to your Ethereum address. Mint your token to prove your reputation."
+                        ? `Your ${capitalize(
+                              web2Provider
+                          )} account is linked to your Ethereum address. Mint your token to prove your reputation.`
                         : _token?.status === "MINTED"
                         ? "You have a minted token! Click on it to see the transaction on Etherscan."
                         : "You burnt your token. Unlink your accounts and link them another time to mint a new token."
@@ -297,20 +301,21 @@ export default function ReputationBadgeTabPanel({
                 }
                 buttonDisabled={reputation !== ReputationLevel.GOLD || _loading || _error}
                 reputation={reputation}
-                contractName={DeployedContracts.TWITTER_BADGE}
+                contractName={ContractName.REPUTATION_BADGE}
+                web2Provider={web2Provider}
             >
                 {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] ? (
                     <IconButton
                         className={classes.token}
-                        href={getExplorerLink(
-                            getDefaultNetworkId(),
-                            _token.mintTransactions[0].response.hash,
-                            ExplorerDataType.TRANSACTION
-                        )}
+                        href={getExplorerLink(_token.mintTransactions[0].response.hash, ExplorerDataType.TRANSACTION)}
                         target="_blank"
                         rel="noreferrer"
                     >
-                        <TwitterIcon className={classes.tokenIcon} fontSize="large" />
+                        {web2Provider === Web2Provider.TWITTER ? (
+                            <TwitterIcon className={classes.tokenIcon} fontSize="large" />
+                        ) : (
+                            <GitHubIcon className={classes.tokenIcon} fontSize="large" />
+                        )}
                     </IconButton>
                 ) : undefined}
             </TabPanelContent>

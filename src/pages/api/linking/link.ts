@@ -18,12 +18,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(401).end()
     }
 
-    const { chainId, address, web2AccountId, userSignature, userPublicKey } = JSON.parse(req.body)
+    const { address, web2AccountId, userSignature, userPublicKey } = JSON.parse(req.body)
 
     logger.silly(`Linking ${address} with ${web2AccountId}. Signature: ${userSignature}`)
 
     // Invalid call
-    if (!chainId || !address || !web2AccountId || !userSignature || !userPublicKey) {
+    if (!address || !web2AccountId || !userSignature || !userPublicKey) {
         return res.status(400).end()
     }
 
@@ -34,7 +34,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     try {
         const token = await linkAccounts({
-            chainId,
             address,
             web2AccountId,
             userSignature,

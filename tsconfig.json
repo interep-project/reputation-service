@@ -17,7 +17,8 @@
         "strict": true,
         "target": "esnext",
         "baseUrl": ".",
-        "typeRoots": ["node_modules/@types", "types"]
+        "typeRoots": ["node_modules/@types", "src/types"],
+        "types": ["react", "node", "jest", "circomlib", "incrementalquintree"]
     },
     "ts-node": {
         // these options are overrides used only by ts-node

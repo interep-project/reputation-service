@@ -1,10 +1,11 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { Session } from "next-auth"
 
 const mockSession: Session = {
-    user: { name: "Joe" },
+    web2Provider: Web2Provider.TWITTER,
     expires: "123",
     web2AccountId: "6087dabb0b3af8703a581bef",
-    twitter: { userId: "12", username: "joe" }
+    user: { id: "12", name: "Joe" }
 }
 
 export default mockSession

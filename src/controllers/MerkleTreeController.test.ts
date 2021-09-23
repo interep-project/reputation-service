@@ -1,4 +1,4 @@
-import { Platform } from "@interrep/reputation-criteria"
+import { Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import { getGroupIds } from "src/core/groups"
@@ -12,7 +12,7 @@ import MerkleTreeController from "./MerkleTreeController"
 
 describe("MerkleTreeController", () => {
     const idCommitment = poseidon([2n, 1n]).toString()
-    const groupId = getGroupIds(Platform.TWITTER)[0]
+    const groupId = getGroupIds(Web2Provider.TWITTER)[0]
 
     beforeAll(async () => {
         await connect()
@@ -130,7 +130,7 @@ describe("MerkleTreeController", () => {
             await expect(fun).rejects.toThrow()
         })
 
-        it(`Should return a path of ${config.TREE_LEVELS} hashes`, async () => {
+        it(`Should return a path of ${config.MERKLE_TREE_LEVELS} hashes`, async () => {
             await seedZeroHashes(false)
 
             const idCommitments = []
@@ -143,14 +143,16 @@ describe("MerkleTreeController", () => {
 
             const path = await MerkleTreeController.retrievePath(groupId, idCommitments[5])
 
-            expect(path.pathElements).toHaveLength(config.TREE_LEVELS)
-            expect(path.indices).toHaveLength(config.TREE_LEVELS)
+            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_LEVELS)
+            expect(path.indices).toHaveLength(config.MERKLE_TREE_LEVELS)
         })
 
         it("Should match the path obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new IncrementalQuinTree(config.TREE_LEVELS, 0, 2, (inputs: BigInt[]) => poseidon(inputs))
+            const tree = new IncrementalQuinTree(config.MERKLE_TREE_LEVELS, 0, 2, (inputs: BigInt[]) =>
+                poseidon(inputs)
+            )
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {

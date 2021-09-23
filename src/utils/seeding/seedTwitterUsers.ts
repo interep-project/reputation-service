@@ -1,18 +1,19 @@
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import colors from "colors"
-import { TwitterUser } from "src/types/twitter"
+import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { getTwitterFriendsByUserId, getTwitterUserByUsername } from "src/services/twitter"
-import TwitterAccount from "src/models/web2Accounts/twitter/TwitterAccount.model"
-import { createTwitterAccountObject } from "src/utils/server/createNewTwitterAccount"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { TwitterUser } from "src/types/twitter"
 
-function createTwitterSeedUser(twitterUser: TwitterUser): any {
-    return {
-        providerAccountId: twitterUser.id,
-        user: twitterUser,
+function createTwitterSeedUser(user: TwitterUser): any {
+    return new Web2Account({
+        provider: Web2Provider.TWITTER,
+        uniqueKey: `${Web2Provider.TWITTER}:${user.id}`,
+        createdAt: Date.now(),
+        providerAccountId: user.id,
         isSeedUser: true,
         isLinkedToAddress: false,
         basicReputation: ReputationLevel.GOLD
-    }
+    })
 }
 
 export default async function seedTwitterUsers(twitterUsernames: string[], logger = false): Promise<void> {
@@ -35,12 +36,12 @@ export default async function seedTwitterUsers(twitterUsernames: string[], logge
             break
         }
 
-        const formattedFriends = friends.map((friend) => createTwitterAccountObject(createTwitterSeedUser(friend)))
+        const formattedFriends = friends.map((friend) => createTwitterSeedUser(friend))
 
         try {
             // With ordered false, it inserts all documents it can and report
             // errors at the end (incl. errors from duplicates).
-            const docs = await TwitterAccount.insertMany(formattedFriends, {
+            const docs = await Web2Account.insertMany(formattedFriends, {
                 ordered: false
             })
 

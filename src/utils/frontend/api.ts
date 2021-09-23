@@ -1,3 +1,5 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
+
 async function sendRequest(url: string, body?: any, method = body ? "POST" : "GET"): Promise<any | null> {
     const response = await fetch(url, {
         method,
@@ -21,12 +23,18 @@ async function sendRequest(url: string, body?: any, method = body ? "POST" : "GE
     }
 }
 
-export function getMyTwitterReputation(): Promise<any | null> {
-    return sendRequest("/api/reputation/twitter/me")
+export function getMyReputation({ web2Provider }: { web2Provider: Web2Provider }): Promise<any | null> {
+    return sendRequest(`/api/reputation/${web2Provider}`)
 }
 
-export function getTwitterReputation({ username }: { username: string }): Promise<any | null> {
-    return sendRequest(`/api/reputation/twitter/?username=${username}`)
+export function getReputation({
+    web2Provider,
+    username
+}: {
+    web2Provider: Web2Provider
+    username: string
+}): Promise<any | null> {
+    return sendRequest(`/api/reputation/${web2Provider}/${username}`)
 }
 
 export function getMyTokens({ ownerAddress }: { ownerAddress: string }): Promise<any | null> {
@@ -39,6 +47,10 @@ export function getGroup({ groupId }: { groupId: string }): Promise<any | null> 
 
 export async function checkLink(): Promise<boolean | null> {
     return sendRequest("/api/linking/check")
+}
+
+export async function checkGroup(): Promise<boolean | null> {
+    return sendRequest(`/api/groups/check`)
 }
 
 export async function checkIdentityCommitment({
@@ -74,13 +86,11 @@ export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation:
 }
 
 export function linkAccounts({
-    chainId,
     address,
     web2AccountId,
     userSignature,
     userPublicKey
 }: {
-    chainId: number
     address: string
     web2AccountId: string
     userSignature: string
@@ -89,7 +99,6 @@ export function linkAccounts({
     return sendRequest(
         "/api/linking/link",
         {
-            chainId,
             address,
             web2AccountId,
             userSignature,

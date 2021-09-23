@@ -1,18 +1,18 @@
+import { Web2Provider } from "@interrep/reputation-criteria"
 import {
+    Button,
     Card,
     CardContent,
-    Button,
-    TextField,
-    Typography,
     Container,
-    makeStyles,
     createStyles,
-    Theme
+    makeStyles,
+    TextField,
+    Theme,
+    Typography
 } from "@material-ui/core"
 import Head from "next/head"
-import { FormEvent, useState } from "react"
-import { AccountReputationByAccount } from "src/models/web2Accounts/Web2Account.types"
-import { getTwitterReputation } from "src/utils/frontend/api"
+import React, { FormEvent, useState } from "react"
+import { getReputation } from "src/utils/frontend/api"
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -43,23 +43,24 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function TwitterReputation(): JSX.Element {
     const classes = useStyles()
-    const [twitterUsername, setTwitterUsername] = useState<string>("")
-    const [twitterUserData, setTwitterUserData] = useState<AccountReputationByAccount>()
-    const [isLoading, setIsLoading] = useState(false)
+    const [_twitterUsername, setTwitterUsername] = useState<string>("")
+    const [_twitterReputation, setTwitterReputation] = useState<any>()
+    const [_isLoading, setIsLoading] = useState(false)
 
     async function onSubmit(event: FormEvent): Promise<void> {
         event.preventDefault()
 
-        if (!twitterUsername) return
+        if (!_twitterUsername) return
 
         setIsLoading(true)
 
-        const reputation = await getTwitterReputation({
-            username: twitterUsername
+        const reputation = await getReputation({
+            web2Provider: Web2Provider.TWITTER,
+            username: _twitterUsername
         })
 
         if (reputation) {
-            setTwitterUserData(reputation)
+            setTwitterReputation(reputation)
         }
 
         setIsLoading(false)
@@ -85,32 +86,28 @@ export default function TwitterReputation(): JSX.Element {
                         className={classes.input}
                         label="Username"
                         variant="outlined"
-                        value={twitterUsername}
+                        value={_twitterUsername}
                         onChange={(event) => setTwitterUsername(event.target.value)}
                     />
-                    <Button variant="outlined" color="primary" type="submit" disabled={isLoading}>
+                    <Button variant="outlined" color="primary" type="submit" disabled={_isLoading}>
                         Check
                     </Button>
                 </form>
 
-                {!isLoading && (
+                {!_isLoading && _twitterReputation && (
                     <>
-                        {twitterUserData?.basicReputation && (
-                            <>
-                                <Typography variant="h6" gutterBottom>
-                                    Reputation: {twitterUserData.basicReputation}
+                        <Typography variant="h6" gutterBottom>
+                            Reputation: {_twitterReputation.reputation}
+                        </Typography>
+                        <Card>
+                            <CardContent className={classes.cardContent}>
+                                <Typography color="textSecondary">Bot Score</Typography>
+                                <Typography variant="h5" component="h2">
+                                    {_twitterReputation.parameters.botometerOverallScore}
+                                    /5
                                 </Typography>
-                                <Card>
-                                    <CardContent className={classes.cardContent}>
-                                        <Typography color="textSecondary">Bot Score</Typography>
-                                        <Typography variant="h5" component="h2">
-                                            {twitterUserData.botometer?.display_scores?.universal.overall}
-                                            /5
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </>
-                        )}
+                            </CardContent>
+                        </Card>
                     </>
                 )}
             </Container>

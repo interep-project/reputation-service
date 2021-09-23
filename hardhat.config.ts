@@ -3,8 +3,8 @@ import { config as dotenvConfig } from "dotenv"
 import { HardhatUserConfig, task } from "hardhat/config"
 import { resolve } from "path"
 import "tsconfig-paths/register"
-import { defaultNetworkByEnv } from "src/config"
 import { NetworksUserConfig } from "hardhat/types"
+import { currentNetwork } from "src/config"
 
 task("faucet", "Sends ETH to an address")
     .addPositionalParam("receiver", "The address that will receive them")
@@ -58,7 +58,7 @@ function getNetworks(): NetworksUserConfig | undefined {
 }
 
 const config: HardhatUserConfig = {
-    defaultNetwork: defaultNetworkByEnv[process.env.NODE_ENV]?.name || "hardhat",
+    defaultNetwork: currentNetwork.name,
     networks: getNetworks(),
     paths: {
         artifacts: "contracts/artifacts",
