@@ -75,8 +75,6 @@ export const supportedNetworks: Record<string, SupportedNetwork> = {
 
 export const currentNetwork = (function IIFE() {
     switch (process.env.NODE_ENV as Environment) {
-        case Environment.TEST:
-            return supportedNetworks.hardhat
         case Environment.DEVELOPMENT:
             return supportedNetworks.localhost
         case Environment.PRODUCTION: {
@@ -89,7 +87,7 @@ export const currentNetwork = (function IIFE() {
             return supportedNetworks[defaultNetwork]
         }
         default:
-            throw new Error("NODE_ENV variable has not been defined correctly")
+            return supportedNetworks.hardhat
     }
 })()
 
