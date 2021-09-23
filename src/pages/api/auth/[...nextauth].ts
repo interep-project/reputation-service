@@ -3,19 +3,27 @@ import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
 import config from "src/config"
-import { checkWeb2Provider, createWeb2Account } from "src/core/accounts"
+import { createWeb2Account, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { User } from "src/types/next-auth"
 import logger from "src/utils/server/logger"
 
 export default NextAuth({
     providers: [
         Providers.Twitter({
             clientId: config.TWITTER_CONSUMER_KEY || "",
-            clientSecret: config.TWITTER_CONSUMER_SECRET || ""
+            clientSecret: config.TWITTER_CONSUMER_SECRET || "",
+            profile: mapTwitterProfile
         }),
         Providers.GitHub({
             clientId: config.GITHUB_CLIENT_ID || "",
-            clientSecret: config.GITHUB_CLIENT_SECRET || ""
+            clientSecret: config.GITHUB_CLIENT_SECRET || "",
+            profile: mapGithubProfile
+        }),
+        Providers.Reddit({
+            clientId: config.REDDIT_CLIENT_ID || "",
+            clientSecret: config.REDDIT_CLIENT_SECRET || "",
+            profile: mapRedditProfile
         })
     ],
     secret: config.NEXTAUTH_SECRET,
@@ -24,13 +32,13 @@ export default NextAuth({
         secret: config.JWT_SECRET
     },
     callbacks: {
-        async signIn(_user, account: Account) {
-            if (!account?.provider || !checkWeb2Provider(account.provider as Web2Provider)) {
+        async signIn(user: User, account: Account) {
+            if (!account?.provider || !(account.provider.toUpperCase() in Web2Provider)) {
                 return false
             }
 
             try {
-                await createWeb2Account(account, account.provider as Web2Provider)
+                await createWeb2Account(user, account, account.provider as Web2Provider)
 
                 return true
             } catch (err) {
@@ -39,8 +47,8 @@ export default NextAuth({
                 return false
             }
         },
-        async jwt(token: JWT, _user, account: Account) {
-            if (!account?.provider || !checkWeb2Provider(account.provider as Web2Provider)) {
+        async jwt(token: JWT, user: User, account: Account) {
+            if (!account?.provider || !(account.provider.toUpperCase() in Web2Provider)) {
                 return token
             }
 
@@ -53,9 +61,8 @@ export default NextAuth({
                 if (web2Account) {
                     token.web2AccountId = web2Account.id
                     token.web2Provider = account.provider as Web2Provider
-                    token.user = {
-                        id: account.id
-                    }
+                    user.reputation = web2Account.basicReputation
+                    token.user = user
                 }
 
                 return token
@@ -73,7 +80,7 @@ export default NextAuth({
             if (token.web2Provider) {
                 session.web2AccountId = token.web2AccountId
                 session.web2Provider = token.web2Provider
-                session.user.id = token.user.id
+                session.user = token.user
             }
 
             return session

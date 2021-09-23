@@ -1510,15 +1510,15 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
-"@interrep/reputation-criteria@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.6.0.tgz#8d1be57f542eb33882824745b66dbf44cecdb7b4"
-  integrity sha512-88rgpdaSxofPrPu8m2aK5FPoxQH/waL5Ci1XCEotDtRmv0ub0zpPurinEe8QVFH222fAly1u4xoZ5ZwkbmGJTw==
+"@interrep/reputation-criteria@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.7.1.tgz#3472d804134da303a53bf3f87531ec78e1e532a8"
+  integrity sha512-+dzani8S+sU/frQjTB6ETX+gmEKdcKzxAz1/NEk2BVhKtG2rw2gzzuq5/tNHutm9mXSeZqXKIuuAh3ncpmP0tA==
 
-"@interrep/semethid@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.8.0.tgz#db1e44aa6484d7f796f0d881f1db88639423ff29"
-  integrity sha512-09oUOtHVZ2cWPW/4c0fPosFykabBUUDSPJEnfEFWnwwwv35ugAOOYnitVxWFY9ahSMHG/xksVzedP9fLNf4F6w==
+"@interrep/semethid@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.8.1.tgz#e5491f2f0187d791712128b41bf447d5cdc55cc1"
+  integrity sha512-BQ29CQ8QChVyXXeasJ3fSAGOQxf2E1iWjHIes9eBYYYuzvbBevC8Emo9Su2jeM8TM2+pbQ4/18rdWqzuyX6NsA==
   dependencies:
     circomlib "^0.5.3"
     js-sha256 "^0.9.0"

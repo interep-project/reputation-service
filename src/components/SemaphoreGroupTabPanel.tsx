@@ -1,4 +1,4 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
 import { capitalize } from "@material-ui/core"
 import { babyJub, poseidon } from "circomlib"
@@ -11,7 +11,7 @@ import TabPanelContent from "./TabPanelContent"
 
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
-    reputation: string
+    reputation: ReputationLevel
     signer: Signer
     web2Provider: Web2Provider
     web2AccountId: string
@@ -137,7 +137,7 @@ export default function SemaphoreGroupTabPanel({
                         ? `The ${reputation} ${capitalize(web2Provider)} group has ${
                               _group?.size
                           } members. Create your Semaphore identity if you want to join this group.`
-                        : `You joined the ${capitalize(web2Provider)} ${reputation} group.`
+                        : `You joined a ${capitalize(web2Provider)} group.`
                 }
                 onLeftArrowClick={onArrowClick}
                 onRightArrowClick={onArrowClick}

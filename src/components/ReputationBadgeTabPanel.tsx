@@ -2,6 +2,7 @@ import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { capitalize, createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
 import TwitterIcon from "@material-ui/icons/Twitter"
 import GitHubIcon from "@material-ui/icons/GitHub"
+import RedditIcon from "@material-ui/icons/Reddit"
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
 import React, { useEffect } from "react"
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
-    reputation: string
+    reputation: ReputationLevel
     address: string
     signer: Signer
     web2Provider: Web2Provider
@@ -313,8 +314,10 @@ export default function ReputationBadgeTabPanel({
                     >
                         {web2Provider === Web2Provider.TWITTER ? (
                             <TwitterIcon className={classes.tokenIcon} fontSize="large" />
-                        ) : (
+                        ) : web2Provider === Web2Provider.GITHUB ? (
                             <GitHubIcon className={classes.tokenIcon} fontSize="large" />
+                        ) : (
+                            <RedditIcon className={classes.tokenIcon} fontSize="large" />
                         )}
                     </IconButton>
                 ) : undefined}

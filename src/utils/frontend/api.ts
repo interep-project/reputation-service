@@ -23,10 +23,6 @@ async function sendRequest(url: string, body?: any, method = body ? "POST" : "GE
     }
 }
 
-export function getMyReputation({ web2Provider }: { web2Provider: Web2Provider }): Promise<any | null> {
-    return sendRequest(`/api/reputation/${web2Provider}`)
-}
-
 export function getReputation({
     web2Provider,
     username

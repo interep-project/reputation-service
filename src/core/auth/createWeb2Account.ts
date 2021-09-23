@@ -1,11 +1,16 @@
-import { calculateReputation, Web2Provider } from "@interrep/reputation-criteria"
+import {
+    calculateReputation,
+    GithubParameters,
+    RedditParameters,
+    TwitterParameters,
+    Web2Provider
+} from "@interrep/reputation-criteria"
 import { Account } from "next-auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { getGithubUser } from "src/services/github"
+import { User } from "src/types/next-auth"
 import { dbConnect } from "src/utils/server/database"
-import { getTwitterParametersById } from "../reputation/twitter"
 
-export default async function createWeb2Account(account: Account, provider: Web2Provider): Promise<void> {
+export default async function createWeb2Account(user: User, account: Account, provider: Web2Provider): Promise<void> {
     await dbConnect()
 
     if (!account.id) {
@@ -28,14 +33,36 @@ export default async function createWeb2Account(account: Account, provider: Web2
 
             switch (provider) {
                 case Web2Provider.TWITTER: {
-                    const parameters = await getTwitterParametersById(account.id)
-                    web2Account.basicReputation = calculateReputation(provider, parameters)
+                    const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
+
+                    web2Account.basicReputation = calculateReputation(provider, {
+                        verifiedProfile,
+                        followers,
+                        botometerOverallScore
+                    })
 
                     break
                 }
                 case Web2Provider.GITHUB: {
-                    const parameters = await getGithubUser(account.accessToken)
-                    web2Account.basicReputation = calculateReputation(provider, parameters)
+                    const { proPlan, followers, receivedStars } = user as GithubParameters
+
+                    web2Account.basicReputation = calculateReputation(provider, {
+                        proPlan,
+                        followers,
+                        receivedStars
+                    })
+
+                    break
+                }
+                case Web2Provider.REDDIT: {
+                    const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
+
+                    web2Account.basicReputation = calculateReputation(provider, {
+                        premiumSubscription,
+                        karma,
+                        coins,
+                        linkedIdentities
+                    })
 
                     break
                 }

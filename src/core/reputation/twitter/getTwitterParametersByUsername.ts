@@ -2,7 +2,7 @@ import { TwitterParameters } from "@interrep/reputation-criteria"
 import getBotometerScore from "src/services/botometer"
 import { getTwitterUserByUsername } from "src/services/twitter"
 
-export default async function getParametersByUsername(username: string): Promise<TwitterParameters> {
+export default async function getTwitterParametersByUsername(username: string): Promise<TwitterParameters> {
     const twitterUser = await getTwitterUserByUsername({
         username
     })

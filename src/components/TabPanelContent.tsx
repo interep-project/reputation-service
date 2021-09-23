@@ -13,12 +13,13 @@ import { useSession } from "next-auth/client"
 import React from "react"
 import TwitterIcon from "@material-ui/icons/Twitter"
 import GitHubIcon from "@material-ui/icons/GitHub"
+import RedditIcon from "@material-ui/icons/Reddit"
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft"
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight"
 import getContractAddress from "src/utils/crypto/getContractAddress"
 import shortenAddress from "src/utils/frontend/shortenAddress"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { ContractName } from "src/config"
 
 const useStyles = makeStyles(() =>
@@ -79,7 +80,7 @@ type Properties = {
     buttonText: string
     onButtonClick?: () => void
     buttonDisabled?: boolean
-    reputation?: string
+    reputation?: ReputationLevel
     contractName?: ContractName
     web2Provider?: Web2Provider
 }
@@ -140,10 +141,12 @@ export default function TabPanelContent({
             {web2Provider && (
                 <>
                     <Box className={classes.web2AccountInformation}>
-                        {web2Provider === "twitter" ? (
+                        {web2Provider === Web2Provider.TWITTER ? (
                             <TwitterIcon fontSize="small" />
-                        ) : (
+                        ) : web2Provider === Web2Provider.GITHUB ? (
                             <GitHubIcon fontSize="small" />
+                        ) : (
+                            <RedditIcon fontSize="small" />
                         )}
                         <Typography style={{ marginLeft: 5 }} variant="caption">
                             &nbsp;{session?.user.name}
