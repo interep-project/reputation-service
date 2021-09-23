@@ -1,6 +1,7 @@
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { capitalize, createStyles, IconButton, makeStyles, Theme } from "@material-ui/core"
 import TwitterIcon from "@material-ui/icons/Twitter"
+import GitHubIcon from "@material-ui/icons/GitHub"
 import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
 import React, { useEffect } from "react"
@@ -310,7 +311,11 @@ export default function ReputationBadgeTabPanel({
                         target="_blank"
                         rel="noreferrer"
                     >
-                        <TwitterIcon className={classes.tokenIcon} fontSize="large" />
+                        {web2Provider === Web2Provider.TWITTER ? (
+                            <TwitterIcon className={classes.tokenIcon} fontSize="large" />
+                        ) : (
+                            <GitHubIcon className={classes.tokenIcon} fontSize="large" />
+                        )}
                     </IconButton>
                 ) : undefined}
             </TabPanelContent>
