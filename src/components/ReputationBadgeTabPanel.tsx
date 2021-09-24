@@ -10,7 +10,7 @@ import { ContractName } from "src/config"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument } from "src/models/tokens/Token.types"
 import getContractAddress from "src/utils/crypto/getContractAddress"
-import { checkLink, getMyTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
+import { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 import TabPanelContent from "./TabPanelContent"
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type Properties = {
     onArrowClick: (direction: -1 | 1) => void
     reputation: ReputationLevel
-    address: string
+    userAddress: string
     signer: Signer
     web2Provider: Web2Provider
     web2AccountId: string
@@ -40,7 +40,7 @@ type Properties = {
 export default function ReputationBadgeTabPanel({
     onArrowClick,
     reputation,
-    address,
+    userAddress: address,
     signer,
     web2Provider,
     web2AccountId
@@ -120,7 +120,7 @@ export default function ReputationBadgeTabPanel({
             }
 
             if (accountLinked) {
-                const tokens = await getMyTokens({ ownerAddress: address })
+                const tokens = await getUserTokens({ userAddress: address })
 
                 if (tokens === null || tokens.length === 0) {
                     showUnexpectedError()
@@ -189,7 +189,7 @@ export default function ReputationBadgeTabPanel({
             return
         }
 
-        const tokens = await getMyTokens({ ownerAddress: address })
+        const tokens = await getUserTokens({ userAddress: address })
 
         if (tokens === null) {
             showUnexpectedError()
@@ -224,7 +224,7 @@ export default function ReputationBadgeTabPanel({
             return
         }
 
-        const tokens = await getMyTokens({ ownerAddress: address })
+        const tokens = await getUserTokens({ userAddress: address })
 
         if (tokens === null) {
             showUnexpectedError()

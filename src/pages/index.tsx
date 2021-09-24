@@ -86,7 +86,7 @@ export default function Home(): JSX.Element {
                                 <ReputationBadgeTabPanel
                                     onArrowClick={(d) => updateTabIndex(d)}
                                     signer={_signer as Signer}
-                                    address={_address as string}
+                                    userAddress={_address as string}
                                     reputation={session?.user?.reputation as ReputationLevel}
                                     web2Provider={session?.web2Provider as Web2Provider}
                                     web2AccountId={session?.web2AccountId as string}

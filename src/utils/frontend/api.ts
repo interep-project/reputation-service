@@ -33,8 +33,8 @@ export function getReputation({
     return sendRequest(`/api/reputation/${web2Provider}/${username}`)
 }
 
-export function getMyTokens({ ownerAddress }: { ownerAddress: string }): Promise<any | null> {
-    return sendRequest(`/api/tokens/?owner=${ownerAddress}`)
+export function getUserTokens({ userAddress }: { userAddress: string }): Promise<any | null> {
+    return sendRequest(`/api/tokens/?userAddress=${userAddress}`)
 }
 
 export function getGroup({ groupId }: { groupId: string }): Promise<any | null> {
@@ -60,7 +60,7 @@ export async function checkIdentityCommitment({
 }
 
 export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
-    return sendRequest("/api/tokens/mint", { tokenId })
+    return sendRequest(`/api/tokens/${tokenId}/mint`, undefined, "POST")
 }
 
 export function addIdentityCommitment({

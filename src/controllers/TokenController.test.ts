@@ -38,10 +38,10 @@ describe("TokenController", () => {
             await clearDatabase()
         })
 
-        it("should return a 400 if there is no owner string in query", async () => {
+        it("should return a 400 if there is no user address in query", async () => {
             // Given
             const { req, res } = createNextMocks({
-                query: { owner: 123 },
+                query: { userAddress: 123 },
                 method: "GET"
             })
 
@@ -55,7 +55,7 @@ describe("TokenController", () => {
         it("should return a 400 if the address in query is not valid", async () => {
             // Given
             const { req, res } = createNextMocks({
-                query: { owner: "0x123" },
+                query: { userAddress: "0x123" },
                 method: "GET"
             })
 
@@ -70,7 +70,7 @@ describe("TokenController", () => {
         it("should return an empty array if there is no tokens for that address", async () => {
             // Given
             const { req, res } = createNextMocks({
-                query: { owner: "0xddfAbCdc4D8FfC6d5beaf154f18B778f892A0740" },
+                query: { userAddress: "0xddfAbCdc4D8FfC6d5beaf154f18B778f892A0740" },
                 method: "GET"
             })
 
@@ -92,7 +92,7 @@ describe("TokenController", () => {
             )
 
             const { req, res } = createNextMocks({
-                query: { owner: userAddress },
+                query: { userAddress },
                 method: "GET"
             })
 
@@ -119,7 +119,7 @@ describe("TokenController", () => {
             )
 
             const { req, res } = createNextMocks({
-                query: { owner: userAddress },
+                query: { userAddress },
                 method: "GET"
             })
 
@@ -133,7 +133,7 @@ describe("TokenController", () => {
     describe("mintToken", () => {
         it("should return a 400 if not token id was passed", async () => {
             const { req, res } = createNextMocks({
-                body: {},
+                query: {},
                 method: "PUT"
             })
 
@@ -149,7 +149,7 @@ describe("TokenController", () => {
 
             const tokenId = "0xaaaaa"
             const { req, res } = createNextMocks({
-                body: { tokenId },
+                query: { tokenId },
                 method: "PUT"
             })
 
@@ -160,7 +160,7 @@ describe("TokenController", () => {
             expect(res._getData().data).toEqual(txResponseMock)
         })
 
-        it("should return 400 and send the error", async () => {
+        it("should return 500 and send the error", async () => {
             const err = new Error("Invalid operation")
             // @ts-expect-error: mocked above
             mintToken.mockImplementationOnce(() => {
@@ -169,13 +169,13 @@ describe("TokenController", () => {
 
             const tokenId = "0xaaaaa"
             const { req, res } = createNextMocks({
-                body: { tokenId },
+                query: { tokenId },
                 method: "PUT"
             })
 
             await TokenController.mintToken(req, res)
 
-            expect(res._getStatusCode()).toBe(400)
+            expect(res._getStatusCode()).toBe(500)
             expect(res._getData()).toEqual(err)
             expect(logger.error).toHaveBeenCalledWith(err)
         })
