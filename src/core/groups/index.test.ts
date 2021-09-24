@@ -54,7 +54,7 @@ describe("Core group functions", () => {
         it("Should return the correct group", async () => {
             const expectedGroup = await getGroup(groupId)
 
-            expect(expectedGroup).toStrictEqual({ id: groupId, size: 0 })
+            expect(expectedGroup).toStrictEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 0 })
         })
 
         it("Should return false if a group does not exist", async () => {
@@ -68,7 +68,7 @@ describe("Core group functions", () => {
 
             const expectedGroup = await getGroup(groupId)
 
-            expect(expectedGroup).toStrictEqual({ id: groupId, size: 10 })
+            expect(expectedGroup).toStrictEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 10 })
         })
     })
 
@@ -90,7 +90,7 @@ describe("Core group functions", () => {
         it("Should return all the existing groups", async () => {
             const expectedGroups = await getGroups()
 
-            expect(expectedGroups).toContainEqual({ id: groupId, size: 0 })
+            expect(expectedGroups).toContainEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 0 })
         })
     })
 })
