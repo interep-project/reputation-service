@@ -1,43 +1,18 @@
-import { AppBar, createStyles, Link, makeStyles, Toolbar, Typography } from "@material-ui/core"
-import { useRouter } from "next/router"
-import GithubIcon from "@material-ui/icons/GitHub"
+import { FaGithub } from "react-icons/fa"
 import React from "react"
-
-const useStyles = makeStyles(() =>
-    createStyles({
-        footer: {
-            top: "auto",
-            bottom: 0
-        },
-        githubLink: {
-            flexGrow: 1
-        }
-    })
-)
+import { Container, Link, Icon, Text, HStack, Box } from "@chakra-ui/react"
 
 export default function Footer(): JSX.Element {
-    const classes = useStyles()
-    const router = useRouter()
-
     return (
-        <AppBar className={classes.footer} position="fixed" elevation={0} color="inherit">
-            <Toolbar variant="dense">
-                <Typography className={classes.githubLink}>
-                    <Link href="https://github.com/InterRep" target="_blank" rel="noreferrer" color="inherit">
-                        <GithubIcon fontSize="small" />
+        <Box bg="background.800" w="100%">
+            <Container my="15px" px="80px" maxW="container.xl">
+                <HStack justify="space-between">
+                    <Text>© InterRep - 2021</Text>
+                    <Link href="https://github.com/InterRep" isExternal>
+                        <Icon boxSize="24px" as={FaGithub} />
                     </Link>
-                </Typography>
-                <Typography>
-                    <Link
-                        href={router.route === "/" ? "/reputation/twitter" : "/"}
-                        target="_blank"
-                        rel="noreferrer"
-                        color="inherit"
-                    >
-                        {router.route === "/" ? "Reputation Service >" : "InterRep >"}
-                    </Link>
-                </Typography>
-            </Toolbar>
-        </AppBar>
+                </HStack>
+            </Container>
+        </Box>
     )
 }
