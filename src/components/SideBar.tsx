@@ -17,10 +17,10 @@ export default function SideBar({ session }: Properties): JSX.Element {
         const reputation = session.user?.reputation as string
 
         if (typeof reputation === "string" && reputation !== ReputationLevel.NOT_SUFFICIENT) {
-            return `${reputation.toLowerCase()}.${colorMode === "dark" ? "200" : "800"}`
+            return `${reputation.toLowerCase()}.${colorMode === "dark" ? "200" : "700"}`
         }
 
-        return `red.${colorMode === "dark" ? "200" : "800"}`
+        return `red.${colorMode === "dark" ? "200" : "700"}`
     }, [session, colorMode])
 
     function normalizeReputationString(reputation: string): string {

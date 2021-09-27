@@ -1,8 +1,19 @@
-import { Button, ButtonGroup, Container, HStack, Text, Tooltip, useClipboard } from "@chakra-ui/react"
+import {
+    Button,
+    IconButton,
+    ButtonGroup,
+    Container,
+    HStack,
+    Text,
+    Tooltip,
+    useClipboard,
+    useColorMode
+} from "@chakra-ui/react"
 import { useSession } from "next-auth/client"
 import { useRouter } from "next/dist/client/router"
 import React, { useCallback, useContext } from "react"
 import { isBrowser } from "react-device-detect"
+import { FaSun, FaMoon } from "react-icons/fa"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import getNetworkFullName from "src/utils/crypto/getNetworkFullName"
@@ -13,6 +24,7 @@ export default function NavBar(): JSX.Element {
     const [session] = useSession()
     const { connect, check, _networkId, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const { hasCopied, onCopy } = useClipboard(_address as string)
+    const { colorMode, toggleColorMode } = useColorMode()
 
     const appIsReady = useCallback(
         () => !!(session && session.user.reputation && currentNetwork.id === _networkId && _address),
@@ -20,7 +32,14 @@ export default function NavBar(): JSX.Element {
     )
 
     return (
-        <Container bg="background.700" position="fixed" pt="60px" pb="20px" px="80px" maxW="container.xl">
+        <Container
+            bg={colorMode === "light" ? "white" : "background.700"}
+            position="fixed"
+            pt="60px"
+            pb="20px"
+            px="80px"
+            maxW="container.xl"
+        >
             <HStack justify="space-between">
                 <HStack>
                     <Text fontSize="2xl" mr="16px">
@@ -49,7 +68,11 @@ export default function NavBar(): JSX.Element {
                 <HStack>
                     {isBrowser && _address && _networkId ? (
                         <>
-                            <Text color="secondary.200" fontWeight="semibold" fontSize="lg">
+                            <Text
+                                color={colorMode === "light" ? "secondary.700" : "secondary.200"}
+                                fontWeight="bold"
+                                fontSize="lg"
+                            >
                                 {_networkId && getNetworkFullName(_networkId)}
                             </Text>
                             {_networkId === currentNetwork.id ? (
@@ -66,6 +89,11 @@ export default function NavBar(): JSX.Element {
                     ) : (
                         <Button onClick={() => connect()}>Connect Your Wallet</Button>
                     )}
+                    <IconButton
+                        onClick={toggleColorMode}
+                        aria-label="Change theme"
+                        icon={colorMode === "dark" ? <FaMoon /> : <FaSun />}
+                    />
                 </HStack>
             </HStack>
         </Container>

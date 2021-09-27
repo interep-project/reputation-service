@@ -16,25 +16,8 @@ const Button = {
             const hoverBg = mode(`gray.200`, `whiteAlpha.300`)(props)
 
             return {
-                minW: 10,
-                fontSize: "md",
-                px: 4,
-                py: 3,
-                lineHeight: "1.2",
-                borderRadius: "2xl",
-                fontWeight: "semibold",
-                transitionProperty: "common",
-                transitionDuration: "normal",
                 _hover: {
-                    bg: hoverBg,
-                    _disabled: {
-                        bg: "initial"
-                    }
-                },
-                _disabled: {
-                    opacity: 0.4,
-                    cursor: "not-allowed",
-                    boxShadow: "none"
+                    bg: hoverBg
                 },
                 _active: { bg: hoverBg }
             }
