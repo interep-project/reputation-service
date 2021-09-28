@@ -2,7 +2,7 @@ import { Button, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chak
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter, FaAward } from "react-icons/fa"
 import { capitalize } from "src/utils/frontend/capitalize"
 
