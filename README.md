@@ -119,7 +119,7 @@ $ yarn start
 
 ### Semaphore groups
 
-Get the list of group ids:
+Get all the InterRep groups:
 
 ```
 /api/groups
@@ -141,22 +141,10 @@ Check whether an identity commitment exists:
 
 **By Twitter account**
 
-Query by username:
+Get Twitter reputation by username:
 
 ```
-/api/reputation/twitter?username=
-```
-
-Query by Twitter id:
-
-```
-/api/reputation/twitter?id=
-```
-
-Query currently connected account:
-
-```
-/api/reputation/twitter/me
+/api/reputation/twitter/:username
 ```
 
 ### Tokens
@@ -164,7 +152,13 @@ Query currently connected account:
 Get tokens by ethereum address:
 
 ```
-/api/tokens?owner=0xba36...
+/api/tokens?userAddress=0xba36...
+```
+
+Get specific token by id:
+
+```
+/api/tokens/:tokenId
 ```
 
 **Notice**: The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
