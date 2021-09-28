@@ -33,7 +33,7 @@ export default function NavBar(): JSX.Element {
 
     return (
         <Container
-            zIndex="sticky"
+            zIndex="1"
             bg={colorMode === "light" ? "white" : "background.700"}
             position="fixed"
             pt="60px"
@@ -47,7 +47,7 @@ export default function NavBar(): JSX.Element {
                         InterRep
                     </Text>
                     <ButtonGroup variant="nav" spacing="2">
-                        <Button onClick={() => router.push("/signin")} isActive={router.route === "/signin"}>
+                        <Button onClick={() => router.push("/")} isActive={router.route === "/"}>
                             Web2 Login
                         </Button>
                         <Button

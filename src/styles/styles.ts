@@ -15,7 +15,7 @@ const styles: Styles = {
             alignItems: "center"
         },
         ".bn-onboard-custom": {
-            zIndex: 1
+            zIndex: 999
         }
     })
 }
