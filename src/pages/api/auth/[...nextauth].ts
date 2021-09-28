@@ -26,6 +26,9 @@ export default NextAuth({
             profile: mapRedditProfile
         })
     ],
+    pages: {
+        signIn: "/"
+    },
     secret: config.NEXTAUTH_SECRET,
     jwt: {
         // signingKey: config.JWT_SIGNING_PRIVATE_KEY,

@@ -1,101 +1,60 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
-import { Card, Container, createStyles, makeStyles, Tab, Tabs, Theme, Typography } from "@material-ui/core"
-import { Signer } from "ethers"
-import { useSession } from "next-auth/client"
-import React, { useCallback, useContext } from "react"
-import { isBrowser, isMobile } from "react-device-detect"
-import ReputationBadgeTabPanel from "src/components/ReputationBadgeTabPanel"
-import SemaphoreGroupTabPanel from "src/components/SemaphoreGroupTabPanel"
-import TabPanelContainer from "src/components/TabPanelContainer"
-import Web2LoginTabPanel from "src/components/Web2LoginTabPanel"
-import { currentNetwork } from "src/config"
-import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import { Button, Heading, VStack, Icon, Tooltip, useColorMode } from "@chakra-ui/react"
+import { FaGithub, FaRedditAlien, FaTwitter, FaInfoCircle } from "react-icons/fa"
+import { signIn, useSession } from "next-auth/client"
+import React from "react"
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        container: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-            paddingBottom: 48,
-            paddingTop: 64
-        },
-        tabContainer: {
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            minHeight: 450,
-            backgroundColor: theme.palette.background.default
-        },
-        tabButton: {
-            textTransform: "capitalize"
-        }
-    })
-)
-
-export default function Home(): JSX.Element {
-    const classes = useStyles()
+export default function Signin(): JSX.Element {
     const [session] = useSession()
-    const [_tabIndex, setTabIndex] = React.useState<number>(0)
-    const { _networkId, _address, _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
-
-    const appIsReady = useCallback(
-        () => !!(session && session.user.reputation && currentNetwork.id === _networkId && _address),
-        [session, _networkId, _address]
-    )
-
-    function updateTabIndex(direction: number): void {
-        setTabIndex((index: number) => index + direction)
-    }
+    const { colorMode } = useColorMode()
 
     return (
-        <Container className={classes.container} maxWidth="sm">
-            {isMobile && (
-                <Typography>
-                    Sorry, mobile and tablet devices are currently not supported. Please access InterRep from a desktop
-                    browser with the Metamask extension installed.
-                </Typography>
-            )}
-            {isBrowser && (
-                <Card className={classes.tabContainer}>
-                    <Tabs variant="fullWidth" value={_tabIndex} onChange={(_event, newIndex) => setTabIndex(newIndex)}>
-                        <Tab className={classes.tabButton} label="Web2 Login" />
-                        <Tab className={classes.tabButton} label="Semaphore group" disabled={!appIsReady()} />
-                        <Tab className={classes.tabButton} label="Reputation badge" disabled={!appIsReady()} />
-                    </Tabs>
-                    <TabPanelContainer value={_tabIndex} index={0}>
-                        <Web2LoginTabPanel
-                            onArrowClick={appIsReady() ? updateTabIndex : undefined}
-                            reputation={session?.user?.reputation as ReputationLevel}
-                            web2Provider={session?.web2Provider as Web2Provider}
+        <>
+            <Heading as="h2" mb="30px" size="xl">
+                Web2 Login
+                <Tooltip
+                    label="Sign in with one of our supported Web2 providers to obtain your reputation."
+                    placement="right-start"
+                >
+                    <span>
+                        <Icon
+                            boxSize="20px"
+                            ml="10px"
+                            mb="5px"
+                            color={colorMode === "light" ? "gray.500" : "background.200"}
+                            as={FaInfoCircle}
                         />
-                    </TabPanelContainer>
-                    {appIsReady() && (
-                        <>
-                            <TabPanelContainer value={_tabIndex} index={1}>
-                                <SemaphoreGroupTabPanel
-                                    onArrowClick={(d) => updateTabIndex(d)}
-                                    reputation={session?.user?.reputation as ReputationLevel}
-                                    signer={_signer as Signer}
-                                    web2Provider={session?.web2Provider as Web2Provider}
-                                    web2AccountId={session?.web2AccountId as string}
-                                />
-                            </TabPanelContainer>
-                            <TabPanelContainer value={_tabIndex} index={2}>
-                                <ReputationBadgeTabPanel
-                                    onArrowClick={(d) => updateTabIndex(d)}
-                                    signer={_signer as Signer}
-                                    userAddress={_address as string}
-                                    reputation={session?.user?.reputation as ReputationLevel}
-                                    web2Provider={session?.web2Provider as Web2Provider}
-                                    web2AccountId={session?.web2AccountId as string}
-                                />
-                            </TabPanelContainer>
-                        </>
-                    )}
-                </Card>
-            )}
-        </Container>
+                    </span>
+                </Tooltip>
+            </Heading>
+            <VStack spacing={4} align="left">
+                <Button
+                    onClick={() => signIn("twitter")}
+                    leftIcon={<FaTwitter />}
+                    colorScheme="twitter"
+                    variant="semisolid"
+                    isDisabled={!!session}
+                >
+                    Twitter
+                </Button>
+                <Button
+                    onClick={() => signIn("github")}
+                    leftIcon={<FaGithub />}
+                    colorScheme="github"
+                    variant="semisolid"
+                    isDisabled={!!session}
+                >
+                    Github
+                </Button>
+                <Button
+                    onClick={() => signIn("reddit")}
+                    leftIcon={<FaRedditAlien />}
+                    colorScheme="reddit"
+                    variant="semisolid"
+                    isDisabled={!!session}
+                >
+                    Reddit
+                </Button>
+            </VStack>
+        </>
     )
 }

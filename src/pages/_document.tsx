@@ -1,6 +1,7 @@
-import { ServerStyleSheets } from "@material-ui/core"
+import { ColorModeScript } from "@chakra-ui/react"
 import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from "next/document"
 import React from "react"
+import theme from "src/styles/theme"
 import { CSP } from "src/types/csp"
 
 // const cspHashOf = (text: string): string => {
@@ -23,7 +24,7 @@ const generateCSP = (): string => {
         "default-src": `'self'`,
         "img-src": `'self' data:`,
         "style-src": `'self' 'unsafe-inline'`,
-        "script-src": `'self' 'unsafe-eval'`,
+        "script-src": `'self' 'unsafe-inline' 'unsafe-eval'`,
         "connect-src": `'self' *.sentry.io`
     }
 
@@ -35,20 +36,10 @@ export default class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps & { csp: string }> {
         // Render app and page and get the context of the page with collected side effects.
         const csp = generateCSP()
-        const sheets = new ServerStyleSheets()
-        const originalRenderPage = ctx.renderPage
-
-        ctx.renderPage = () =>
-            originalRenderPage({
-                enhanceApp: (App) => (props) => sheets.collect(<App {...props} />)
-            })
-
         const initialProps = await Document.getInitialProps(ctx)
 
         return {
             ...initialProps,
-            // Styles fragment is rendered after the app and page rendering finish.
-            styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
             csp
         }
     }
@@ -62,6 +53,7 @@ export default class MyDocument extends Document {
                     <meta httpEquiv="Content-Security-Policy" content={csp} />
                 </Head>
                 <body>
+                    <ColorModeScript initialColorMode={theme.initialColorMode} />
                     <Main />
                     <NextScript />
                 </body>
