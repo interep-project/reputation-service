@@ -33,6 +33,7 @@ export default function NavBar(): JSX.Element {
 
     return (
         <Container
+            zIndex="sticky"
             bg={colorMode === "light" ? "white" : "background.700"}
             position="fixed"
             pt="60px"
@@ -80,10 +81,7 @@ export default function NavBar(): JSX.Element {
                                     <Button onClick={onCopy}>{shortenAddress(_address)}</Button>
                                 </Tooltip>
                             ) : (
-                                <>
-                                    <Text fontSize="lg">(wrong network)</Text>
-                                    <Button onClick={() => check()}>Switch Network</Button>
-                                </>
+                                <Button onClick={() => check()}>Switch Network</Button>
                             )}
                         </>
                     ) : (
