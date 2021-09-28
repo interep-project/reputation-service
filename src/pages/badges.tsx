@@ -385,7 +385,7 @@ export default function Badges(): JSX.Element {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-    const authorized = !!req.cookies["next-auth.session-token"]
+    const authorized = !!req.cookies["__Secure-next-auth.session-token"] || !!req.cookies["next-auth.session-token"]
 
     if (authorized) {
         return {
