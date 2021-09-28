@@ -31,11 +31,11 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
     },
     42: {
         [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x99FCf805C468977e0F8Ceae21935268EEceadC07",
+            twitter: "0x0Cb09b04016Ba1CfBF37359f0112F304F2381EB6",
             github: "0xab0090f2F9C061C12D3Fa286079659Fe00e173bf",
             reddit: "0xAB1855a7d02C771465411fDD4B63f647925d6c37"
         },
-        [ContractName.INTERREP_GROUPS]: "0x8247BC4382ecc6Eb240d9A4CD51E9Aa85Ef75BD9"
+        [ContractName.INTERREP_GROUPS]: "0x23789296D79FBD09e560FAf84C5870f266b4fef2"
     },
     421611: {
         [ContractName.REPUTATION_BADGE]: {
