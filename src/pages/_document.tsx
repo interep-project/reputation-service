@@ -25,7 +25,7 @@ const generateCSP = (): string => {
         "img-src": `'self' data:`,
         "style-src": `'self' 'unsafe-inline'`,
         "script-src": `'self' 'unsafe-inline' 'unsafe-eval'`,
-        "connect-src": `'self' *.sentry.io`
+        "connect-src": `'self' *.sentry.io https://api.poap.xyz`
     }
 
     // Convert to string and return.
