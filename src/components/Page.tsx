@@ -1,6 +1,7 @@
 import { Box, Container, HStack } from "@chakra-ui/react"
 import { useSession } from "next-auth/client"
-import React from "react"
+import React, { useContext } from "react"
+import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import SideBar from "./SideBar"
 
 type Parameters = {
@@ -9,6 +10,7 @@ type Parameters = {
 
 export default function Page({ children }: Parameters): JSX.Element {
     const [session] = useSession()
+    const { _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
 
     return (
         <Container
@@ -20,8 +22,13 @@ export default function Page({ children }: Parameters): JSX.Element {
             display="flex"
         >
             <HStack flex="1" align="start">
-                {session && <SideBar session={session} />}
-                <Box flex="1" py="10px" pl={session ? "30px" : "0"} borderLeftWidth={session ? "4px" : "0"}>
+                {(session || _address) && <SideBar session={session} address={_address} />}
+                <Box
+                    flex="1"
+                    py="10px"
+                    pl={session || _address ? "30px" : "0"}
+                    borderLeftWidth={session || _address ? "4px" : "0"}
+                >
                     {children}
                 </Box>
             </HStack>
