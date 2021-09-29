@@ -2170,10 +2170,10 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
-"@interrep/reputation-criteria@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.7.1.tgz#3472d804134da303a53bf3f87531ec78e1e532a8"
-  integrity sha512-+dzani8S+sU/frQjTB6ETX+gmEKdcKzxAz1/NEk2BVhKtG2rw2gzzuq5/tNHutm9mXSeZqXKIuuAh3ncpmP0tA==
+"@interrep/reputation-criteria@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.8.0.tgz#a8f2220482d7b8783e5b8c3d22f2dadadc44fb56"
+  integrity sha512-F70lah/Ycw7BhHDzub0wj0LkXLHwKE4P/Y3NMgGajMzVzZP+dV4DyFf7wnBRUdjBKod+3OTv1B7RSdoq4IPPdA==
 
 "@interrep/semethid@^0.8.1":
   version "0.8.1"
