@@ -1,11 +1,26 @@
-import { Button, Heading, HStack, Text, useColorMode, VStack } from "@chakra-ui/react"
+import {
+    Button,
+    Heading,
+    HStack,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Text,
+    useColorMode,
+    VStack
+} from "@chakra-ui/react"
+import { BsChevronDown } from "react-icons/bs"
 import React from "react"
 
 type Properties = {
     title: string
     message: string
-    buttonText: string
-    buttonFunction?: () => void
+    actionText: string
+    actionFunction: (par?: any) => void
+    actionType?: "button" | "select"
+    selectOptions?: string[]
+    selectOptionFilter?: (option: string) => string
     loading?: boolean
     disabled?: boolean
 }
@@ -13,8 +28,11 @@ type Properties = {
 export default function Step({
     title,
     message,
-    buttonText,
-    buttonFunction,
+    actionText,
+    actionFunction,
+    actionType = "button",
+    selectOptions,
+    selectOptionFilter,
     loading = false,
     disabled = false
 }: Properties): JSX.Element {
@@ -34,15 +52,37 @@ export default function Step({
                 </Heading>
                 <Text>{message}</Text>
             </VStack>
-            <Button
-                onClick={buttonFunction}
-                colorScheme="primary"
-                variant="ghost"
-                isLoading={loading}
-                isDisabled={disabled}
-            >
-                {buttonText}
-            </Button>
+            {actionType === "button" ? (
+                <Button
+                    onClick={actionFunction}
+                    colorScheme="primary"
+                    variant="ghost"
+                    isLoading={loading}
+                    isDisabled={disabled}
+                >
+                    {actionText}
+                </Button>
+            ) : actionType === "select" && selectOptions?.length ? (
+                <Menu>
+                    <MenuButton
+                        colorScheme="primary"
+                        variant="ghost"
+                        as={Button}
+                        rightIcon={<BsChevronDown />}
+                        isDisabled={disabled}
+                        isLoading={loading}
+                    >
+                        {actionText}
+                    </MenuButton>
+                    <MenuList>
+                        {selectOptions.map((option) => (
+                            <MenuItem key={option} onClick={() => actionFunction(option)}>
+                                {selectOptionFilter(option)}
+                            </MenuItem>
+                        ))}
+                    </MenuList>
+                </Menu>
+            ) : null}
         </HStack>
     )
 }

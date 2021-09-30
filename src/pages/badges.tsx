@@ -346,8 +346,8 @@ export default function Badges(): JSX.Element {
                         <Step
                             title="Step 1"
                             message={`Link your Ethereum/${capitalize(session.web2Provider)} accounts.`}
-                            buttonText="Link accounts"
-                            buttonFunction={() =>
+                            actionText="Link accounts"
+                            actionFunction={() =>
                                 linkAccount(_signer as Signer, _address as string, session.web2AccountId)
                             }
                             loading={_currentStep === 1 && _loading}
@@ -356,24 +356,24 @@ export default function Badges(): JSX.Element {
                         <Step
                             title="Step 2"
                             message="Mint your ERC721 token."
-                            buttonText="Mint token"
-                            buttonFunction={() => mint(_token as ITokenDocument)}
+                            actionText="Mint token"
+                            actionFunction={() => mint(_token as ITokenDocument)}
                             loading={_currentStep === 2 && _loading}
                             disabled={_currentStep !== 2}
                         />
                         <Step
                             title="Step 3"
                             message="Burn your ERC721 token."
-                            buttonText="Burn token"
-                            buttonFunction={() => burn(_token as ITokenDocument, _signer as Signer)}
+                            actionText="Burn token"
+                            actionFunction={() => burn(_token as ITokenDocument, _signer as Signer)}
                             loading={_currentStep === 3 && _loading}
                             disabled={_currentStep !== 3}
                         />
                         <Step
                             title="Step 4"
                             message={`Unlink your Ethereum/${capitalize(session.web2Provider)} accounts.`}
-                            buttonText="Unlink accounts"
-                            buttonFunction={() => unlinkAccount(_token as ITokenDocument)}
+                            actionText="Unlink accounts"
+                            actionFunction={() => unlinkAccount(_token as ITokenDocument)}
                             loading={_currentStep === 4 && _loading}
                             disabled={_currentStep !== 4}
                         />

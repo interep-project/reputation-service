@@ -1,21 +1,20 @@
-import { Button, Divider, HStack, Icon, Spinner, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
-import { calculateReputation, ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { Button, Divider, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import { getPOAPtokens } from "src/services/poap"
+import { getEventName, PoapGroupId } from "src/core/groups/poap"
 import { capitalize } from "src/utils/frontend/capitalize"
 
 type Properties = {
     session?: Session | null
-    address?: string
+    poapGroupIds?: PoapGroupId[]
 }
 
-export default function SideBar({ session, address }: Properties): JSX.Element {
+export default function SideBar({ session, poapGroupIds }: Properties): JSX.Element {
     const { colorMode } = useColorMode()
-    const [_poapReputation, setPoapReputation] = useState<ReputationLevel>()
 
     const getReputationColor = useCallback(
         (reputation: ReputationLevel) => {
@@ -28,45 +27,26 @@ export default function SideBar({ session, address }: Properties): JSX.Element {
         [colorMode]
     )
 
-    useEffect(() => {
-        ;(async () => {
-            if (address) {
-                const tokens = await getPOAPtokens(address)
-                const poapReputation = calculateReputation(Web2Provider.POAP, { tokens: tokens.length })
-
-                setPoapReputation(poapReputation)
-            }
-        })()
-    }, [address])
-
     return (
         <VStack align="left" divider={<Divider />} py="15px" pr="30px" spacing="4">
-            {address && (
-                <>
-                    {_poapReputation ? (
-                        <VStack align="left" spacing="3">
-                            <Text fontWeight="extrabold" fontSize="xl">
-                                Web3
+            {poapGroupIds?.length && (
+                <VStack align="left" spacing="3">
+                    <Text fontWeight="extrabold" fontSize="xl">
+                        Web3
+                    </Text>
+                    <HStack spacing="2">
+                        <Icon boxSize="26px" as={FaAward} />
+                        <Text fontSize="md">POAP</Text>
+                    </HStack>
+                    <VStack align="left" spacing="1">
+                        <Text fontSize="md">Your events:</Text>
+                        {poapGroupIds.map((groupId) => (
+                            <Text pl="10px" key={groupId} fontSize="md">
+                                {getEventName(groupId)}
                             </Text>
-                            <HStack spacing="2">
-                                <Icon boxSize="26px" as={FaAward} />
-                                <Text fontSize="md">POAP</Text>
-                            </HStack>
-                            <HStack spacing="1">
-                                <Text fontSize="md">Reputation: </Text>
-                                <Tooltip label={`Your POAP reputation is: ${_poapReputation}.`} placement="right-start">
-                                    <span>
-                                        <Icon boxSize="24px" color={getReputationColor(_poapReputation)} as={BiAward} />
-                                    </span>
-                                </Tooltip>
-                            </HStack>
-                        </VStack>
-                    ) : (
-                        <VStack h="104px" align="center" justify="center">
-                            <Spinner thickness="2px" speed="0.65s" size="md" />
-                        </VStack>
-                    )}
-                </>
+                        ))}
+                    </VStack>
+                </VStack>
             )}
             {session && (
                 <VStack align="left" spacing="3">
