@@ -1,16 +1,19 @@
 import Onboard from "bnc-onboard"
-import { Wallet, API } from "bnc-onboard/dist/src/interfaces"
+import { API, Wallet } from "bnc-onboard/dist/src/interfaces"
 import { ethers, Signer } from "ethers"
-import { getAddress } from "ethers/lib/utils"
 import { useCallback, useEffect, useState } from "react"
 import { currentNetwork } from "src/config"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import getPoapGroupIds from "src/core/groups/poap/getAddressGroupIds"
+import { PoapGroupId } from "src/core/groups/poap"
+import { getAddress } from "ethers/lib/utils"
 
 export default function useEthereumWallet(): EthereumWalletContextType {
     const [_onboard, setOnboard] = useState<API>()
     const [_signer, setSigner] = useState<Signer>()
     const [_address, setAddress] = useState<string>()
     const [_networkId, setNetworkId] = useState<number>()
+    const [_poapGroupIds, setPoapGroupIds] = useState<PoapGroupId[]>([])
 
     useEffect(() => {
         ;(async () => {
@@ -31,11 +34,16 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                             onboard.walletReset()
                             setSigner(undefined)
                             setAddress(undefined)
+                            setPoapGroupIds([])
                             return
                         }
 
                         try {
                             setAddress(getAddress(address))
+
+                            const poapGroupIds = await getPoapGroupIds(address)
+
+                            setPoapGroupIds(poapGroupIds)
                         } catch (error) {
                             console.error(error)
                         }
@@ -87,6 +95,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         _networkId,
         _signer,
         _address,
+        _poapGroupIds,
         check,
         connect
     }
