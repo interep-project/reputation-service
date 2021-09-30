@@ -1,6 +1,5 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
-import { Group } from "src/types/groups"
+import { Group, Provider } from "src/types/groups"
 import checkGroup from "./checkGroup"
 
 export default async function getGroup(groupId: string): Promise<Group> {
@@ -10,7 +9,7 @@ export default async function getGroup(groupId: string): Promise<Group> {
 
     return {
         id: groupId,
-        provider: groupId.split("_")[0].toLowerCase() as Web2Provider,
+        provider: groupId.split("_")[0].toLowerCase() as Provider,
         size: await MerkleTreeNode.getNumberOfNodes(groupId, 0)
     }
 }

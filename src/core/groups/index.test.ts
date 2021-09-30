@@ -1,9 +1,12 @@
 import { Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
+import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/seeding/seedRootHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import getAllProviders from "./getAllProviders"
 import { checkGroup, getGroup, getGroupIds, getGroups } from "./index"
+import { PoapGroupId } from "./poap"
 
 describe("Core group functions", () => {
     describe("Get group ids", () => {
@@ -12,6 +15,7 @@ describe("Core group functions", () => {
 
             expect(expectedGroupIds).toContain("TWITTER_GOLD")
             expect(expectedGroupIds).toContain("GITHUB_GOLD")
+            expect(expectedGroupIds).toContain(PoapGroupId.POAP_DEVCON_4)
         })
 
         it("Should return all the group ids of an existing Web2 provider", () => {
@@ -22,6 +26,16 @@ describe("Core group functions", () => {
                 "TWITTER_SILVER",
                 "TWITTER_BRONZE",
                 "TWITTER_NOT_SUFFICIENT"
+            ])
+        })
+
+        it("Should return all the group ids of an existing Web3 provider", () => {
+            const expectedGroupIds = getGroupIds(Web3Provider.POAP)
+
+            expect(expectedGroupIds).toStrictEqual([
+                PoapGroupId.POAP_DEVCON_4,
+                PoapGroupId.POAP_DEVCON_5,
+                PoapGroupId.POAP_ETH2
             ])
         })
     })
@@ -91,6 +105,15 @@ describe("Core group functions", () => {
             const expectedGroups = await getGroups()
 
             expect(expectedGroups).toContainEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 0 })
+        })
+    })
+
+    describe("Get all providers", () => {
+        it("Should return all the existing providers", async () => {
+            const expectedValue = getAllProviders()
+
+            expect(expectedValue).toContainEqual(Web3Provider.POAP)
+            expect(expectedValue).toContainEqual(Web2Provider.TWITTER)
         })
     })
 })

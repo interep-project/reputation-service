@@ -1,18 +1,18 @@
-import { getWeb2Providers, Web2Provider } from "@interrep/reputation-criteria"
-import { Group } from "src/types/groups"
-import getGroupIds from "./getGroupIds"
+import { Group, Provider } from "src/types/groups"
+import { getAllProviders } from "."
 import getGroup from "./getGroup"
+import getGroupIds from "./getGroupIds"
 
-export default async function getGroups(web2Provider?: Web2Provider): Promise<Group[]> {
-    if (web2Provider) {
-        return Promise.all(getGroupIds(web2Provider).map(getGroup))
+export default async function getGroups(provider?: Provider): Promise<Group[]> {
+    if (provider) {
+        return Promise.all(getGroupIds(provider).map(getGroup))
     }
 
-    const web2Providers = getWeb2Providers()
+    const providers = getAllProviders()
     let groups: Group[] = []
 
-    for (const web2Provider of web2Providers) {
-        groups = groups.concat(await getGroups(web2Provider))
+    for (const provider of providers) {
+        groups = groups.concat(await getGroups(provider))
     }
 
     return groups
