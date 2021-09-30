@@ -66,14 +66,20 @@ export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null>
 export function addIdentityCommitment({
     groupId,
     identityCommitment,
-    web2AccountId
+    web2AccountId,
+    userAddress,
+    userSignature
 }: {
     groupId: string
     identityCommitment: string
-    web2AccountId: string
+    web2AccountId?: string
+    userAddress?: string
+    userSignature?: string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${groupId}/${identityCommitment}`, {
-        web2AccountId
+        web2AccountId,
+        userAddress,
+        userSignature
     })
 }
 
