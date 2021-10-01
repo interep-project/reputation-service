@@ -33,9 +33,9 @@ describe("Core group functions", () => {
             const expectedGroupIds = getGroupIds(Web3Provider.POAP)
 
             expect(expectedGroupIds).toStrictEqual([
+                PoapGroupId.POAP_DEVCON_3,
                 PoapGroupId.POAP_DEVCON_4,
-                PoapGroupId.POAP_DEVCON_5,
-                PoapGroupId.POAP_ETH2
+                PoapGroupId.POAP_DEVCON_5
             ])
         })
     })
