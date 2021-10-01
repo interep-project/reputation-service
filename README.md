@@ -125,6 +125,12 @@ Get all the InterRep providers:
 /api/providers
 ```
 
+Check whether an identity commitment belongs to any provider group:
+
+```
+/api/providers/:provider/:identityCommitment/check
+```
+
 ### Semaphore groups
 
 Get all the InterRep groups:
@@ -139,7 +145,7 @@ Get a Merkle tree path:
 /api/groups/:groupId/:identityCommitment/path
 ```
 
-Check whether an identity commitment exists:
+Check whether an identity commitment belongs to a group:
 
 ```
 /api/groups/:groupId/:identityCommitment/check
