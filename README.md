@@ -117,6 +117,14 @@ $ yarn start
 
 ## APIs
 
+### Providers
+
+Get all the InterRep providers:
+
+```
+/api/providers
+```
+
 ### Semaphore groups
 
 Get all the InterRep groups:
