@@ -53,7 +53,7 @@ export default function NavBar(): JSX.Element {
                         <Button
                             onClick={() => router.push("/groups")}
                             isActive={router.route === "/groups"}
-                            isDisabled={!appIsReady()}
+                            isDisabled={!_address}
                         >
                             Groups
                         </Button>

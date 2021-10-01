@@ -1,8 +1,14 @@
 import { Web2Provider } from "@interrep/reputation-criteria"
 
+export enum Web3Provider {
+    POAP = "poap"
+}
+
+export type Provider = Web2Provider | Web3Provider
+
 export type Group = {
     id: string
-    provider: Web2Provider
+    provider: Provider
     size: number
 }
 
