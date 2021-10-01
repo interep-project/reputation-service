@@ -6,7 +6,7 @@ export type EthereumWalletContextType = {
     _networkId?: number
     _signer?: Signer
     _address?: string
-    _poapGroupIds?: PoapGroupId[]
+    _poapGroupIds: PoapGroupId[]
     check: () => Promise<void>
     connect: () => Promise<void>
 }

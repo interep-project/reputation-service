@@ -5,7 +5,7 @@ import { Signer } from "ethers"
 import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { getEventName, PoapGroupId } from "src/core/groups/poap"
+import { getPoapEventName, PoapGroupId } from "src/core/groups/poap"
 import { Group, Provider } from "src/types/groups"
 import { addIdentityCommitment, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 import { capitalize } from "src/utils/frontend/capitalize"
@@ -140,7 +140,7 @@ export default function PoapGroups(): JSX.Element {
         }
 
         setLoading(false)
-        setCurrentStep(0)
+        setCurrentStep(1)
         toast({
             description: "You joined the POAP group correctly.",
             variant: "subtle",
@@ -148,7 +148,7 @@ export default function PoapGroups(): JSX.Element {
         })
     }
 
-    return !_poapGroupIds?.length ? (
+    return !_poapGroupIds.length ? (
         <VStack h="300px" align="center" justify="center">
             <Spinner thickness="4px" speed="0.65s" size="xl" />
         </VStack>
@@ -162,7 +162,7 @@ export default function PoapGroups(): JSX.Element {
                     actionFunction={(groupId) => selectGroup(groupId)}
                     actionType="select"
                     selectOptions={_poapGroupIds}
-                    selectOptionFilter={(option) => getEventName(option as PoapGroupId)}
+                    selectOptionFilter={(option) => getPoapEventName(option as PoapGroupId)}
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />

@@ -57,7 +57,7 @@ export default function Groups(): JSX.Element {
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
                         {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
-                        {_poapGroupIds && <Tab>POAP</Tab>}
+                        {!!_poapGroupIds.length && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
                         {session && (
@@ -66,7 +66,7 @@ export default function Groups(): JSX.Element {
                                 <Web2Groups />
                             </TabPanel>
                         )}
-                        {_poapGroupIds && (
+                        {!!_poapGroupIds.length && (
                             <TabPanel>
                                 {" "}
                                 <PoapGroups />

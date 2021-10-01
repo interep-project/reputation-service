@@ -27,12 +27,15 @@ export default function Web2Groups(): JSX.Element {
             variant: "subtle",
             status: "error"
         })
+
         setLoading(false)
     }, [toast])
 
     useEffect(() => {
         ;(async () => {
             if (session) {
+                setLoading(true)
+
                 const hasJoinedAGroup = await checkGroup()
                 const { web2Provider, user } = session
 
@@ -63,6 +66,7 @@ export default function Web2Groups(): JSX.Element {
                     } members. Follow the steps below to join it.`
                 )
                 setCurrentStep(1)
+                setLoading(false)
             }
         })()
     }, [session, showUnexpectedError])
@@ -142,18 +146,23 @@ export default function Web2Groups(): JSX.Element {
 
         setLoading(false)
         setCurrentStep(0)
-        setDescription(
-            `You joined the ${session?.user.reputation} ${capitalize(session?.web2Provider as string)} group correctly.`
-        )
+        toast({
+            description: `You joined the ${session?.user.reputation} ${capitalize(
+                session?.web2Provider as string
+            )} POAP group correctly.`,
+            variant: "subtle",
+            isClosable: true
+        })
+        setDescription("")
     }
 
-    return !session || !_description ? (
+    return !session || (_loading && _currentStep === 0) ? (
         <VStack h="300px" align="center" justify="center">
             <Spinner thickness="4px" speed="0.65s" size="xl" />
         </VStack>
     ) : (
         <>
-            <Text>{_description}</Text>
+            <Text fontWeight="semibold">{_description}</Text>
 
             <VStack mt="20px" spacing={4} align="left">
                 <Step

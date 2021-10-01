@@ -4,7 +4,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { ContractName } from "src/config"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
-import { getAddressGroupIds, PoapGroupId } from "src/core/groups/poap"
+import { getPoapGroupIdsByAddress, PoapGroupId } from "src/core/groups/poap"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getContractAddress from "src/utils/crypto/getContractAddress"
 import getContractInstance from "src/utils/crypto/getContractInstance"
@@ -92,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
             throw new Error(`The signature is not valid`)
         }
 
-        const poapGroupIds = await getAddressGroupIds(userAddress)
+        const poapGroupIds = await getPoapGroupIdsByAddress(userAddress)
 
         if (!poapGroupIds.includes(groupId as PoapGroupId)) {
             throw new Error(`The address does not hold the group POAP token`)

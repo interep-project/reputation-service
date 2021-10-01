@@ -18,16 +18,16 @@ export default function Page({ children }: Parameters): JSX.Element {
             mb="80px"
             mt="180px"
             px="80px"
-            maxW={session || _poapGroupIds?.length ? "container.lg" : "container.md"}
+            maxW={session || !!_poapGroupIds.length ? "container.lg" : "container.md"}
             display="flex"
         >
             <HStack flex="1" align="start">
-                {(session || _poapGroupIds?.length) && <SideBar session={session} poapGroupIds={_poapGroupIds} />}
+                {(session || !!_poapGroupIds.length) && <SideBar session={session} poapGroupIds={_poapGroupIds} />}
                 <Box
                     flex="1"
                     py="10px"
-                    pl={session || _poapGroupIds?.length ? "30px" : "0"}
-                    borderLeftWidth={session || _poapGroupIds?.length ? "4px" : "0"}
+                    pl={session || !!_poapGroupIds.length ? "30px" : "0"}
+                    borderLeftWidth={session || !!_poapGroupIds.length ? "4px" : "0"}
                 >
                     {children}
                 </Box>

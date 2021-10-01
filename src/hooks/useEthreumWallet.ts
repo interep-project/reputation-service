@@ -4,8 +4,7 @@ import { ethers, Signer } from "ethers"
 import { useCallback, useEffect, useState } from "react"
 import { currentNetwork } from "src/config"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import getPoapGroupIds from "src/core/groups/poap/getAddressGroupIds"
-import { PoapGroupId } from "src/core/groups/poap"
+import { PoapGroupId, getPoapGroupIdsByAddress } from "src/core/groups/poap"
 import { getAddress } from "ethers/lib/utils"
 
 export default function useEthereumWallet(): EthereumWalletContextType {
@@ -41,7 +40,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                         try {
                             setAddress(getAddress(address))
 
-                            const poapGroupIds = await getPoapGroupIds(address)
+                            const poapGroupIds = await getPoapGroupIdsByAddress(address)
 
                             setPoapGroupIds(poapGroupIds)
                         } catch (error) {

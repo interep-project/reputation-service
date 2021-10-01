@@ -325,7 +325,7 @@ export default function Badges(): JSX.Element {
                                     />
                                 </Link>
                             )}
-                        <Text>
+                        <Text fontWeight="semibold">
                             {session.user.reputation !== ReputationLevel.GOLD
                                 ? `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}.`
                                 : _token?.status === TokenStatus.NOT_MINTED
