@@ -53,6 +53,10 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
+            ) : !session && !_poapGroupIds.length ? (
+                <VStack h="300px" align="center" justify="center">
+                    <Text fontSize="lg">Please, sign in with one of our supported Web2 providers!</Text>
+                </VStack>
             ) : (
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
