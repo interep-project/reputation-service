@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
     try {
         const node = await MerkleTreeNode.findByGroupIdAndHash(groupId, identityCommitment)
 
-        return res.status(200).send({ data: !!node })
+        return res.status(200).send({ data: !!node && node.key.level === 0 })
     } catch (error) {
         logger.error(error)
 
