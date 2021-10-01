@@ -4,6 +4,7 @@ import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { ContractName } from "src/config"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
+import { getAddressGroupIds, PoapGroupId } from "src/core/groups/poap"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getContractAddress from "src/utils/crypto/getContractAddress"
 import getContractInstance from "src/utils/crypto/getContractInstance"
@@ -86,25 +87,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         }
     }
 
-    if (ethers.utils.verifyMessage(identityCommitment, userSignature) !== userAddress) {
-        return res.status(422).end()
+    try {
+        if (ethers.utils.verifyMessage(identityCommitment, userSignature) !== userAddress) {
+            throw new Error(`The signature is not valid`)
+        }
+
+        const poapGroupIds = await getAddressGroupIds(userAddress)
+
+        if (!poapGroupIds.includes(groupId as PoapGroupId)) {
+            throw new Error(`The address does not hold the group POAP token`)
+        }
+
+        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
+
+        // Get the value of the next root hash without saving anything in the db.
+        const rootHash = await MerkleTreeController.previewNewRoot(groupId, identityCommitment)
+
+        // Update the contract with new root.
+        const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
+        const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
+
+        await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
+
+        // Update the db with the new merkle tree.
+        await MerkleTreeController.appendLeaf(groupId, identityCommitment)
+
+        return res.status(201).send({ data: rootHash.toString() })
+    } catch (error) {
+        logger.error(error)
+
+        return res.status(500).end()
     }
-
-    logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
-
-    // Get the value of the next root hash without saving anything in the db.
-    const rootHash = await MerkleTreeController.previewNewRoot(groupId, identityCommitment)
-
-    // Update the contract with new root.
-    const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
-    const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
-
-    await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
-
-    // Update the db with the new merkle tree.
-    await MerkleTreeController.appendLeaf(groupId, identityCommitment)
-
-    return res.status(201).send({ data: rootHash.toString() })
 }
 
 export default withSentry(handler as NextApiHandler)
