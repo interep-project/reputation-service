@@ -77,7 +77,7 @@ export default function Step({
                     <MenuList>
                         {selectOptions.map((option) => (
                             <MenuItem key={option} onClick={() => actionFunction(option)}>
-                                {selectOptionFilter(option)}
+                                {selectOptionFilter && selectOptionFilter(option)}
                             </MenuItem>
                         ))}
                     </MenuList>
