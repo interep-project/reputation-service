@@ -9,8 +9,8 @@
     <a href="https://github.com/InterRep" target="_blank">
         <img src="https://img.shields.io/badge/project-InterRep-blue.svg?style=flat-square">
     </a>
-    <a href="https://github.com/InterRep/reputation-service/actions/workflows/main.yaml">
-        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/Reputation%20Service%20CI?label=test&logo=github">
+    <a href="https://github.com/InterRep/reputation-service/actions/workflows/test.yaml">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/test?label=test&logo=github">
     </a>
     <a href="https://eslint.org/" target="_blank">
         <img alt="Linter eslint" src="https://img.shields.io/badge/linter-eslint-8080f2?style=flat-square&logo=eslint">
@@ -36,6 +36,10 @@
         </a>
     </h4>
 </div>
+
+If you want an overwiew of InterRep, read our announcement post: https://jaygraber.medium.com/introducing-interrep-255d3f56682. For more details, please see our [documentation website](https://docs.interrep.link).
+
+⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of interRep. They will soon be updated. You can find an updated version at [kovan.interrep.link](https://kovan.interrep.link) (staging env).
 
 ---
 
