@@ -1,6 +1,5 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
-import { afterAll, beforeAll, describe, expect } from "@jest/globals"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
@@ -8,11 +7,12 @@ import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
-import checkIfUserSignatureIsValid from "../signing/checkIfUserSignatureIsValid"
+import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
+import { Wallet } from "ethers"
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4"
 const getParams = (override?: Record<string, unknown>) => ({
-    chainId: currentNetwork.id,
+    chainId: currentNetwork.chainId,
     address: addy,
     userSignature: "signature",
     web2AccountId: "608a89a5346f2f9008feef8e",
@@ -20,15 +20,18 @@ const getParams = (override?: Record<string, unknown>) => ({
     ...override
 })
 
-jest.mock("hardhat", () => {
-    const actualHardhat = jest.requireActual("hardhat")
+const createMockedSigner = () => Wallet.fromMnemonic("test test test test test test test test test test test junk")
+
+jest.mock("src/utils/crypto/getSigner", () => ({
+    __esModule: true,
+    default: jest.fn(() => createMockedSigner())
+}))
+
+jest.mock("ethers", () => {
+    const actualEthers = jest.requireActual("ethers")
     return {
-        ...actualHardhat,
+        ...actualEthers,
         ethers: {
-            ...actualHardhat.ethers,
-            provider: {
-                getNetwork: jest.fn(() => ({ chainId: 31337, name: "hardhat" }))
-            },
             utils: {
                 id: jest.fn(() => `0x03dd40b36474bf4559c4d733be6f5ec1e61bcb562d1c7f04629ee3af7ee569f9`),
                 verifyMessage: jest.fn()
@@ -137,7 +140,6 @@ describe("linkAccounts", () => {
                 await expect(
                     linkAccounts({
                         web2AccountId: web2AccountNotLinked.id,
-                        chainId: currentNetwork.id,
                         address: addy,
                         userSignature: "signature",
                         userPublicKey: "pubKey"
@@ -166,7 +168,6 @@ describe("linkAccounts", () => {
             const userPublicKey = "xj93Xo97GEIhaO5mHcMNMfNnS5YReu/kexbGHIOtGXU="
             const token = await linkAccounts({
                 web2AccountId: web2AccountMock.id,
-                chainId: currentNetwork.id,
                 address: addy,
                 userSignature: "signature",
                 userPublicKey

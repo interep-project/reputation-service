@@ -26,7 +26,7 @@ export default function Groups(): JSX.Element {
     const { _address, _networkId, _poapGroupIds } = useContext(EthereumWalletContext) as EthereumWalletContextType
 
     function walletIsConnected(networkId?: number, address?: string): boolean {
-        return currentNetwork.id === networkId && !!address
+        return currentNetwork.chainId === networkId && !!address
     }
 
     return (

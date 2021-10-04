@@ -1,5 +1,5 @@
 import { Web2Provider } from "@interrep/reputation-criteria"
-import { ethers } from "hardhat"
+import { Wallet } from "ethers"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
@@ -8,6 +8,13 @@ import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
+
+const mockedSigner = Wallet.fromMnemonic("test test test test test test test test test test test junk")
+
+jest.mock("src/utils/crypto/getSigner", () => ({
+    __esModule: true,
+    default: jest.fn(() => mockedSigner)
+}))
 
 jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
@@ -24,8 +31,6 @@ const createMockBackendAttestation = async ({
     attestationMessage: string
     backendAttestationSignature: string
 }> => {
-    const [backendSigner] = await ethers.getSigners()
-
     const attestationMessage = createBackendAttestationMessage({
         providerAccountId,
         provider: "twitter",
@@ -33,7 +38,7 @@ const createMockBackendAttestation = async ({
         decimalId: decimalId || "573930924"
     })
 
-    const backendAttestationSignature = await backendSigner.signMessage(attestationMessage)
+    const backendAttestationSignature = await mockedSigner.signMessage(attestationMessage)
 
     return { attestationMessage, backendAttestationSignature }
 }
@@ -106,7 +111,7 @@ describe("unlink", () => {
             providerAccountId: "twitter"
         })
 
-        const [, otherSigner] = await ethers.getSigners()
+        const otherSigner = Wallet.createRandom()
 
         const attestationMessage = "attestationMessage"
 

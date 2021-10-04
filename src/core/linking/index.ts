@@ -1,4 +1,3 @@
-import { ethers } from "hardhat"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
 import logger from "src/utils/server/logger"
@@ -11,6 +10,8 @@ import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import { ContractName, currentNetwork } from "src/config"
+import getSigner from "src/utils/crypto/getSigner"
+import { ethers } from "ethers"
 
 type LinkAccountsParams = {
     address: string
@@ -74,7 +75,7 @@ const linkAccounts = async ({
         await web2Account.save()
 
         const token = new Token({
-            chainId: currentNetwork.id,
+            chainId: currentNetwork.chainId,
             contractAddress,
             userAddress: checksummedAddress,
             web2Provider: web2Account.provider,
@@ -96,7 +97,7 @@ const linkAccounts = async ({
             providerAccountId: web2Account.providerAccountId
         })
 
-        const [backendSigner] = await ethers.getSigners()
+        const backendSigner = await getSigner()
         const backendAttestationSignature = await backendSigner.signMessage(attestationMessage)
 
         logger.silly(

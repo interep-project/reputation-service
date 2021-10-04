@@ -1,13 +1,10 @@
 import mintNewToken from "./mintNewToken"
 
-jest.mock("hardhat", () => ({
-    ethers: {
-        getContractAt: () => ({
-            safeMint: jest.fn(() => "mintTxResponse")
-        }),
-        getSigners: () => [{ signer: "1" }],
-        BigNumber: { from: jest.fn(() => 12334556) }
-    }
+jest.mock("src/utils/crypto/getBackendContractInstance", () => ({
+    __esModule: true,
+    default: () => ({
+        safeMint: jest.fn(() => "mintTxResponse")
+    })
 }))
 
 describe("mintNewToken", () => {

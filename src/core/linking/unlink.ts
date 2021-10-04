@@ -1,7 +1,8 @@
-import { ethers } from "hardhat"
+import { ethers } from "ethers"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import getSigner from "src/utils/crypto/getSigner"
 import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 
 type UnlinkAccountsParams = {
@@ -31,10 +32,10 @@ const unlinkAccounts = async ({
 
     const { attestationMessage, backendAttestationSignature } = JSON.parse(parsedAttestation.message)
 
-    const [backendSigner] = await ethers.getSigners()
+    const backendSigner = await getSigner()
     const signerAddress = ethers.utils.verifyMessage(attestationMessage, backendAttestationSignature)
 
-    if (signerAddress !== backendSigner.address) {
+    if (signerAddress !== (await backendSigner.getAddress())) {
         throw new Error("Attestation signature invalid")
     }
 

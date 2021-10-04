@@ -29,7 +29,7 @@ export default function NavBar(): JSX.Element {
     const { colorMode, toggleColorMode } = useColorMode()
 
     const appIsReady = useCallback(
-        () => !!(session && session.user.reputation && currentNetwork.id === _networkId && _address),
+        () => !!(session && session.user.reputation && currentNetwork.chainId === _networkId && _address),
         [session, _networkId, _address]
     )
 
@@ -78,7 +78,7 @@ export default function NavBar(): JSX.Element {
                             >
                                 {_networkId && getNetworkFullName(_networkId)}
                             </Text>
-                            {_networkId === currentNetwork.id ? (
+                            {_networkId === currentNetwork.chainId ? (
                                 <Tooltip label="Copied!" isOpen={hasCopied}>
                                     <Button onClick={onCopy}>{shortenAddress(_address)}</Button>
                                 </Tooltip>

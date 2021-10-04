@@ -1,4 +1,6 @@
-export type SupportedNetwork = {
+import { SupportedChainId } from "src/config"
+
+export type NetworkData = {
     name: string
-    id: number
+    chainId: SupportedChainId
 }

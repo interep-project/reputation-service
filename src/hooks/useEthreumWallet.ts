@@ -21,7 +21,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
             }
 
             const onboard = Onboard({
-                networkId: currentNetwork.id,
+                networkId: currentNetwork.chainId,
                 hideBranding: true,
                 walletSelect: {
                     wallets: [{ walletName: "metamask", preferred: true }]

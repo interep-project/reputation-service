@@ -1,6 +1,5 @@
 import { Heading, HStack, Icon, Link, Spinner, Text, Tooltip, useColorMode, useToast, VStack } from "@chakra-ui/react"
 import { ReputationLevel } from "@interrep/reputation-criteria"
-import ReputationBadge from "contracts/artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
 import { ethers, Signer } from "ethers"
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/client"
@@ -13,6 +12,7 @@ import EthereumWalletContext, { EthereumWalletContextType } from "src/context/Et
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
 import getContractAddress from "src/utils/crypto/getContractAddress"
+import getContractInstance from "src/utils/crypto/getContractInstance"
 import { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
 import { capitalize } from "src/utils/frontend/capitalize"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
@@ -70,7 +70,7 @@ export default function Badges(): JSX.Element {
     }
 
     function walletIsConnected(networkId?: number, address?: string): boolean {
-        return currentNetwork.id === networkId && !!address
+        return currentNetwork.chainId === networkId && !!address
     }
 
     const showUnexpectedError = useCallback(() => {
@@ -223,7 +223,7 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const contractInstance = new ethers.Contract(contractAddress, ReputationBadge.abi)
+        const contractInstance = getContractInstance(ContractName.REPUTATION_BADGE, contractAddress)
 
         try {
             const tx = await contractInstance.connect(signer).burn(token.decimalId)

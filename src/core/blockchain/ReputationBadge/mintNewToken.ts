@@ -1,6 +1,6 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { ContractName } from "src/config"
-import getContractInstance from "src/utils/crypto/getContractInstance"
+import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 
 type MintNewTokenProps = {
@@ -13,7 +13,7 @@ const mintNewToken = async ({ badgeAddress, to, tokenId }: MintNewTokenProps): P
     if (!tokenId) throw new Error("Token id is not defined")
 
     const decimalId = stringToBigNumber(tokenId)
-    const contractInstance = await getContractInstance(ContractName.REPUTATION_BADGE, badgeAddress)
+    const contractInstance = await getBackendContractInstance(ContractName.REPUTATION_BADGE, badgeAddress)
 
     return contractInstance.safeMint(to, decimalId)
 }

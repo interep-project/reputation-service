@@ -1,13 +1,13 @@
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
-import getContractInstance from "src/utils/crypto/getContractInstance"
+import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import getContractEvents from "src/utils/crypto/getContractEvents"
 import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
 
-jest.mock("src/utils/crypto/getContractInstance", () => ({
+jest.mock("src/utils/crypto/getBackendContractInstance", () => ({
     __esModule: true,
     default: jest.fn(() => ({
         exists: () => false
@@ -52,7 +52,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update MINT_PENDING -> MINTED", async () => {
         // @ts-ignore: mocked above
-        getContractInstance.mockImplementationOnce(() => ({
+        getBackendContractInstance.mockImplementationOnce(() => ({
             exists: () => true
         }))
 
@@ -67,7 +67,7 @@ describe("checkAndUpdateTokenStatus", () => {
 
     it("should update NOT_MINTED -> MINTED", async () => {
         // @ts-ignore: mocked above
-        getContractInstance.mockImplementationOnce(() => ({
+        getBackendContractInstance.mockImplementationOnce(() => ({
             exists: () => true
         }))
 

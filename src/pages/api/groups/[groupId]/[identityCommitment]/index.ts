@@ -1,13 +1,13 @@
 import { withSentry } from "@sentry/nextjs"
-import { ethers } from "hardhat"
+import { ethers } from "ethers"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { ContractName } from "src/config"
 import MerkleTreeController from "src/controllers/MerkleTreeController"
 import { getPoapGroupIdsByAddress, PoapGroupId } from "src/core/groups/poap"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import getContractAddress from "src/utils/crypto/getContractAddress"
-import getContractInstance from "src/utils/crypto/getContractInstance"
 import { dbConnect } from "src/utils/server/database"
 import logger from "src/utils/server/logger"
 
@@ -68,7 +68,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
 
             // Update the contract with new root.
             const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
-            const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
+            const contractInstance = await getBackendContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
 
             await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 
@@ -105,7 +105,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
 
         // Update the contract with new root.
         const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
-        const contractInstance = await getContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
+        const contractInstance = await getBackendContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
 
         await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 

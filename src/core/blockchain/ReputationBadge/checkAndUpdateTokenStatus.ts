@@ -1,9 +1,9 @@
 import { ContractName } from "src/config"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
 import { zeroAddress } from "src/utils/crypto/constants"
+import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import getContractAddress from "src/utils/crypto/getContractAddress"
 import getContractEvents from "src/utils/crypto/getContractEvents"
-import getContractInstance from "src/utils/crypto/getContractInstance"
 import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
 import logger from "src/utils/server/logger"
@@ -22,7 +22,10 @@ export default async function checkAndUpdateTokenStatus(tokens: ITokenDocument[]
                 }
 
                 const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
-                const contractInstance = await getContractInstance(ContractName.REPUTATION_BADGE, contractAddress)
+                const contractInstance = await getBackendContractInstance(
+                    ContractName.REPUTATION_BADGE,
+                    contractAddress
+                )
 
                 // TODO: checking each contract might not be the most scalable solution
                 // refactor to avoid explicit dependency with individual contracts?

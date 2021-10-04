@@ -1,5 +1,5 @@
 import getNextConfig from "next/config"
-import { SupportedNetwork } from "./types/network"
+import { NetworkData } from "./types/network"
 
 export enum Environment {
     TEST = "test",
@@ -12,8 +12,16 @@ export enum ContractName {
     REPUTATION_BADGE = "ReputationBadge"
 }
 
+export enum SupportedChainId {
+    LOCALHOST = 31337,
+    KOVAN = 42,
+    ROPSTEN = 3,
+    ARBITRUM = 42161,
+    ARBITRUM_TESTNET = 421611
+}
+
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
-    31337: {
+    [SupportedChainId.LOCALHOST]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
@@ -21,15 +29,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         },
         [ContractName.INTERREP_GROUPS]: "0x0165878A594ca255338adfa4d48449f69242Eb8F"
     },
-    3: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-        },
-        [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
-    },
-    42: {
+    [SupportedChainId.KOVAN]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x0Cb09b04016Ba1CfBF37359f0112F304F2381EB6",
             github: "0xab0090f2F9C061C12D3Fa286079659Fe00e173bf",
@@ -37,7 +37,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         },
         [ContractName.INTERREP_GROUPS]: "0x23789296D79FBD09e560FAf84C5870f266b4fef2"
     },
-    421611: {
+    [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
@@ -45,7 +45,16 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         },
         [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
-    42161: {
+
+    [SupportedChainId.ARBITRUM_TESTNET]: {
+        [ContractName.REPUTATION_BADGE]: {
+            twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
+            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+        },
+        [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
+    },
+    [SupportedChainId.ARBITRUM]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
@@ -55,33 +64,27 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
     }
 }
 
-export const supportedNetworks: Record<string, SupportedNetwork> = {
-    hardhat: {
-        name: "hardhat",
-        id: 31337
-    },
+export const supportedNetworks: Record<string, NetworkData> = {
     localhost: {
         name: "localhost",
-        id: 31337
+        chainId: SupportedChainId.LOCALHOST
     },
     kovan: {
-        name: "kovan",
-        id: 42
+        name: "ropsten",
+        chainId: SupportedChainId.KOVAN
     },
     ropsten: {
         name: "ropsten",
-        id: 3
+        chainId: SupportedChainId.ROPSTEN
     },
     arbitrum: {
         name: "arbitrum",
-        id: 42161
+        chainId: SupportedChainId.ARBITRUM
     }
 }
 
-export const currentNetwork = (function IIFE() {
+export const currentNetwork: NetworkData = (function IIFE(): NetworkData {
     switch (process.env.NODE_ENV as Environment) {
-        case Environment.DEVELOPMENT:
-            return supportedNetworks.localhost
         case Environment.PRODUCTION: {
             const { defaultNetwork } = getNextConfig().publicRuntimeConfig
 
@@ -92,7 +95,7 @@ export const currentNetwork = (function IIFE() {
             return supportedNetworks[defaultNetwork]
         }
         default:
-            return supportedNetworks.hardhat
+            return supportedNetworks.localhost
     }
 })()
 
