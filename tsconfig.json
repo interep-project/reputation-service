@@ -27,7 +27,6 @@
             "module": "commonjs"
         }
     },
-    "exclude": ["node_modules", "contracts"],
-    "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts", "src/types"],
-    "files": ["./hardhat.config.ts"]
+    "exclude": ["node_modules"],
+    "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts", "src/types"]
 }

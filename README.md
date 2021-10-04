@@ -48,8 +48,9 @@ If you want an overwiew of InterRep, read our announcement post: https://jaygrab
 Clone this repository and install the dependencies:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/InterRep/reputation-service.git
-$ cd reputation-service && yarn
+$ git clone https://github.com/InterRep/reputation-service.git
+$ cd reputation-service
+$ yarn
 ```
 
 ## Usage
@@ -73,9 +74,7 @@ $ yarn seed:twitterUsers
 $ yarn seed:zeroHashes
 ```
 
-### Running InterRep locally
-
-**NODE_ENV === 'development'**
+### Running InterRep (development)
 
 ```bash
 $ yarn dev
@@ -83,27 +82,28 @@ $ yarn dev
 
 The pages auto-update as you edit files.
 
-To test all the features, you will need to run and deploy InterRep smart contracts locally. Here's how:
+To test all the features, you will need to run and deploy the InterRep contracts locally. Here's how:
+
+1. Clone the `contracts` repository:
+
+```bash
+$ git clone https://github.com/InterRep/contracts.git
+$ cd contracts
+```
 
 1. Start a local network in one terminal:
 
 ```bash
-$ cd contracts && yarn start
+$ yarn start
 ```
 
-2. In another terminal, deploy the interRep badge contract:
+2. In another terminal, deploy the contracts on the local network:
 
 ```bash
-$ cd contracts && yarn deploy:mocks --network localhost
+$ yarn deploy:mocks --network localhost
 ```
 
-3. If it is necessary give your address some ETH for gas:
-
-```bash
-$ npx hardhat faucet YOUR_ADDRESS --network localhost
-```
-
-### Production
+### Running InterRep (production)
 
 **NODE_ENV === 'production'**
 
