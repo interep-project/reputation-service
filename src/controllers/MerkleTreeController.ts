@@ -2,7 +2,7 @@ import { checkGroup } from "src/core/groups"
 import config from "../config"
 import { MerkleTreeNode, MerkleTreeZero } from "../models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "../models/merkleTree/MerkleTree.types"
-import poseidonHash from "../utils/crypto/hasher"
+import poseidonHash from "../utils/common/crypto/hasher"
 
 class MerkleTreeController {
     public appendLeaf = async (groupId: string, idCommitment: string): Promise<string> => {

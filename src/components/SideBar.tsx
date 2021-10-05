@@ -6,7 +6,7 @@ import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { getPoapEventName, PoapGroupId } from "src/core/groups/poap"
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 
 type Properties = {
     session?: Session | null

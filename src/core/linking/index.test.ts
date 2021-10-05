@@ -5,7 +5,7 @@ import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
-import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
+import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { Wallet } from "ethers"
@@ -22,7 +22,7 @@ const getParams = (override?: Record<string, unknown>) => ({
 
 const createMockedSigner = () => Wallet.fromMnemonic("test test test test test test test test test test test junk")
 
-jest.mock("src/utils/crypto/getSigner", () => ({
+jest.mock("src/utils/backend/getSigner", () => ({
     __esModule: true,
     default: jest.fn(() => createMockedSigner())
 }))
@@ -57,7 +57,7 @@ jest.mock("../blockchain/ReputationBadge/mintNewToken", () => ({
     )
 }))
 
-jest.mock("src/utils/crypto/encryption", () => ({
+jest.mock("src/utils/common/crypto/encryption", () => ({
     encryptMessageWithSalt: jest.fn(() => "encryptedMessage")
 }))
 

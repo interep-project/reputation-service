@@ -1,11 +1,11 @@
 import { ContractName } from "src/config"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
-import { zeroAddress } from "src/utils/crypto/constants"
-import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
-import getContractAddress from "src/utils/crypto/getContractAddress"
-import getContractEvents from "src/utils/crypto/getContractEvents"
-import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
-import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
+import { zeroAddress } from "src/utils/common/crypto/constants"
+import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import getContractAddress from "src/utils/common/getContractAddress"
+import getContractEvents from "src/utils/common/getContractEvents"
+import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"
+import stringToBigNumber from "src/utils/common/stringToBigNumber"
 import logger from "src/utils/backend/logger"
 
 export default async function checkAndUpdateTokenStatus(tokens: ITokenDocument[]): Promise<any | null> {

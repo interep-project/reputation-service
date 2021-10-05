@@ -1,25 +1,25 @@
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
-import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
-import getContractEvents from "src/utils/crypto/getContractEvents"
-import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
+import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import getContractEvents from "src/utils/common/getContractEvents"
+import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
 
-jest.mock("src/utils/crypto/getBackendContractInstance", () => ({
+jest.mock("src/utils/backend/getBackendContractInstance", () => ({
     __esModule: true,
     default: jest.fn(() => ({
         exists: () => false
     }))
 }))
 
-jest.mock("src/utils/crypto/getContractEvents", () => ({
+jest.mock("src/utils/common/getContractEvents", () => ({
     __esModule: true,
     default: jest.fn()
 }))
 
-jest.mock("src/utils/crypto/isTransactionConfirmed", () => ({
+jest.mock("src/utils/backend/isTransactionConfirmed", () => ({
     __esModule: true,
     default: jest.fn()
 }))

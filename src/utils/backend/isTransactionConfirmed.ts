@@ -1,4 +1,4 @@
-import getProvider from "./getProvider"
+import getProvider from "src/utils/backend/getProvider"
 
 export default async function isTransactionConfirmed(txHash: string): Promise<boolean> {
     const provider = getProvider()

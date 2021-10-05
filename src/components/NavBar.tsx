@@ -16,7 +16,7 @@ import { isBrowser } from "react-device-detect"
 import { FaSun, FaMoon } from "react-icons/fa"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import getNetworkFullName from "src/utils/crypto/getNetworkFullName"
+import getNetworkFullName from "src/utils/common/getNetworkFullName"
 import shortenAddress from "src/utils/frontend/shortenAddress"
 
 export default function NavBar(): JSX.Element {

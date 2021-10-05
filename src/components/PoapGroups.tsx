@@ -8,7 +8,7 @@ import EthereumWalletContext, { EthereumWalletContextType } from "src/context/Et
 import { getPoapEventName, PoapGroupId } from "src/core/groups/poap"
 import { Group, Provider } from "src/types/groups"
 import { addIdentityCommitment, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 
 export default function PoapGroups(): JSX.Element {
     const toast = useToast()

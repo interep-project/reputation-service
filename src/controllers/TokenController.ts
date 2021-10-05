@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import mintToken from "src/core/linking/mintToken"
 import Token from "src/models/tokens/Token.model"
-import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
+import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"
 import logger from "src/utils/backend/logger"
 
 class TokenController {

@@ -18,7 +18,7 @@ import PoapGroups from "src/components/PoapGroups"
 import Web2Groups from "src/components/Web2Groups"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 
 export default function Groups(): JSX.Element {
     const [session] = useSession()

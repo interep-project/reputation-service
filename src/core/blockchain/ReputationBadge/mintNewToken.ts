@@ -1,7 +1,7 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { ContractName } from "src/config"
-import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
-import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
+import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import stringToBigNumber from "src/utils/common/stringToBigNumber"
 
 type MintNewTokenProps = {
     badgeAddress: string

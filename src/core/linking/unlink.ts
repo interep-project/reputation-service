@@ -2,7 +2,7 @@ import { ethers } from "ethers"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import getSigner from "src/utils/crypto/getSigner"
+import getSigner from "src/utils/backend/getSigner"
 import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 
 type UnlinkAccountsParams = {

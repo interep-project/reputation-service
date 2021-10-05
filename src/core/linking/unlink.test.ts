@@ -11,7 +11,7 @@ import unlinkAccounts from "./unlink"
 
 const mockedSigner = Wallet.fromMnemonic("test test test test test test test test test test test junk")
 
-jest.mock("src/utils/crypto/getSigner", () => ({
+jest.mock("src/utils/backend/getSigner", () => ({
     __esModule: true,
     default: jest.fn(() => mockedSigner)
 }))

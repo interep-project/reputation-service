@@ -1,4 +1,4 @@
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 import PoapGroupId from "./poapGroupIds"
 
 export default function getPoapEventName(groupId: PoapGroupId) {

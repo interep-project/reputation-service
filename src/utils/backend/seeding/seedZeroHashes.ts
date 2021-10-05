@@ -1,7 +1,7 @@
 import config from "src/config"
 import colors from "colors"
 import { MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
-import poseidonHash from "src/utils/crypto/hasher"
+import poseidonHash from "src/utils/common/crypto/hasher"
 
 export default async function seedZeroHashes(logger = false): Promise<void> {
     const log = logger ? console.log : (message: string) => message

@@ -1,6 +1,6 @@
 import mintNewToken from "./mintNewToken"
 
-jest.mock("src/utils/crypto/getBackendContractInstance", () => ({
+jest.mock("src/utils/backend/getBackendContractInstance", () => ({
     __esModule: true,
     default: () => ({
         safeMint: jest.fn(() => "mintTxResponse")

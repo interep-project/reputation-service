@@ -9,7 +9,7 @@ import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { Group } from "src/types/groups"
 import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 
 export default function Web2Groups(): JSX.Element {
     const [session] = useSession()

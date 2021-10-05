@@ -11,10 +11,10 @@ import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
-import getContractAddress from "src/utils/crypto/getContractAddress"
-import getContractInstance from "src/utils/crypto/getContractInstance"
+import getContractAddress from "src/utils/common/getContractAddress"
+import getContractInstance from "src/utils/common/getContractInstance"
 import { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
-import { capitalize } from "src/utils/frontend/capitalize"
+import capitalize from "src/utils/common/capitalize"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 
 export default function Badges(): JSX.Element {
