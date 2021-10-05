@@ -5,8 +5,8 @@ import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
 import Token from "src/models/tokens/Token.model"
 import handler from "src/pages/api/linking/link"
-import logger from "src/utils/server/logger"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import logger from "src/utils/backend/logger"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
 jest.mock("src/core/linking", () => jest.fn())
 jest.mock("next-auth/client", () => ({

@@ -3,8 +3,8 @@ import { withSentry } from "@sentry/nextjs"
 import { getSession } from "next-auth/client"
 import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
-import { dbConnect } from "src/utils/server/database"
-import logger from "src/utils/server/logger"
+import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()

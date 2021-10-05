@@ -8,8 +8,8 @@ import { getPoapGroupIdsByAddress, PoapGroupId } from "src/core/groups/poap"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import getContractAddress from "src/utils/crypto/getContractAddress"
-import { dbConnect } from "src/utils/server/database"
-import logger from "src/utils/server/logger"
+import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()

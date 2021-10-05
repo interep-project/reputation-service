@@ -1,9 +1,9 @@
 import createNextMocks from "src/mocks/createNextMocks"
 import jwt from "next-auth/jwt"
 import handler from "src/pages/api/linking/unlink"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import unlinkAccounts from "src/core/linking/unlink"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 
 jest.mock("src/core/linking/unlink", () => jest.fn())
 jest.mock("next-auth/jwt", () => ({

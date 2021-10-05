@@ -2,8 +2,8 @@ import { calculateReputation, Web2Provider } from "@interrep/reputation-criteria
 import { withSentry } from "@sentry/nextjs"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getTwitterParametersByUsername } from "src/core/reputation/twitter"
-import { dbConnect } from "src/utils/server/database"
-import logger from "src/utils/server/logger"
+import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()

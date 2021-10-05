@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 import { createUserAttestationMessage } from "./createUserAttestationMessage"
 
 type CheckIfUserSignatureIsValidParams = {

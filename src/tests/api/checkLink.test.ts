@@ -4,7 +4,7 @@ import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import handler from "src/pages/api/linking/check"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
 jest.mock("next-auth/client", () => ({
     getSession: jest.fn()

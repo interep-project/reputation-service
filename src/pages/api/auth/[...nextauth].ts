@@ -6,7 +6,7 @@ import config from "src/config"
 import { createWeb2Account, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { User } from "src/types/next-auth"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 
 export default NextAuth({
     providers: [

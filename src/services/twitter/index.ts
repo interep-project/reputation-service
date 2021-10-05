@@ -1,7 +1,7 @@
 import Twitter from "twitter-v2"
 import config from "src/config"
 import { TwitterUser } from "src/types/twitter"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 
 const { TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET } = config
 

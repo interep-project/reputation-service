@@ -3,7 +3,7 @@ import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import mintToken from "./mintToken"
 
 const mockTxResponse = {

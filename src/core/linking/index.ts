@@ -1,6 +1,6 @@
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import Token from "src/models/tokens/Token.model"

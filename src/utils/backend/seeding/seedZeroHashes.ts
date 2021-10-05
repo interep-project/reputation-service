@@ -6,7 +6,7 @@ import poseidonHash from "src/utils/crypto/hasher"
 export default async function seedZeroHashes(logger = false): Promise<void> {
     const log = logger ? console.log : (message: string) => message
 
-    log(colors.white.bold("\nSeeding zero hashes...\n"))
+    log(colors.white.bold("Seeding zero hashes...\n"))
 
     let level = 0
     let zeroHash = "0"
@@ -33,7 +33,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
         log(colors.white(`Document with id: ${zeroHashDocument.id} inserted`))
     }
 
-    if (level < config.MERKLE_TREE_LEVELS) {
+    if (level === config.MERKLE_TREE_LEVELS) {
         log(colors.green.bold("\nDocuments inserted correctly ✓\n"))
     }
 }

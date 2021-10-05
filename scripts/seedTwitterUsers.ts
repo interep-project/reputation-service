@@ -1,5 +1,5 @@
-import seedTwitterUsers from "src/utils/seeding/seedTwitterUsers"
-import { dbConnect, dbDisconnect } from "src/utils/server/database"
+import seedTwitterUsers from "src/utils/backend/seeding/seedTwitterUsers"
+import { dbConnect, dbDisconnect } from "src/utils/backend/database"
 
 const twitterUsernames = [
     // "twobitidiot",
@@ -26,7 +26,7 @@ const twitterUsernames = [
     // "drakefjustin",
 ]
 
-;(async () => {
+;(async function IIFE() {
     dbConnect()
 
     try {

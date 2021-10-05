@@ -4,7 +4,7 @@ import { TokenStatus } from "src/models/tokens/Token.types"
 import getBackendContractInstance from "src/utils/crypto/getBackendContractInstance"
 import getContractEvents from "src/utils/crypto/getContractEvents"
 import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
 
 jest.mock("src/utils/crypto/getBackendContractInstance", () => ({

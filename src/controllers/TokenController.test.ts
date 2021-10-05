@@ -3,8 +3,8 @@ import mintToken from "src/core/linking/mintToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
 import Token from "src/models/tokens/Token.model"
-import logger from "src/utils/server/logger"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import logger from "src/utils/backend/logger"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import TokenController from "./TokenController"
 
 jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
@@ -12,7 +12,7 @@ jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () =>
     default: jest.fn()
 }))
 
-jest.mock("src/utils/server/logger", () => ({
+jest.mock("src/utils/backend/logger", () => ({
     __esModule: true,
     default: {
         error: jest.fn()

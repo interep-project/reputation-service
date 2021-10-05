@@ -5,7 +5,7 @@ import createMockTokenObject from "src/mocks/createMockToken"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
 

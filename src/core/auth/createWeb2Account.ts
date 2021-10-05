@@ -8,7 +8,7 @@ import {
 import { Account } from "next-auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { User } from "src/types/next-auth"
-import { dbConnect } from "src/utils/server/database"
+import { dbConnect } from "src/utils/backend/database"
 
 export default async function createWeb2Account(user: User, account: Account, provider: Web2Provider): Promise<void> {
     await dbConnect()

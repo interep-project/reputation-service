@@ -3,11 +3,11 @@ import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import { getGroupIds } from "src/core/groups"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
-import seedZeroHashes from "src/utils/seeding/seedRootHashes"
+import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import config from "../config"
 import { MerkleTreeNode } from "../models/merkleTree/MerkleTree.model"
 import poseidonHash from "../utils/crypto/hasher"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "../utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "../utils/backend/testDatabase"
 import MerkleTreeController from "./MerkleTreeController"
 
 describe("MerkleTreeController", () => {

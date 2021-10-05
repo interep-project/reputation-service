@@ -3,7 +3,7 @@ import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/check
 import mintToken from "src/core/linking/mintToken"
 import Token from "src/models/tokens/Token.model"
 import getChecksummedAddress from "src/utils/crypto/getChecksummedAddress"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 
 class TokenController {
     public getTokensByAddress = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {

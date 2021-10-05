@@ -1,6 +1,6 @@
-import seedZeroHashes from "src/utils/seeding/seedRootHashes"
-import { dbConnect, dbDisconnect } from "src/utils/server/database"
-;(async () => {
+import { dbConnect, dbDisconnect } from "src/utils/backend/database"
+import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
+;(async function IIFE() {
     dbConnect()
 
     try {

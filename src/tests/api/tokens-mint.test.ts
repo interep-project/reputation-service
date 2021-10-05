@@ -1,7 +1,7 @@
 import TokenController from "src/controllers/TokenController"
 import createNextMocks from "src/mocks/createNextMocks"
 import handler from "src/pages/api/tokens/[tokenId]/mint"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
 jest.spyOn(TokenController, "mintToken")
 

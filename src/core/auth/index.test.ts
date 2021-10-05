@@ -1,6 +1,6 @@
 import { TwitterParameters, Web2Provider } from "@interrep/reputation-criteria"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import createWeb2Account from "./createWeb2Account"
 
 const providerAccountId = "user_id"

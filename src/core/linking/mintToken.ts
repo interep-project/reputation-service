@@ -1,7 +1,7 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import Token from "src/models/tokens/Token.model"
 import { TokenStatus } from "src/models/tokens/Token.types"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
 

@@ -6,7 +6,7 @@ import getContractAddress from "src/utils/crypto/getContractAddress"
 import getContractEvents from "src/utils/crypto/getContractEvents"
 import isTransactionConfirmed from "src/utils/crypto/isTransactionConfirmed"
 import stringToBigNumber from "src/utils/crypto/stringToBigNumber"
-import logger from "src/utils/server/logger"
+import logger from "src/utils/backend/logger"
 
 export default async function checkAndUpdateTokenStatus(tokens: ITokenDocument[]): Promise<any | null> {
     if (!tokens) return null

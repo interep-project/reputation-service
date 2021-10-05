@@ -19,7 +19,7 @@ function createTwitterSeedUser(user: TwitterUser): any {
 export default async function seedTwitterUsers(twitterUsernames: string[], logger = false): Promise<void> {
     const log = logger ? console.log : (message: string) => message
 
-    log(colors.white.bold("\nSeeding Twitter accounts...\n"))
+    log(colors.white.bold("Seeding Twitter accounts...\n"))
 
     for (const username of twitterUsernames) {
         const twitterUser = await getTwitterUserByUsername({
@@ -51,6 +51,6 @@ export default async function seedTwitterUsers(twitterUsernames: string[], logge
             log(colors.white(`Number of write errors: ${error.writeErrors?.length}`))
         }
 
-        log("\n")
+        log("")
     }
 }

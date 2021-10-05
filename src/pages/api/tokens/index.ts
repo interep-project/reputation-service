@@ -1,7 +1,7 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
 import TokenController from "src/controllers/TokenController"
-import { dbConnect } from "src/utils/server/database"
+import { dbConnect } from "src/utils/backend/database"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()

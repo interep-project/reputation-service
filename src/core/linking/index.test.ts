@@ -6,7 +6,7 @@ import Token from "src/models/tokens/Token.model"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
 import { encryptMessageWithSalt } from "src/utils/crypto/encryption"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/server/testDatabase"
+import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { Wallet } from "ethers"
 

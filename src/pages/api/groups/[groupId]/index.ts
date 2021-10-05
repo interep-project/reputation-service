@@ -1,7 +1,7 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
-import { dbConnect } from "src/utils/server/database"
-import logger from "src/utils/server/logger"
+import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 import { getGroup } from "src/core/groups"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {

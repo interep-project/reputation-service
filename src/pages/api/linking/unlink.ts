@@ -3,8 +3,8 @@ import { withSentry } from "@sentry/nextjs"
 import jwt, { JWT } from "next-auth/jwt"
 import config from "src/config"
 import unlinkAccounts from "src/core/linking/unlink"
-import { dbConnect } from "src/utils/server/database"
-import logger from "src/utils/server/logger"
+import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()
