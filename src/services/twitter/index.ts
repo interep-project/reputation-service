@@ -25,13 +25,6 @@ export const getTwitterUserByUsername = async ({ username }: { username: string 
     return data
 }
 
-export const getTwitterUserById = async ({ id }: { id: string }): Promise<TwitterUser> => {
-    // See https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-id
-    const { data } = await client.get(`users/${id}`, userRequestedFields)
-
-    return data
-}
-
 export const getTwitterFriendsByUserId = async ({
     userId,
     maxResults = 10
