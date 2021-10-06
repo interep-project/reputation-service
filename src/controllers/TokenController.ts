@@ -6,7 +6,7 @@ import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress
 import logger from "src/utils/backend/logger"
 
 class TokenController {
-    public getTokensByAddress = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+    static getTokensByAddress = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const userAddress = req.query?.userAddress
 
         if (!userAddress || typeof userAddress !== "string") {
@@ -36,7 +36,7 @@ class TokenController {
         }
     }
 
-    public getToken = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+    static getToken = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const tokenId = req.query?.tokenId
 
         if (!tokenId || typeof tokenId !== "string") {
@@ -58,7 +58,7 @@ class TokenController {
         }
     }
 
-    public mintToken = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+    static mintToken = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const tokenId = req.query?.tokenId
 
         if (!tokenId || typeof tokenId !== "string") {
@@ -77,4 +77,4 @@ class TokenController {
     }
 }
 
-export default new TokenController()
+export default TokenController

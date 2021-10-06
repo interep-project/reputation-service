@@ -1,12 +1,11 @@
 import { Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
-import MerkleTreeController from "src/controllers/MerkleTreeController"
+import { appendLeaf } from "src/core/groups/mts"
+import { PoapGroupId } from "src/core/groups/poap"
 import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import getAllProviders from "./getAllProviders"
-import { checkGroup, getGroup, getGroupIds, getGroups } from "./index"
-import { PoapGroupId } from "./poap"
+import { checkGroup, getGroup, getGroupIds, getGroups, getAllProviders } from "."
 
 describe("Core group functions", () => {
     describe("Get group ids", () => {
@@ -77,7 +76,7 @@ describe("Core group functions", () => {
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon([BigInt(i)]).toString()
 
-                await MerkleTreeController.appendLeaf(groupId, idCommitment)
+                await appendLeaf(groupId, idCommitment)
             }
 
             const expectedGroup = await getGroup(groupId)
