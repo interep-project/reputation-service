@@ -4,13 +4,13 @@ import { IncrementalQuinTree } from "incrementalquintree"
 import { getGroupIds } from "src/core/groups"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
-import config from "../config"
-import { MerkleTreeNode } from "../models/merkleTree/MerkleTree.model"
-import poseidonHash from "../utils/common/crypto/hasher"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "../utils/backend/testDatabase"
-import MerkleTreeController from "./MerkleTreeController"
+import config from "src/config"
+import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
+import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import poseidonHash from "src/utils/common/crypto/hasher"
+import { appendLeaf, previewNewRoot, retrievePath } from "."
 
-describe("MerkleTreeController", () => {
+describe("Merkle Trees", () => {
     const idCommitment = poseidon([2n, 1n]).toString()
     const groupId = getGroupIds(Web2Provider.TWITTER)[0]
 
@@ -30,13 +30,13 @@ describe("MerkleTreeController", () => {
         it("Should not append any leaf if the group id does not exist", async () => {
             await seedZeroHashes(false)
 
-            const fun = (): Promise<string> => MerkleTreeController.appendLeaf("WRONG_GROUP_ID", idCommitment)
+            const fun = (): Promise<string> => appendLeaf("WRONG_GROUP_ID", idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
 
         it("Should not append any leaf without first creating the zero hashes", async () => {
-            const fun = (): Promise<string> => MerkleTreeController.appendLeaf(groupId, idCommitment)
+            const fun = (): Promise<string> => appendLeaf(groupId, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
@@ -44,8 +44,8 @@ describe("MerkleTreeController", () => {
         it("Should not append the same identity twice", async () => {
             await seedZeroHashes(false)
 
-            await MerkleTreeController.appendLeaf(groupId, idCommitment)
-            const fun = (): Promise<string> => MerkleTreeController.appendLeaf(groupId, idCommitment)
+            await appendLeaf(groupId, idCommitment)
+            const fun = (): Promise<string> => appendLeaf(groupId, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
@@ -54,8 +54,8 @@ describe("MerkleTreeController", () => {
             await seedZeroHashes(false)
             const idCommitments = [poseidon([1]).toString(), poseidon([2]).toString()]
 
-            await MerkleTreeController.appendLeaf(groupId, idCommitments[0])
-            await MerkleTreeController.appendLeaf(groupId, idCommitments[1])
+            await appendLeaf(groupId, idCommitments[0])
+            await appendLeaf(groupId, idCommitments[1])
 
             const node = (await MerkleTreeNode.findByLevelAndIndex({
                 groupId,
@@ -73,7 +73,7 @@ describe("MerkleTreeController", () => {
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon([BigInt(i)]).toString()
 
-                await MerkleTreeController.appendLeaf(groupId, idCommitment)
+                await appendLeaf(groupId, idCommitment)
             }
 
             const expectedNumberOfNodes = [10, 5, 3, 2, 1, 1, 1]
@@ -94,13 +94,13 @@ describe("MerkleTreeController", () => {
         it("Should not return the root hash if the group id does not exist", async () => {
             await seedZeroHashes(false)
 
-            const fun = (): Promise<string> => MerkleTreeController.previewNewRoot("WRONG_GROUP_ID", idCommitment)
+            const fun = (): Promise<string> => previewNewRoot("WRONG_GROUP_ID", idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
 
         it("Should not calculate the root hash without first creating the zero hashes", async () => {
-            const fun = (): Promise<string> => MerkleTreeController.previewNewRoot(groupId, idCommitment)
+            const fun = (): Promise<string> => previewNewRoot(groupId, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
@@ -111,8 +111,8 @@ describe("MerkleTreeController", () => {
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon([BigInt(i)]).toString()
 
-                const expectedRootHash = await MerkleTreeController.previewNewRoot(groupId, idCommitment)
-                const rootHash = await MerkleTreeController.appendLeaf(groupId, idCommitment)
+                const expectedRootHash = await previewNewRoot(groupId, idCommitment)
+                const rootHash = await appendLeaf(groupId, idCommitment)
 
                 expect(rootHash).toBe(expectedRootHash)
             }
@@ -125,7 +125,7 @@ describe("MerkleTreeController", () => {
         })
 
         it(`Should not return any path if the identity commitment does not exist`, async () => {
-            const fun = (): Promise<string[]> => MerkleTreeController.retrievePath(groupId, idCommitment)
+            const fun = (): Promise<string[]> => retrievePath(groupId, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
@@ -138,10 +138,10 @@ describe("MerkleTreeController", () => {
             for (let i = 0; i < 10; i++) {
                 idCommitments.push(poseidon([BigInt(i)]).toString())
 
-                await MerkleTreeController.appendLeaf(groupId, idCommitments[i])
+                await appendLeaf(groupId, idCommitments[i])
             }
 
-            const path = await MerkleTreeController.retrievePath(groupId, idCommitments[5])
+            const path = await retrievePath(groupId, idCommitments[5])
 
             expect(path.pathElements).toHaveLength(config.MERKLE_TREE_LEVELS)
             expect(path.indices).toHaveLength(config.MERKLE_TREE_LEVELS)
@@ -158,11 +158,11 @@ describe("MerkleTreeController", () => {
             for (let i = 0; i < 10; i++) {
                 idCommitments.push(poseidon([BigInt(i)]).toString())
 
-                await MerkleTreeController.appendLeaf(groupId, idCommitments[i])
+                await appendLeaf(groupId, idCommitments[i])
                 tree.insert(BigInt(idCommitments[i]))
             }
 
-            const path1 = await MerkleTreeController.retrievePath(groupId, idCommitments[5])
+            const path1 = await retrievePath(groupId, idCommitments[5])
 
             const path2 = tree.genMerklePath(5)
             const path2Elements = path2.pathElements.map((e: BigInt[]) => e[0].toString())
