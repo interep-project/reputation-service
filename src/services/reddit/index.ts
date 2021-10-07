@@ -1,13 +1,13 @@
 const url = "https://oauth.reddit.com/api/v1"
 
-export async function getRedditUser(token: string) {
-    const headers = new Headers()
+export async function getRedditUserByToken(token: string) {
+    const headers = new Headers({
+        Authorization: token
+    })
 
-    headers.append("Authorization", `baerer ${token}`)
-
-    const reposResponse = await fetch(`${url}/me`, {
+    const userResponse = await fetch(`${url}/me`, {
         headers
     })
 
-    return reposResponse.json()
+    return userResponse.json()
 }
