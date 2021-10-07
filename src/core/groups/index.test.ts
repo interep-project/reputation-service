@@ -1,27 +1,26 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
-import MerkleTreeController from "src/controllers/MerkleTreeController"
+import { appendLeaf } from "src/core/groups/mts"
 import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import getAllProviders from "./getAllProviders"
-import { checkGroup, getGroup, getGroupIds, getGroups } from "./index"
-import { PoapGroupId } from "./poap"
+import { checkGroup, getAllProviders, getGroup, getGroupIds, getGroups } from "."
+import { PoapGroupName } from "./poap"
 
 describe("Core group functions", () => {
     describe("Get group ids", () => {
         it("Should return all the existing group ids", () => {
-            const expectedGroupIds = getGroupIds()
+            const expectedValue = getGroupIds()
 
-            expect(expectedGroupIds).toContain("TWITTER_GOLD")
-            expect(expectedGroupIds).toContain("GITHUB_GOLD")
-            expect(expectedGroupIds).toContain(PoapGroupId.POAP_DEVCON_4)
+            expect(expectedValue).toContain("TWITTER_GOLD")
+            expect(expectedValue).toContain("GITHUB_GOLD")
+            expect(expectedValue).toContain("POAP_DEVCON_4")
         })
 
         it("Should return all the group ids of an existing Web2 provider", () => {
-            const expectedGroupIds = getGroupIds(Web2Provider.TWITTER)
+            const expectedValue = getGroupIds(Web2Provider.TWITTER)
 
-            expect(expectedGroupIds).toStrictEqual([
+            expect(expectedValue).toStrictEqual([
                 "TWITTER_GOLD",
                 "TWITTER_SILVER",
                 "TWITTER_BRONZE",
@@ -30,33 +29,27 @@ describe("Core group functions", () => {
         })
 
         it("Should return all the group ids of an existing Web3 provider", () => {
-            const expectedGroupIds = getGroupIds(Web3Provider.POAP)
+            const expectedValue = getGroupIds(Web3Provider.POAP)
 
-            expect(expectedGroupIds).toStrictEqual([
-                PoapGroupId.POAP_DEVCON_3,
-                PoapGroupId.POAP_DEVCON_4,
-                PoapGroupId.POAP_DEVCON_5
-            ])
+            expect(expectedValue).toStrictEqual(["POAP_DEVCON_3", "POAP_DEVCON_4", "POAP_DEVCON_5"])
         })
     })
 
     describe("Check group", () => {
         it("Should return true if a group exists", () => {
-            const isAnExistingGroup = checkGroup("TWITTER_GOLD")
+            const expectedValue = checkGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)
 
-            expect(isAnExistingGroup).toBeTruthy()
+            expect(expectedValue).toBeTruthy()
         })
 
         it("Should return false if a group does not exist", () => {
-            const isAnExistingGroup = checkGroup("FACEBOOK_GOLD")
+            const expectedValue = checkGroup(Web2Provider.TWITTER, PoapGroupName.DEVCON_3)
 
-            expect(isAnExistingGroup).toBeFalsy()
+            expect(expectedValue).toBeFalsy()
         })
     })
 
     describe("Get group", () => {
-        const groupId = getGroupIds(Web2Provider.TWITTER)[0]
-
         beforeAll(async () => {
             await connect()
         })
@@ -66,9 +59,13 @@ describe("Core group functions", () => {
         })
 
         it("Should return the correct group", async () => {
-            const expectedGroup = await getGroup(groupId)
+            const expectedValue = await getGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)
 
-            expect(expectedGroup).toStrictEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 0 })
+            expect(expectedValue).toStrictEqual({
+                name: ReputationLevel.GOLD,
+                provider: Web2Provider.TWITTER,
+                size: 0
+            })
         })
 
         it("Should return false if a group does not exist", async () => {
@@ -77,18 +74,20 @@ describe("Core group functions", () => {
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon([BigInt(i)]).toString()
 
-                await MerkleTreeController.appendLeaf(groupId, idCommitment)
+                await appendLeaf(Web2Provider.TWITTER, ReputationLevel.GOLD, idCommitment)
             }
 
-            const expectedGroup = await getGroup(groupId)
+            const expectedGroup = await getGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)
 
-            expect(expectedGroup).toStrictEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 10 })
+            expect(expectedGroup).toStrictEqual({
+                name: ReputationLevel.GOLD,
+                provider: Web2Provider.TWITTER,
+                size: 10
+            })
         })
     })
 
     describe("Get groups", () => {
-        const groupId = getGroupIds(Web2Provider.TWITTER)[0]
-
         beforeAll(async () => {
             await connect()
         })
@@ -104,7 +103,11 @@ describe("Core group functions", () => {
         it("Should return all the existing groups", async () => {
             const expectedGroups = await getGroups()
 
-            expect(expectedGroups).toContainEqual({ id: groupId, provider: Web2Provider.TWITTER, size: 0 })
+            expect(expectedGroups).toContainEqual({
+                name: ReputationLevel.GOLD,
+                provider: Web2Provider.TWITTER,
+                size: 0
+            })
         })
     })
 

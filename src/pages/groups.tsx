@@ -23,7 +23,7 @@ import capitalize from "src/utils/common/capitalize"
 export default function Groups(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
-    const { _address, _networkId, _poapGroupIds } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { _address, _networkId, _poapGroupNames } = useContext(EthereumWalletContext) as EthereumWalletContextType
 
     function walletIsConnected(networkId?: number, address?: string): boolean {
         return currentNetwork.chainId === networkId && !!address
@@ -53,7 +53,7 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session && !_poapGroupIds.length ? (
+            ) : !session && !_poapGroupNames.length ? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, sign in with one of our supported Web2 providers!</Text>
                 </VStack>
@@ -61,7 +61,7 @@ export default function Groups(): JSX.Element {
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
                         {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
-                        {!!_poapGroupIds.length && <Tab>POAP</Tab>}
+                        {!!_poapGroupNames.length && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
                         {session && (
@@ -70,7 +70,7 @@ export default function Groups(): JSX.Element {
                                 <Web2Groups />
                             </TabPanel>
                         )}
-                        {!!_poapGroupIds.length && (
+                        {!!_poapGroupNames.length && (
                             <TabPanel>
                                 {" "}
                                 <PoapGroups />

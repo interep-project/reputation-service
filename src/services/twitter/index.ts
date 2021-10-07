@@ -18,16 +18,21 @@ const userRequestedFields = {
     "user.fields": ["id", "profile_image_url", "public_metrics", "verified", "created_at"]
 }
 
+export const getTwitterUserByToken = async (token: string) => {
+    const headers = new Headers({
+        Authorization: token
+    })
+
+    const userResponse = await fetch("https://api.twitter.com/1.1/account/verify_credentials.json", {
+        headers
+    })
+
+    return userResponse.json()
+}
+
 export const getTwitterUserByUsername = async ({ username }: { username: string }): Promise<TwitterUser> => {
     // https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-by-username-username
     const { data } = await client.get(`users/by/username/${username}`, userRequestedFields)
-
-    return data
-}
-
-export const getTwitterUserById = async ({ id }: { id: string }): Promise<TwitterUser> => {
-    // See https://developer.twitter.com/en/docs/twitter-api/users/lookup/api-reference/get-users-id
-    const { data } = await client.get(`users/${id}`, userRequestedFields)
 
     return data
 }

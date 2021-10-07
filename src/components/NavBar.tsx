@@ -22,7 +22,7 @@ import shortenAddress from "src/utils/frontend/shortenAddress"
 export default function NavBar(): JSX.Element {
     const router = useRouter()
     const [session] = useSession()
-    const { connect, check, _networkId, _address, _poapGroupIds } = useContext(
+    const { connect, check, _networkId, _address, _poapGroupNames } = useContext(
         EthereumWalletContext
     ) as EthereumWalletContextType
     const { hasCopied, onCopy } = useClipboard(_address as string)
@@ -55,7 +55,7 @@ export default function NavBar(): JSX.Element {
                         <Button
                             onClick={() => router.push("/groups")}
                             isActive={router.route === "/groups"}
-                            isDisabled={!_address || (!appIsReady() && !_poapGroupIds.length)}
+                            isDisabled={!_address || (!appIsReady() && !_poapGroupNames.length)}
                         >
                             Groups
                         </Button>

@@ -5,14 +5,14 @@ import { Signer } from "ethers"
 import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { getPoapEventName, PoapGroupId } from "src/core/groups/poap"
-import { Group, Provider } from "src/types/groups"
+import { getPoapEventName, PoapGroupName } from "src/core/groups/poap"
+import { Group, Provider, Web3Provider } from "src/types/groups"
 import { addIdentityCommitment, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 import capitalize from "src/utils/common/capitalize"
 
 export default function PoapGroups(): JSX.Element {
     const toast = useToast()
-    const { _signer, _poapGroupIds, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { _signer, _poapGroupNames, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_loading, setLoading] = useState<boolean>(false)
     const [_group, setGroup] = useState<Group | null>(null)
@@ -28,8 +28,8 @@ export default function PoapGroups(): JSX.Element {
     }, [toast])
 
     const selectGroup = useCallback(
-        async (groupId: string) => {
-            const group = await getGroup({ groupId })
+        async (groupName: PoapGroupName) => {
+            const group = await getGroup({ provider: Web3Provider.POAP, name: groupName })
 
             if (group === null) {
                 showUnexpectedError()
@@ -87,7 +87,8 @@ export default function PoapGroups(): JSX.Element {
         }
 
         const alreadyExist = await checkIdentityCommitment({
-            groupId: group.id,
+            provider: group.provider,
+            name: group.name as PoapGroupName,
             identityCommitment
         })
 
@@ -128,7 +129,8 @@ export default function PoapGroups(): JSX.Element {
         }
 
         const rootHash = await addIdentityCommitment({
-            groupId: group.id,
+            provider: group.provider,
+            name: group.name as PoapGroupName,
             identityCommitment: _identityCommitment as string,
             userAddress: _address as string,
             userSignature
@@ -148,7 +150,7 @@ export default function PoapGroups(): JSX.Element {
         })
     }
 
-    return !_poapGroupIds.length ? (
+    return !_poapGroupNames.length ? (
         <VStack h="300px" align="center" justify="center">
             <Spinner thickness="4px" speed="0.65s" size="xl" />
         </VStack>
@@ -159,10 +161,10 @@ export default function PoapGroups(): JSX.Element {
                     title="Step 1"
                     message="Select a POAP group."
                     actionText="Select Group"
-                    actionFunction={(groupId) => selectGroup(groupId)}
+                    actionFunction={(groupName) => selectGroup(groupName)}
                     actionType="select"
-                    selectOptions={_poapGroupIds}
-                    selectOptionFilter={(option) => getPoapEventName(option as PoapGroupId)}
+                    selectOptions={_poapGroupNames}
+                    selectOptionFilter={(option) => getPoapEventName(option as PoapGroupName)}
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />

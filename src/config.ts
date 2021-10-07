@@ -1,6 +1,19 @@
 import getNextConfig from "next/config"
 import { NetworkData } from "./types/network"
 
+const defaultEnv = {
+    MERKLE_TREE_LEVELS: 16,
+    API_WHITELIST: [
+        /^http:\/\/localhost/,
+        /^http:\/\/127.0.0.1/,
+        /^https:\/\/kovan\\.interrep\\.link/,
+        /^https:\/\/ropsten\\.interrep\\.link/,
+        /^https:\/\/interrep\\.link/,
+        /^https:\/\/auti\\.sm/,
+        /^https:\/\/www\\.auti\\.sm/
+    ]
+}
+
 export enum Environment {
     TEST = "test",
     DEVELOPMENT = "development",
@@ -35,7 +48,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xab0090f2F9C061C12D3Fa286079659Fe00e173bf",
             reddit: "0xAB1855a7d02C771465411fDD4B63f647925d6c37"
         },
-        [ContractName.INTERREP_GROUPS]: "0x23789296D79FBD09e560FAf84C5870f266b4fef2"
+        [ContractName.INTERREP_GROUPS]: "0xB9A55B681BF8426ceb71F54d127D3391fd28a1E4"
     },
     [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -113,5 +126,6 @@ export default {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
-    MERKLE_TREE_LEVELS: Number(process.env.MERKLE_TREE_LEVELS) || 16
+    MERKLE_TREE_LEVELS: Number(process.env.MERKLE_TREE_LEVELS) || defaultEnv.MERKLE_TREE_LEVELS,
+    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
 }

@@ -1,4 +1,5 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { PoapGroupName } from "src/core/groups/poap"
 
 export enum Web3Provider {
     POAP = "poap"
@@ -7,7 +8,7 @@ export enum Web3Provider {
 export type Provider = Web2Provider | Web3Provider
 
 export type Group = {
-    id: string
+    name: ReputationLevel | PoapGroupName
     provider: Provider
     size: number
 }

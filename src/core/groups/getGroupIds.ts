@@ -1,17 +1,23 @@
 import { getReputationLevels } from "@interrep/reputation-criteria"
 import { Provider, Web3Provider } from "src/types/groups"
 import getAllProviders from "./getAllProviders"
-import { PoapGroupId } from "./poap"
+import getGroupId from "./getGroupId"
+import { getPoapGroupNames } from "./poap"
 
 export default function getGroupIds(provider?: Provider): string[] {
-    if (provider && provider === Web3Provider.POAP) {
-        return Object.values(PoapGroupId)
-    }
-
     if (provider) {
-        const reputationLevels = getReputationLevels(provider)
+        switch (provider) {
+            case Web3Provider.POAP: {
+                const poapGroupNames = getPoapGroupNames()
 
-        return reputationLevels.map((reputation) => `${provider.toUpperCase()}_${reputation}`)
+                return poapGroupNames.map((poapGroupName) => getGroupId(provider, poapGroupName))
+            }
+            default: {
+                const reputationLevels = getReputationLevels(provider)
+
+                return reputationLevels.map((reputation) => getGroupId(provider, reputation))
+            }
+        }
     }
 
     const providers = getAllProviders()
