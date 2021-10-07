@@ -5,15 +5,15 @@ import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import { getPoapEventName, PoapGroupId } from "src/core/groups/poap"
+import { getPoapEventName, PoapGroupName } from "src/core/groups/poap"
 import capitalize from "src/utils/common/capitalize"
 
 type Properties = {
     session?: Session | null
-    poapGroupIds: PoapGroupId[]
+    poapGroupNames: PoapGroupName[]
 }
 
-export default function SideBar({ session, poapGroupIds }: Properties): JSX.Element {
+export default function SideBar({ session, poapGroupNames }: Properties): JSX.Element {
     const { colorMode } = useColorMode()
 
     const getReputationColor = useCallback(
@@ -29,7 +29,7 @@ export default function SideBar({ session, poapGroupIds }: Properties): JSX.Elem
 
     return (
         <VStack align="left" divider={<Divider />} py="15px" pr="30px" spacing="4">
-            {!!poapGroupIds.length && (
+            {!!poapGroupNames.length && (
                 <VStack align="left" spacing="3">
                     <Text fontWeight="extrabold" fontSize="xl">
                         Web3
@@ -40,7 +40,7 @@ export default function SideBar({ session, poapGroupIds }: Properties): JSX.Elem
                     </HStack>
                     <VStack align="left" spacing="1">
                         <Text fontSize="md">Your events:</Text>
-                        {poapGroupIds.map((groupId) => (
+                        {poapGroupNames.map((groupId) => (
                             <Text pl="10px" key={groupId} fontSize="md">
                                 {getPoapEventName(groupId)}
                             </Text>

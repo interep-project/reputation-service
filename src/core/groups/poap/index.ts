@@ -1,6 +1,7 @@
-import getPoapGroupIdsByAddress from "./getPoapGroupIdsByAddress"
+import getPoapGroupNamesByAddress from "./getPoapGroupNamesByAddress"
 import getPoapEventFancyId from "./getPoapEventFancyId"
 import getPoapEventName from "./getPoapEventName"
-import PoapGroupId from "./poapGroupIds"
+import PoapGroupName from "./poapGroupName"
+import getPoapGroupNames from "./getPoapGroupNames"
 
-export { getPoapGroupIdsByAddress, getPoapEventFancyId, PoapGroupId, getPoapEventName }
+export { getPoapGroupNamesByAddress, getPoapEventFancyId, PoapGroupName, getPoapGroupNames, getPoapEventName }

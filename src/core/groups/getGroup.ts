@@ -1,15 +1,30 @@
+import { ReputationLevel } from "@interrep/reputation-criteria"
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
 import { Group, Provider } from "src/types/groups"
+import { getGroupId } from "."
 import checkGroup from "./checkGroup"
+import { PoapGroupName } from "./poap"
 
-export default async function getGroup(groupId: string): Promise<Group> {
-    if (!checkGroup(groupId)) {
+export default async function getGroup(
+    provider: Provider,
+    reputationOrName: ReputationLevel | PoapGroupName
+): Promise<Group> {
+    const groupId = getGroupId(provider, reputationOrName)
+
+    if (!checkGroup(provider, reputationOrName)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 
-    return {
-        id: groupId,
-        provider: groupId.split("_")[0].toLowerCase() as Provider,
+    const group: Group = {
+        provider,
         size: await MerkleTreeNode.getNumberOfNodes(groupId, 0)
     }
+
+    if (reputationOrName in ReputationLevel) {
+        group.reputation = reputationOrName as ReputationLevel
+    } else {
+        group.name = reputationOrName
+    }
+
+    return group
 }

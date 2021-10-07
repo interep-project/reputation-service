@@ -1,8 +1,17 @@
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
-import { checkGroup } from "src/core/groups"
+import { checkGroup, getGroupId } from "src/core/groups"
+import { Provider } from "src/types/groups"
+import { ReputationLevel } from "@interrep/reputation-criteria"
+import { PoapGroupName } from "../poap"
 
-export default async function retrievePath(groupId: string, idCommitment: string): Promise<any> {
-    if (!checkGroup(groupId)) {
+export default async function retrievePath(
+    provider: Provider,
+    reputationOrName: ReputationLevel | PoapGroupName,
+    idCommitment: string
+): Promise<any> {
+    const groupId = getGroupId(provider, reputationOrName)
+
+    if (!checkGroup(provider, reputationOrName)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 

@@ -3,9 +3,11 @@ import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import config, { ContractName } from "src/config"
+import { getGroupId } from "src/core/groups"
 import { appendLeaf, previewNewRoot } from "src/core/groups/mts"
-import { getPoapGroupIdsByAddress, PoapGroupId } from "src/core/groups/poap"
+import { getPoapGroupNamesByAddress, PoapGroupName } from "src/core/groups/poap"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { Provider } from "src/types/groups"
 import apiMiddleware from "src/utils/backend/apiMiddleware"
 import { dbConnect } from "src/utils/backend/database"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
@@ -28,16 +30,20 @@ export default async function addIdentityCommitmentController(
         return res.status(405).end()
     }
 
-    const groupId = req.query?.groupId
+    const provider = req.query?.provider
+    const reputationOrName = req.query?.reputationOrName
     const identityCommitment = req.query?.identityCommitment
+
     const { web2AccountId, userSignature, userAddress } = JSON.parse(req.body)
 
     if (
         (!web2AccountId && !(userSignature && userAddress)) ||
+        !provider ||
+        typeof provider !== "string" ||
+        !reputationOrName ||
+        typeof reputationOrName !== "string" ||
         !identityCommitment ||
-        typeof identityCommitment !== "string" ||
-        !groupId ||
-        typeof groupId !== "string"
+        typeof identityCommitment !== "string"
     ) {
         return res.status(400).end()
     }
@@ -56,6 +62,8 @@ export default async function addIdentityCommitmentController(
         try {
             await dbConnect()
 
+            const groupId = getGroupId(provider as Provider, reputationOrName as any)
+
             logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
 
             const web2Account = await Web2Account.findById(web2AccountId)
@@ -64,19 +72,20 @@ export default async function addIdentityCommitmentController(
                 throw new Error(`Web 2 account not found`)
             }
 
-            if (
-                !web2Account.basicReputation ||
-                `${web2Account.provider.toString().toUpperCase()}_${web2Account.basicReputation}` !== groupId
-            ) {
-                throw new Error("The group id does not match the web 2 account reputation")
+            if (web2Account.provider !== provider) {
+                throw new Error("Web 2 account doesn't have the right provider")
+            }
+
+            if (!web2Account.basicReputation || web2Account.basicReputation !== reputationOrName) {
+                throw new Error("Web 2 account doesn't have the right reputation")
             }
 
             if (web2Account.hasJoinedAGroup) {
-                throw new Error(`Web 2 account already joined a ${web2Account.provider} group`)
+                throw new Error(`Web 2 account already joined a ${provider} group`)
             }
 
             // Get the value of the next root hash without saving anything in the db.
-            const rootHash = await previewNewRoot(groupId, identityCommitment)
+            const rootHash = await previewNewRoot(provider as Provider, reputationOrName as any, identityCommitment)
 
             // Update the contract with new root.
             const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
@@ -85,7 +94,7 @@ export default async function addIdentityCommitmentController(
             await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 
             // Update the db with the new merkle tree.
-            await appendLeaf(groupId, identityCommitment)
+            await appendLeaf(provider as Provider, reputationOrName as any, identityCommitment)
 
             web2Account.hasJoinedAGroup = true
 
@@ -104,9 +113,10 @@ export default async function addIdentityCommitmentController(
             throw new Error(`The signature is not valid`)
         }
 
-        const poapGroupIds = await getPoapGroupIdsByAddress(userAddress)
+        const groupId = getGroupId(provider as Provider, reputationOrName as any)
+        const userPoapGroupNames = await getPoapGroupNamesByAddress(userAddress)
 
-        if (!poapGroupIds.includes(groupId as PoapGroupId)) {
+        if (!userPoapGroupNames.includes(reputationOrName as PoapGroupName)) {
             throw new Error(`The address does not hold the group POAP token`)
         }
 
@@ -115,7 +125,7 @@ export default async function addIdentityCommitmentController(
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
 
         // Get the value of the next root hash without saving anything in the db.
-        const rootHash = await previewNewRoot(groupId, identityCommitment)
+        const rootHash = await previewNewRoot(provider as Provider, reputationOrName as any, identityCommitment)
 
         // Update the contract with new root.
         const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
@@ -124,7 +134,7 @@ export default async function addIdentityCommitmentController(
         await contractInstance.addRootHash(ethers.utils.formatBytes32String(groupId), identityCommitment, rootHash)
 
         // Update the db with the new merkle tree.
-        await appendLeaf(groupId, identityCommitment)
+        await appendLeaf(provider as Provider, reputationOrName as any, identityCommitment)
 
         return res.status(201).send({ data: rootHash.toString() })
     } catch (error) {

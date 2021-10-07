@@ -1,11 +1,20 @@
-import { Group, Provider } from "src/types/groups"
+import { getReputationLevels } from "@interrep/reputation-criteria"
+import { Group, Provider, Web3Provider } from "src/types/groups"
 import { getAllProviders } from "."
 import getGroup from "./getGroup"
-import getGroupIds from "./getGroupIds"
+import { getPoapGroupNames } from "./poap"
 
 export default async function getGroups(provider?: Provider): Promise<Group[]> {
     if (provider) {
-        return Promise.all(getGroupIds(provider).map(getGroup))
+        if (provider === Web3Provider.POAP) {
+            const poapGroupNames = getPoapGroupNames()
+
+            return Promise.all(poapGroupNames.map((poapGroupName) => getGroup(provider, poapGroupName)))
+        }
+
+        const reputationLevels = getReputationLevels(provider)
+
+        return Promise.all(reputationLevels.map((reputation) => getGroup(provider, reputation)))
     }
 
     const providers = getAllProviders()

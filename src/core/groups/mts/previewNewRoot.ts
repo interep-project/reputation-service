@@ -1,11 +1,20 @@
+import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
-import { checkGroup } from "src/core/groups"
+import { checkGroup, getGroupId } from "src/core/groups"
 import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
+import { PoapGroupName } from "../poap"
 
-export default async function previewNewRoot(groupId: string, idCommitment: string): Promise<string> {
-    if (!checkGroup(groupId)) {
+export default async function previewNewRoot(
+    provider: Provider,
+    reputationOrName: ReputationLevel | PoapGroupName,
+    idCommitment: string
+): Promise<string> {
+    const groupId = getGroupId(provider, reputationOrName)
+
+    if (!checkGroup(provider, reputationOrName)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 

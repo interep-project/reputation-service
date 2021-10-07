@@ -1,5 +1,5 @@
 import { Spinner, Text, useToast, VStack } from "@chakra-ui/react"
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
 import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
@@ -51,7 +51,8 @@ export default function Web2Groups(): JSX.Element {
                 }
 
                 const group = await getGroup({
-                    groupId: `${web2Provider.toUpperCase()}_${user.reputation}`
+                    provider: web2Provider,
+                    reputationOrName: user.reputation as ReputationLevel
                 })
 
                 if (group === null) {
@@ -88,7 +89,7 @@ export default function Web2Groups(): JSX.Element {
 
     async function retrieveAndCheckIdentityCommitment(
         signer: Signer,
-        groupId: string,
+        group: Group,
         web2Provider: Web2Provider
     ): Promise<void> {
         setLoading(true)
@@ -106,7 +107,8 @@ export default function Web2Groups(): JSX.Element {
         }
 
         const alreadyExist = await checkIdentityCommitment({
-            groupId,
+            provider: group.provider,
+            reputationOrName: group.reputation as ReputationLevel,
             identityCommitment
         })
 
@@ -130,11 +132,12 @@ export default function Web2Groups(): JSX.Element {
         setCurrentStep(2)
     }
 
-    async function joinGroup(groupId: string, web2AccountId: string): Promise<void> {
+    async function joinGroup(group: Group, web2AccountId: string): Promise<void> {
         setLoading(true)
 
         const rootHash = await addIdentityCommitment({
-            groupId,
+            provider: group.provider,
+            reputationOrName: group.reputation as ReputationLevel,
             identityCommitment: _identityCommitment as string,
             web2AccountId
         })
@@ -172,7 +175,7 @@ export default function Web2Groups(): JSX.Element {
                     actionFunction={() =>
                         retrieveAndCheckIdentityCommitment(
                             _signer as Signer,
-                            _group?.id as string,
+                            _group as Group,
                             session.web2Provider as Web2Provider
                         )
                     }
@@ -183,7 +186,7 @@ export default function Web2Groups(): JSX.Element {
                     title="Step 2"
                     message={`Join the ${session.user.reputation} ${capitalize(session.web2Provider as string)} group.`}
                     actionText="Join Group"
-                    actionFunction={() => joinGroup(_group?.id as string, session.web2AccountId as string)}
+                    actionFunction={() => joinGroup(_group as Group, session.web2AccountId as string)}
                     loading={_currentStep === 2 && _loading}
                     disabled={_currentStep !== 2}
                 />

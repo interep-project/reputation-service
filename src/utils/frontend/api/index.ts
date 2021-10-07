@@ -1,4 +1,6 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { PoapGroupName } from "src/core/groups/poap"
+import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
 export function getReputation({
@@ -15,8 +17,14 @@ export function getUserTokens({ userAddress }: { userAddress: string }): Promise
     return sendRequest(`/api/tokens/?userAddress=${userAddress}`)
 }
 
-export function getGroup({ groupId }: { groupId: string }): Promise<any | null> {
-    return sendRequest(`/api/groups/${groupId}`)
+export function getGroup({
+    provider,
+    reputationOrName
+}: {
+    provider: Provider
+    reputationOrName: ReputationLevel | PoapGroupName
+}): Promise<any | null> {
+    return sendRequest(`/api/groups/${provider}/${reputationOrName}`)
 }
 
 export async function checkLink(): Promise<boolean | null> {
@@ -28,13 +36,15 @@ export async function checkGroup(): Promise<boolean | null> {
 }
 
 export async function checkIdentityCommitment({
-    groupId,
+    provider,
+    reputationOrName,
     identityCommitment
 }: {
-    groupId: string
+    provider: Provider
+    reputationOrName: ReputationLevel | PoapGroupName
     identityCommitment: string
 }): Promise<boolean | null> {
-    return sendRequest(`/api/groups/${groupId}/${identityCommitment}/check`)
+    return sendRequest(`/api/groups/${provider}/${reputationOrName}/${identityCommitment}/check`)
 }
 
 export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
@@ -42,19 +52,21 @@ export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null>
 }
 
 export function addIdentityCommitment({
-    groupId,
+    provider,
+    reputationOrName,
     identityCommitment,
     web2AccountId,
     userAddress,
     userSignature
 }: {
-    groupId: string
+    provider: Provider
+    reputationOrName: ReputationLevel | PoapGroupName
     identityCommitment: string
     web2AccountId?: string
     userAddress?: string
     userSignature?: string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${groupId}/${identityCommitment}`, {
+    return sendRequest(`/api/groups/${provider}/${reputationOrName}/${identityCommitment}`, {
         web2AccountId,
         userAddress,
         userSignature

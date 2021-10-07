@@ -1,5 +1,5 @@
-import PoapGroupId from "./poapGroupIds"
+import PoapGroupName from "./poapGroupName"
 
-export default function getPoapEventFancyId(groupId: PoapGroupId) {
-    return groupId.substr(5).toLowerCase().replace("_", "")
+export default function getPoapEventFancyId(groupName: PoapGroupName) {
+    return groupName.toLowerCase().replace("_", "")
 }

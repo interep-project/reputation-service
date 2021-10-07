@@ -4,7 +4,7 @@ import { ethers, Signer } from "ethers"
 import { useCallback, useEffect, useState } from "react"
 import { currentNetwork } from "src/config"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { PoapGroupId, getPoapGroupIdsByAddress } from "src/core/groups/poap"
+import { PoapGroupName, getPoapGroupNamesByAddress } from "src/core/groups/poap"
 import { getAddress } from "ethers/lib/utils"
 
 export default function useEthereumWallet(): EthereumWalletContextType {
@@ -12,7 +12,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
     const [_signer, setSigner] = useState<Signer>()
     const [_address, setAddress] = useState<string>()
     const [_networkId, setNetworkId] = useState<number>()
-    const [_poapGroupIds, setPoapGroupIds] = useState<PoapGroupId[]>([])
+    const [_poapGroupNames, setPoapGroupNames] = useState<PoapGroupName[]>([])
 
     useEffect(() => {
         ;(async () => {
@@ -33,16 +33,16 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                             onboard.walletReset()
                             setSigner(undefined)
                             setAddress(undefined)
-                            setPoapGroupIds([])
+                            setPoapGroupNames([])
                             return
                         }
 
                         try {
                             setAddress(getAddress(address))
 
-                            const poapGroupIds = await getPoapGroupIdsByAddress(address)
+                            const poapGroupIds = await getPoapGroupNamesByAddress(address)
 
-                            setPoapGroupIds(poapGroupIds)
+                            setPoapGroupNames(poapGroupIds)
                         } catch (error) {
                             console.error(error)
                         }
@@ -94,7 +94,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         _networkId,
         _signer,
         _address,
-        _poapGroupIds,
+        _poapGroupNames,
         check,
         connect
     }

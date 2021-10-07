@@ -3,8 +3,8 @@ import { withSentry } from "@sentry/nextjs"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
-import { getGroupIds } from "src/core/groups"
 import { Provider } from "src/types/groups"
+import { getGroupIds } from "src/core/groups"
 
 const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     await dbConnect()
