@@ -14,14 +14,14 @@ export default async function hasIdentityCommitmentController(
     }
 
     const provider = req.query?.provider
-    const reputationOrName = req.query?.reputationOrName
+    const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
 
     if (
         !provider ||
         typeof provider !== "string" ||
-        !reputationOrName ||
-        typeof reputationOrName !== "string" ||
+        !name ||
+        typeof name !== "string" ||
         !identityCommitment ||
         typeof identityCommitment !== "string"
     ) {
@@ -31,7 +31,7 @@ export default async function hasIdentityCommitmentController(
     try {
         await dbConnect()
 
-        const groupId = getGroupId(provider as Provider, reputationOrName as any)
+        const groupId = getGroupId(provider as Provider, name as any)
         const node = await MerkleTreeNode.findByGroupIdAndHash(groupId, identityCommitment)
 
         return res.status(200).send({ data: !!node && node.key.level === 0 })

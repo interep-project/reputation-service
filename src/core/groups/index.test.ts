@@ -62,7 +62,7 @@ describe("Core group functions", () => {
             const expectedValue = await getGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)
 
             expect(expectedValue).toStrictEqual({
-                reputation: ReputationLevel.GOLD,
+                name: ReputationLevel.GOLD,
                 provider: Web2Provider.TWITTER,
                 size: 0
             })
@@ -80,7 +80,7 @@ describe("Core group functions", () => {
             const expectedGroup = await getGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)
 
             expect(expectedGroup).toStrictEqual({
-                reputation: ReputationLevel.GOLD,
+                name: ReputationLevel.GOLD,
                 provider: Web2Provider.TWITTER,
                 size: 10
             })
@@ -104,7 +104,7 @@ describe("Core group functions", () => {
             const expectedGroups = await getGroups()
 
             expect(expectedGroups).toContainEqual({
-                reputation: ReputationLevel.GOLD,
+                name: ReputationLevel.GOLD,
                 provider: Web2Provider.TWITTER,
                 size: 0
             })

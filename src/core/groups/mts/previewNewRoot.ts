@@ -9,12 +9,12 @@ import { PoapGroupName } from "../poap"
 
 export default async function previewNewRoot(
     provider: Provider,
-    reputationOrName: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName,
     idCommitment: string
 ): Promise<string> {
-    const groupId = getGroupId(provider, reputationOrName)
+    const groupId = getGroupId(provider, name)
 
-    if (!checkGroup(provider, reputationOrName)) {
+    if (!checkGroup(provider, name)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 

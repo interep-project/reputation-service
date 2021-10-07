@@ -5,26 +5,16 @@ import { getGroupId } from "."
 import checkGroup from "./checkGroup"
 import { PoapGroupName } from "./poap"
 
-export default async function getGroup(
-    provider: Provider,
-    reputationOrName: ReputationLevel | PoapGroupName
-): Promise<Group> {
-    const groupId = getGroupId(provider, reputationOrName)
+export default async function getGroup(provider: Provider, name: ReputationLevel | PoapGroupName): Promise<Group> {
+    const groupId = getGroupId(provider, name)
 
-    if (!checkGroup(provider, reputationOrName)) {
+    if (!checkGroup(provider, name)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 
-    const group: Group = {
+    return {
+        name,
         provider,
         size: await MerkleTreeNode.getNumberOfNodes(groupId, 0)
     }
-
-    if (reputationOrName in ReputationLevel) {
-        group.reputation = reputationOrName as ReputationLevel
-    } else {
-        group.name = reputationOrName
-    }
-
-    return group
 }

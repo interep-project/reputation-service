@@ -10,16 +10,16 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
     }
 
     const provider = req.query?.provider
-    const reputationOrName = req.query?.reputationOrName
+    const name = req.query?.name
 
-    if (!provider || typeof provider !== "string" || !reputationOrName || typeof reputationOrName !== "string") {
+    if (!provider || typeof provider !== "string" || !name || typeof name !== "string") {
         return res.status(400).end()
     }
 
     try {
         await dbConnect()
 
-        const group = await getGroup(provider as Provider, reputationOrName as any)
+        const group = await getGroup(provider as Provider, name as any)
 
         return res.status(200).send({ data: group })
     } catch (error) {

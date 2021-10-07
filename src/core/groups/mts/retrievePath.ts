@@ -6,12 +6,12 @@ import { PoapGroupName } from "../poap"
 
 export default async function retrievePath(
     provider: Provider,
-    reputationOrName: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName,
     idCommitment: string
 ): Promise<any> {
-    const groupId = getGroupId(provider, reputationOrName)
+    const groupId = getGroupId(provider, name)
 
-    if (!checkGroup(provider, reputationOrName)) {
+    if (!checkGroup(provider, name)) {
         throw new Error(`The group ${groupId} does not exist`)
     }
 
