@@ -146,13 +146,13 @@ Get all the InterRep groups:
 Get a Merkle tree path:
 
 ```
-/api/groups/:provider/:reputationOrName/:identityCommitment/path
+/api/groups/:provider/:name/:identityCommitment/path
 ```
 
 Check whether an identity commitment belongs to a group:
 
 ```
-/api/groups/:provider/:reputationOrName/:identityCommitment/check
+/api/groups/:provider/:name/:identityCommitment/check
 ```
 
 ### Reputation
