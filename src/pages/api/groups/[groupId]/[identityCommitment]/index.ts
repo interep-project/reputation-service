@@ -1,4 +1,4 @@
 import { withSentry } from "@sentry/nextjs"
-import GroupsController from "src/controllers/groups"
+import { addIdentityCommitmentController } from "src/controllers/groups"
 
-export default withSentry(GroupsController.addIdentityCommitment)
+export default withSentry(addIdentityCommitmentController)

@@ -5,7 +5,7 @@ import createNextMocks from "src/mocks/createNextMocks"
 import Token from "src/models/tokens/Token.model"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import TokenController from "./TokenController"
+import { getTokensByAddressController, mintTokenController } from "."
 
 jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
@@ -46,7 +46,7 @@ describe("TokenController", () => {
             })
 
             // When
-            await TokenController.getTokensByAddress(req, res)
+            await getTokensByAddressController(req, res)
 
             // Expect
             expect(res._getStatusCode()).toBe(400)
@@ -60,7 +60,7 @@ describe("TokenController", () => {
             })
 
             // When
-            await TokenController.getTokensByAddress(req, res)
+            await getTokensByAddressController(req, res)
 
             // Expect
             expect(res._getStatusCode()).toBe(400)
@@ -75,7 +75,7 @@ describe("TokenController", () => {
             })
 
             // When
-            await TokenController.getTokensByAddress(req, res)
+            await getTokensByAddressController(req, res)
 
             // Expect
             expect(res._getStatusCode()).toBe(200)
@@ -96,7 +96,7 @@ describe("TokenController", () => {
                 method: "GET"
             })
 
-            await TokenController.getTokensByAddress(req, res)
+            await getTokensByAddressController(req, res)
 
             expect(checkAndUpdateTokenStatus).toHaveBeenCalled()
             expect(res._getStatusCode()).toBe(200)
@@ -123,7 +123,7 @@ describe("TokenController", () => {
                 method: "GET"
             })
 
-            await TokenController.getTokensByAddress(req, res)
+            await getTokensByAddressController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
             expect(logger.error).toHaveBeenCalledWith(err)
@@ -134,10 +134,10 @@ describe("TokenController", () => {
         it("should return a 400 if not token id was passed", async () => {
             const { req, res } = createNextMocks({
                 query: {},
-                method: "PUT"
+                method: "POST"
             })
 
-            await TokenController.mintToken(req, res)
+            await mintTokenController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -150,10 +150,10 @@ describe("TokenController", () => {
             const tokenId = "0xaaaaa"
             const { req, res } = createNextMocks({
                 query: { tokenId },
-                method: "PUT"
+                method: "POST"
             })
 
-            await TokenController.mintToken(req, res)
+            await mintTokenController(req, res)
 
             expect(mintToken).toHaveBeenCalledWith(tokenId)
             expect(res._getStatusCode()).toBe(200)
@@ -170,10 +170,10 @@ describe("TokenController", () => {
             const tokenId = "0xaaaaa"
             const { req, res } = createNextMocks({
                 query: { tokenId },
-                method: "PUT"
+                method: "POST"
             })
 
-            await TokenController.mintToken(req, res)
+            await mintTokenController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
             expect(res._getData()).toEqual(err)

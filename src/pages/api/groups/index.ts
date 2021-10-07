@@ -1,4 +1,4 @@
 import { withSentry } from "@sentry/nextjs"
-import GroupsController from "src/controllers/groups"
+import { getGroupsController } from "src/controllers/groups"
 
-export default withSentry(GroupsController.getGroups)
+export default withSentry(getGroupsController)

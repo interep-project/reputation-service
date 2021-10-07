@@ -1,4 +1,4 @@
 import { withSentry } from "@sentry/nextjs"
-import GroupsController from "src/controllers/groups"
+import { hasJoinedAGroupController } from "src/controllers/groups"
 
-export default withSentry(GroupsController.web2AccountHasJoinedAGroup)
+export default withSentry(hasJoinedAGroupController)

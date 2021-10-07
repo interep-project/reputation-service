@@ -1,4 +1,4 @@
 import { withSentry } from "@sentry/nextjs"
-import GroupsController from "src/controllers/groups"
+import { getMerkleTreePathController } from "src/controllers/groups"
 
-export default withSentry(GroupsController.getMerkleTreePath)
+export default withSentry(getMerkleTreePathController)

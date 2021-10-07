@@ -14,8 +14,6 @@ const defaultEnv = {
     ]
 }
 
-console.log()
-
 export enum Environment {
     TEST = "test",
     DEVELOPMENT = "development",
