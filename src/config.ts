@@ -45,7 +45,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.KOVAN]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x0Cb09b04016Ba1CfBF37359f0112F304F2381EB6",
-            github: "0xab0090f2F9C061C12D3Fa286079659Fe00e173bf",
+            github: "0x091D7af24CA1eA4810467ff3321A5965256C1d14",
             reddit: "0xAB1855a7d02C771465411fDD4B63f647925d6c37"
         },
         [ContractName.INTERREP_GROUPS]: "0xB9A55B681BF8426ceb71F54d127D3391fd28a1E4"
