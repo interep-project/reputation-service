@@ -83,7 +83,7 @@ export const supportedNetworks: Record<string, NetworkData> = {
         chainId: SupportedChainId.LOCALHOST
     },
     kovan: {
-        name: "ropsten",
+        name: "kovan",
         chainId: SupportedChainId.KOVAN
     },
     ropsten: {
