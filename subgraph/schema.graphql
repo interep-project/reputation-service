@@ -1,7 +1,6 @@
 type Group @entity {
     id: ID!
     groupId: Bytes
-    name: String!
     members: [Member!]! @derivedFrom(field: "group")
 }
 
