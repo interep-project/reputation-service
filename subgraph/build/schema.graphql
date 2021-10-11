@@ -1,0 +1,13 @@
+type Group @entity {
+    id: ID!
+    groupId: Bytes
+    members: [Member!]! @derivedFrom(field: "group")
+}
+
+type Member @entity {
+    id: ID!
+    identityCommitment: Bytes
+    rootHash: Bytes
+    leafIndex: Int!
+    group: Group
+}
