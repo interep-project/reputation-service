@@ -17,7 +17,13 @@
     "test:tree": "npx jest src/controllers/MerkleTreeController.test.ts --coverage false",
     "lint": "eslint . --ext js,jsx,ts,tsx",
     "commit": "cz",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "graph:codegen": "cd subgraph && graph codegen",
+    "graph:build": "cd subgraph && graph build",
+    "graph:deploy": "cd subgraph && graph deploy --node https://api.thegraph.com/deploy/ glamperd/InterRep-Groups-kovan",
+    "graph:create-local": "cd subgraph && graph create --node http://localhost:8020/ glamperd/InterRep-Groups-kovan",
+    "graph:remove-local": "cd subgraph && graph remove --node http://localhost:8020/ glamperd/InterRep-Groups-kovan",
+    "graph:deploy-local": "cd subgraph && graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 glamperd/InterRep-Groups-kovan"
   },
   "engines": {
     "node": "14.x",

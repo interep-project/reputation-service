@@ -54,3 +54,6 @@ typechain
 
 #openzeppelin
 .openzeppelin/unknown-*.json
+
+# subgraph
+subgraph/build/

@@ -5,9 +5,9 @@ import {
 
 import {
   NewRootHash as NewRootHashEvent,
-} from "../init/InterRepGroups/generated/InterRepGroups/InterRepGroups"
+} from "./InterRepGroups"
 
-import { Member, Group } from "../init/InterRepGroups/generated/schema"
+import { Member, Group } from "./schema"
 
 const BIG_INT_ONE = BigInt.fromI32(1)
 
@@ -20,7 +20,7 @@ export function handleNewRootHash(event: NewRootHashEvent): void {
   log.info('getting group {}', [event.params.groupId.toString()])
   let group = getGroup(event.params.groupId.toHexString())
   group.name = event.params.groupId.toString()
-  log.info('got group {}', [group.name])
+  log.info('group is {}', [group.name])
   group.memberCount = group.memberCount.plus(BIG_INT_ONE)
   group.leafCount = group.leafCount.plus(BIG_INT_ONE)
 
