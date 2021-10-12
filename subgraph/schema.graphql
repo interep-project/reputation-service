@@ -1,6 +1,6 @@
 type Group @entity {
     id: ID!
-    groupId: String
+    name: String!
     leafCount: BigInt!
     memberCount: BigInt!
     members: [Member!]! @derivedFrom(field: "group")

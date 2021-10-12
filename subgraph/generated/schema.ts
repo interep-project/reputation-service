@@ -17,6 +17,7 @@ export class Group extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
+    this.set("name", Value.fromString(""));
     this.set("leafCount", Value.fromBigInt(BigInt.zero()));
     this.set("memberCount", Value.fromBigInt(BigInt.zero()));
   }
@@ -47,21 +48,13 @@ export class Group extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get groupId(): string | null {
-    let value = this.get("groupId");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toString();
-    }
+  get name(): string {
+    let value = this.get("name");
+    return value!.toString();
   }
 
-  set groupId(value: string | null) {
-    if (!value) {
-      this.unset("groupId");
-    } else {
-      this.set("groupId", Value.fromString(<string>value));
-    }
+  set name(value: string) {
+    this.set("name", Value.fromString(value));
   }
 
   get leafCount(): BigInt {

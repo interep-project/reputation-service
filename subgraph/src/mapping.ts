@@ -17,9 +17,10 @@ export function handleNewRootHash(event: NewRootHashEvent): void {
     event.transaction.hash.toHex() + "-" + event.logIndex.toString()
   )
 
-  log.info('getting group {}', [event.params.groupId.toHexString()])
+  log.info('getting group {}', [event.params.groupId.toString()])
   let group = getGroup(event.params.groupId.toHexString())
-  log.info('got group {}', [group.id])
+  group.name = event.params.groupId.toString()
+  log.info('got group {}', [group.name])
   group.memberCount = group.memberCount.plus(BIG_INT_ONE)
   group.leafCount = group.leafCount.plus(BIG_INT_ONE)
 
@@ -39,7 +40,7 @@ function getGroup(groupId: string): Group {
   let group = Group.load(groupId)
   if (group == null) {
     group = new Group(groupId)
-    group.save()
+    //group.save()
   }
   return group
 }
