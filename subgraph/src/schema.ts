@@ -92,9 +92,11 @@ export class Member extends Entity {
 
 
 export class Group extends Entity {
-  constructor(id: string) {
+  constructor(provider: string, name: string) {
     super();
-    this.set("id", Value.fromString(id));    
+    this.set("id", Value.fromString(provider+'_'+name));
+    this.set("provider", Value.fromString(provider));
+    this.set("name", Value.fromString(name));
     this.set("leafCount", Value.fromBigInt(BIG_INT_ZERO));
     this.set("memberCount", Value.fromBigInt(BIG_INT_ZERO));
   }
@@ -112,8 +114,8 @@ export class Group extends Entity {
     }
   }
 
-  static load(id: string): Group | null {
-    return changetype<Group | null>(store.get("Group", id));
+  static load(provider: string, name: string): Group | null {
+    return changetype<Group | null>(store.get("Group", provider+'_'+name));
   }
 
   get id(): string {
@@ -123,6 +125,15 @@ export class Group extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get provider(): string {
+    let value = this.get("provider");
+    return value!.toString();
+  }
+
+  set provider(value: string) {
+    this.set("provider", Value.fromString(value));
   }
 
   get name(): string {

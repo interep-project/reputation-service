@@ -1,5 +1,6 @@
 type Group @entity {
     id: ID!
+    provider: String!
     name: String!
     leafCount: BigInt!
     memberCount: BigInt!

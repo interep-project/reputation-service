@@ -5,7 +5,13 @@
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "_groupId",
+        "name": "_provider",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "_groupName",
         "type": "bytes32"
       },
       {
