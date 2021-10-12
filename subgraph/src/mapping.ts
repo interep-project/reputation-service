@@ -26,7 +26,7 @@ export function handleNewRootHash(event: NewRootHashEvent): void {
   entity.group = group.id
   entity.identityCommitment = event.params.identityCommitment.toHexString()
   entity.rootHash = event.params.rootHash.toHexString()
-  entity.index = group.leafCount
+  entity.leafIndex = group.leafCount
   entity.save()
 
   group.save()

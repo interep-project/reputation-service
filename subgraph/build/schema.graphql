@@ -1,13 +1,15 @@
 type Group @entity {
     id: ID!
-    groupId: Bytes
+    groupId: String
+    leafCount: BigInt!
+    memberCount: BigInt!
     members: [Member!]! @derivedFrom(field: "group")
 }
 
 type Member @entity {
     id: ID!
-    identityCommitment: Bytes
-    rootHash: Bytes
-    leafIndex: Int!
+    identityCommitment: String
+    rootHash: String
+    leafIndex: BigInt!
     group: Group
 }

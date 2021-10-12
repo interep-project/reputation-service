@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.3
 description: InterRep groups and their members. Group members are Semaphore ID commitments
 repository: https://github.com/interrep/subgraph/subgraph
 schema:
