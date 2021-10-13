@@ -45,15 +45,3 @@ yarn-error.log*
 # logs
 logs/
 node_modules
-
-#Hardhat files
-cache
-artifacts
-
-typechain
-
-#openzeppelin
-.openzeppelin/unknown-*.json
-
-# subgraph
-subgraph/build/
