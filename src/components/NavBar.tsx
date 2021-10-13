@@ -1,95 +1,101 @@
 import {
-  AppBar,
-  Box,
-  Button,
-  createStyles,
-  makeStyles,
-  Theme,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
-import { useRouter } from "next/router";
-import React, { useContext } from "react";
-import { isBrowser } from "react-device-detect";
-import { isDefaultNetworkId } from "src/utils/crypto/getDefaultNetwork";
-import {
-  getChainNameFromNetworkId,
-  shortenAddress,
-} from "src/utils/frontend/evm";
-import EthereumWalletContext, {
-  EthereumWalletContextType,
-} from "src/services/context/EthereumWalletContext";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    title: {
-      flexGrow: 1,
-    },
-    walletDataBox: {
-      display: "flex",
-      alignItems: "center",
-    },
-    networkName: {
-      fontWeight: "bold",
-      marginRight: theme.spacing(2),
-    },
-    address: {
-      fontWeight: "bold",
-      padding: "8px 16px",
-      borderRadius: 4,
-      backgroundColor: theme.palette.background.default,
-    },
-  })
-);
+    Button,
+    IconButton,
+    ButtonGroup,
+    Container,
+    HStack,
+    Text,
+    Tooltip,
+    useClipboard,
+    useColorMode
+} from "@chakra-ui/react"
+import { useSession } from "next-auth/client"
+import { useRouter } from "next/dist/client/router"
+import React, { useCallback, useContext } from "react"
+import { isBrowser } from "react-device-detect"
+import { FaSun, FaMoon } from "react-icons/fa"
+import { currentNetwork } from "src/config"
+import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import getNetworkFullName from "src/utils/common/getNetworkFullName"
+import shortenAddress from "src/utils/frontend/shortenAddress"
 
 export default function NavBar(): JSX.Element {
-  const classes = useStyles();
-  const { connect, check, _networkId, _address } = useContext(
-    EthereumWalletContext
-  ) as EthereumWalletContextType;
-  const router = useRouter();
+    const router = useRouter()
+    const [session] = useSession()
+    const { connect, check, _networkId, _address, _poapGroupNames } = useContext(
+        EthereumWalletContext
+    ) as EthereumWalletContextType
+    const { hasCopied, onCopy } = useClipboard(_address as string)
+    const { colorMode, toggleColorMode } = useColorMode()
 
-  return (
-    <AppBar position="fixed" elevation={0} color="inherit">
-      <Toolbar>
-        <Typography className={classes.title} variant="h6">
-          InterRep
-        </Typography>
-        {router.route === "/" && (
-          <>
-            {isBrowser && _address && _networkId ? (
-              <Box className={classes.walletDataBox}>
-                <Typography
-                  style={{ fontWeight: "bold" }}
-                  className={classes.networkName}
-                  color="secondary"
-                  variant="body1"
-                >
-                  {_networkId && getChainNameFromNetworkId(_networkId)}
-                </Typography>
-                {!isDefaultNetworkId(_networkId) && (
-                  <Typography className={classes.networkName} variant="body1">
-                    (wrong network)
-                  </Typography>
-                )}
-                {isDefaultNetworkId(_networkId) ? (
-                  <Typography className={classes.address} variant="body1">
-                    {shortenAddress(_address)}
-                  </Typography>
-                ) : (
-                  <Button onClick={check} variant="outlined">
-                    Switch
-                  </Button>
-                )}
-              </Box>
-            ) : (
-              <Button onClick={connect} variant="outlined">
-                Connect
-              </Button>
-            )}
-          </>
-        )}
-      </Toolbar>
-    </AppBar>
-  );
+    const appIsReady = useCallback(
+        () => !!(session && session.user.reputation && currentNetwork.chainId === _networkId && _address),
+        [session, _networkId, _address]
+    )
+
+    return (
+        <Container
+            zIndex="1"
+            bg={colorMode === "light" ? "white" : "background.700"}
+            position="fixed"
+            pt="60px"
+            pb="20px"
+            px="80px"
+            maxW="container.xl"
+        >
+            <HStack justify="space-between">
+                <HStack>
+                    <Text fontSize="2xl" mr="16px">
+                        InterRep
+                    </Text>
+                    <ButtonGroup variant="nav" spacing="2">
+                        <Button onClick={() => router.push("/")} isActive={router.route === "/"}>
+                            Web2 Login
+                        </Button>
+                        <Button
+                            onClick={() => router.push("/groups")}
+                            isActive={router.route === "/groups"}
+                            isDisabled={!_address || (!appIsReady() && !_poapGroupNames.length)}
+                        >
+                            Groups
+                        </Button>
+                        <Button
+                            onClick={() => router.push("/badges")}
+                            isActive={router.route === "/badges"}
+                            isDisabled={!appIsReady()}
+                        >
+                            Badges
+                        </Button>
+                    </ButtonGroup>
+                </HStack>
+                <HStack>
+                    {isBrowser && _address && _networkId ? (
+                        <>
+                            <Text
+                                color={colorMode === "light" ? "secondary.700" : "secondary.200"}
+                                fontWeight="bold"
+                                fontSize="lg"
+                            >
+                                {_networkId && getNetworkFullName(_networkId)}
+                            </Text>
+                            {_networkId === currentNetwork.chainId ? (
+                                <Tooltip label="Copied!" isOpen={hasCopied}>
+                                    <Button onClick={onCopy}>{shortenAddress(_address)}</Button>
+                                </Tooltip>
+                            ) : (
+                                <Button onClick={() => check()}>Switch Network</Button>
+                            )}
+                        </>
+                    ) : (
+                        <Button onClick={() => connect()}>Connect Your Wallet</Button>
+                    )}
+                    <IconButton
+                        onClick={toggleColorMode}
+                        aria-label="Change theme"
+                        icon={colorMode === "dark" ? <FaMoon /> : <FaSun />}
+                    />
+                </HStack>
+            </HStack>
+        </Container>
+    )
 }

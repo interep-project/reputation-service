@@ -1,34 +1,29 @@
-import mintNewToken from "./mintNewToken";
+import mintNewToken from "./mintNewToken"
 
-jest.mock("hardhat", () => ({
-  ethers: {
-    getContractAt: () => ({
-      connect: () => ({ safeMint: jest.fn(() => "mintTxResponse") }),
-    }),
-    getSigners: () => [{ signer: "1" }],
-    BigNumber: { from: jest.fn(() => 12334556) },
-  },
-}));
+jest.mock("src/utils/backend/getBackendContractInstance", () => ({
+    __esModule: true,
+    default: () => ({
+        safeMint: jest.fn(() => "mintTxResponse")
+    })
+}))
 
 describe("mintNewToken", () => {
-  it("should throw if no token id was passed", async () => {
-    try {
-      // @ts-expect-error: tokenId should be defined
-      await mintNewToken({ tokenId: undefined });
-    } catch (err) {
-      expect(err).toEqual(new Error("Token id is not defined"));
-    }
-  });
+    it("Should throw if no token id was passed", async () => {
+        // @ts-expect-error: tokenId should be defined
+        const fun = () => mintNewToken({ tokenId: undefined })
 
-  it("should return the transaction response", async () => {
-    const to = "to";
-    const tokenId = "12234";
-    const txResponse = await mintNewToken({
-      badgeAddress: "badgeAddy",
-      to,
-      tokenId,
-    });
+        await expect(fun).rejects.toThrow("Token id is not defined")
+    })
 
-    expect(txResponse).toEqual("mintTxResponse");
-  });
-});
+    it("Should return the transaction response", async () => {
+        const to = "to"
+        const tokenId = "12234"
+        const txResponse = await mintNewToken({
+            badgeAddress: "badgeAddy",
+            to,
+            tokenId
+        })
+
+        expect(txResponse).toEqual("mintTxResponse")
+    })
+})

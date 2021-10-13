@@ -1,33 +1,30 @@
-import { ethers } from "ethers";
-import logger from "src/utils/server/logger";
-import { createUserAttestationMessage } from "./createUserAttestationMessage";
+import { ethers } from "ethers"
+import logger from "src/utils/backend/logger"
+import { createUserAttestationMessage } from "./createUserAttestationMessage"
 
 type CheckIfUserSignatureIsValidParams = {
-  checksummedAddress: string;
-  web2AccountId: string;
-  userSignature: string;
-};
+    checksummedAddress: string
+    web2AccountId: string
+    userSignature: string
+}
 
-export const checkIfUserSignatureIsValid = ({
-  checksummedAddress,
-  web2AccountId,
-  userSignature,
-}: CheckIfUserSignatureIsValidParams): boolean => {
-  const recreatedMessageSignedByUser = createUserAttestationMessage({
+export default function checkIfUserSignatureIsValid({
     checksummedAddress,
     web2AccountId,
-  });
-
-  const signerAddress = ethers.utils.verifyMessage(
-    recreatedMessageSignedByUser,
     userSignature
-  );
+}: CheckIfUserSignatureIsValidParams): boolean {
+    const recreatedMessageSignedByUser = createUserAttestationMessage({
+        checksummedAddress,
+        web2AccountId
+    })
 
-  logger.silly(`[Linking] Signer address: ${signerAddress}`);
+    const signerAddress = ethers.utils.verifyMessage(recreatedMessageSignedByUser, userSignature)
 
-  if (signerAddress !== checksummedAddress) {
-    return false;
-  }
+    logger.silly(`[Linking] Signer address: ${signerAddress}`)
 
-  return true;
-};
+    if (signerAddress !== checksummedAddress) {
+        return false
+    }
+
+    return true
+}

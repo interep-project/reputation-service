@@ -1,42 +1,42 @@
-import seedTwitterUsers from "src/utils/seeding/seedTwitterUsers";
-import { dbConnect, dbDisconnect } from "src/utils/server/database";
+import seedTwitterUsers from "src/utils/backend/seeding/seedTwitterUsers"
+import { dbConnect, dbDisconnect } from "src/utils/backend/database"
 
 const twitterUsernames = [
-  // "twobitidiot",
-  // "La__Cuen", 10k+ friends
-  // "VitalikButerin",
-  // "FEhrsam",
-  "byrongibson",
-  "arcalinea",
-  // "kumavis_",
-  // "whyrusleeping",
-  // "juanbenet",
-  // "karl_dot_tech",
-  // "jinglanW",
-  // "jillruthcarlson",
-  // "zmanian", 10k+ friends
-  // "notscottmoore",
-  // "RaphaelRoullet",
-  // "nicksdjohnson",
-  // "emilianobonassi",
-  // "kaiynne",
-  // "RuneKek",
-  // "haydenzadams",
-  // "sassal0x",
-  // "drakefjustin",
-];
+    // "twobitidiot",
+    // "La__Cuen", 10k+ friends
+    // "VitalikButerin",
+    // "FEhrsam",
+    "byrongibson",
+    "arcalinea"
+    // "kumavis_",
+    // "whyrusleeping",
+    // "juanbenet",
+    // "karl_dot_tech",
+    // "jinglanW",
+    // "jillruthcarlson",
+    // "zmanian", 10k+ friends
+    // "notscottmoore",
+    // "RaphaelRoullet",
+    // "nicksdjohnson",
+    // "emilianobonassi",
+    // "kaiynne",
+    // "RuneKek",
+    // "haydenzadams",
+    // "sassal0x",
+    // "drakefjustin",
+]
 
-(async () => {
-  dbConnect();
+;(async function IIFE() {
+    dbConnect()
 
-  try {
-    await seedTwitterUsers(twitterUsernames, true);
-    dbDisconnect();
+    try {
+        await seedTwitterUsers(twitterUsernames, true)
+        dbDisconnect()
 
-    process.exit(0);
-  } catch (error) {
-    console.error(error);
+        process.exit(0)
+    } catch (error) {
+        console.error(error)
 
-    process.exit(1);
-  }
-})();
+        process.exit(1)
+    }
+})()

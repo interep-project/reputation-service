@@ -9,6 +9,9 @@
     <a href="https://github.com/InterRep" target="_blank">
         <img src="https://img.shields.io/badge/project-InterRep-blue.svg?style=flat-square">
     </a>
+    <a href="https://github.com/InterRep/reputation-service/actions/workflows/test.yaml">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/test?label=test&logo=github">
+    </a>
     <a href="https://eslint.org/" target="_blank">
         <img alt="Linter eslint" src="https://img.shields.io/badge/linter-eslint-8080f2?style=flat-square&logo=eslint">
     </a>
@@ -18,25 +21,36 @@
     <img alt="Repository top language" src="https://img.shields.io/github/languages/top/InterRep/reputation-service?style=flat-square">
 </p>
 
+<div align="center">
+    <h4>
+        <a href="https://docs.interrep.link/contributing">
+            👥 Contributing
+        </a>
+        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="https://docs.interrep.link/code-of-conduct">
+            🤝 Code of conduct
+        </a>
+        <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+        <a href="https://t.me/interrep">
+            🗣️ Chat &amp; Support
+        </a>
+    </h4>
+</div>
+
+If you want an overwiew of InterRep, read our announcement post: https://jaygraber.medium.com/introducing-interrep-255d3f56682. For more details, please see our [documentation website](https://docs.interrep.link).
+
+⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of interRep. They will soon be updated. You can find an updated version at [kovan.interrep.link](https://kovan.interrep.link) (staging env).
+
 ---
-
-## Table of Contents
-
--   🛠 [Install](#install)
--   🕹 [Usage](#usage)
--   🔌 [APIs](#apis)
--   🔬 Development
-    -   Rules
-        -   [Commits](https://github.com/cedoor/cedoor/tree/main/git#commits-rules)
-        -   [Branches](https://github.com/cedoor/cedoor/tree/main/git#branch-rules)
 
 ## Install
 
 Clone this repository and install the dependencies:
 
 ```bash
-$ git clone --recurse-submodules https://github.com/InterRep/reputation-service.git
-$ cd reputation-service && yarn
+$ git clone https://github.com/InterRep/reputation-service.git
+$ cd reputation-service
+$ yarn
 ```
 
 ## Usage
@@ -57,13 +71,10 @@ To seed the database (optional) you can run:
 
 ```bash
 $ yarn seed:twitterUsers
-$ yarn seed:groups
 $ yarn seed:zeroHashes
 ```
 
-### Running InterRep locally
-
-**NODE_ENV === 'development'**
+### Running InterRep (development)
 
 ```bash
 $ yarn dev
@@ -71,27 +82,28 @@ $ yarn dev
 
 The pages auto-update as you edit files.
 
-To test all the features, you will need to run and deploy InterRep smart contracts locally. Here's how:
+To test all the features, you will need to run and deploy the InterRep contracts locally. Here's how:
+
+1. Clone the `contracts` repository:
+
+```bash
+$ git clone https://github.com/InterRep/contracts.git
+$ cd contracts
+```
 
 1. Start a local network in one terminal:
 
 ```bash
-$ cd contracts && yarn start
+$ yarn start
 ```
 
-2. In another terminal, deploy the interRep badge contract:
+2. In another terminal, deploy the contracts on the local network:
 
 ```bash
-$ cd contracts && yarn deploy:mocks --network localhost
+$ yarn deploy:mocks --network localhost
 ```
 
-3. If it is necessary give your address some ETH for gas:
-
-```bash
-$ npx hardhat faucet YOUR_ADDRESS --network localhost
-```
-
-### Production
+### Running InterRep (production)
 
 **NODE_ENV === 'production'**
 

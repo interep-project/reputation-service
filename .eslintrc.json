@@ -1,0 +1,46 @@
+{
+    "env": {
+        "es6": true
+    },
+    "extends": [
+        "airbnb",
+        "airbnb/hooks",
+        "airbnb-typescript",
+        "plugin:jest/recommended",
+        "plugin:jest/style",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "project": ["./tsconfig.json"]
+    },
+    "plugins": ["@typescript-eslint", "jest"],
+    "ignorePatterns": ["node_modules", "types", "coverage", ".next"],
+    "rules": {
+        "no-console": "off",
+        "no-restricted-syntax": "off",
+        "react/require-default-props": "off",
+        "import/no-extraneous-dependencies": "off",
+        "jest/no-commented-out-tests": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-props-no-spreading": "off",
+        "no-await-in-loop": "off",
+        "no-param-reassign": "off",
+        "no-nested-ternary": "off",
+        "no-underscore-dangle": "off",
+        "@typescript-eslint/no-shadow": "off",
+        "no-plusplus": "off",
+        "import/no-cycle": "off",
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "variable",
+                "format": ["camelCase", "PascalCase", "UPPER_CASE", "snake_case"],
+                "leadingUnderscore": "allow"
+            }
+        ]
+    }
+}

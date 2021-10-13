@@ -1,43 +1,45 @@
-import { SupportedChainId } from "src/config";
+import { currentNetwork, SupportedChainId } from "src/config"
+import { NetworkData } from "src/types/network"
 
-const ETHERSCAN_PREFIXES: { [chainId: string]: string } = {
-  [SupportedChainId.kovan]: "kovan.",
-  [SupportedChainId.ropsten]: "ropsten.",
-};
+function getEtherscanPrefix(networkData: NetworkData): string {
+    switch (networkData.chainId) {
+        case SupportedChainId.KOVAN:
+        case SupportedChainId.ROPSTEN:
+            return `${networkData.name}.`
+        default:
+            return ""
+    }
+}
 
 export enum ExplorerDataType {
-  TRANSACTION = "transaction",
-  TOKEN = "token",
-  ADDRESS = "address",
-  BLOCK = "block",
+    TRANSACTION = "transaction",
+    TOKEN = "token",
+    ADDRESS = "address",
+    BLOCK = "block"
 }
 
 /**
- * Return the explorer link for the given data and data type
- * @param chainId the ID of the chain for which to return the data
- * @param data the data to return a link for
- * @param type the type of the data
+ * Return the explorer link for the given data and data type.
+ * @param data The data to return a link for.
+ * @param type The type of the data.
+ * @returns the explorer link.
  */
-export function getExplorerLink(
-  chainId: number,
-  data: string,
-  type: ExplorerDataType
-): string {
-  const prefix = `https://${ETHERSCAN_PREFIXES[chainId] ?? ""}etherscan.io`;
+export function getExplorerLink(data: string, type: ExplorerDataType): string {
+    const url = `https://${getEtherscanPrefix(currentNetwork)}etherscan.io`
 
-  switch (type) {
-    case ExplorerDataType.TRANSACTION:
-      return `${prefix}/tx/${data}`;
+    switch (type) {
+        case ExplorerDataType.TRANSACTION:
+            return `${url}/tx/${data}`
 
-    case ExplorerDataType.TOKEN:
-      return `${prefix}/token/${data}`;
+        case ExplorerDataType.TOKEN:
+            return `${url}/token/${data}`
 
-    case ExplorerDataType.BLOCK:
-      return `${prefix}/block/${data}`;
+        case ExplorerDataType.BLOCK:
+            return `${url}/block/${data}`
 
-    case ExplorerDataType.ADDRESS:
-      return `${prefix}/address/${data}`;
-    default:
-      return `${prefix}`;
-  }
+        case ExplorerDataType.ADDRESS:
+            return `${url}/address/${data}`
+        default:
+            return `${url}`
+    }
 }

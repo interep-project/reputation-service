@@ -1,134 +1,73 @@
-import {
-  Card,
-  CardContent,
-  Button,
-  TextField,
-  Typography,
-  Container,
-  makeStyles,
-  createStyles,
-  Theme,
-} from "@material-ui/core";
-import Head from "next/head";
-import { FormEvent, useState } from "react";
-import {
-  AccountReputationByAccount,
-  BasicReputation,
-} from "src/models/web2Accounts/Web2Account.types";
-import { getTwitterReputation } from "src/utils/frontend/api";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "column",
-      flex: 1,
-      paddingBottom: theme.spacing(4),
-    },
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      width: 450,
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(3),
-    },
-    input: {
-      paddingBottom: theme.spacing(2),
-    },
-    cardContent: {
-      textAlign: "center",
-      padding: theme.spacing(3),
-    },
-  })
-);
+import { Button, Heading, Input, InputGroup, InputRightElement, Text, useColorMode, VStack } from "@chakra-ui/react"
+import { Web2Provider } from "@interrep/reputation-criteria"
+import React, { useState } from "react"
+import { getReputation } from "src/utils/frontend/api"
 
 export default function TwitterReputation(): JSX.Element {
-  const classes = useStyles();
-  const [twitterUsername, setTwitterUsername] = useState<string>("");
-  const [
-    twitterUserData,
-    setTwitterUserData,
-  ] = useState<AccountReputationByAccount>();
-  const [isLoading, setIsLoading] = useState(false);
+    const { colorMode } = useColorMode()
+    const [_twitterUsername, setTwitterUsername] = useState<string>("")
+    const [_twitterReputation, setTwitterReputation] = useState<any>()
+    const [_isLoading, setIsLoading] = useState(false)
 
-  async function onSubmit(event: FormEvent): Promise<void> {
-    event.preventDefault();
+    async function calculateReputation(): Promise<void> {
+        if (!_twitterUsername) return
 
-    if (!twitterUsername) return;
+        setIsLoading(true)
 
-    setIsLoading(true);
+        const reputation = await getReputation({
+            web2Provider: Web2Provider.TWITTER,
+            username: _twitterUsername
+        })
 
-    const reputation = await getTwitterReputation({
-      username: twitterUsername,
-    });
+        if (reputation) {
+            setTwitterReputation(reputation)
+        }
 
-    if (reputation) {
-      setTwitterUserData(reputation);
+        setIsLoading(false)
     }
 
-    setIsLoading(false);
-  }
+    return (
+        <>
+            <Heading as="h2" size="xl">
+                Twitter Reputation Service
+            </Heading>
 
-  return (
-    <>
-      <Head>
-        <title>Reputation Service</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+            <Text mt="10px">Enter a twitter username to check if a user is reputable.</Text>
 
-      <Container className={classes.container} maxWidth="sm">
-        <Typography variant="h4" gutterBottom>
-          Reputation Service
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          Enter a twitter username to check if a user is reputable.
-        </Typography>
+            <InputGroup mt="30px" size="md">
+                <Input
+                    pr="4.5rem"
+                    placeholder="Username"
+                    value={_twitterUsername}
+                    onChange={(event) => setTwitterUsername(event.target.value)}
+                    variant="flushed"
+                />
+                <InputRightElement width="4.5rem">
+                    <Button h="1.75rem" size="sm" onClick={() => calculateReputation()} isLoading={_isLoading}>
+                        Check
+                    </Button>
+                </InputRightElement>
+            </InputGroup>
 
-        <form className={classes.form} onSubmit={onSubmit} noValidate>
-          <TextField
-            className={classes.input}
-            label="Username"
-            variant="outlined"
-            value={twitterUsername}
-            onChange={(event) => setTwitterUsername(event.target.value)}
-          />
-          <Button
-            variant="outlined"
-            color="primary"
-            type="submit"
-            disabled={isLoading}
-          >
-            Check
-          </Button>
-        </form>
+            {_twitterReputation && (
+                <VStack mt="30px">
+                    <Heading as="h5" size="sm">
+                        Reputation: {_twitterReputation.reputation}
+                    </Heading>
 
-        {!isLoading && (
-          <>
-            {twitterUserData?.basicReputation && (
-              <Typography variant="h6" gutterBottom>
-                Reputation: {twitterUserData.basicReputation}
-              </Typography>
+                    <VStack
+                        p="16px"
+                        background={colorMode === "light" ? "gray.100" : "whiteAlpha.100"}
+                        borderRadius="2xl"
+                    >
+                        <Text>Bot Score</Text>
+                        <Heading as="h4" size="md">
+                            {_twitterReputation.parameters.botometerOverallScore}
+                            /5
+                        </Heading>
+                    </VStack>
+                </VStack>
             )}
-
-            {twitterUserData?.basicReputation === BasicReputation.UNCLEAR && (
-              <Card>
-                <CardContent className={classes.cardContent}>
-                  <Typography color="textSecondary">Bot Score</Typography>
-                  <Typography variant="h5" component="h2">
-                    {
-                      twitterUserData.botometer?.display_scores?.universal
-                        .overall
-                    }
-                    /5
-                  </Typography>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        )}
-      </Container>
-    </>
-  );
+        </>
+    )
 }

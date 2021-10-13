@@ -1,0 +1,30 @@
+name: test
+
+on:
+    pull_request:
+    push:
+        branches:
+            - develop
+            - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+
+      - uses: c-hive/gha-yarn-cache@v2
+
+      - name: Install dependencies
+        run: |
+          yarn install --immutable
+
+      - name: Run tests
+        run: yarn test:prod
