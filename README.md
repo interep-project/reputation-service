@@ -172,3 +172,42 @@ Get token by contract address and id:
 ```
 
 **Notice**: The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+
+## Subgraph
+The subgraph allows groups and group members to be queried using graphql.
+
+The subgraph is available at https://thegraph.com/hosted-service/subgraph/glamperd/interrep-groups-kovan, currently only for testnet data.
+
+The hosting service provided by the graph protocol community is used, so that data is updated soon after a smart contract event is emitted. Only `addRootHash` events are currently supported.
+
+### Authorisation
+
+Prior to code generation or deployment, set the authorisation code that links your account on thegraph.com with this deployment.
+
+```bash
+$ graph auth  --product hosted-service <auth code>
+```
+
+### Build the subgraph
+
+Useful for discovering compile errors before deploying
+
+```bash
+$ yarn graph:build
+````
+
+### Code Generation
+
+Required if the schema has changed. 
+
+```bash
+$ yarn graph:codegen
+```
+
+### Deploy
+
+To deploy code changes to either the smart contract, mapping code or the subgraph schema. Redeploying will trigger a refresh of indexed data, starting at the block number specified in `subgraph.yaml`. Allow time for the indexer to synchronise. The example query will be reset. 
+
+```bash
+$ yarn graph:deploy
+```
