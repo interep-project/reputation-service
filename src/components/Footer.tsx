@@ -1,4 +1,4 @@
-import { FaGithub } from "react-icons/fa"
+import { FaGithub, FaMedium, FaTwitter } from "react-icons/fa"
 import React from "react"
 import { Container, Link, Icon, Text, HStack, Box, useColorMode } from "@chakra-ui/react"
 
@@ -9,10 +9,23 @@ export default function Footer(): JSX.Element {
         <Box bg={colorMode === "light" ? "gray.200" : "background.800"} w="100%">
             <Container my="15px" px="80px" maxW="container.xl">
                 <HStack justify="space-between">
-                    <Text>© InterRep - 2021</Text>
-                    <Link href="https://github.com/InterRep" isExternal>
-                        <Icon boxSize="24px" as={FaGithub} />
-                    </Link>
+                    <Text>Copyright © 2021 InterRep</Text>
+
+                    <HStack spacing={4}>
+                        <Link fontWeight="bold" href="https://docs.interrep.link" isExternal>
+                            Docs
+                        </Link>
+                        <Text>|</Text>
+                        <Link href="https://medium.com/privacy-scaling-explorations" isExternal>
+                            <Icon boxSize="20px" as={FaMedium} />
+                        </Link>
+                        <Link href="https://twitter.com/PrivacyScaling" isExternal>
+                            <Icon boxSize="20px" as={FaTwitter} />
+                        </Link>
+                        <Link href="https://github.com/InterRep" isExternal>
+                            <Icon boxSize="20px" as={FaGithub} />
+                        </Link>
+                    </HStack>
                 </HStack>
             </Container>
         </Box>
