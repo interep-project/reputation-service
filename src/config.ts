@@ -127,5 +127,11 @@ export default {
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
     MERKLE_TREE_LEVELS: Number(process.env.MERKLE_TREE_LEVELS) || defaultEnv.MERKLE_TREE_LEVELS,
-    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
+    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST,
+    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
+    GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
+    GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
+    GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
+    GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN
+
 }
