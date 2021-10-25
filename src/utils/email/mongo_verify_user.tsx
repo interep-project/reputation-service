@@ -6,7 +6,7 @@ const consoleString = "\u001b[1;32m [Database] \u001b[0m ";
 const uri = config.MONGO_URL as string;
 const client = new MongoClient(uri);
 
-export async function verifyUser(emailAddress:string, id:number) {
+export async function verifyUser(emailAddress:string, id:string) {
     return new Promise(async(resolve, reject) => {
 
         try {
