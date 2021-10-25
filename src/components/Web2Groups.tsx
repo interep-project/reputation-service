@@ -1,15 +1,14 @@
 import { Spinner, Text, useToast, VStack } from "@chakra-ui/react"
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
-import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
 import { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { Group } from "src/types/groups"
-import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 import capitalize from "src/utils/common/capitalize"
+import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 
 export default function Web2Groups(): JSX.Element {
     const [session] = useSession()
@@ -74,13 +73,7 @@ export default function Web2Groups(): JSX.Element {
 
     async function retrieveIdentityCommitment(signer: Signer, web2Provider: Web2Provider): Promise<string | null> {
         try {
-            const identity = await semethid((message) => signer.signMessage(message), capitalize(web2Provider))
-
-            return poseidon([
-                babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
-                identity.identityNullifier,
-                identity.identityTrapdoor
-            ]).toString()
+            return await semethid((message) => signer.signMessage(message), capitalize(web2Provider))
         } catch (error) {
             console.error(error)
             return null

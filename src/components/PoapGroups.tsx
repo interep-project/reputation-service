@@ -1,6 +1,5 @@
 import { Spinner, useToast, VStack } from "@chakra-ui/react"
 import semethid from "@interrep/semethid"
-import { babyJub, poseidon } from "circomlib"
 import { Signer } from "ethers"
 import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
@@ -58,13 +57,7 @@ export default function PoapGroups(): JSX.Element {
 
     async function retrieveIdentityCommitment(signer: Signer, provider: Provider): Promise<string | null> {
         try {
-            const identity = await semethid((message) => signer.signMessage(message), capitalize(provider))
-
-            return poseidon([
-                babyJub.mulPointEscalar(identity.keypair.pubKey, 8)[0],
-                identity.identityNullifier,
-                identity.identityTrapdoor
-            ]).toString()
+            return await semethid((message) => signer.signMessage(message), capitalize(provider))
         } catch (error) {
             console.error(error)
             return null

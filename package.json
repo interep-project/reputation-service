@@ -31,7 +31,7 @@
         "@emotion/styled": "^11",
         "@fontsource/raleway": "^4.5.0",
         "@interrep/reputation-criteria": "^0.10.0",
-        "@interrep/semethid": "^0.8.1",
+        "@interrep/semethid": "^0.9.1",
         "@sentry/nextjs": "^6.12.0",
         "bnc-onboard": "^1.34.1",
         "botometer": "^1.0.12",
