@@ -5,10 +5,10 @@ export enum Web3Provider {
     POAP = "poap"
 }
 
-export type Provider = Web2Provider | Web3Provider
+export type Provider = Web2Provider | Web3Provider | "telegram"
 
 export type Group = {
-    name: ReputationLevel | PoapGroupName
+    name: ReputationLevel | PoapGroupName | string
     provider: Provider
     size: number
 }

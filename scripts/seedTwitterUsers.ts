@@ -26,17 +26,17 @@ const twitterUsernames = [
     // "drakefjustin",
 ]
 
-;(async function IIFE() {
-    dbConnect()
+async function main() {
+    await dbConnect()
 
-    try {
-        await seedTwitterUsers(twitterUsernames, true)
-        dbDisconnect()
+    await seedTwitterUsers(twitterUsernames, true)
 
-        process.exit(0)
-    } catch (error) {
+    dbDisconnect()
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
         console.error(error)
-
         process.exit(1)
-    }
-})()
+    })

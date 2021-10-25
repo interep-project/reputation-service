@@ -4,37 +4,10 @@ import { appendLeaf } from "src/core/groups/mts"
 import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { checkGroup, getAllProviders, getGroup, getGroupIds, getGroups } from "."
+import { checkGroup, getAllProviders, getGroup, getGroups } from "."
 import { PoapGroupName } from "./poap"
 
 describe("Core group functions", () => {
-    describe("Get group ids", () => {
-        it("Should return all the existing group ids", () => {
-            const expectedValue = getGroupIds()
-
-            expect(expectedValue).toContain("TWITTER_GOLD")
-            expect(expectedValue).toContain("GITHUB_GOLD")
-            expect(expectedValue).toContain("POAP_DEVCON_4")
-        })
-
-        it("Should return all the group ids of an existing Web2 provider", () => {
-            const expectedValue = getGroupIds(Web2Provider.TWITTER)
-
-            expect(expectedValue).toStrictEqual([
-                "TWITTER_GOLD",
-                "TWITTER_SILVER",
-                "TWITTER_BRONZE",
-                "TWITTER_NOT_SUFFICIENT"
-            ])
-        })
-
-        it("Should return all the group ids of an existing Web3 provider", () => {
-            const expectedValue = getGroupIds(Web3Provider.POAP)
-
-            expect(expectedValue).toStrictEqual(["POAP_DEVCON_3", "POAP_DEVCON_4", "POAP_DEVCON_5"])
-        })
-    })
-
     describe("Check group", () => {
         it("Should return true if a group exists", () => {
             const expectedValue = checkGroup(Web2Provider.TWITTER, ReputationLevel.GOLD)

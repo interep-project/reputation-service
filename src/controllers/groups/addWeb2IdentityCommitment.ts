@@ -1,7 +1,7 @@
 import { calculateReputation, ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { addIdentityCommitment, getGroupId } from "src/core/groups"
+import { addIdentityCommitment } from "src/core/groups"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
@@ -130,9 +130,7 @@ export default async function addWeb2IdentityCommitmentController(
     try {
         await dbConnect()
 
-        const groupId = getGroupId(provider, name as any)
-
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
+        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the ${provider} group ${name}`)
 
         const web2Account = await Web2Account.findById(web2AccountId)
 

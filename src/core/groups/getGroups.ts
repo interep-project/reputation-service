@@ -1,4 +1,5 @@
 import { getReputationLevels } from "@interrep/reputation-criteria"
+import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
 import { Group, Provider, Web3Provider } from "src/types/groups"
 import { getAllProviders } from "."
 import getGroup from "./getGroup"
@@ -10,6 +11,12 @@ export default async function getGroups(provider?: Provider): Promise<Group[]> {
             const poapGroupNames = getPoapGroupNames()
 
             return Promise.all(poapGroupNames.map((poapGroupName) => getGroup(provider, poapGroupName)))
+        }
+
+        if (provider === "telegram") {
+            const telegramGroupNames = await MerkleTreeNode.getGroupNamesByProvider(provider)
+
+            return Promise.all(telegramGroupNames.map((telegramGroupName) => getGroup(provider, telegramGroupName)))
         }
 
         const reputationLevels = getReputationLevels(provider)

@@ -51,7 +51,7 @@ export default function Web2Groups(): JSX.Element {
 
                 const group = await getGroup({
                     provider: web2Provider,
-                    name: user.reputation as ReputationLevel
+                    groupName: user.reputation as ReputationLevel
                 })
 
                 if (group === null) {
@@ -101,7 +101,7 @@ export default function Web2Groups(): JSX.Element {
 
         const alreadyExist = await checkIdentityCommitment({
             provider: group.provider,
-            name: group.name as ReputationLevel,
+            groupName: group.name as ReputationLevel,
             identityCommitment
         })
 
@@ -130,7 +130,7 @@ export default function Web2Groups(): JSX.Element {
 
         const rootHash = await addIdentityCommitment({
             provider: group.provider,
-            name: group.name as ReputationLevel,
+            groupName: group.name as ReputationLevel,
             identityCommitment: _identityCommitment as string,
             web2AccountId
         })

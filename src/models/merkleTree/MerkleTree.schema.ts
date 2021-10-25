@@ -1,5 +1,12 @@
 import { Schema } from "mongoose"
-import { findByLevelAndIndex, findByGroupIdAndHash, findZeroes, getNumberOfNodes } from "./MerkleTree.statics"
+import {
+    findByLevelAndIndex,
+    findByGroupAndHash,
+    findZeroes,
+    getNumberOfNodes,
+    findByGroupProviderAndHash,
+    getGroupNamesByProvider
+} from "./MerkleTree.statics"
 import {
     IMerkleTreeNode,
     IMerkleTreeNodeDocument,
@@ -11,11 +18,12 @@ import {
 
 // Node
 const MerkleTreeNodeSchemaFields: Record<keyof IMerkleTreeNode, any> = {
-    key: {
-        groupId: String,
-        level: Number,
-        index: Number
+    group: {
+        name: String,
+        provider: String
     },
+    level: Number,
+    index: Number,
     parent: {
         type: Schema.Types.ObjectId,
         required: false,
@@ -30,7 +38,9 @@ export const MerkleTreeNodeSchema = new Schema<IMerkleTreeNodeDocument, IMerkleT
 )
 
 MerkleTreeNodeSchema.statics.findByLevelAndIndex = findByLevelAndIndex
-MerkleTreeNodeSchema.statics.findByGroupIdAndHash = findByGroupIdAndHash
+MerkleTreeNodeSchema.statics.findByGroupAndHash = findByGroupAndHash
+MerkleTreeNodeSchema.statics.findByGroupProviderAndHash = findByGroupProviderAndHash
+MerkleTreeNodeSchema.statics.getGroupNamesByProvider = getGroupNamesByProvider
 MerkleTreeNodeSchema.statics.getNumberOfNodes = getNumberOfNodes
 
 // Zeroes

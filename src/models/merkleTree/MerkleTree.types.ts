@@ -1,14 +1,18 @@
 import { Model, Document } from "mongoose"
-import { findByLevelAndIndex, findByGroupIdAndHash, findZeroes, getNumberOfNodes } from "./MerkleTree.statics"
-
-export interface IMerkleTreeNodeKey {
-    groupId: string
-    level: number
-    index: number
-}
+import { Group } from "src/types/groups"
+import {
+    findByLevelAndIndex,
+    findByGroupAndHash,
+    findZeroes,
+    getNumberOfNodes,
+    findByGroupProviderAndHash,
+    getGroupNamesByProvider
+} from "./MerkleTree.statics"
 
 export interface IMerkleTreeNode {
-    key: IMerkleTreeNodeKey
+    group: Omit<Group, "size">
+    level: number
+    index: number
     parent?: IMerkleTreeNode // Root node has no parent.
     siblingHash?: string // Root has no sibling.
     hash: string
@@ -18,7 +22,9 @@ export interface IMerkleTreeNodeDocument extends IMerkleTreeNode, Document {}
 
 export interface IMerkleTreeNodeModel extends Model<IMerkleTreeNodeDocument> {
     findByLevelAndIndex: typeof findByLevelAndIndex
-    findByGroupIdAndHash: typeof findByGroupIdAndHash
+    findByGroupAndHash: typeof findByGroupAndHash
+    findByGroupProviderAndHash: typeof findByGroupProviderAndHash
+    getGroupNamesByProvider: typeof getGroupNamesByProvider
     getNumberOfNodes: typeof getNumberOfNodes
 }
 

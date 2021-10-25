@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { getGroupId } from "src/core/groups"
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
@@ -13,7 +12,7 @@ export default async function hasIdentityCommitmentController(
         return res.status(405).end()
     }
 
-    const provider = req.query?.provider
+    const provider = req.query?.provider as Provider
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
 
@@ -31,10 +30,9 @@ export default async function hasIdentityCommitmentController(
     try {
         await dbConnect()
 
-        const groupId = getGroupId(provider as Provider, name as any)
-        const node = await MerkleTreeNode.findByGroupIdAndHash(groupId, identityCommitment)
+        const node = await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment)
 
-        return res.status(200).send({ data: !!node && node.key.level === 0 })
+        return res.status(200).send({ data: !!node && node.level === 0 })
     } catch (error) {
         logger.error(error)
 

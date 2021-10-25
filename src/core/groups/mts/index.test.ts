@@ -8,7 +8,6 @@ import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { appendLeaf, previewNewRoot, retrievePath } from "."
-import getGroupId from "../getGroupId"
 import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
@@ -59,12 +58,7 @@ describe("Merkle Trees", () => {
             await appendLeaf(provider, reputation, idCommitments[0])
             await appendLeaf(provider, reputation, idCommitments[1])
 
-            const groupId = getGroupId(provider, reputation)
-            const node = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: 1,
-                index: 0
-            })) as IMerkleTreeNodeDocument
+            const node = (await MerkleTreeNode.findByLevelAndIndex(1, 0)) as IMerkleTreeNodeDocument
             const hash = poseidonHash(idCommitments[0], idCommitments[1])
 
             expect(hash).toBe(node.hash)
@@ -82,9 +76,7 @@ describe("Merkle Trees", () => {
             const expectedNumberOfNodes = [10, 5, 3, 2, 1, 1, 1]
 
             for (let i = 0; i < expectedNumberOfNodes.length; i++) {
-                const groupId = getGroupId(provider, reputation)
-
-                const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(groupId, i)
+                const numberOfNodes = await MerkleTreeNode.getNumberOfNodes({ provider, name: reputation }, i)
 
                 expect(numberOfNodes).toBe(expectedNumberOfNodes[i])
             }

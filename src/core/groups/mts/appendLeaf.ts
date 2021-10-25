@@ -1,6 +1,6 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
-import { checkGroup, getGroupId } from "src/core/groups"
+import { checkGroup } from "src/core/groups"
 import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
 import { Provider } from "src/types/groups"
@@ -9,16 +9,14 @@ import { PoapGroupName } from "../poap"
 
 export default async function appendLeaf(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName | string,
     idCommitment: string
 ): Promise<string> {
-    const groupId = getGroupId(provider, name)
-
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, idCommitment)) {
         throw new Error(`The identity commitment ${idCommitment} already exist`)
     }
 
@@ -30,14 +28,16 @@ export default async function appendLeaf(
     }
 
     // Get next available index at level 0.
-    let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
+    let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
     if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
         throw new Error(`The tree is full`)
     }
 
     let node = await MerkleTreeNode.create({
-        key: { groupId, level: 0, index: currentIndex },
+        group: { provider, name },
+        level: 0,
+        index: currentIndex,
         hash: idCommitment
     })
 
@@ -45,11 +45,7 @@ export default async function appendLeaf(
         if (currentIndex % 2 === 0) {
             node.siblingHash = zeroes[level].hash
 
-            let parentNode = await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: level + 1,
-                index: Math.floor(currentIndex / 2)
-            })
+            let parentNode = await MerkleTreeNode.findByLevelAndIndex(level + 1, Math.floor(currentIndex / 2))
 
             if (parentNode) {
                 parentNode.hash = poseidonHash(node.hash, node.siblingHash)
@@ -57,11 +53,12 @@ export default async function appendLeaf(
                 await parentNode.save()
             } else {
                 parentNode = await MerkleTreeNode.create({
-                    key: {
-                        groupId,
-                        level: level + 1,
-                        index: Math.floor(currentIndex / 2)
+                    group: {
+                        provider,
+                        name
                     },
+                    level: level + 1,
+                    index: Math.floor(currentIndex / 2),
                     hash: poseidonHash(node.hash, node.siblingHash)
                 })
             }
@@ -72,20 +69,18 @@ export default async function appendLeaf(
 
             node = parentNode
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
+            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
                 level,
-                index: currentIndex - 1
-            })) as IMerkleTreeNodeDocument
+                currentIndex - 1
+            )) as IMerkleTreeNodeDocument
 
             node.siblingHash = siblingNode.hash
             siblingNode.siblingHash = node.hash
 
-            const parentNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: level + 1,
-                index: Math.floor(currentIndex / 2)
-            })) as IMerkleTreeNodeDocument
+            const parentNode = (await MerkleTreeNode.findByLevelAndIndex(
+                level + 1,
+                Math.floor(currentIndex / 2)
+            )) as IMerkleTreeNodeDocument
 
             parentNode.hash = poseidonHash(siblingNode.hash, node.hash)
 

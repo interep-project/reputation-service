@@ -28,7 +28,7 @@ export default function PoapGroups(): JSX.Element {
 
     const selectGroup = useCallback(
         async (groupName: PoapGroupName) => {
-            const group = await getGroup({ provider: Web3Provider.POAP, name: groupName })
+            const group = await getGroup({ provider: Web3Provider.POAP, groupName })
 
             if (group === null) {
                 showUnexpectedError()
@@ -81,7 +81,7 @@ export default function PoapGroups(): JSX.Element {
 
         const alreadyExist = await checkIdentityCommitment({
             provider: group.provider,
-            name: group.name as PoapGroupName,
+            groupName: group.name as PoapGroupName,
             identityCommitment
         })
 
@@ -123,7 +123,7 @@ export default function PoapGroups(): JSX.Element {
 
         const rootHash = await addIdentityCommitment({
             provider: group.provider,
-            name: group.name as PoapGroupName,
+            groupName: group.name as PoapGroupName,
             identityCommitment: _identityCommitment as string,
             userAddress: _address as string,
             userSignature

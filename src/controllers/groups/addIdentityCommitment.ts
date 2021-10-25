@@ -6,6 +6,7 @@ import { Web3Provider } from "src/types/groups"
 import apiMiddleware from "src/utils/backend/apiMiddleware"
 import logger from "src/utils/backend/logger"
 import addPoapIdentityCommitmentController from "./addPoapIdentityCommitment"
+import addTelegramIdentityCommitmentController from "./addTelegramIdentityCommitment"
 import addWeb2IdentityCommitmentController from "./addWeb2IdentityCommitment"
 
 export default async function addIdentityCommitmentController(
@@ -30,9 +31,12 @@ export default async function addIdentityCommitmentController(
         return res.status(400).end()
     }
 
-    if (provider === Web3Provider.POAP) {
-        return addPoapIdentityCommitmentController(req, res)
+    switch (provider) {
+        case Web3Provider.POAP:
+            return addPoapIdentityCommitmentController(req, res)
+        case "telegram":
+            return addTelegramIdentityCommitmentController(req, res)
+        default:
+            return addWeb2IdentityCommitmentController(req, res, provider as Web2Provider)
     }
-
-    return addWeb2IdentityCommitmentController(req, res, provider as Web2Provider)
 }

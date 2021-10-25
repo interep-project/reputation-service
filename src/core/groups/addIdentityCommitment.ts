@@ -9,7 +9,7 @@ import { PoapGroupName } from "./poap"
 
 export default async function addIdentityCommitment(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName | string,
     identityCommitment: string
 ): Promise<string> {
     // Get the value of the next root hash without saving anything in the db.
