@@ -26,7 +26,6 @@
         "jest/no-commented-out-tests": "off",
         "react/react-in-jsx-scope": "off",
         "react/jsx-props-no-spreading": "off",
-        "react-hooks/exhaustive-deps": "off",
         "no-await-in-loop": "off",
         "no-param-reassign": "off",
         "no-nested-ternary": "off",
