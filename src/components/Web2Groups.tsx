@@ -1,147 +1,81 @@
-import { Spinner, Text, useToast, VStack } from "@chakra-ui/react"
+import { Spinner, Text, VStack } from "@chakra-ui/react"
 import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
-import semethid from "@interrep/semethid"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import useInterRepAPI from "src/hooks/useInterRepAPI"
+import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
 import capitalize from "src/utils/common/capitalize"
 
 export default function Web2Groups(): JSX.Element {
     const [session] = useSession()
-    const toast = useToast()
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
-    const [_loading, setLoading] = useState<boolean>(false)
     const [_description, setDescription] = useState<string>()
     const [_group, setGroup] = useState<Group | null>(null)
     const [_currentStep, setCurrentStep] = useState<number>(0)
-    const { checkIdentityCommitment, checkGroup, addIdentityCommitment, getGroup } = useInterRepAPI()
+    const {
+        retrieveIdentityCommitment,
+        checkIdentityCommitment,
+        joinGroup,
+        checkGroup,
+        getGroup,
+        _loading
+    } = useGroups()
 
     useEffect(() => {
         ;(async () => {
             if (session) {
-                setLoading(true)
-
-                const hasJoinedAGroup = await checkGroup()
                 const { web2Provider, user } = session
-
-                if (hasJoinedAGroup === null) {
-                    setLoading(false)
-                    return
-                }
+                const hasJoinedAGroup = await checkGroup(web2Provider as Web2Provider)
 
                 if (hasJoinedAGroup) {
                     setDescription(`It seems you already joined a ${capitalize(web2Provider as string)} group.`)
-                    setLoading(false)
                     return
                 }
 
-                const group = await getGroup({
-                    provider: web2Provider,
-                    groupName: user.reputation as ReputationLevel
-                })
+                const group = await getGroup(web2Provider, user.reputation as ReputationLevel)
 
-                if (group === null) {
-                    setLoading(false)
-                    return
+                if (group) {
+                    setGroup(group)
+
+                    setDescription(
+                        `The ${user.reputation} ${capitalize(web2Provider as string)} group has ${
+                            group.size
+                        } members. Follow the steps below to join it.`
+                    )
+                    setCurrentStep(1)
                 }
-
-                setGroup(group)
-                setDescription(
-                    `The ${user.reputation} ${capitalize(web2Provider as string)} group has ${
-                        group.size
-                    } members. Follow the steps below to join it.`
-                )
-                setCurrentStep(1)
-                setLoading(false)
             }
         })()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session])
 
-    async function retrieveIdentityCommitment(signer: Signer, web2Provider: Web2Provider): Promise<string | null> {
-        try {
-            return await semethid((message) => signer.signMessage(message), capitalize(web2Provider))
-        } catch (error) {
-            console.error(error)
-            return null
-        }
-    }
+    const step1 = useCallback(
+        async (signer: Signer, group: Group) => {
+            const identityCommitment = await retrieveIdentityCommitment(signer, group.provider)
 
-    async function retrieveAndCheckIdentityCommitment(
-        signer: Signer,
-        group: Group,
-        web2Provider: Web2Provider
-    ): Promise<void> {
-        setLoading(true)
+            if (identityCommitment) {
+                if (await checkIdentityCommitment(identityCommitment, group.provider, group.name)) {
+                    setIdentityCommitment(identityCommitment)
+                    setCurrentStep(2)
+                }
+            }
+        },
+        [retrieveIdentityCommitment, checkIdentityCommitment]
+    )
 
-        const identityCommitment = await retrieveIdentityCommitment(signer, web2Provider)
-
-        if (!identityCommitment) {
-            toast({
-                description: "Your signature is needed to create the identity commitment.",
-                variant: "subtle",
-                isClosable: true
-            })
-            setLoading(false)
-            return
-        }
-
-        const alreadyExist = await checkIdentityCommitment({
-            provider: group.provider,
-            groupName: group.name as ReputationLevel,
-            identityCommitment
-        })
-
-        if (alreadyExist === null) {
-            setLoading(false)
-            return
-        }
-
-        if (alreadyExist) {
-            toast({
-                description: `You already joined this group with another ${capitalize(web2Provider)} account`,
-                variant: "subtle",
-                isClosable: true
-            })
-            setLoading(false)
-            return
-        }
-
-        setIdentityCommitment(identityCommitment)
-        setLoading(false)
-        setCurrentStep(2)
-    }
-
-    async function joinGroup(group: Group, web2AccountId: string): Promise<void> {
-        setLoading(true)
-
-        const rootHash = await addIdentityCommitment({
-            provider: group.provider,
-            groupName: group.name as ReputationLevel,
-            identityCommitment: _identityCommitment as string,
-            web2AccountId
-        })
-
-        if (rootHash === null) {
-            setLoading(false)
-            return
-        }
-
-        setLoading(false)
-        setCurrentStep(0)
-        toast({
-            description: `You joined the ${session?.user.reputation} ${capitalize(
-                session?.web2Provider as string
-            )} POAP group correctly.`,
-            variant: "subtle",
-            isClosable: true
-        })
-        setDescription("")
-    }
+    const step2 = useCallback(
+        async (group: Group, identityCommitment: string, web2AccountId: string) => {
+            if (await joinGroup(identityCommitment, group.provider, group.name, { web2AccountId })) {
+                setCurrentStep(0)
+                setDescription("")
+            }
+        },
+        [joinGroup]
+    )
 
     return !session || (_loading && _currentStep === 0) ? (
         <VStack h="300px" align="center" justify="center">
@@ -156,13 +90,7 @@ export default function Web2Groups(): JSX.Element {
                     title="Step 1"
                     message="Create your Semaphore identity."
                     actionText="Create Identity"
-                    actionFunction={() =>
-                        retrieveAndCheckIdentityCommitment(
-                            _signer as Signer,
-                            _group as Group,
-                            session.web2Provider as Web2Provider
-                        )
-                    }
+                    actionFunction={() => step1(_signer as Signer, _group as Group)}
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />
@@ -170,7 +98,9 @@ export default function Web2Groups(): JSX.Element {
                     title="Step 2"
                     message={`Join the ${session.user.reputation} ${capitalize(session.web2Provider as string)} group.`}
                     actionText="Join Group"
-                    actionFunction={() => joinGroup(_group as Group, session.web2AccountId as string)}
+                    actionFunction={() =>
+                        step2(_group as Group, _identityCommitment as string, session.web2AccountId as string)
+                    }
                     loading={_currentStep === 2 && _loading}
                     disabled={_currentStep !== 2}
                 />

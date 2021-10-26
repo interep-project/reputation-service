@@ -22,7 +22,7 @@ export function getGroup({
     groupName
 }: {
     provider: Provider
-    groupName: ReputationLevel | PoapGroupName
+    groupName: ReputationLevel | PoapGroupName | string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}`)
 }
