@@ -33,6 +33,10 @@ export default function Groups(): JSX.Element {
         return currentNetwork.chainId === networkId && !!address
     }
 
+    function isTelegramMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "telegram"
+    }
+
     return (
         <>
             <Heading as="h2" size="xl">
@@ -57,19 +61,19 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session && _poapGroupNames.length === 0 && !parameters ? (
+            ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, sign in with one of our supported Web2 providers!</Text>
                 </VStack>
             ) : (
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
-                        {parameters[0] === "telegram" && <Tab>Telegram</Tab>}
+                        {isTelegramMagicLink(parameters) && <Tab>Telegram</Tab>}
                         {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
                         {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
-                        {parameters[0] === "telegram" && (
+                        {isTelegramMagicLink(parameters) && (
                             <TabPanel>
                                 <TelegramGroups userId={parameters[2]} groupId={parameters[3]} />
                             </TabPanel>
