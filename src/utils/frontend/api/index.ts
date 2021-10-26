@@ -37,14 +37,14 @@ export async function checkGroup(): Promise<boolean | null> {
 
 export async function checkIdentityCommitment({
     provider,
-    groupName: name,
+    groupName,
     identityCommitment
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
 }): Promise<boolean | null> {
-    return sendRequest(`/api/groups/${provider}/${name}/${identityCommitment}/check`)
+    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
 }
 
 export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
@@ -53,7 +53,7 @@ export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null>
 
 export function addIdentityCommitment({
     provider,
-    groupName: name,
+    groupName,
     identityCommitment,
     web2AccountId,
     userAddress,
@@ -68,7 +68,7 @@ export function addIdentityCommitment({
     userSignature?: string
     telegramUserId?: string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${name}/${identityCommitment}`, {
+    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
         web2AccountId,
         userAddress,
         userSignature,

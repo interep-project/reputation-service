@@ -3,12 +3,12 @@ import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import useInterRepAPI from "src/hooks/useInterRepAPI"
 import { Group } from "src/types/groups"
 import capitalize from "src/utils/common/capitalize"
-import { addIdentityCommitment, checkGroup, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 
 export default function Web2Groups(): JSX.Element {
     const [session] = useSession()
@@ -19,16 +19,7 @@ export default function Web2Groups(): JSX.Element {
     const [_description, setDescription] = useState<string>()
     const [_group, setGroup] = useState<Group | null>(null)
     const [_currentStep, setCurrentStep] = useState<number>(0)
-
-    const showUnexpectedError = useCallback(() => {
-        toast({
-            description: "Sorry, there was an unexpected error.",
-            variant: "subtle",
-            status: "error"
-        })
-
-        setLoading(false)
-    }, [toast])
+    const { checkIdentityCommitment, checkGroup, addIdentityCommitment, getGroup } = useInterRepAPI()
 
     useEffect(() => {
         ;(async () => {
@@ -39,7 +30,7 @@ export default function Web2Groups(): JSX.Element {
                 const { web2Provider, user } = session
 
                 if (hasJoinedAGroup === null) {
-                    showUnexpectedError()
+                    setLoading(false)
                     return
                 }
 
@@ -55,7 +46,7 @@ export default function Web2Groups(): JSX.Element {
                 })
 
                 if (group === null) {
-                    showUnexpectedError()
+                    setLoading(false)
                     return
                 }
 
@@ -69,7 +60,7 @@ export default function Web2Groups(): JSX.Element {
                 setLoading(false)
             }
         })()
-    }, [session, showUnexpectedError])
+    }, [session])
 
     async function retrieveIdentityCommitment(signer: Signer, web2Provider: Web2Provider): Promise<string | null> {
         try {
@@ -106,7 +97,7 @@ export default function Web2Groups(): JSX.Element {
         })
 
         if (alreadyExist === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 
@@ -136,7 +127,7 @@ export default function Web2Groups(): JSX.Element {
         })
 
         if (rootHash === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 

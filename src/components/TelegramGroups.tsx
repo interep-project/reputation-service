@@ -1,12 +1,12 @@
 import { useToast, VStack } from "@chakra-ui/react"
 import semethid from "@interrep/semethid"
 import { Signer } from "ethers"
-import React, { useCallback, useContext, useState } from "react"
+import React, { useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
+import useInterRepAPI from "src/hooks/useInterRepAPI"
 import { Provider } from "src/types/groups"
 import capitalize from "src/utils/common/capitalize"
-import { addIdentityCommitment, checkIdentityCommitment } from "src/utils/frontend/api"
 
 type Properties = {
     userId: string
@@ -16,18 +16,10 @@ type Properties = {
 export default function TelegramGroups({ userId, groupId }: Properties): JSX.Element {
     const toast = useToast()
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
-    const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_loading, setLoading] = useState<boolean>(false)
+    const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
-
-    const showUnexpectedError = useCallback(() => {
-        toast({
-            description: "Sorry, there was an unexpected error.",
-            variant: "subtle",
-            status: "error"
-        })
-        setLoading(false)
-    }, [toast])
+    const { checkIdentityCommitment, addIdentityCommitment } = useInterRepAPI()
 
     async function retrieveIdentityCommitment(signer: Signer, provider: Provider): Promise<string | null> {
         try {
@@ -60,7 +52,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
         })
 
         if (alreadyExist === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 
@@ -70,14 +62,13 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
                 variant: "subtle",
                 isClosable: true
             })
-            setCurrentStep(1)
             setLoading(false)
             return
         }
 
         setIdentityCommitment(identityCommitment)
         setLoading(false)
-        setCurrentStep(3)
+        setCurrentStep(2)
     }
 
     async function joinGroup(): Promise<void> {
@@ -91,12 +82,12 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
         })
 
         if (rootHash === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 
         setLoading(false)
-        setCurrentStep(1)
+        setCurrentStep(0)
         toast({
             description: "You joined the Telegram group correctly.",
             variant: "subtle",
@@ -119,8 +110,8 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
                 message="Join the selected group."
                 actionText="Join Group"
                 actionFunction={() => joinGroup()}
-                loading={_currentStep === 3 && _loading}
-                disabled={_currentStep !== 3}
+                loading={_currentStep === 2 && _loading}
+                disabled={_currentStep !== 2}
             />
         </VStack>
     )

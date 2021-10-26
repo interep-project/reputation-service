@@ -68,7 +68,7 @@ export default function Groups(): JSX.Element {
             ) : (
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
-                        {isTelegramMagicLink(parameters) && <Tab>Telegram</Tab>}
+                        {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
                         {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
                         {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>

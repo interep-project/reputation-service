@@ -6,8 +6,8 @@ import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { getPoapEventName, PoapGroupName } from "src/core/groups/poap"
 import { Group, Provider, Web3Provider } from "src/types/groups"
-import { addIdentityCommitment, checkIdentityCommitment, getGroup } from "src/utils/frontend/api"
 import capitalize from "src/utils/common/capitalize"
+import useInterRepAPI from "src/hooks/useInterRepAPI"
 
 export default function PoapGroups(): JSX.Element {
     const toast = useToast()
@@ -16,22 +16,13 @@ export default function PoapGroups(): JSX.Element {
     const [_loading, setLoading] = useState<boolean>(false)
     const [_group, setGroup] = useState<Group | null>(null)
     const [_currentStep, setCurrentStep] = useState<number>(1)
-
-    const showUnexpectedError = useCallback(() => {
-        toast({
-            description: "Sorry, there was an unexpected error.",
-            variant: "subtle",
-            status: "error"
-        })
-        setLoading(false)
-    }, [toast])
+    const { checkIdentityCommitment, addIdentityCommitment, getGroup } = useInterRepAPI()
 
     const selectGroup = useCallback(
         async (groupName: PoapGroupName) => {
             const group = await getGroup({ provider: Web3Provider.POAP, groupName })
 
             if (group === null) {
-                showUnexpectedError()
                 return
             }
 
@@ -43,7 +34,7 @@ export default function PoapGroups(): JSX.Element {
             })
             setCurrentStep(2)
         },
-        [toast, showUnexpectedError]
+        [toast, getGroup]
     )
 
     async function sign(signer: Signer, message: string): Promise<string | null> {
@@ -86,7 +77,7 @@ export default function PoapGroups(): JSX.Element {
         })
 
         if (alreadyExist === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 
@@ -130,7 +121,7 @@ export default function PoapGroups(): JSX.Element {
         })
 
         if (rootHash === null) {
-            showUnexpectedError()
+            setLoading(false)
             return
         }
 
