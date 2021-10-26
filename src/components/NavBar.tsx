@@ -54,7 +54,7 @@ export default function NavBar(): JSX.Element {
                         </Button>
                         <Button
                             onClick={() => router.push("/groups")}
-                            isActive={router.route === "/groups"}
+                            isActive={router.route === "/groups/[[...provider]]"}
                             isDisabled={!_address || (!appIsReady() && !_poapGroupNames.length)}
                         >
                             Groups
