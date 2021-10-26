@@ -3,9 +3,13 @@ import { InterRepBot } from "@interrep/telegram-bot"
 async function main() {
     const { TELEGRAM_BOT_TOKEN, MONGO_URL, NEXTAUTH_URL } = process.env
 
-    const bot = new InterRepBot(TELEGRAM_BOT_TOKEN as string, MONGO_URL as string, NEXTAUTH_URL as string)
+    if (TELEGRAM_BOT_TOKEN && MONGO_URL && NEXTAUTH_URL) {
+        const bot = new InterRepBot(TELEGRAM_BOT_TOKEN, MONGO_URL, NEXTAUTH_URL)
 
-    return bot.start()
+        return bot.start()
+    }
+
+    return null
 }
 
 main()
