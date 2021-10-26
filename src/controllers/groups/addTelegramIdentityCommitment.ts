@@ -19,14 +19,14 @@ export default async function addTelegramIdentityCommitmentController(req: NextA
         return res.status(400).end()
     }
 
+    const hashId = sha256(telegramUserId + name)
+    const telegramUser = await TelegramUser.findByHashId(hashId)
+
+    if (!telegramUser) {
+        return res.status(403).end()
+    }
+
     try {
-        const hashId = sha256(telegramUserId + name)
-        const telegramUser = await TelegramUser.findByHashId(hashId)
-
-        if (!telegramUser) {
-            throw new Error(`Telegram user has no permissions to join this group`)
-        }
-
         if (telegramUser.joined) {
             throw new Error(`Telegram user already joined this group`)
         }
