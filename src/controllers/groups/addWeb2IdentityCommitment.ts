@@ -1,7 +1,7 @@
-import { calculateReputation, ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { calculateReputation, ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { addIdentityCommitment, getGroupId } from "src/core/groups"
+import { addIdentityCommitment } from "src/core/groups"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
@@ -13,7 +13,7 @@ import logger from "src/utils/backend/logger"
 export default async function addWeb2IdentityCommitmentController(
     req: NextApiRequest,
     res: NextApiResponse,
-    provider: Web2Provider
+    provider: OAuthProvider
 ) {
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
@@ -30,11 +30,11 @@ export default async function addWeb2IdentityCommitmentController(
 
         try {
             switch (provider) {
-                case Web2Provider.GITHUB: {
+                case OAuthProvider.GITHUB: {
                     const { id, plan, followers, receivedStars } = await getGithubUserByToken(token)
 
                     accountId = id
-                    reputation = calculateReputation(Web2Provider.GITHUB, {
+                    reputation = calculateReputation(OAuthProvider.GITHUB, {
                         proPlan: plan.name === "pro",
                         followers,
                         receivedStars
@@ -42,7 +42,7 @@ export default async function addWeb2IdentityCommitmentController(
 
                     break
                 }
-                case Web2Provider.REDDIT: {
+                case OAuthProvider.REDDIT: {
                     const {
                         id,
                         has_subscribed_to_premium,
@@ -52,7 +52,7 @@ export default async function addWeb2IdentityCommitmentController(
                     } = await getRedditUserByToken(token)
 
                     accountId = id
-                    reputation = calculateReputation(Web2Provider.REDDIT, {
+                    reputation = calculateReputation(OAuthProvider.REDDIT, {
                         premiumSubscription: has_subscribed_to_premium,
                         karma: total_karma,
                         coins,
@@ -61,12 +61,12 @@ export default async function addWeb2IdentityCommitmentController(
 
                     break
                 }
-                case Web2Provider.TWITTER: {
+                case OAuthProvider.TWITTER: {
                     const { id_str, screen_name, followers_count, verified } = await getTwitterUserByToken(token)
                     const botometerResult = await getBotometerScore(screen_name)
 
                     accountId = id_str
-                    reputation = calculateReputation(Web2Provider.REDDIT, {
+                    reputation = calculateReputation(OAuthProvider.REDDIT, {
                         followers: followers_count,
                         verifiedProfile: verified,
                         botometerOverallScore: botometerResult?.display_scores?.universal?.overall
@@ -130,9 +130,7 @@ export default async function addWeb2IdentityCommitmentController(
     try {
         await dbConnect()
 
-        const groupId = getGroupId(provider, name as any)
-
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
+        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the ${provider} group ${name}`)
 
         const web2Account = await Web2Account.findById(web2AccountId)
 

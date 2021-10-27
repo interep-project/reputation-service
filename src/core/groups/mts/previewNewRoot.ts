@@ -1,6 +1,6 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
-import { checkGroup, getGroupId } from "src/core/groups"
+import { checkGroup } from "src/core/groups"
 import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
 import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
 import { Provider } from "src/types/groups"
@@ -9,16 +9,14 @@ import { PoapGroupName } from "../poap"
 
 export default async function previewNewRoot(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName | string,
     idCommitment: string
 ): Promise<string> {
-    const groupId = getGroupId(provider, name)
-
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, idCommitment)) {
         throw new Error(`The identity commitment ${idCommitment} already exist`)
     }
 
@@ -30,7 +28,7 @@ export default async function previewNewRoot(
     }
 
     // Get next available index at level 0.
-    let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
+    let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
     if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
         throw new Error(`The tree is full`)
@@ -44,11 +42,10 @@ export default async function previewNewRoot(
 
             hash = poseidonHash(hash, siblingHash)
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
+            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
                 level,
-                index: currentIndex - 1
-            })) as IMerkleTreeNodeDocument
+                currentIndex - 1
+            )) as IMerkleTreeNodeDocument
 
             hash = poseidonHash(siblingNode.hash, hash)
         }

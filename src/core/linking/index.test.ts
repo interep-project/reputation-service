@@ -1,5 +1,5 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
 import Token from "src/models/tokens/Token.model"
@@ -97,8 +97,8 @@ describe("linkAccounts", () => {
 
         beforeAll(async () => {
             web2Account = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:1`,
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:1`,
                 createdAt: Date.now(),
                 providerAccountId: "1",
                 isLinkedToAddress: true,
@@ -126,8 +126,8 @@ describe("linkAccounts", () => {
             let web2AccountNotLinked: IWeb2AccountDocument
             beforeAll(async () => {
                 web2AccountNotLinked = await Web2Account.create({
-                    provider: Web2Provider.TWITTER,
-                    uniqueKey: `${Web2Provider.TWITTER}:2`,
+                    provider: OAuthProvider.TWITTER,
+                    uniqueKey: `${OAuthProvider.TWITTER}:2`,
                     createdAt: Date.now(),
                     providerAccountId: "2",
                     user: { id: "2", username: "new name" },
@@ -154,8 +154,8 @@ describe("linkAccounts", () => {
 
         beforeAll(async () => {
             web2AccountMock = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:999`,
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:999`,
                 createdAt: Date.now(),
                 providerAccountId: "999",
                 user: { id: "999", username: "username" },

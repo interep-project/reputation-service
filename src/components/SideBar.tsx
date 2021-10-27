@@ -1,5 +1,5 @@
 import { Button, Divider, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
@@ -54,21 +54,21 @@ export default function SideBar({ session, poapGroupNames }: Properties): JSX.El
                         Web2
                     </Text>
                     <HStack spacing="2">
-                        {session.web2Provider === Web2Provider.TWITTER ? (
+                        {session.provider === OAuthProvider.TWITTER ? (
                             <Icon boxSize="26px" as={FaTwitter} />
-                        ) : session.web2Provider === Web2Provider.GITHUB ? (
+                        ) : session.provider === OAuthProvider.GITHUB ? (
                             <Icon boxSize="26px" as={FaGithub} />
                         ) : (
                             <Icon boxSize="26px" as={FaRedditAlien} />
                         )}
-                        <Text fontSize="md">{capitalize(session.web2Provider)}</Text>
+                        <Text fontSize="md">{capitalize(session.provider)}</Text>
                     </HStack>
                     <Text fontSize="md">Username: {session.user.username as string}</Text>
                     {session.user?.reputation && (
                         <HStack spacing="1">
                             <Text fontSize="md">Reputation: </Text>
                             <Tooltip
-                                label={`Your ${capitalize(session.web2Provider)} reputation is: ${
+                                label={`Your ${capitalize(session.provider)} reputation is: ${
                                     session.user.reputation
                                 }.`}
                                 placement="right-start"

@@ -1,5 +1,5 @@
 import { Button, Heading, Input, InputGroup, InputRightElement, Text, useColorMode, VStack } from "@chakra-ui/react"
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import React, { useState } from "react"
 import { getReputation } from "src/utils/frontend/api"
 
@@ -15,7 +15,7 @@ export default function TwitterReputation(): JSX.Element {
         setIsLoading(true)
 
         const reputation = await getReputation({
-            web2Provider: Web2Provider.TWITTER,
+            provider: OAuthProvider.TWITTER,
             username: _twitterUsername
         })
 

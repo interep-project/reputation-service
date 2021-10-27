@@ -12,7 +12,7 @@ export default function Signin(): JSX.Element {
             <Heading as="h2" mb="30px" size="xl">
                 Web2 Login
                 <Tooltip
-                    label="Sign in with one of our supported Web2 providers to obtain your reputation."
+                    label="Sign in with one of our supported providers to obtain your reputation."
                     placement="right-start"
                 >
                     <span>

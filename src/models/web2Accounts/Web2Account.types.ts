@@ -1,9 +1,9 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { Model, Document } from "mongoose"
 import { findByProviderAccountId } from "./Web2Account.statics"
 
 export interface IWeb2Account {
-    provider: Web2Provider
+    provider: OAuthProvider
     providerAccountId: string
     uniqueKey: string
     basicReputation?: ReputationLevel

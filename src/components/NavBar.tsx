@@ -21,17 +21,23 @@ import shortenAddress from "src/utils/frontend/shortenAddress"
 
 export default function NavBar(): JSX.Element {
     const router = useRouter()
+    const parameters = router.query.provider as string[]
     const [session] = useSession()
     const { connect, check, _networkId, _address, _poapGroupNames } = useContext(
         EthereumWalletContext
     ) as EthereumWalletContextType
     const { hasCopied, onCopy } = useClipboard(_address as string)
+
     const { colorMode, toggleColorMode } = useColorMode()
 
     const appIsReady = useCallback(
         () => !!(session && session.user.reputation && currentNetwork.chainId === _networkId && _address),
         [session, _networkId, _address]
     )
+
+    function isTelegramMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "telegram"
+    }
 
     return (
         <Container
@@ -54,8 +60,11 @@ export default function NavBar(): JSX.Element {
                         </Button>
                         <Button
                             onClick={() => router.push("/groups")}
-                            isActive={router.route === "/groups"}
-                            isDisabled={!_address || (!appIsReady() && !_poapGroupNames.length)}
+                            isActive={router.route === "/groups/[[...provider]]"}
+                            isDisabled={
+                                !_address ||
+                                (!appIsReady() && !_poapGroupNames.length && !isTelegramMagicLink(parameters))
+                            }
                         >
                             Groups
                         </Button>

@@ -12,10 +12,12 @@ import {
     VStack
 } from "@chakra-ui/react"
 import { useSession } from "next-auth/client"
+import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { FaInfoCircle } from "react-icons/fa"
 import PoapGroups from "src/components/PoapGroups"
-import Web2Groups from "src/components/Web2Groups"
+import TelegramGroups from "src/components/TelegramGroups"
+import OAuthGroups from "src/components/OAuthGroups"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import capitalize from "src/utils/common/capitalize"
@@ -24,9 +26,15 @@ export default function Groups(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
     const { _address, _networkId, _poapGroupNames } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const router = useRouter()
+    const parameters = router.query.provider as string[]
 
     function walletIsConnected(networkId?: number, address?: string): boolean {
         return currentNetwork.chainId === networkId && !!address
+    }
+
+    function isTelegramMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "telegram"
     }
 
     return (
@@ -53,26 +61,30 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session && !_poapGroupNames.length ? (
+            ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
-                    <Text fontSize="lg">Please, sign in with one of our supported Web2 providers!</Text>
+                    <Text fontSize="lg">Please, sign in with one of our supported providers!</Text>
                 </VStack>
             ) : (
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
-                        {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
-                        {!!_poapGroupNames.length && <Tab>POAP</Tab>}
+                        {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
+                        {session && <Tab mr="10px">{capitalize(session.provider)}</Tab>}
+                        {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
-                        {session && (
+                        {isTelegramMagicLink(parameters) && (
                             <TabPanel>
-                                {" "}
-                                <Web2Groups />
+                                <TelegramGroups userId={parameters[2]} groupId={parameters[3]} />
                             </TabPanel>
                         )}
-                        {!!_poapGroupNames.length && (
+                        {session && (
                             <TabPanel>
-                                {" "}
+                                <OAuthGroups />
+                            </TabPanel>
+                        )}
+                        {_poapGroupNames.length !== 0 && (
+                            <TabPanel>
                                 <PoapGroups />
                             </TabPanel>
                         )}

@@ -1,4 +1,4 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import { Wallet } from "ethers"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
@@ -68,8 +68,8 @@ describe("unlink", () => {
 
     it("should return an error is the account is not linked", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: false,
             providerAccountId: "twitter"
@@ -86,8 +86,8 @@ describe("unlink", () => {
 
     it("should return an error if the attestation has no message field", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -104,8 +104,8 @@ describe("unlink", () => {
 
     it("should return an error if the message was not signed by the backend", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -134,16 +134,16 @@ describe("unlink", () => {
 
     it("should return an error if the web 2 account in the attestation does not match the one provided", async () => {
         const web2Account1 = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id1`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id1`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id1"
         })
 
         const web2Account2 = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id2`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id2`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id2"
@@ -170,8 +170,8 @@ describe("unlink", () => {
 
     it("should return an error if the token in the attestation can't be found", async () => {
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
@@ -208,8 +208,8 @@ describe("unlink", () => {
         })
 
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
@@ -249,8 +249,8 @@ describe("unlink", () => {
         })
 
         const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"

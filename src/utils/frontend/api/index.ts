@@ -1,16 +1,16 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
 export function getReputation({
-    web2Provider,
+    provider,
     username
 }: {
-    web2Provider: Web2Provider
+    provider: OAuthProvider
     username: string
 }): Promise<any | null> {
-    return sendRequest(`/api/reputation/${web2Provider}/${username}`)
+    return sendRequest(`/api/reputation/${provider}/${username}`)
 }
 
 export function getUserTokens({ userAddress }: { userAddress: string }): Promise<any | null> {
@@ -19,12 +19,12 @@ export function getUserTokens({ userAddress }: { userAddress: string }): Promise
 
 export function getGroup({
     provider,
-    name
+    groupName
 }: {
     provider: Provider
-    name: ReputationLevel | PoapGroupName
+    groupName: ReputationLevel | PoapGroupName | string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${name}`)
+    return sendRequest(`/api/groups/${provider}/${groupName}`)
 }
 
 export async function checkLink(): Promise<boolean | null> {
@@ -37,14 +37,14 @@ export async function checkGroup(): Promise<boolean | null> {
 
 export async function checkIdentityCommitment({
     provider,
-    name,
+    groupName,
     identityCommitment
 }: {
     provider: Provider
-    name: ReputationLevel | PoapGroupName
+    groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
 }): Promise<boolean | null> {
-    return sendRequest(`/api/groups/${provider}/${name}/${identityCommitment}/check`)
+    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
 }
 
 export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
@@ -53,23 +53,26 @@ export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null>
 
 export function addIdentityCommitment({
     provider,
-    name,
+    groupName,
     identityCommitment,
     web2AccountId,
     userAddress,
-    userSignature
+    userSignature,
+    telegramUserId
 }: {
     provider: Provider
-    name: ReputationLevel | PoapGroupName
+    groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
     web2AccountId?: string
     userAddress?: string
     userSignature?: string
+    telegramUserId?: string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${name}/${identityCommitment}`, {
+    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
         web2AccountId,
         userAddress,
-        userSignature
+        userSignature,
+        telegramUserId
     })
 }
 
