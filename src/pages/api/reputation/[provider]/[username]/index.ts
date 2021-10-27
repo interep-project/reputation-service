@@ -1,4 +1,4 @@
-import { calculateReputation, Web2Provider } from "@interrep/reputation-criteria"
+import { calculateReputation, OAuthProvider } from "@interrep/reputation-criteria"
 import { withSentry } from "@sentry/nextjs"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getTwitterParametersByUsername } from "src/core/reputation/twitter"
@@ -12,20 +12,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(405).end()
     }
 
-    const web2Provider = req.query?.web2Provider
+    const provider = req.query?.provider
     const username = req.query?.username
 
-    if (!web2Provider || typeof web2Provider !== "string" || !username || typeof username !== "string") {
+    if (!provider || typeof provider !== "string" || !username || typeof username !== "string") {
         return res.status(400).end()
     }
 
     try {
         const data: any = {}
 
-        switch (web2Provider) {
+        switch (provider) {
             case "twitter":
                 data.parameters = await getTwitterParametersByUsername(username)
-                data.reputation = calculateReputation(Web2Provider.TWITTER, data.parameters)
+                data.reputation = calculateReputation(OAuthProvider.TWITTER, data.parameters)
 
                 break
             default:

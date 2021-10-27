@@ -1,4 +1,4 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import colors from "colors"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { getTwitterFriendsByUserId, getTwitterUserByUsername } from "src/services/twitter"
@@ -6,8 +6,8 @@ import { TwitterUser } from "src/types/twitter"
 
 function createTwitterSeedUser(user: TwitterUser): any {
     return new Web2Account({
-        provider: Web2Provider.TWITTER,
-        uniqueKey: `${Web2Provider.TWITTER}:${user.id}`,
+        provider: OAuthProvider.TWITTER,
+        uniqueKey: `${OAuthProvider.TWITTER}:${user.id}`,
         createdAt: Date.now(),
         providerAccountId: user.id,
         isSeedUser: true,

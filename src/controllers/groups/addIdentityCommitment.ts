@@ -1,4 +1,4 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import Cors from "cors"
 import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
@@ -37,6 +37,6 @@ export default async function addIdentityCommitmentController(
         case "telegram":
             return addTelegramIdentityCommitmentController(req, res)
         default:
-            return addWeb2IdentityCommitmentController(req, res, provider as Web2Provider)
+            return addWeb2IdentityCommitmentController(req, res, provider as OAuthProvider)
     }
 }

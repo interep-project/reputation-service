@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react"
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import semethid from "@interrep/semethid"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
@@ -8,7 +8,7 @@ import capitalize from "src/utils/common/capitalize"
 import useInterRepAPI from "./useInterRepAPI"
 
 type ReturnParameters = {
-    checkGroup: (provider: Web2Provider) => Promise<boolean | null>
+    checkGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
     signMessage: (signer: Signer, message: string) => Promise<string | null>
     retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>

@@ -1,4 +1,4 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
@@ -74,8 +74,8 @@ describe("api/linking/checkLink", () => {
         it("should return true if an account is already linked", async () => {
             const isLinkedToAddress = true
             const web2Account = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:1`,
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:1`,
                 createdAt: Date.now(),
                 providerAccountId: "1",
                 isLinkedToAddress,

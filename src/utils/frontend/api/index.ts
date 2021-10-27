@@ -1,16 +1,16 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
 export function getReputation({
-    web2Provider,
+    provider,
     username
 }: {
-    web2Provider: Web2Provider
+    provider: OAuthProvider
     username: string
 }): Promise<any | null> {
-    return sendRequest(`/api/reputation/${web2Provider}/${username}`)
+    return sendRequest(`/api/reputation/${provider}/${username}`)
 }
 
 export function getUserTokens({ userAddress }: { userAddress: string }): Promise<any | null> {

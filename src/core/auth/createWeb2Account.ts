@@ -3,14 +3,14 @@ import {
     GithubParameters,
     RedditParameters,
     TwitterParameters,
-    Web2Provider
+    OAuthProvider
 } from "@interrep/reputation-criteria"
 import { Account } from "next-auth"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { User } from "src/types/next-auth"
 import { dbConnect } from "src/utils/backend/database"
 
-export default async function createWeb2Account(user: User, account: Account, provider: Web2Provider): Promise<void> {
+export default async function createWeb2Account(user: User, account: Account, provider: OAuthProvider): Promise<void> {
     await dbConnect()
 
     if (!account.id) {
@@ -32,7 +32,7 @@ export default async function createWeb2Account(user: User, account: Account, pr
             })
 
             switch (provider) {
-                case Web2Provider.TWITTER: {
+                case OAuthProvider.TWITTER: {
                     const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
 
                     web2Account.basicReputation = calculateReputation(provider, {
@@ -43,7 +43,7 @@ export default async function createWeb2Account(user: User, account: Account, pr
 
                     break
                 }
-                case Web2Provider.GITHUB: {
+                case OAuthProvider.GITHUB: {
                     const { proPlan, followers, receivedStars } = user as GithubParameters
 
                     web2Account.basicReputation = calculateReputation(provider, {
@@ -54,7 +54,7 @@ export default async function createWeb2Account(user: User, account: Account, pr
 
                     break
                 }
-                case Web2Provider.REDDIT: {
+                case OAuthProvider.REDDIT: {
                     const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
 
                     web2Account.basicReputation = calculateReputation(provider, {

@@ -35,7 +35,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
             decryptedAttestation
         })
 
-        return res.status(200).end()
+        return res.status(200).send({ data: true })
     } catch (err) {
         logger.error(err)
 

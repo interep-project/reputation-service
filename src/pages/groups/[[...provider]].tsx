@@ -17,7 +17,7 @@ import React, { useContext } from "react"
 import { FaInfoCircle } from "react-icons/fa"
 import PoapGroups from "src/components/PoapGroups"
 import TelegramGroups from "src/components/TelegramGroups"
-import Web2Groups from "src/components/Web2Groups"
+import OAuthGroups from "src/components/OAuthGroups"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import capitalize from "src/utils/common/capitalize"
@@ -63,13 +63,13 @@ export default function Groups(): JSX.Element {
                 </VStack>
             ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
-                    <Text fontSize="lg">Please, sign in with one of our supported Web2 providers!</Text>
+                    <Text fontSize="lg">Please, sign in with one of our supported providers!</Text>
                 </VStack>
             ) : (
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
                         {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
-                        {session && <Tab mr="10px">{capitalize(session.web2Provider)}</Tab>}
+                        {session && <Tab mr="10px">{capitalize(session.provider)}</Tab>}
                         {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
@@ -80,7 +80,7 @@ export default function Groups(): JSX.Element {
                         )}
                         {session && (
                             <TabPanel>
-                                <Web2Groups />
+                                <OAuthGroups />
                             </TabPanel>
                         )}
                         {_poapGroupNames.length !== 0 && (

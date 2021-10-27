@@ -1,4 +1,4 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import config from "src/config"
@@ -12,7 +12,7 @@ import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
     const idCommitment = poseidon([2n, 1n]).toString()
-    const provider = Web2Provider.TWITTER
+    const provider = OAuthProvider.TWITTER
     const reputation = ReputationLevel.GOLD
 
     beforeAll(async () => {

@@ -1,7 +1,7 @@
 import { getReputationLevels } from "@interrep/reputation-criteria"
 import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
 import { Group, Provider, Web3Provider } from "src/types/groups"
-import { getAllProviders } from "."
+import { getProviders } from "."
 import getGroup from "./getGroup"
 import { getPoapGroupNames } from "./poap"
 
@@ -24,7 +24,7 @@ export default async function getGroups(provider?: Provider): Promise<Group[]> {
         return Promise.all(reputationLevels.map((reputation) => getGroup(provider, reputation)))
     }
 
-    const providers = getAllProviders()
+    const providers = getProviders()
     let groups: Group[] = []
 
     for (const provider of providers) {

@@ -319,11 +319,11 @@ export default function Badges(): JSX.Element {
                                 ? `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}.`
                                 : _token?.status === TokenStatus.NOT_MINTED
                                 ? `Your Ethereum/${capitalize(
-                                      session.web2Provider
+                                      session.provider
                                   )} accounts are linked. Mint a token to create your reputation badge.`
                                 : _token?.status === TokenStatus.MINTED
                                 ? `You have a ${capitalize(
-                                      session.web2Provider
+                                      session.provider
                                   )} reputation bedge. Follow the steps below if you want to burn the token or unlink your accounts.`
                                 : _token?.status === TokenStatus.BURNED
                                 ? `You burnt your token. Unlink your accounts and create another badge.`
@@ -334,7 +334,7 @@ export default function Badges(): JSX.Element {
                     <VStack mt="30px" spacing={4} align="left">
                         <Step
                             title="Step 1"
-                            message={`Link your Ethereum/${capitalize(session.web2Provider)} accounts.`}
+                            message={`Link your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Link accounts"
                             actionFunction={() =>
                                 linkAccount(_signer as Signer, _address as string, session.web2AccountId)
@@ -360,7 +360,7 @@ export default function Badges(): JSX.Element {
                         />
                         <Step
                             title="Step 4"
-                            message={`Unlink your Ethereum/${capitalize(session.web2Provider)} accounts.`}
+                            message={`Unlink your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Unlink accounts"
                             actionFunction={() => unlinkAccount(_token as ITokenDocument)}
                             loading={_currentStep === 4 && _loading}

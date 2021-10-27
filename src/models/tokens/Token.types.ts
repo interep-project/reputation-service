@@ -1,4 +1,4 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import { Model, Document } from "mongoose"
 import { ITransaction } from "../transactions/Transaction.types"
 import { findByUserAddress } from "./Token.statics"
@@ -21,7 +21,7 @@ export interface IToken {
     decimalId: string
     status: TokenStatus
     mintTransactions?: ITransaction[]
-    web2Provider: Web2Provider
+    web2Provider: OAuthProvider
 }
 
 export interface ITokenDocument extends IToken, Document {}
