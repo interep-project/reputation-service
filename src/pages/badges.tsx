@@ -120,6 +120,7 @@ export default function Badges(): JSX.Element {
                 setCurrentStep(1)
             }
         })()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, _address, _networkId])
 
     async function linkAccount(signer: Signer, address: string, web2AccountId: string): Promise<void> {
