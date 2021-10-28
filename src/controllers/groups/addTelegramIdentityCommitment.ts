@@ -1,4 +1,5 @@
-import { sha256, TelegramUser } from "@interrep/telegram-bot"
+import { sha256 } from "@interrep/telegram-bot"
+import { TelegramUser } from "@interrep/data-models"
 import { NextApiRequest, NextApiResponse } from "next"
 import { addIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
