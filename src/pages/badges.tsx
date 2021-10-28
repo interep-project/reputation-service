@@ -11,7 +11,7 @@ import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import { TokenDocument, TokenStatus } from "@interrep/data-models"
+import type { TokenDocument } from "@interrep/data-models"
 import capitalize from "src/utils/common/capitalize"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractInstance from "src/utils/common/getContractInstance"
@@ -78,45 +78,36 @@ export default function Badges(): JSX.Element {
         ;(async () => {
             if (session && walletIsConnected(_networkId, _address)) {
                 const { user } = session
-
                 if (user.reputation !== ReputationLevel.GOLD) {
                     setCurrentStep(0)
                     return
                 }
-
                 const accountLinked = await checkLink()
-
                 if (accountLinked === null) {
                     return
                 }
-
                 if (accountLinked) {
                     const tokens = await getUserTokens({ userAddress: _address as string })
-
                     if (tokens === null || tokens.length === 0) {
                         return
                     }
-
                     const token = tokens[tokens.length - 1] as TokenDocument
-
                     switch (token.status) {
-                        case TokenStatus.NOT_MINTED:
+                        case "NOT_MINTED":
                             setCurrentStep(2)
                             break
-                        case TokenStatus.MINTED:
+                        case "MINTED":
                             setCurrentStep(3)
                             break
-                        case TokenStatus.BURNED:
+                        case "BURNED":
                             setCurrentStep(4)
                             break
                         default:
                             setCurrentStep(1)
                     }
-
                     setToken(token)
                     return
                 }
-
                 setCurrentStep(1)
             }
         })()
@@ -295,37 +286,34 @@ export default function Badges(): JSX.Element {
             ) : (
                 <>
                     <HStack mt="10px">
-                        {_token &&
-                            _token.status === TokenStatus.MINTED &&
-                            _token.mintTransactions &&
-                            _token.mintTransactions[0] && (
-                                <Link
-                                    href={getExplorerLink(
-                                        _token.mintTransactions[0].response.hash,
-                                        ExplorerDataType.TRANSACTION
-                                    )}
-                                    isExternal
-                                    px="10px"
-                                >
-                                    <Icon
-                                        boxSize="70px"
-                                        color={colorMode === "light" ? "gold.600" : "gold.500"}
-                                        as={BiCoin}
-                                    />
-                                </Link>
-                            )}
+                        {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] && (
+                            <Link
+                                href={getExplorerLink(
+                                    _token.mintTransactions[0].response.hash,
+                                    ExplorerDataType.TRANSACTION
+                                )}
+                                isExternal
+                                px="10px"
+                            >
+                                <Icon
+                                    boxSize="70px"
+                                    color={colorMode === "light" ? "gold.600" : "gold.500"}
+                                    as={BiCoin}
+                                />
+                            </Link>
+                        )}
                         <Text fontWeight="semibold">
                             {session.user.reputation !== ReputationLevel.GOLD
                                 ? `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}.`
-                                : _token?.status === TokenStatus.NOT_MINTED
+                                : _token?.status === "NOT_MINTED"
                                 ? `Your Ethereum/${capitalize(
                                       session.provider
                                   )} accounts are linked. Mint a token to create your reputation badge.`
-                                : _token?.status === TokenStatus.MINTED
+                                : _token?.status === "MINTED"
                                 ? `You have a ${capitalize(
                                       session.provider
                                   )} reputation bedge. Follow the steps below if you want to burn the token or unlink your accounts.`
-                                : _token?.status === TokenStatus.BURNED
+                                : _token?.status === "BURNED"
                                 ? `You burnt your token. Unlink your accounts and create another badge.`
                                 : "Follow the steps below to create your reputation badge."}
                         </Text>
