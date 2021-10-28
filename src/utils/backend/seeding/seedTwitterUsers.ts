@@ -1,18 +1,18 @@
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import colors from "colors"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { OAuthAccount } from "@interrep/data-models"
 import { getTwitterFriendsByUserId, getTwitterUserByUsername } from "src/services/twitter"
 import { TwitterUser } from "src/types/twitter"
 
 function createTwitterSeedUser(user: TwitterUser): any {
-    return new Web2Account({
+    return new OAuthAccount({
         provider: OAuthProvider.TWITTER,
         uniqueKey: `${OAuthProvider.TWITTER}:${user.id}`,
         createdAt: Date.now(),
         providerAccountId: user.id,
         isSeedUser: true,
         isLinkedToAddress: false,
-        basicReputation: ReputationLevel.GOLD
+        reputation: ReputationLevel.GOLD
     })
 }
 
@@ -41,7 +41,7 @@ export default async function seedTwitterUsers(twitterUsernames: string[], logge
         try {
             // With ordered false, it inserts all documents it can and report
             // errors at the end (incl. errors from duplicates).
-            const docs = await Web2Account.insertMany(formattedFriends, {
+            const docs = await OAuthAccount.insertMany(formattedFriends, {
                 ordered: false
             })
 

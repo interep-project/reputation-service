@@ -1,10 +1,9 @@
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"
 import logger from "src/utils/backend/logger"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import getContractAddress from "src/utils/common/getContractAddress"
-import { TokenDocument, TokenStatus, Token } from "@interrep/data-models"
+import { TokenDocument, TokenStatus, Token, OAuthAccount } from "@interrep/data-models"
 import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 import { ReputationLevel } from "@interrep/reputation-criteria"
@@ -14,14 +13,14 @@ import { ethers } from "ethers"
 
 type LinkAccountsParams = {
     address: string
-    web2AccountId: string
+    accountId: string
     userSignature: string
     userPublicKey: string
 }
 
 const linkAccounts = async ({
     address,
-    web2AccountId,
+    accountId,
     userSignature,
     userPublicKey
 }: LinkAccountsParams): Promise<TokenDocument> => {
@@ -33,7 +32,7 @@ const linkAccounts = async ({
 
     const isUserSignatureValid = checkIfUserSignatureIsValid({
         checksummedAddress,
-        web2AccountId,
+        accountId,
         userSignature
     })
 
@@ -41,43 +40,43 @@ const linkAccounts = async ({
         throw new Error(`Invalid signature`)
     }
 
-    let web2Account
+    let account
 
     try {
-        web2Account = await Web2Account.findById(web2AccountId)
+        account = await OAuthAccount.findById(accountId)
     } catch (e) {
         logger.error(e)
-        throw new Error(`Error retrieving web 2 account`)
+        throw new Error(`Error retrieving account`)
     }
 
-    if (!web2Account) {
-        throw new Error(`Web 2 account not found`)
+    if (!account) {
+        throw new Error(`Account not found`)
     }
 
-    if (web2Account.isLinkedToAddress) {
-        throw new Error(`Web 2 account already linked`)
+    if (account.isLinkedToAddress) {
+        throw new Error(`Account already linked`)
     }
 
-    if (!web2Account.basicReputation || web2Account.basicReputation !== ReputationLevel.GOLD) {
+    if (!account.reputation || account.reputation !== ReputationLevel.GOLD) {
         throw new Error(`Insufficient account's reputation`)
     }
 
-    const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, web2Account.provider)
+    const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, account.provider)
 
     if (!contractAddress) {
         throw new Error(`Invalid badge address ${contractAddress}`)
     }
 
     try {
-        web2Account.isLinkedToAddress = true
+        account.isLinkedToAddress = true
 
-        await web2Account.save()
+        await account.save()
 
         const token = new Token({
             chainId: currentNetwork.chainId,
             contractAddress,
             userAddress: checksummedAddress,
-            provider: web2Account.provider,
+            provider: account.provider,
             issuanceTimestamp: Date.now(),
             status: TokenStatus.NOT_MINTED
         })
@@ -92,8 +91,8 @@ const linkAccounts = async ({
         const attestationMessage = createBackendAttestationMessage({
             decimalId,
             address: checksummedAddress,
-            provider: web2Account.provider,
-            providerAccountId: web2Account.providerAccountId
+            provider: account.provider,
+            providerAccountId: account.providerAccountId
         })
 
         const backendSigner = await getSigner()

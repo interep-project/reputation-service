@@ -68,8 +68,8 @@ export default function OAuthGroups(): JSX.Element {
     )
 
     const step2 = useCallback(
-        async (group: Group, identityCommitment: string, web2AccountId: string) => {
-            if (await joinGroup(identityCommitment, group.provider, group.name, { web2AccountId })) {
+        async (group: Group, identityCommitment: string, accountId: string) => {
+            if (await joinGroup(identityCommitment, group.provider, group.name, { accountId })) {
                 setCurrentStep(0)
                 setDescription("")
             }
@@ -99,7 +99,7 @@ export default function OAuthGroups(): JSX.Element {
                     message={`Join the ${session.user.reputation} ${capitalize(session.provider as string)} group.`}
                     actionText="Join Group"
                     actionFunction={() =>
-                        step2(_group as Group, _identityCommitment as string, session.web2AccountId as string)
+                        step2(_group as Group, _identityCommitment as string, session.accountId as string)
                     }
                     loading={_currentStep === 2 && _loading}
                     disabled={_currentStep !== 2}

@@ -55,7 +55,7 @@ export function addIdentityCommitment({
     provider,
     groupName,
     identityCommitment,
-    web2AccountId,
+    accountId,
     userAddress,
     userSignature,
     telegramUserId
@@ -63,13 +63,13 @@ export function addIdentityCommitment({
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
-    web2AccountId?: string
+    accountId?: string
     userAddress?: string
     userSignature?: string
     telegramUserId?: string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
-        web2AccountId,
+        accountId,
         userAddress,
         userSignature,
         telegramUserId
@@ -82,12 +82,12 @@ export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation:
 
 export function linkAccounts({
     address,
-    web2AccountId,
+    accountId,
     userSignature,
     userPublicKey
 }: {
     address: string
-    web2AccountId: string
+    accountId: string
     userSignature: string
     userPublicKey: string
 }): Promise<any | null> {
@@ -95,7 +95,7 @@ export function linkAccounts({
         "/api/linking/link",
         {
             address,
-            web2AccountId,
+            accountId,
             userSignature,
             userPublicKey
         },

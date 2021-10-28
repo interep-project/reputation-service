@@ -123,7 +123,7 @@ export default function Badges(): JSX.Element {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, _address, _networkId])
 
-    async function linkAccount(signer: Signer, address: string, web2AccountId: string): Promise<void> {
+    async function linkAccount(signer: Signer, address: string, accountId: string): Promise<void> {
         setLoading(true)
 
         const publicKey = await getPublicKey()
@@ -140,7 +140,7 @@ export default function Badges(): JSX.Element {
 
         const message = createUserAttestationMessage({
             checksummedAddress: address,
-            web2AccountId
+            accountId
         })
 
         const userSignature = await sign(signer, message)
@@ -157,7 +157,7 @@ export default function Badges(): JSX.Element {
 
         const newToken = await linkAccounts({
             address,
-            web2AccountId,
+            accountId,
             userSignature,
             userPublicKey: publicKey
         })
@@ -336,9 +336,7 @@ export default function Badges(): JSX.Element {
                             title="Step 1"
                             message={`Link your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Link accounts"
-                            actionFunction={() =>
-                                linkAccount(_signer as Signer, _address as string, session.web2AccountId)
-                            }
+                            actionFunction={() => linkAccount(_signer as Signer, _address as string, session.accountId)}
                             loading={_currentStep === 1 && _loading}
                             disabled={_currentStep !== 1}
                         />

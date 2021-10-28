@@ -11,7 +11,7 @@ interface User extends Record<string, any> {
 
 declare module "next-auth" {
     interface Session extends NextAuthSession {
-        web2AccountId: string
+        accountId: string
         provider: OAuthProvider
         user: User
     }
@@ -19,7 +19,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
     interface JWT extends NextAuthJWT {
-        web2AccountId: string
+        accountId: string
         provider: OAuthProvider
         user: User
     }

@@ -18,24 +18,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(401).end()
     }
 
-    const { address, web2AccountId, userSignature, userPublicKey } = JSON.parse(req.body)
+    const { address, accountId, userSignature, userPublicKey } = JSON.parse(req.body)
 
-    logger.silly(`Linking ${address} with ${web2AccountId}. Signature: ${userSignature}`)
+    logger.silly(`Linking ${address} with ${accountId}. Signature: ${userSignature}`)
 
-    // Invalid call
-    if (!address || !web2AccountId || !userSignature || !userPublicKey) {
+    // Invalid call.
+    if (!address || !accountId || !userSignature || !userPublicKey) {
         return res.status(400).end()
     }
 
-    // Check if user is connected with the web 2 account to be linked
-    if (session.web2AccountId !== web2AccountId) {
+    // Check if user is connected with the account to be linked.
+    if (session.accountId !== accountId) {
         return res.status(403).end()
     }
 
     try {
         const token = await linkAccounts({
             address,
-            web2AccountId,
+            accountId,
             userSignature,
             userPublicKey
         })

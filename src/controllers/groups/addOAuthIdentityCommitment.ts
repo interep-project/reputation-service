@@ -2,7 +2,7 @@ import { calculateReputation, ReputationLevel, OAuthProvider } from "@interrep/r
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { addIdentityCommitment } from "src/core/groups"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { OAuthAccount } from "@interrep/data-models"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
@@ -10,7 +10,7 @@ import { getTwitterUserByToken } from "src/services/twitter"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function addWeb2IdentityCommitmentController(
+export default async function addOAuthIdentityCommitmentController(
     req: NextApiRequest,
     res: NextApiResponse,
     provider: OAuthProvider
@@ -80,28 +80,28 @@ export default async function addWeb2IdentityCommitmentController(
 
             await dbConnect()
 
-            let web2Account = await Web2Account.findByProviderAccountId(provider, accountId)
+            let account = await OAuthAccount.findByProviderAccountId(provider, accountId)
 
-            if (!web2Account) {
-                web2Account = await Web2Account.create({
+            if (!account) {
+                account = await OAuthAccount.create({
                     provider,
                     providerAccountId: accountId,
                     isLinkedToAddress: false,
-                    basicReputation: reputation,
+                    reputation,
                     uniqueKey: `${provider}:${accountId}`,
                     createdAt: Date.now()
                 })
             }
 
-            if (web2Account.hasJoinedAGroup) {
-                throw new Error(`Web 2 account already joined a ${provider} group`)
+            if (account.hasJoinedAGroup) {
+                throw new Error(`Account already joined a ${provider} group`)
             }
 
             const rootHash = await addIdentityCommitment(provider, reputation, identityCommitment)
 
-            web2Account.hasJoinedAGroup = true
+            account.hasJoinedAGroup = true
 
-            await web2Account.save()
+            await account.save()
 
             return res.status(201).send({ data: rootHash })
         } catch (error) {
@@ -111,9 +111,9 @@ export default async function addWeb2IdentityCommitmentController(
         }
     }
 
-    const { web2AccountId } = JSON.parse(req.body)
+    const { accountId } = JSON.parse(req.body)
 
-    if (!web2AccountId) {
+    if (!accountId) {
         return res.status(400).end()
     }
 
@@ -123,7 +123,7 @@ export default async function addWeb2IdentityCommitmentController(
         return res.status(401).end()
     }
 
-    if (session.web2AccountId !== web2AccountId) {
+    if (session.accountId !== accountId) {
         return res.status(403).end()
     }
 
@@ -132,29 +132,29 @@ export default async function addWeb2IdentityCommitmentController(
 
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the ${provider} group ${name}`)
 
-        const web2Account = await Web2Account.findById(web2AccountId)
+        const account = await OAuthAccount.findById(accountId)
 
-        if (!web2Account) {
-            throw new Error(`Web 2 account not found`)
+        if (!account) {
+            throw new Error(`Account not found`)
         }
 
-        if (web2Account.provider !== provider) {
-            throw new Error("Web 2 account doesn't have the right provider")
+        if (account.provider !== provider) {
+            throw new Error("Account doesn't have the right provider")
         }
 
-        if (!web2Account.basicReputation || web2Account.basicReputation !== name) {
-            throw new Error("Web 2 account doesn't have the right reputation")
+        if (!account.reputation || account.reputation !== name) {
+            throw new Error("Account doesn't have the right reputation")
         }
 
-        if (web2Account.hasJoinedAGroup) {
-            throw new Error(`Web 2 account already joined a ${provider} group`)
+        if (account.hasJoinedAGroup) {
+            throw new Error(`Account already joined a ${provider} group`)
         }
 
         const rootHash = await addIdentityCommitment(provider, name, identityCommitment)
 
-        web2Account.hasJoinedAGroup = true
+        account.hasJoinedAGroup = true
 
-        await web2Account.save()
+        await account.save()
 
         return res.status(201).send({ data: rootHash.toString() })
     } catch (error) {

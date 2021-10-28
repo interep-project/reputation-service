@@ -1,9 +1,7 @@
 export type UserAttestationMessageParams = {
     checksummedAddress: string
-    web2AccountId: string
+    accountId: string
 }
 // TODO: Improve with more explicit message to sign
-export const createUserAttestationMessage = ({
-    checksummedAddress,
-    web2AccountId
-}: UserAttestationMessageParams): string => `InterRep:${checksummedAddress}:${web2AccountId}`
+export const createUserAttestationMessage = ({ checksummedAddress, accountId }: UserAttestationMessageParams): string =>
+    `InterRep:${checksummedAddress}:${accountId}`
