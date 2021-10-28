@@ -3,9 +3,8 @@ import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress
 import logger from "src/utils/backend/logger"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
-import Token from "src/models/tokens/Token.model"
 import getContractAddress from "src/utils/common/getContractAddress"
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
+import { TokenDocument, TokenStatus, Token } from "@interrep/data-models"
 import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 import { ReputationLevel } from "@interrep/reputation-criteria"
@@ -25,7 +24,7 @@ const linkAccounts = async ({
     web2AccountId,
     userSignature,
     userPublicKey
-}: LinkAccountsParams): Promise<ITokenDocument> => {
+}: LinkAccountsParams): Promise<TokenDocument> => {
     const checksummedAddress = getChecksummedAddress(address)
 
     if (!checksummedAddress) {
@@ -78,7 +77,7 @@ const linkAccounts = async ({
             chainId: currentNetwork.chainId,
             contractAddress,
             userAddress: checksummedAddress,
-            web2Provider: web2Account.provider,
+            provider: web2Account.provider,
             issuanceTimestamp: Date.now(),
             status: TokenStatus.NOT_MINTED
         })

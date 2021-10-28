@@ -2,7 +2,7 @@ import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/check
 import mintToken from "src/core/linking/mintToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
-import Token from "src/models/tokens/Token.model"
+import { Token } from "@interrep/data-models"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { getTokensByAddressController, mintTokenController } from "."

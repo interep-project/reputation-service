@@ -1,6 +1,5 @@
 import { ethers } from "ethers"
-import Token from "src/models/tokens/Token.model"
-import { TokenStatus } from "src/models/tokens/Token.types"
+import { TokenStatus, Token } from "@interrep/data-models"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import getSigner from "src/utils/backend/getSigner"
 import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus"
@@ -39,9 +38,9 @@ const unlinkAccounts = async ({
         throw new Error("Attestation signature invalid")
     }
 
-    const { decimalId, web2Provider, providerAccountId } = JSON.parse(attestationMessage)
+    const { decimalId, provider, providerAccountId } = JSON.parse(attestationMessage)
 
-    const web2AccountFromAttestation = await Web2Account.findByProviderAccountId(web2Provider, providerAccountId)
+    const web2AccountFromAttestation = await Web2Account.findByProviderAccountId(provider, providerAccountId)
 
     const web2AccountFromAttestationObject = web2AccountFromAttestation?.toObject()
 

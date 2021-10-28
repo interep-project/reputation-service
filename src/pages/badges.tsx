@@ -11,7 +11,7 @@ import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
+import { TokenDocument, TokenStatus } from "@interrep/data-models"
 import capitalize from "src/utils/common/capitalize"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractInstance from "src/utils/common/getContractInstance"
@@ -23,7 +23,7 @@ export default function Badges(): JSX.Element {
     const toast = useToast()
     const { _signer, _address, _networkId } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_loading, setLoading] = useState<boolean>(false)
-    const [_token, setToken] = useState<ITokenDocument>()
+    const [_token, setToken] = useState<TokenDocument>()
     const [_currentStep, setCurrentStep] = useState<number>()
     const { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } = useInterRepAPI()
 
@@ -97,7 +97,7 @@ export default function Badges(): JSX.Element {
                         return
                     }
 
-                    const token = tokens[tokens.length - 1] as ITokenDocument
+                    const token = tokens[tokens.length - 1] as TokenDocument
 
                     switch (token.status) {
                         case TokenStatus.NOT_MINTED:
@@ -172,7 +172,7 @@ export default function Badges(): JSX.Element {
         setCurrentStep(2)
     }
 
-    async function mint(token: ITokenDocument): Promise<void> {
+    async function mint(token: TokenDocument): Promise<void> {
         setLoading(true)
 
         const response = await mintToken({ tokenId: token._id })
@@ -194,10 +194,10 @@ export default function Badges(): JSX.Element {
         setCurrentStep(3)
     }
 
-    async function burn(token: ITokenDocument, signer: Signer): Promise<void> {
+    async function burn(token: TokenDocument, signer: Signer): Promise<void> {
         setLoading(true)
 
-        const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
+        const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.provider)
 
         if (contractAddress === null) {
             toast({
@@ -237,7 +237,7 @@ export default function Badges(): JSX.Element {
         setCurrentStep(4)
     }
 
-    async function unlinkAccount(token: ITokenDocument): Promise<void> {
+    async function unlinkAccount(token: TokenDocument): Promise<void> {
         setLoading(true)
 
         const decryptedAttestation = await decrypt(token.encryptedAttestation)
@@ -346,7 +346,7 @@ export default function Badges(): JSX.Element {
                             title="Step 2"
                             message="Mint your ERC721 token."
                             actionText="Mint token"
-                            actionFunction={() => mint(_token as ITokenDocument)}
+                            actionFunction={() => mint(_token as TokenDocument)}
                             loading={_currentStep === 2 && _loading}
                             disabled={_currentStep !== 2}
                         />
@@ -354,7 +354,7 @@ export default function Badges(): JSX.Element {
                             title="Step 3"
                             message="Burn your ERC721 token."
                             actionText="Burn token"
-                            actionFunction={() => burn(_token as ITokenDocument, _signer as Signer)}
+                            actionFunction={() => burn(_token as TokenDocument, _signer as Signer)}
                             loading={_currentStep === 3 && _loading}
                             disabled={_currentStep !== 3}
                         />
@@ -362,7 +362,7 @@ export default function Badges(): JSX.Element {
                             title="Step 4"
                             message={`Unlink your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Unlink accounts"
-                            actionFunction={() => unlinkAccount(_token as ITokenDocument)}
+                            actionFunction={() => unlinkAccount(_token as TokenDocument)}
                             loading={_currentStep === 4 && _loading}
                             disabled={_currentStep !== 4}
                         />

@@ -1,5 +1,5 @@
 import { ContractName } from "src/config"
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
+import { TokenDocument, TokenStatus } from "@interrep/data-models"
 import { zeroAddress } from "src/utils/common/crypto/constants"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractAddress from "src/utils/common/getContractAddress"
@@ -8,7 +8,7 @@ import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 import logger from "src/utils/backend/logger"
 
-export default async function checkAndUpdateTokenStatus(tokens: ITokenDocument[]): Promise<any | null> {
+export default async function checkAndUpdateTokenStatus(tokens: TokenDocument[]): Promise<any | null> {
     if (!tokens) return null
 
     try {
@@ -21,7 +21,7 @@ export default async function checkAndUpdateTokenStatus(tokens: ITokenDocument[]
                     throw new Error(`Token with id ${token.id} has no decimalId`)
                 }
 
-                const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
+                const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.provider)
                 const contractInstance = await getBackendContractInstance(
                     ContractName.REPUTATION_BADGE,
                     contractAddress

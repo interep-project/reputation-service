@@ -1,6 +1,5 @@
 import createMockTokenObject from "src/mocks/createMockToken"
-import Token from "src/models/tokens/Token.model"
-import { TokenStatus } from "src/models/tokens/Token.types"
+import { TokenStatus, Token } from "@interrep/data-models"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractEvents from "src/utils/common/getContractEvents"
 import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"

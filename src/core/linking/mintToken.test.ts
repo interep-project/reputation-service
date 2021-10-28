@@ -1,8 +1,7 @@
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
 import createMockTokenObject from "src/mocks/createMockToken"
-import Token from "src/models/tokens/Token.model"
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
+import { TokenDocument, TokenStatus, Token } from "@interrep/data-models"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import mintToken from "./mintToken"
 
@@ -27,7 +26,7 @@ const checkAndUpdateTokenStatusMocked = checkAndUpdateTokenStatus as jest.Mocked
 >
 
 describe("mintToken", () => {
-    let mockToken: ITokenDocument
+    let mockToken: TokenDocument
 
     beforeAll(async () => {
         await connect()

@@ -2,7 +2,7 @@ import { ContractTransaction } from "@ethersproject/contracts"
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
-import Token from "src/models/tokens/Token.model"
+import { Token } from "@interrep/data-models"
 import Web2Account from "src/models/web2Accounts/Web2Account.model"
 import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
 import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
@@ -184,7 +184,7 @@ describe("linkAccounts", () => {
             expect(typeof savedToken.decimalId).toBe("string")
             expect(encryptMessageWithSalt).toHaveBeenCalledWith(
                 userPublicKey,
-                '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"web2Provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x58e10c262844d01fbc3c8fed5f067429c068c6b851e0a1a45505b8863b4852b523c00052ec0cfe024f4bc199917f9363183676441a8568015a5a93876c0019371b"}'
+                '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x9571034f3bf9a04cbaa984ee57119e50d3289fd2f815bb91c0d567312fa50e314b7d6c64b4f8d42b71fa984a625971b186a66a68eaa970416c68e288ecb978881c"}'
             )
             expect(savedToken.encryptedAttestation).toEqual("encryptedMessage")
         })
