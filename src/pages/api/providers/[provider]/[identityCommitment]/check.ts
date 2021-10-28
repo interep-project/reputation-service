@@ -1,6 +1,6 @@
 import { withSentry } from "@sentry/nextjs"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
+import { MerkleTreeNode } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"

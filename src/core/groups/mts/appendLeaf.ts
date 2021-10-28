@@ -1,8 +1,7 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
@@ -72,7 +71,7 @@ export default async function appendLeaf(
             const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
                 level,
                 currentIndex - 1
-            )) as IMerkleTreeNodeDocument
+            )) as MerkleTreeNodeDocument
 
             node.siblingHash = siblingNode.hash
             siblingNode.siblingHash = node.hash
@@ -80,7 +79,7 @@ export default async function appendLeaf(
             const parentNode = (await MerkleTreeNode.findByLevelAndIndex(
                 level + 1,
                 Math.floor(currentIndex / 2)
-            )) as IMerkleTreeNodeDocument
+            )) as MerkleTreeNodeDocument
 
             parentNode.hash = poseidonHash(siblingNode.hash, node.hash)
 

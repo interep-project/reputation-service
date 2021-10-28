@@ -1,5 +1,5 @@
 import { getReputationLevels } from "@interrep/reputation-criteria"
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
+import { MerkleTreeNode } from "@interrep/data-models"
 import { Group, Provider, Web3Provider } from "src/types/groups"
 import { getProviders } from "."
 import getGroup from "./getGroup"

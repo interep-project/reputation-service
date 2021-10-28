@@ -1,8 +1,7 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
@@ -45,7 +44,7 @@ export default async function previewNewRoot(
             const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
                 level,
                 currentIndex - 1
-            )) as IMerkleTreeNodeDocument
+            )) as MerkleTreeNodeDocument
 
             hash = poseidonHash(siblingNode.hash, hash)
         }
