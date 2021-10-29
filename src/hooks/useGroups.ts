@@ -149,14 +149,14 @@ export default function useGroups(): ReturnParameters {
         async (identityCommitment: string, provider: Provider, groupName: string, body: any): Promise<true | null> => {
             setLoading(true)
 
-            const rootHash = await addIdentityCommitment({
+            const response = await addIdentityCommitment({
                 provider,
                 groupName,
                 identityCommitment,
                 ...body
             })
 
-            if (rootHash === null) {
+            if (response === null) {
                 setLoading(false)
                 return null
             }

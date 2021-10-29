@@ -1,7 +1,6 @@
-import { calculateReputation, ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { calculateReputation, ReputationLevel, OAuthProvider, getReputationLevels } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { addIdentityCommitment } from "src/core/groups"
 import { OAuthAccount } from "@interrep/data-models"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
@@ -9,6 +8,7 @@ import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import addIdentityCommitments from "src/core/groups/addIdentityCommitments"
 
 export default async function addOAuthIdentityCommitmentController(
     req: NextApiRequest,
@@ -97,13 +97,31 @@ export default async function addOAuthIdentityCommitmentController(
                 throw new Error(`Account already joined a ${provider} group`)
             }
 
-            const rootHash = await addIdentityCommitment(provider, reputation, identityCommitment)
+            const reputationLevels = getReputationLevels()
+
+            switch (name) {
+                case ReputationLevel.GOLD:
+                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                    break
+                case ReputationLevel.SILVER:
+                    reputationLevels.shift()
+                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                    break
+                case ReputationLevel.BRONZE:
+                    reputationLevels.shift()
+                    reputationLevels.shift()
+                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                    break
+                default:
+                    await addIdentityCommitments(provider, [ReputationLevel.NOT_SUFFICIENT], identityCommitment)
+                    break
+            }
 
             account.hasJoinedAGroup = true
 
             await account.save()
 
-            return res.status(201).send({ data: rootHash })
+            return res.status(201).send({ data: true })
         } catch (error) {
             logger.error(error)
 
@@ -150,13 +168,31 @@ export default async function addOAuthIdentityCommitmentController(
             throw new Error(`Account already joined a ${provider} group`)
         }
 
-        const rootHash = await addIdentityCommitment(provider, name, identityCommitment)
+        const reputationLevels = getReputationLevels()
+
+        switch (name) {
+            case ReputationLevel.GOLD:
+                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                break
+            case ReputationLevel.SILVER:
+                reputationLevels.shift()
+                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                break
+            case ReputationLevel.BRONZE:
+                reputationLevels.shift()
+                reputationLevels.shift()
+                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
+                break
+            default:
+                await addIdentityCommitments(provider, [ReputationLevel.NOT_SUFFICIENT], identityCommitment)
+                break
+        }
 
         account.hasJoinedAGroup = true
 
         await account.save()
 
-        return res.status(201).send({ data: rootHash.toString() })
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 

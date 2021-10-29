@@ -37,9 +37,9 @@ export default async function addPoapIdentityCommitmentController(req: NextApiRe
 
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the POAP group ${name}`)
 
-        const rootHash = await addIdentityCommitment(Web3Provider.POAP, name as PoapGroupName, identityCommitment)
+        await addIdentityCommitment(Web3Provider.POAP, name as PoapGroupName, identityCommitment)
 
-        return res.status(201).send({ data: rootHash.toString() })
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 

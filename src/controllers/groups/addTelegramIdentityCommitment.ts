@@ -36,13 +36,13 @@ export default async function addTelegramIdentityCommitmentController(req: NextA
 
         logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the Telegram group ${name}`)
 
-        const rootHash = await addIdentityCommitment("telegram", name, identityCommitment)
+        await addIdentityCommitment("telegram", name, identityCommitment)
 
         telegramUser.joined = true
 
         await telegramUser.save()
 
-        return res.status(201).send({ data: rootHash.toString() })
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 
