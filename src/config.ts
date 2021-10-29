@@ -44,11 +44,11 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x0Cb09b04016Ba1CfBF37359f0112F304F2381EB6",
-            github: "0x091D7af24CA1eA4810467ff3321A5965256C1d14",
-            reddit: "0xAB1855a7d02C771465411fDD4B63f647925d6c37"
+            twitter: "0xF685380c95857Ae6f022F43ADB951BC2eE861E07",
+            github: "0xD6B4f70b441e9E2F4473F53Fe1cAe50F49C42E18",
+            reddit: "0x55d2d15631078cC555d06f14fD45bF2A7D86B4Cf"
         },
-        [ContractName.INTERREP_GROUPS]: "0xB9A55B681BF8426ceb71F54d127D3391fd28a1E4"
+        [ContractName.INTERREP_GROUPS]: "0xD2C9435C0E9e051e37456C01B2478f3e48ce735B"
     },
     [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
