@@ -57,7 +57,11 @@ describe("Merkle Trees", () => {
             await appendLeaf(provider, reputation, idCommitments[0])
             await appendLeaf(provider, reputation, idCommitments[1])
 
-            const node = (await MerkleTreeNode.findByLevelAndIndex(1, 0)) as MerkleTreeNodeDocument
+            const node = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name: reputation },
+                1,
+                0
+            )) as MerkleTreeNodeDocument
             const hash = poseidonHash(idCommitments[0], idCommitments[1])
 
             expect(hash).toBe(node.hash)

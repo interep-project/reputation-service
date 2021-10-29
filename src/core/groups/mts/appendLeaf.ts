@@ -9,14 +9,14 @@ import { PoapGroupName } from "../poap"
 export default async function appendLeaf(
     provider: Provider,
     name: ReputationLevel | PoapGroupName | string,
-    idCommitment: string
+    identityCommitment: string
 ): Promise<string> {
     if (!checkGroup(provider, name)) {
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, idCommitment)) {
-        throw new Error(`The identity commitment ${idCommitment} already exist`)
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
+        throw new Error(`The identity commitment ${identityCommitment} already exist`)
     }
 
     // Get the zero hashes.
@@ -37,14 +37,18 @@ export default async function appendLeaf(
         group: { provider, name },
         level: 0,
         index: currentIndex,
-        hash: idCommitment
+        hash: identityCommitment
     })
 
     for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
         if (currentIndex % 2 === 0) {
             node.siblingHash = zeroes[level].hash
 
-            let parentNode = await MerkleTreeNode.findByLevelAndIndex(level + 1, Math.floor(currentIndex / 2))
+            let parentNode = await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
+                level + 1,
+                Math.floor(currentIndex / 2)
+            )
 
             if (parentNode) {
                 parentNode.hash = poseidonHash(node.hash, node.siblingHash)
@@ -68,7 +72,8 @@ export default async function appendLeaf(
 
             node = parentNode
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
+            const siblingNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
                 level,
                 currentIndex - 1
             )) as MerkleTreeNodeDocument
@@ -76,7 +81,8 @@ export default async function appendLeaf(
             node.siblingHash = siblingNode.hash
             siblingNode.siblingHash = node.hash
 
-            const parentNode = (await MerkleTreeNode.findByLevelAndIndex(
+            const parentNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
                 level + 1,
                 Math.floor(currentIndex / 2)
             )) as MerkleTreeNodeDocument

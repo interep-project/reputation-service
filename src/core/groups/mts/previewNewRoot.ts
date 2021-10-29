@@ -9,14 +9,14 @@ import { PoapGroupName } from "../poap"
 export default async function previewNewRoot(
     provider: Provider,
     name: ReputationLevel | PoapGroupName | string,
-    idCommitment: string
+    identityCommitment: string
 ): Promise<string> {
     if (!checkGroup(provider, name)) {
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, idCommitment)) {
-        throw new Error(`The identity commitment ${idCommitment} already exist`)
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
+        throw new Error(`The identity commitment ${identityCommitment} already exist`)
     }
 
     // Get the zero hashes.
@@ -33,7 +33,7 @@ export default async function previewNewRoot(
         throw new Error(`The tree is full`)
     }
 
-    let hash = idCommitment
+    let hash = identityCommitment
 
     for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
         if (currentIndex % 2 === 0) {
@@ -41,7 +41,8 @@ export default async function previewNewRoot(
 
             hash = poseidonHash(hash, siblingHash)
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex(
+            const siblingNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
                 level,
                 currentIndex - 1
             )) as MerkleTreeNodeDocument

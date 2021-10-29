@@ -7,14 +7,14 @@ import { PoapGroupName } from "../poap"
 export default async function retrievePath(
     provider: Provider,
     name: ReputationLevel | PoapGroupName,
-    idCommitment: string
+    identityCommitment: string
 ): Promise<any> {
     if (!checkGroup(provider, name)) {
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
     // Get path starting from leaf node.
-    const leafNode = await MerkleTreeNode.findByGroupAndHash({ name, provider }, idCommitment)
+    const leafNode = await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)
 
     if (!leafNode) {
         throw new Error(`The identity commitment does not exist`)
@@ -27,7 +27,11 @@ export default async function retrievePath(
         {
             $match: {
                 index,
-                level
+                level,
+                group: {
+                    provider,
+                    name
+                }
             }
         },
         {

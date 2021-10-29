@@ -2191,7 +2191,15 @@
     fastfile "0.0.19"
     ffjavascript "^0.2.30"
 
-"@interrep/data-models@^0.1.2", "@interrep/data-models@~0.1.2":
+"@interrep/data-models@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@interrep/data-models/-/data-models-0.1.4.tgz#6da53fb631612b1fa1f68b0b2dd78f621f4264dc"
+  integrity sha512-7JLYaxvltQFc0QmUiiu+D49VbTq2Hp7kk4F2vUkCu4Z1ucvvsw9bdJnrzBr2v0aotEvrRzPkJcD3d/pn80M/zA==
+  dependencies:
+    "@interrep/reputation-criteria" "^0.12.0"
+    mongoose "^5.12.1"
+
+"@interrep/data-models@~0.1.2":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@interrep/data-models/-/data-models-0.1.2.tgz#8ad9e6539bd6cb76b3e9a125b7b9c0466fe1d564"
   integrity sha512-pr5rFEoJgyNzo0RYr23y5NF8ZwsqwT2Nr7yl4OQ36mMIpI0YTHTVturEaKfdFwmTnrzU0uPC7RatXgDRGmq9nA==

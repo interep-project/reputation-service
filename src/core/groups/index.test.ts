@@ -41,7 +41,7 @@ describe("Core group functions", () => {
             })
         })
 
-        it("Should return false if a group does not exist", async () => {
+        it("Should return the group with size = 10", async () => {
             await seedZeroHashes(false)
 
             for (let i = 0; i < 10; i++) {
