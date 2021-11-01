@@ -3,7 +3,7 @@ import { RequestMethod } from "node-mocks-http"
 import linkAccounts from "src/core/linking"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
-import Token from "src/models/tokens/Token.model"
+import { Token } from "@interrep/data-models"
 import handler from "src/pages/api/linking/link"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
@@ -20,7 +20,7 @@ const getSessionMocked = getSession as jest.MockedFunction<typeof getSession>
 const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
 
 const bodyParams = {
-    web2AccountId: mockSession.web2AccountId,
+    accountId: mockSession.accountId,
     address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
     userSignature: "0xSignature",
     userPublicKey: "publicKey"
@@ -80,7 +80,7 @@ describe("api/linking", () => {
         })
 
         it("should return 403 if the session account id is not the one passed", async () => {
-            const { req, res } = createNextMocks(createCall({ web2AccountId: "11111111" }))
+            const { req, res } = createNextMocks(createCall({ accountId: "11111111" }))
 
             // When
             await handler(req, res)
@@ -91,11 +91,11 @@ describe("api/linking", () => {
 
         it("should return 400 if a parameter is missing", async () => {
             const withoutAddress = createCall({ address: undefined })
-            const withoutWeb2AccountId = createCall({ web2AccountId: undefined })
+            const withoutAccountId = createCall({ accountId: undefined })
             const withoutSignature = createCall({ userSignature: undefined })
             const withoutPubKey = createCall({ userPublicKey: undefined })
 
-            const calls = [withoutAddress, withoutSignature, withoutWeb2AccountId, withoutPubKey]
+            const calls = [withoutAddress, withoutSignature, withoutAccountId, withoutPubKey]
             calls.forEach(async (call) => {
                 const { req, res } = createNextMocks(call)
 

@@ -1,6 +1,6 @@
 import { withSentry } from "@sentry/nextjs"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
-import { getAllProviders } from "src/core/groups"
+import { getProviders } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     try {
-        const providers = getAllProviders()
+        const providers = getProviders()
 
         return res.status(200).send({ data: providers })
     } catch (error) {

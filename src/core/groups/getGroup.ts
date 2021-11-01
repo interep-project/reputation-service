@@ -1,20 +1,20 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
+import { MerkleTreeNode } from "@interrep/data-models"
 import { Group, Provider } from "src/types/groups"
-import { getGroupId } from "."
 import checkGroup from "./checkGroup"
 import { PoapGroupName } from "./poap"
 
-export default async function getGroup(provider: Provider, name: ReputationLevel | PoapGroupName): Promise<Group> {
-    const groupId = getGroupId(provider, name)
-
+export default async function getGroup(
+    provider: Provider,
+    name: ReputationLevel | PoapGroupName | string
+): Promise<Group> {
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The ${provider} ${name} group does not exist`)
     }
 
     return {
         name,
         provider,
-        size: await MerkleTreeNode.getNumberOfNodes(groupId, 0)
+        size: await MerkleTreeNode.getNumberOfNodes({ name, provider }, 0)
     }
 }

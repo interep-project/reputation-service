@@ -1,25 +1,22 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
-import { checkGroup, getGroupId } from "src/core/groups"
-import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { checkGroup } from "src/core/groups"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
 
 export default async function appendLeaf(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
-    idCommitment: string
+    name: ReputationLevel | PoapGroupName | string,
+    identityCommitment: string
 ): Promise<string> {
-    const groupId = getGroupId(provider, name)
-
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
-        throw new Error(`The identity commitment ${idCommitment} already exist`)
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
+        throw new Error(`The identity commitment ${identityCommitment} already exist`)
     }
 
     // Get the zero hashes.
@@ -30,26 +27,28 @@ export default async function appendLeaf(
     }
 
     // Get next available index at level 0.
-    let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
+    let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
     if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
         throw new Error(`The tree is full`)
     }
 
     let node = await MerkleTreeNode.create({
-        key: { groupId, level: 0, index: currentIndex },
-        hash: idCommitment
+        group: { provider, name },
+        level: 0,
+        index: currentIndex,
+        hash: identityCommitment
     })
 
     for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
         if (currentIndex % 2 === 0) {
             node.siblingHash = zeroes[level].hash
 
-            let parentNode = await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: level + 1,
-                index: Math.floor(currentIndex / 2)
-            })
+            let parentNode = await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
+                level + 1,
+                Math.floor(currentIndex / 2)
+            )
 
             if (parentNode) {
                 parentNode.hash = poseidonHash(node.hash, node.siblingHash)
@@ -57,11 +56,12 @@ export default async function appendLeaf(
                 await parentNode.save()
             } else {
                 parentNode = await MerkleTreeNode.create({
-                    key: {
-                        groupId,
-                        level: level + 1,
-                        index: Math.floor(currentIndex / 2)
+                    group: {
+                        provider,
+                        name
                     },
+                    level: level + 1,
+                    index: Math.floor(currentIndex / 2),
                     hash: poseidonHash(node.hash, node.siblingHash)
                 })
             }
@@ -72,20 +72,20 @@ export default async function appendLeaf(
 
             node = parentNode
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
+            const siblingNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
                 level,
-                index: currentIndex - 1
-            })) as IMerkleTreeNodeDocument
+                currentIndex - 1
+            )) as MerkleTreeNodeDocument
 
             node.siblingHash = siblingNode.hash
             siblingNode.siblingHash = node.hash
 
-            const parentNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: level + 1,
-                index: Math.floor(currentIndex / 2)
-            })) as IMerkleTreeNodeDocument
+            const parentNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
+                level + 1,
+                Math.floor(currentIndex / 2)
+            )) as MerkleTreeNodeDocument
 
             parentNode.hash = poseidonHash(siblingNode.hash, node.hash)
 

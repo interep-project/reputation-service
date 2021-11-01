@@ -1,7 +1,7 @@
-import { TwitterParameters, Web2Provider } from "@interrep/reputation-criteria"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { TwitterParameters, OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthAccount } from "@interrep/data-models"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import createWeb2Account from "./createWeb2Account"
+import createOAuthAccount from "./createOAuthAccount"
 
 const providerAccountId = "user_id"
 const accessToken = "accessToken"
@@ -18,14 +18,14 @@ function createNexAuthAccount(override?: any) {
     }
 }
 
-describe("Core web2 account functions", () => {
+describe("Core OAuth account functions", () => {
     const user: TwitterParameters | any = {
         verifiedProfile: true,
         followers: 100,
         botometerOverallScore: 2
     }
 
-    describe("Create web2 account", () => {
+    describe("Create OAuth account", () => {
         beforeAll(async () => {
             await connect()
         })
@@ -40,28 +40,28 @@ describe("Core web2 account functions", () => {
 
         it("Should throw if the reponse has no user id", async () => {
             await expect(() =>
-                createWeb2Account(user, createNexAuthAccount({ id: "" }), Web2Provider.TWITTER)
+                createOAuthAccount(user, createNexAuthAccount({ id: "" }), OAuthProvider.TWITTER)
             ).rejects.toThrow("Invalid account response")
         })
 
         it("Should save the tokens on an existing user", async () => {
-            await createWeb2Account(
+            await createOAuthAccount(
                 user,
                 createNexAuthAccount({ accessToken: "a", refreshToken: "b" }),
-                Web2Provider.TWITTER
+                OAuthProvider.TWITTER
             )
 
-            await createWeb2Account(user, createNexAuthAccount(), Web2Provider.TWITTER)
-            const twitterAccount = await Web2Account.findByProviderAccountId(Web2Provider.TWITTER, providerAccountId)
+            await createOAuthAccount(user, createNexAuthAccount(), OAuthProvider.TWITTER)
+            const twitterAccount = await OAuthAccount.findByProviderAccountId(OAuthProvider.TWITTER, providerAccountId)
 
             expect(twitterAccount!.accessToken).toBe(accessToken)
             expect(twitterAccount!.refreshToken).toBe(refreshToken)
         })
 
         it("Should create the account if it does not already exist in the db", async () => {
-            await createWeb2Account(user, createNexAuthAccount(), Web2Provider.TWITTER)
+            await createOAuthAccount(user, createNexAuthAccount(), OAuthProvider.TWITTER)
 
-            const twitterAccount = await Web2Account.findByProviderAccountId(Web2Provider.TWITTER, providerAccountId)
+            const twitterAccount = await OAuthAccount.findByProviderAccountId(OAuthProvider.TWITTER, providerAccountId)
 
             expect(twitterAccount?.toObject()).toEqual(
                 expect.objectContaining({
@@ -70,7 +70,7 @@ describe("Core web2 account functions", () => {
                     isSeedUser: false,
                     accessToken,
                     refreshToken,
-                    uniqueKey: `${Web2Provider.TWITTER}:${providerAccountId}`
+                    uniqueKey: `${OAuthProvider.TWITTER}:${providerAccountId}`
                 })
             )
         })

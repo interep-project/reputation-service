@@ -2,7 +2,11 @@ import { getReputationLevels, ReputationLevel } from "@interrep/reputation-crite
 import { Provider, Web3Provider } from "src/types/groups"
 import { getPoapGroupNames, PoapGroupName } from "./poap"
 
-export default function checkGroup(provider: Provider, name: ReputationLevel | PoapGroupName): boolean {
+export default function checkGroup(provider: Provider, name: ReputationLevel | PoapGroupName | string): boolean {
+    if (provider === "telegram") {
+        return true
+    }
+
     if (provider === Web3Provider.POAP) {
         const poapGroupNames = getPoapGroupNames()
 

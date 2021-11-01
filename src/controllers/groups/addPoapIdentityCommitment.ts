@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment, getGroupId } from "src/core/groups"
+import { addIdentityCommitment } from "src/core/groups"
 import { getPoapGroupNamesByAddress, PoapGroupName } from "src/core/groups/poap"
 import { Web3Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
@@ -27,7 +27,6 @@ export default async function addPoapIdentityCommitmentController(req: NextApiRe
             throw new Error(`The signature is not valid`)
         }
 
-        const groupId = getGroupId(Web3Provider.POAP, name as any)
         const userPoapGroupNames = await getPoapGroupNamesByAddress(userAddress)
 
         if (!userPoapGroupNames.includes(name as PoapGroupName)) {
@@ -36,11 +35,11 @@ export default async function addPoapIdentityCommitmentController(req: NextApiRe
 
         await dbConnect()
 
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the group ${groupId}`)
+        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the POAP group ${name}`)
 
-        const rootHash = await addIdentityCommitment(Web3Provider.POAP, name as PoapGroupName, identityCommitment)
+        await addIdentityCommitment(Web3Provider.POAP, name as PoapGroupName, identityCommitment)
 
-        return res.status(201).send({ data: rootHash.toString() })
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 

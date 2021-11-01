@@ -1,10 +1,10 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
 import config from "src/config"
-import { createWeb2Account, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { createOAuthAccount, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
+import { OAuthAccount } from "@interrep/data-models"
 import { User } from "src/types/next-auth"
 import logger from "src/utils/backend/logger"
 
@@ -36,12 +36,12 @@ export default NextAuth({
     },
     callbacks: {
         async signIn(user: User, account: Account) {
-            if (!account?.provider || !(account.provider.toUpperCase() in Web2Provider)) {
+            if (!account?.provider || !(account.provider.toUpperCase() in OAuthProvider)) {
                 return false
             }
 
             try {
-                await createWeb2Account(user, account, account.provider as Web2Provider)
+                await createOAuthAccount(user, account, account.provider as OAuthProvider)
 
                 return true
             } catch (err) {
@@ -50,21 +50,21 @@ export default NextAuth({
                 return false
             }
         },
-        async jwt(token: JWT, user: User, account: Account) {
-            if (!account?.provider || !(account.provider.toUpperCase() in Web2Provider)) {
+        async jwt(token: JWT, user: User, nextAuthAccount: Account) {
+            if (!nextAuthAccount?.provider || !(nextAuthAccount.provider.toUpperCase() in OAuthProvider)) {
                 return token
             }
 
             try {
-                const web2Account = await Web2Account.findByProviderAccountId(
-                    account.provider as Web2Provider,
-                    account.id
+                const account = await OAuthAccount.findByProviderAccountId(
+                    nextAuthAccount.provider as OAuthProvider,
+                    nextAuthAccount.id
                 )
 
-                if (web2Account) {
-                    token.web2AccountId = web2Account.id
-                    token.web2Provider = account.provider as Web2Provider
-                    user.reputation = web2Account.basicReputation
+                if (account) {
+                    token.accountId = account.id
+                    token.provider = nextAuthAccount.provider as OAuthProvider
+                    user.reputation = account.reputation
                     token.user = user
                 }
 
@@ -80,9 +80,9 @@ export default NextAuth({
                 return session
             }
 
-            if (token.web2Provider) {
-                session.web2AccountId = token.web2AccountId
-                session.web2Provider = token.web2Provider
+            if (token.provider) {
+                session.accountId = token.accountId
+                session.provider = token.provider
                 session.user = token.user
             }
 

@@ -1,19 +1,17 @@
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import config from "src/config"
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { MerkleTreeNodeDocument, MerkleTreeNode } from "@interrep/data-models"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { appendLeaf, previewNewRoot, retrievePath } from "."
-import getGroupId from "../getGroupId"
 import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
     const idCommitment = poseidon([2n, 1n]).toString()
-    const provider = Web2Provider.TWITTER
+    const provider = OAuthProvider.TWITTER
     const reputation = ReputationLevel.GOLD
 
     beforeAll(async () => {
@@ -59,12 +57,11 @@ describe("Merkle Trees", () => {
             await appendLeaf(provider, reputation, idCommitments[0])
             await appendLeaf(provider, reputation, idCommitments[1])
 
-            const groupId = getGroupId(provider, reputation)
-            const node = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
-                level: 1,
-                index: 0
-            })) as IMerkleTreeNodeDocument
+            const node = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name: reputation },
+                1,
+                0
+            )) as MerkleTreeNodeDocument
             const hash = poseidonHash(idCommitments[0], idCommitments[1])
 
             expect(hash).toBe(node.hash)
@@ -82,9 +79,7 @@ describe("Merkle Trees", () => {
             const expectedNumberOfNodes = [10, 5, 3, 2, 1, 1, 1]
 
             for (let i = 0; i < expectedNumberOfNodes.length; i++) {
-                const groupId = getGroupId(provider, reputation)
-
-                const numberOfNodes = await MerkleTreeNode.getNumberOfNodes(groupId, i)
+                const numberOfNodes = await MerkleTreeNode.getNumberOfNodes({ provider, name: reputation }, i)
 
                 expect(numberOfNodes).toBe(expectedNumberOfNodes[i])
             }

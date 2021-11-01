@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { OAuthAccount } from "@interrep/data-models"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
@@ -18,13 +18,13 @@ export default async function hasJoinedAGroupController(req: NextApiRequest, res
     try {
         await dbConnect()
 
-        const web2Account = await Web2Account.findById(session.web2AccountId)
+        const account = await OAuthAccount.findById(session.accountId)
 
-        if (!web2Account) {
-            return res.status(500).send("Can't find web 2 account")
+        if (!account) {
+            return res.status(500).send("Can't find account")
         }
 
-        return res.status(200).send({ data: !!web2Account.hasJoinedAGroup })
+        return res.status(200).send({ data: !!account.hasJoinedAGroup })
     } catch (error) {
         logger.error(error)
 

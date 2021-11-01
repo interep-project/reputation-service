@@ -2,7 +2,7 @@ export default async function sendRequest(
     url: string,
     body?: any,
     method = body ? "POST" : "GET"
-): Promise<any | null> {
+): Promise<any | null | number> {
     const response = await fetch(url, {
         method,
         body: JSON.stringify(body)
@@ -13,7 +13,7 @@ export default async function sendRequest(
 
         console.error(error || `HTTP method ${method} failed`)
 
-        return null
+        return response.status
     }
 
     try {
@@ -21,6 +21,6 @@ export default async function sendRequest(
 
         return data
     } catch {
-        return undefined
+        return 500
     }
 }

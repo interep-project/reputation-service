@@ -1,8 +1,8 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { OAuthAccount } from "@interrep/data-models"
 import handler from "src/pages/api/linking/check"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
@@ -58,7 +58,7 @@ describe("api/linking/checkLink", () => {
             getSessionMocked.mockImplementation(() => Promise.resolve(mockSession))
         })
 
-        it("should return a 500 if a web 2 account can't be found from the session", async () => {
+        it("should return a 500 if a account can't be found from the session", async () => {
             const { req, res } = createNextMocks({
                 method: "GET"
             })
@@ -68,23 +68,20 @@ describe("api/linking/checkLink", () => {
 
             // Expect
             expect(res._getStatusCode()).toBe(500)
-            expect(res._getData()).toEqual("Can't find web 2 account")
+            expect(res._getData()).toEqual("Can't find account")
         })
 
         it("should return true if an account is already linked", async () => {
             const isLinkedToAddress = true
-            const web2Account = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:1`,
+            const account = await OAuthAccount.create({
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:1`,
                 createdAt: Date.now(),
                 providerAccountId: "1",
-                isLinkedToAddress,
-                basicReputation: undefined
+                isLinkedToAddress
             })
 
-            getSessionMocked.mockImplementationOnce(() =>
-                Promise.resolve({ ...mockSession, web2AccountId: web2Account.id })
-            )
+            getSessionMocked.mockImplementationOnce(() => Promise.resolve({ ...mockSession, accountId: account.id }))
 
             const { req, res } = createNextMocks({
                 method: "GET"
@@ -110,7 +107,7 @@ describe("api/linking/checkLink", () => {
 
             // Expect
             expect(res._getStatusCode()).toBe(500)
-            expect(res._getData()).toEqual("Error while verifying if web 2 account is linked")
+            expect(res._getData()).toEqual("Error while verifying if account is linked")
         })
     })
 })

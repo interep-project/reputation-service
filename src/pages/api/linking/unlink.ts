@@ -21,21 +21,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(500).end()
     }
 
-    const web2AccountIdFromSession = jwToken.web2AccountId
+    const accountIdFromSession = jwToken.accountId
 
-    if (!web2AccountIdFromSession) {
-        return res.status(403).send("No web 2 account id from session. User might not be logged in")
+    if (!accountIdFromSession) {
+        return res.status(403).send("No account id from session. User might not be logged in")
     }
 
     const { decryptedAttestation } = JSON.parse(req.body)
 
     try {
         await unlinkAccounts({
-            web2AccountIdFromSession,
+            accountIdFromSession,
             decryptedAttestation
         })
 
-        return res.status(200).end()
+        return res.status(200).send({ data: true })
     } catch (err) {
         logger.error(err)
 

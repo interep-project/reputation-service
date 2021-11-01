@@ -1,10 +1,8 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { ReputationLevel, Web2Provider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
-import Token from "src/models/tokens/Token.model"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
-import { IWeb2AccountDocument } from "src/models/web2Accounts/Web2Account.types"
+import { Token, OAuthAccountDocument, OAuthAccount } from "@interrep/data-models"
 import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
 import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
@@ -15,7 +13,7 @@ const getParams = (override?: Record<string, unknown>) => ({
     chainId: currentNetwork.chainId,
     address: addy,
     userSignature: "signature",
-    web2AccountId: "608a89a5346f2f9008feef8e",
+    accountId: "608a89a5346f2f9008feef8e",
     userPublicKey: "pubKey",
     ...override
 })
@@ -92,54 +90,54 @@ describe("linkAccounts", () => {
         })
     })
 
-    describe("web 2 account", () => {
-        let web2Account: IWeb2AccountDocument
+    describe("OAuth account", () => {
+        let account: OAuthAccountDocument
 
         beforeAll(async () => {
-            web2Account = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:1`,
+            account = await OAuthAccount.create({
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:1`,
                 createdAt: Date.now(),
                 providerAccountId: "1",
                 isLinkedToAddress: true,
-                basicReputation: ReputationLevel.NOT_SUFFICIENT
+                reputation: ReputationLevel.NOT_SUFFICIENT
             })
         })
 
-        it("should throw if it fails retrieving the web 2 account", async () => {
-            await expect(() => linkAccounts(getParams({ web2AccountId: "thisIdIsInvalid" }))).rejects.toThrow(
-                `Error retrieving web 2 account`
+        it("should throw if it fails retrieving the account", async () => {
+            await expect(() => linkAccounts(getParams({ accountId: "thisIdIsInvalid" }))).rejects.toThrow(
+                `Error retrieving account`
             )
         })
 
-        it("should throw if there is no web 2 account for that id", async () => {
-            await expect(() => linkAccounts(getParams())).rejects.toThrow(`Web 2 account not found`)
+        it("should throw if there is no account for that id", async () => {
+            await expect(() => linkAccounts(getParams())).rejects.toThrow(`Account not found`)
         })
 
         it("should throw if the account is already linked", async () => {
-            await expect(() => linkAccounts(getParams({ web2AccountId: web2Account.id }))).rejects.toThrow(
-                `Web 2 account already linked`
+            await expect(() => linkAccounts(getParams({ accountId: account.id }))).rejects.toThrow(
+                `Account already linked`
             )
         })
 
         describe("link", () => {
-            let web2AccountNotLinked: IWeb2AccountDocument
+            let accountNotLinked: OAuthAccountDocument
             beforeAll(async () => {
-                web2AccountNotLinked = await Web2Account.create({
-                    provider: Web2Provider.TWITTER,
-                    uniqueKey: `${Web2Provider.TWITTER}:2`,
+                accountNotLinked = await OAuthAccount.create({
+                    provider: OAuthProvider.TWITTER,
+                    uniqueKey: `${OAuthProvider.TWITTER}:2`,
                     createdAt: Date.now(),
                     providerAccountId: "2",
                     user: { id: "2", username: "new name" },
                     isLinkedToAddress: false,
-                    basicReputation: ReputationLevel.NOT_SUFFICIENT
+                    reputation: ReputationLevel.NOT_SUFFICIENT
                 })
             })
 
             it("should throw if the account's reputation is not GOLD", async () => {
                 await expect(
                     linkAccounts({
-                        web2AccountId: web2AccountNotLinked.id,
+                        accountId: accountNotLinked.id,
                         address: addy,
                         userSignature: "signature",
                         userPublicKey: "pubKey"
@@ -150,30 +148,30 @@ describe("linkAccounts", () => {
     })
 
     describe("Token creation", () => {
-        let web2AccountMock: IWeb2AccountDocument
+        let accountMock: OAuthAccountDocument
 
         beforeAll(async () => {
-            web2AccountMock = await Web2Account.create({
-                provider: Web2Provider.TWITTER,
-                uniqueKey: `${Web2Provider.TWITTER}:999`,
+            accountMock = await OAuthAccount.create({
+                provider: OAuthProvider.TWITTER,
+                uniqueKey: `${OAuthProvider.TWITTER}:999`,
                 createdAt: Date.now(),
                 providerAccountId: "999",
                 user: { id: "999", username: "username" },
                 isLinkedToAddress: false,
-                basicReputation: ReputationLevel.GOLD
+                reputation: ReputationLevel.GOLD
             })
         })
 
         it("should change isLinkedToAddress to true and create a new token", async () => {
             const userPublicKey = "xj93Xo97GEIhaO5mHcMNMfNnS5YReu/kexbGHIOtGXU="
             const token = await linkAccounts({
-                web2AccountId: web2AccountMock.id,
+                accountId: accountMock.id,
                 address: addy,
                 userSignature: "signature",
                 userPublicKey
             })
 
-            const account = await Web2Account.findById(web2AccountMock.id)
+            const account = await OAuthAccount.findById(accountMock.id)
 
             const savedToken = await Token.findById(token.id)
 
@@ -184,7 +182,7 @@ describe("linkAccounts", () => {
             expect(typeof savedToken.decimalId).toBe("string")
             expect(encryptMessageWithSalt).toHaveBeenCalledWith(
                 userPublicKey,
-                '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"web2Provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x58e10c262844d01fbc3c8fed5f067429c068c6b851e0a1a45505b8863b4852b523c00052ec0cfe024f4bc199917f9363183676441a8568015a5a93876c0019371b"}'
+                '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x9571034f3bf9a04cbaa984ee57119e50d3289fd2f815bb91c0d567312fa50e314b7d6c64b4f8d42b71fa984a625971b186a66a68eaa970416c68e288ecb978881c"}'
             )
             expect(savedToken.encryptedAttestation).toEqual("encryptedMessage")
         })

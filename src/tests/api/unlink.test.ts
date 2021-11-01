@@ -59,10 +59,10 @@ describe("api/linking/unlink", () => {
 
     it("should call unlinkAccounts with the right parameters", async () => {
         const decryptedAttestation = "decrypted"
-        const web2AccountIdFromSession = "web2Id"
+        const accountIdFromSession = "accountId"
         getTokenMocked.mockImplementationOnce(() =>
             // @ts-ignore: resolves to a JWT
-            Promise.resolve({ web2AccountId: web2AccountIdFromSession })
+            Promise.resolve({ accountId: accountIdFromSession })
         )
 
         const { req, res } = createNextMocks({
@@ -77,18 +77,18 @@ describe("api/linking/unlink", () => {
 
         // Expect
         expect(unlinkAccountsMocked).toHaveBeenCalledWith({
-            web2AccountIdFromSession,
+            accountIdFromSession,
             decryptedAttestation
         })
     })
 
     describe("unlink", () => {
         const decryptedAttestation = "decryptedAttestation"
-        const web2AccountIdFromSession = "web2Id"
+        const accountIdFromSession = "accountId"
         beforeAll(() => {
             getTokenMocked.mockImplementation(() =>
                 // @ts-ignore: resolves to a JWT
-                Promise.resolve({ web2AccountId: web2AccountIdFromSession })
+                Promise.resolve({ accountId: accountIdFromSession })
             )
         })
 

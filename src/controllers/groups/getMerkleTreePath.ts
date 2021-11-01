@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { getGroupId } from "src/core/groups"
 import { retrievePath } from "src/core/groups/mts"
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
+import { MerkleTreeNode } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
@@ -11,7 +10,7 @@ export default async function getMerkleTreePathController(req: NextApiRequest, r
         return res.status(405).end()
     }
 
-    const provider = req.query?.provider
+    const provider = req.query?.provider as Provider
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
 
@@ -29,9 +28,7 @@ export default async function getMerkleTreePathController(req: NextApiRequest, r
     try {
         await dbConnect()
 
-        const groupId = getGroupId(provider as Provider, name as any)
-
-        if (!(await MerkleTreeNode.findByGroupIdAndHash(groupId, identityCommitment))) {
+        if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment))) {
             return res.status(404).send("The identity commitment does not exist")
         }
 

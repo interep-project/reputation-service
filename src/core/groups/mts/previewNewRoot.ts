@@ -1,25 +1,22 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
-import { checkGroup, getGroupId } from "src/core/groups"
-import { MerkleTreeNode, MerkleTreeZero } from "src/models/merkleTree/MerkleTree.model"
-import { IMerkleTreeNodeDocument } from "src/models/merkleTree/MerkleTree.types"
+import { checkGroup } from "src/core/groups"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
 
 export default async function previewNewRoot(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
-    idCommitment: string
+    name: ReputationLevel | PoapGroupName | string,
+    identityCommitment: string
 ): Promise<string> {
-    const groupId = getGroupId(provider, name)
-
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)) {
-        throw new Error(`The identity commitment ${idCommitment} already exist`)
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
+        throw new Error(`The identity commitment ${identityCommitment} already exist`)
     }
 
     // Get the zero hashes.
@@ -30,13 +27,13 @@ export default async function previewNewRoot(
     }
 
     // Get next available index at level 0.
-    let currentIndex = await MerkleTreeNode.getNumberOfNodes(groupId, 0)
+    let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
     if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
         throw new Error(`The tree is full`)
     }
 
-    let hash = idCommitment
+    let hash = identityCommitment
 
     for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
         if (currentIndex % 2 === 0) {
@@ -44,11 +41,11 @@ export default async function previewNewRoot(
 
             hash = poseidonHash(hash, siblingHash)
         } else {
-            const siblingNode = (await MerkleTreeNode.findByLevelAndIndex({
-                groupId,
+            const siblingNode = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+                { provider, name },
                 level,
-                index: currentIndex - 1
-            })) as IMerkleTreeNodeDocument
+                currentIndex - 1
+            )) as MerkleTreeNodeDocument
 
             hash = poseidonHash(siblingNode.hash, hash)
         }

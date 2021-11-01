@@ -1,10 +1,8 @@
-import { Web2Provider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation-criteria"
 import { Wallet } from "ethers"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
-import Token from "src/models/tokens/Token.model"
-import { TokenStatus } from "src/models/tokens/Token.types"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { TokenStatus, Token, OAuthAccount } from "@interrep/data-models"
 import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
@@ -56,20 +54,20 @@ describe("unlink", () => {
         await clearDatabase()
     })
 
-    it("should return an error if the web 2 account is not found", async () => {
+    it("should return an error if the account is not found", async () => {
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: "608c4a10c994a377e232df7f",
+                accountIdFromSession: "608c4a10c994a377e232df7f",
                 decryptedAttestation: "attestation"
             })
 
-        await expect(fun()).rejects.toThrow("Unable to find web2Account")
+        await expect(fun()).rejects.toThrow("Unable to find account")
     })
 
     it("should return an error is the account is not linked", async () => {
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: false,
             providerAccountId: "twitter"
@@ -77,17 +75,17 @@ describe("unlink", () => {
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account.id,
+                accountIdFromSession: account.id,
                 decryptedAttestation: "attestation"
             })
 
-        await expect(fun()).rejects.toThrow("Web 2 account is not linked")
+        await expect(fun()).rejects.toThrow("Account is not linked")
     })
 
     it("should return an error if the attestation has no message field", async () => {
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -95,7 +93,7 @@ describe("unlink", () => {
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account.id,
+                accountIdFromSession: account.id,
                 decryptedAttestation: JSON.stringify({ salt: "0xef4", message: "" })
             })
 
@@ -103,9 +101,9 @@ describe("unlink", () => {
     })
 
     it("should return an error if the message was not signed by the backend", async () => {
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:twitter`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:twitter`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "twitter"
@@ -119,7 +117,7 @@ describe("unlink", () => {
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account.id,
+                accountIdFromSession: account.id,
                 decryptedAttestation: JSON.stringify({
                     salt: "0x4fe",
                     message: JSON.stringify({
@@ -132,30 +130,30 @@ describe("unlink", () => {
         await expect(fun()).rejects.toThrow("Attestation signature invalid")
     })
 
-    it("should return an error if the web 2 account in the attestation does not match the one provided", async () => {
-        const web2Account1 = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id1`,
+    it("should return an error if the account in the attestation does not match the one provided", async () => {
+        const account1 = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id1`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id1"
         })
 
-        const web2Account2 = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id2`,
+        const account2 = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id2`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id2"
         })
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
-            providerAccountId: web2Account1.providerAccountId
+            providerAccountId: account1.providerAccountId
         })
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account2.id,
+                accountIdFromSession: account2.id,
                 decryptedAttestation: JSON.stringify({
                     salt: "0x4fe",
                     message: JSON.stringify({
@@ -165,25 +163,25 @@ describe("unlink", () => {
                 })
             })
 
-        await expect(fun()).rejects.toThrow("Web 2 accounts don't match")
+        await expect(fun()).rejects.toThrow("Accounts don't match")
     })
 
     it("should return an error if the token in the attestation can't be found", async () => {
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
         })
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
-            providerAccountId: web2Account.providerAccountId
+            providerAccountId: account.providerAccountId
         })
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account.id,
+                accountIdFromSession: account.id,
                 decryptedAttestation: JSON.stringify({
                     salt: "0x4fe",
                     message: JSON.stringify({
@@ -207,22 +205,22 @@ describe("unlink", () => {
             await token.save()
         })
 
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
         })
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
-            providerAccountId: web2Account.providerAccountId,
+            providerAccountId: account.providerAccountId,
             decimalId: token.decimalId
         })
 
         const fun = () =>
             unlinkAccounts({
-                web2AccountIdFromSession: web2Account.id,
+                accountIdFromSession: account.id,
                 decryptedAttestation: JSON.stringify({
                     salt: "0x4fe",
                     message: JSON.stringify({
@@ -233,11 +231,11 @@ describe("unlink", () => {
             })
 
         await expect(fun()).rejects.toThrow(
-            "The on-chain token associated with the web 2 account you are connected with needs to be burned first."
+            "The on-chain token associated with the account you are connected with needs to be burned first."
         )
     })
 
-    it("should update web 2 account and mark token as REVOKED", async () => {
+    it("should update account and mark token as REVOKED", async () => {
         const token = await Token.create(createMockTokenObject())
 
         if (!token.decimalId) throw new Error("Token creation failed")
@@ -248,21 +246,21 @@ describe("unlink", () => {
             await token.save()
         })
 
-        const web2Account = await Web2Account.create({
-            provider: Web2Provider.TWITTER,
-            uniqueKey: `${Web2Provider.TWITTER}:id3`,
+        const account = await OAuthAccount.create({
+            provider: OAuthProvider.TWITTER,
+            uniqueKey: `${OAuthProvider.TWITTER}:id3`,
             createdAt: Date.now(),
             isLinkedToAddress: true,
             providerAccountId: "id3"
         })
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
-            providerAccountId: web2Account.providerAccountId,
+            providerAccountId: account.providerAccountId,
             decimalId: token.decimalId
         })
 
         await unlinkAccounts({
-            web2AccountIdFromSession: web2Account.id,
+            accountIdFromSession: account.id,
             decryptedAttestation: JSON.stringify({
                 salt: "0x4fe",
                 message: JSON.stringify({
@@ -273,9 +271,9 @@ describe("unlink", () => {
         })
 
         const savedToken = await Token.findById(token.id)
-        const savedWeb2Account = await Web2Account.findById(web2Account.id)
+        const savedAccount = await OAuthAccount.findById(account.id)
 
         expect(savedToken?.status).toEqual(TokenStatus.REVOKED)
-        expect(savedWeb2Account?.isLinkedToAddress).toEqual(false)
+        expect(savedAccount?.isLinkedToAddress).toEqual(false)
     })
 })

@@ -15,6 +15,6 @@ export const createBackendAttestationMessage = ({
         service: "InterRep",
         decimalId,
         userAddress: address,
-        web2Provider: provider,
+        provider,
         providerAccountId
     })

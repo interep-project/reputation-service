@@ -3,39 +3,43 @@ import {
     GithubParameters,
     RedditParameters,
     TwitterParameters,
-    Web2Provider
+    OAuthProvider
 } from "@interrep/reputation-criteria"
 import { Account } from "next-auth"
-import Web2Account from "src/models/web2Accounts/Web2Account.model"
+import { OAuthAccount } from "@interrep/data-models"
 import { User } from "src/types/next-auth"
 import { dbConnect } from "src/utils/backend/database"
 
-export default async function createWeb2Account(user: User, account: Account, provider: Web2Provider): Promise<void> {
+export default async function createOAuthAccount(
+    user: User,
+    nextAuthAccount: Account,
+    provider: OAuthProvider
+): Promise<void> {
     await dbConnect()
 
-    if (!account.id) {
+    if (!nextAuthAccount.id) {
         throw new Error("Invalid account response")
     }
 
     try {
-        let web2Account = await Web2Account.findByProviderAccountId(provider, account.id)
+        let account = await OAuthAccount.findByProviderAccountId(provider, nextAuthAccount.id)
 
-        if (!web2Account) {
-            web2Account = new Web2Account({
+        if (!account) {
+            account = new OAuthAccount({
                 provider,
-                providerAccountId: account.id,
+                providerAccountId: nextAuthAccount.id,
                 isLinkedToAddress: false,
-                accessToken: account.accessToken,
-                refreshToken: account.refreshToken,
-                uniqueKey: `${provider}:${account.id}`,
+                accessToken: nextAuthAccount.accessToken,
+                refreshToken: nextAuthAccount.refreshToken,
+                uniqueKey: `${provider}:${nextAuthAccount.id}`,
                 createdAt: Date.now()
             })
 
             switch (provider) {
-                case Web2Provider.TWITTER: {
+                case OAuthProvider.TWITTER: {
                     const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
 
-                    web2Account.basicReputation = calculateReputation(provider, {
+                    account.reputation = calculateReputation(provider, {
                         verifiedProfile,
                         followers,
                         botometerOverallScore
@@ -43,10 +47,10 @@ export default async function createWeb2Account(user: User, account: Account, pr
 
                     break
                 }
-                case Web2Provider.GITHUB: {
+                case OAuthProvider.GITHUB: {
                     const { proPlan, followers, receivedStars } = user as GithubParameters
 
-                    web2Account.basicReputation = calculateReputation(provider, {
+                    account.reputation = calculateReputation(provider, {
                         proPlan,
                         followers,
                         receivedStars
@@ -54,10 +58,10 @@ export default async function createWeb2Account(user: User, account: Account, pr
 
                     break
                 }
-                case Web2Provider.REDDIT: {
+                case OAuthProvider.REDDIT: {
                     const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
 
-                    web2Account.basicReputation = calculateReputation(provider, {
+                    account.reputation = calculateReputation(provider, {
                         premiumSubscription,
                         karma,
                         coins,
@@ -69,12 +73,12 @@ export default async function createWeb2Account(user: User, account: Account, pr
                 default:
             }
         } else {
-            web2Account.accessToken = account.accessToken
-            web2Account.refreshToken = account.refreshToken
+            account.accessToken = nextAuthAccount.accessToken
+            account.refreshToken = nextAuthAccount.refreshToken
         }
 
         try {
-            await web2Account.save()
+            await account.save()
         } catch (error) {
             throw new Error(`Error trying to save the account: ${error}`)
         }

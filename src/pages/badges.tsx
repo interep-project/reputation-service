@@ -3,18 +3,18 @@ import { ReputationLevel } from "@interrep/reputation-criteria"
 import { ethers, Signer } from "ethers"
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/client"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { BiCoin } from "react-icons/bi"
 import { FaInfoCircle } from "react-icons/fa"
 import Step from "src/components/Step"
 import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
-import { ITokenDocument, TokenStatus } from "src/models/tokens/Token.types"
+import useInterRepAPI from "src/hooks/useInterRepAPI"
+import type { TokenDocument } from "@interrep/data-models"
+import capitalize from "src/utils/common/capitalize"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractInstance from "src/utils/common/getContractInstance"
-import { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } from "src/utils/frontend/api"
-import capitalize from "src/utils/common/capitalize"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
 
 export default function Badges(): JSX.Element {
@@ -23,8 +23,9 @@ export default function Badges(): JSX.Element {
     const toast = useToast()
     const { _signer, _address, _networkId } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_loading, setLoading] = useState<boolean>(false)
-    const [_token, setToken] = useState<ITokenDocument>()
+    const [_token, setToken] = useState<TokenDocument>()
     const [_currentStep, setCurrentStep] = useState<number>()
+    const { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } = useInterRepAPI()
 
     async function getPublicKey(): Promise<string | null> {
         try {
@@ -73,68 +74,47 @@ export default function Badges(): JSX.Element {
         return currentNetwork.chainId === networkId && !!address
     }
 
-    const showUnexpectedError = useCallback(() => {
-        toast({
-            description: "Sorry, there was an unexpected error.",
-            variant: "subtle",
-            status: "error"
-        })
-
-        setLoading(false)
-    }, [toast])
-
     useEffect(() => {
         ;(async () => {
             if (session && walletIsConnected(_networkId, _address)) {
                 const { user } = session
-
                 if (user.reputation !== ReputationLevel.GOLD) {
                     setCurrentStep(0)
                     return
                 }
-
                 const accountLinked = await checkLink()
-
                 if (accountLinked === null) {
-                    showUnexpectedError()
                     return
                 }
-
                 if (accountLinked) {
                     const tokens = await getUserTokens({ userAddress: _address as string })
-
                     if (tokens === null || tokens.length === 0) {
-                        showUnexpectedError()
-
                         return
                     }
-
-                    const token = tokens[tokens.length - 1] as ITokenDocument
-
+                    const token = tokens[tokens.length - 1] as TokenDocument
                     switch (token.status) {
-                        case TokenStatus.NOT_MINTED:
+                        case "NOT_MINTED":
                             setCurrentStep(2)
                             break
-                        case TokenStatus.MINTED:
+                        case "MINTED":
                             setCurrentStep(3)
                             break
-                        case TokenStatus.BURNED:
+                        case "BURNED":
                             setCurrentStep(4)
                             break
                         default:
                             setCurrentStep(1)
                     }
-
                     setToken(token)
                     return
                 }
-
                 setCurrentStep(1)
             }
         })()
-    }, [session, _address, _networkId, showUnexpectedError])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session, _address, _networkId])
 
-    async function linkAccount(signer: Signer, address: string, web2AccountId: string): Promise<void> {
+    async function linkAccount(signer: Signer, address: string, accountId: string): Promise<void> {
         setLoading(true)
 
         const publicKey = await getPublicKey()
@@ -151,7 +131,7 @@ export default function Badges(): JSX.Element {
 
         const message = createUserAttestationMessage({
             checksummedAddress: address,
-            web2AccountId
+            accountId
         })
 
         const userSignature = await sign(signer, message)
@@ -168,14 +148,13 @@ export default function Badges(): JSX.Element {
 
         const newToken = await linkAccounts({
             address,
-            web2AccountId,
+            accountId,
             userSignature,
             userPublicKey: publicKey
         })
 
         if (newToken === null) {
-            showUnexpectedError()
-
+            setLoading(false)
             return
         }
 
@@ -184,22 +163,20 @@ export default function Badges(): JSX.Element {
         setCurrentStep(2)
     }
 
-    async function mint(token: ITokenDocument): Promise<void> {
+    async function mint(token: TokenDocument): Promise<void> {
         setLoading(true)
 
         const response = await mintToken({ tokenId: token._id })
 
         if (response === null) {
-            showUnexpectedError()
-
+            setLoading(false)
             return
         }
 
         const tokens = await getUserTokens({ userAddress: token.userAddress })
 
         if (tokens === null) {
-            showUnexpectedError()
-
+            setLoading(false)
             return
         }
 
@@ -208,10 +185,10 @@ export default function Badges(): JSX.Element {
         setCurrentStep(3)
     }
 
-    async function burn(token: ITokenDocument, signer: Signer): Promise<void> {
+    async function burn(token: TokenDocument, signer: Signer): Promise<void> {
         setLoading(true)
 
-        const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.web2Provider)
+        const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, token.provider)
 
         if (contractAddress === null) {
             toast({
@@ -230,15 +207,19 @@ export default function Badges(): JSX.Element {
             await tx.wait()
         } catch (error) {
             console.error(error)
-            showUnexpectedError()
+            toast({
+                description: "Transaction failed, check your wallet.",
+                variant: "subtle",
+                status: "error"
+            })
+            setLoading(false)
             return
         }
 
         const tokens = await getUserTokens({ userAddress: token.userAddress })
 
         if (tokens === null) {
-            showUnexpectedError()
-
+            setLoading(false)
             return
         }
 
@@ -247,7 +228,7 @@ export default function Badges(): JSX.Element {
         setCurrentStep(4)
     }
 
-    async function unlinkAccount(token: ITokenDocument): Promise<void> {
+    async function unlinkAccount(token: TokenDocument): Promise<void> {
         setLoading(true)
 
         const decryptedAttestation = await decrypt(token.encryptedAttestation)
@@ -265,8 +246,7 @@ export default function Badges(): JSX.Element {
         const response = await unlinkAccounts({ decryptedAttestation })
 
         if (response === null) {
-            showUnexpectedError()
-
+            setLoading(false)
             return
         }
 
@@ -306,37 +286,34 @@ export default function Badges(): JSX.Element {
             ) : (
                 <>
                     <HStack mt="10px">
-                        {_token &&
-                            _token.status === TokenStatus.MINTED &&
-                            _token.mintTransactions &&
-                            _token.mintTransactions[0] && (
-                                <Link
-                                    href={getExplorerLink(
-                                        _token.mintTransactions[0].response.hash,
-                                        ExplorerDataType.TRANSACTION
-                                    )}
-                                    isExternal
-                                    px="10px"
-                                >
-                                    <Icon
-                                        boxSize="70px"
-                                        color={colorMode === "light" ? "gold.600" : "gold.500"}
-                                        as={BiCoin}
-                                    />
-                                </Link>
-                            )}
+                        {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] && (
+                            <Link
+                                href={getExplorerLink(
+                                    _token.mintTransactions[0].response.hash,
+                                    ExplorerDataType.TRANSACTION
+                                )}
+                                isExternal
+                                px="10px"
+                            >
+                                <Icon
+                                    boxSize="70px"
+                                    color={colorMode === "light" ? "gold.600" : "gold.500"}
+                                    as={BiCoin}
+                                />
+                            </Link>
+                        )}
                         <Text fontWeight="semibold">
                             {session.user.reputation !== ReputationLevel.GOLD
                                 ? `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}.`
-                                : _token?.status === TokenStatus.NOT_MINTED
+                                : _token?.status === "NOT_MINTED"
                                 ? `Your Ethereum/${capitalize(
-                                      session.web2Provider
+                                      session.provider
                                   )} accounts are linked. Mint a token to create your reputation badge.`
-                                : _token?.status === TokenStatus.MINTED
+                                : _token?.status === "MINTED"
                                 ? `You have a ${capitalize(
-                                      session.web2Provider
+                                      session.provider
                                   )} reputation bedge. Follow the steps below if you want to burn the token or unlink your accounts.`
-                                : _token?.status === TokenStatus.BURNED
+                                : _token?.status === "BURNED"
                                 ? `You burnt your token. Unlink your accounts and create another badge.`
                                 : "Follow the steps below to create your reputation badge."}
                         </Text>
@@ -345,11 +322,9 @@ export default function Badges(): JSX.Element {
                     <VStack mt="30px" spacing={4} align="left">
                         <Step
                             title="Step 1"
-                            message={`Link your Ethereum/${capitalize(session.web2Provider)} accounts.`}
+                            message={`Link your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Link accounts"
-                            actionFunction={() =>
-                                linkAccount(_signer as Signer, _address as string, session.web2AccountId)
-                            }
+                            actionFunction={() => linkAccount(_signer as Signer, _address as string, session.accountId)}
                             loading={_currentStep === 1 && _loading}
                             disabled={_currentStep !== 1}
                         />
@@ -357,7 +332,7 @@ export default function Badges(): JSX.Element {
                             title="Step 2"
                             message="Mint your ERC721 token."
                             actionText="Mint token"
-                            actionFunction={() => mint(_token as ITokenDocument)}
+                            actionFunction={() => mint(_token as TokenDocument)}
                             loading={_currentStep === 2 && _loading}
                             disabled={_currentStep !== 2}
                         />
@@ -365,15 +340,15 @@ export default function Badges(): JSX.Element {
                             title="Step 3"
                             message="Burn your ERC721 token."
                             actionText="Burn token"
-                            actionFunction={() => burn(_token as ITokenDocument, _signer as Signer)}
+                            actionFunction={() => burn(_token as TokenDocument, _signer as Signer)}
                             loading={_currentStep === 3 && _loading}
                             disabled={_currentStep !== 3}
                         />
                         <Step
                             title="Step 4"
-                            message={`Unlink your Ethereum/${capitalize(session.web2Provider)} accounts.`}
+                            message={`Unlink your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Unlink accounts"
-                            actionFunction={() => unlinkAccount(_token as ITokenDocument)}
+                            actionFunction={() => unlinkAccount(_token as TokenDocument)}
                             loading={_currentStep === 4 && _loading}
                             disabled={_currentStep !== 4}
                         />

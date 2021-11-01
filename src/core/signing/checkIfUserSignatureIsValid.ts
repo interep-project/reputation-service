@@ -4,18 +4,18 @@ import { createUserAttestationMessage } from "./createUserAttestationMessage"
 
 type CheckIfUserSignatureIsValidParams = {
     checksummedAddress: string
-    web2AccountId: string
+    accountId: string
     userSignature: string
 }
 
 export default function checkIfUserSignatureIsValid({
     checksummedAddress,
-    web2AccountId,
+    accountId,
     userSignature
 }: CheckIfUserSignatureIsValidParams): boolean {
     const recreatedMessageSignedByUser = createUserAttestationMessage({
         checksummedAddress,
-        web2AccountId
+        accountId
     })
 
     const signerAddress = ethers.utils.verifyMessage(recreatedMessageSignedByUser, userSignature)

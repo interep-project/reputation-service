@@ -1,34 +1,37 @@
-import { MerkleTreeNode } from "src/models/merkleTree/MerkleTree.model"
-import { checkGroup, getGroupId } from "src/core/groups"
-import { Provider } from "src/types/groups"
 import { ReputationLevel } from "@interrep/reputation-criteria"
+import { checkGroup } from "src/core/groups"
+import { MerkleTreeNode } from "@interrep/data-models"
+import { Provider } from "src/types/groups"
 import { PoapGroupName } from "../poap"
 
 export default async function retrievePath(
     provider: Provider,
     name: ReputationLevel | PoapGroupName,
-    idCommitment: string
+    identityCommitment: string
 ): Promise<any> {
-    const groupId = getGroupId(provider, name)
-
     if (!checkGroup(provider, name)) {
-        throw new Error(`The group ${groupId} does not exist`)
+        throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
     // Get path starting from leaf node.
-    const leafNode = await MerkleTreeNode.findByGroupIdAndHash(groupId, idCommitment)
+    const leafNode = await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)
 
     if (!leafNode) {
         throw new Error(`The identity commitment does not exist`)
     }
 
-    const { key } = leafNode
+    const { index, level } = leafNode
 
     // Get path and return array.
     const pathQuery = MerkleTreeNode.aggregate([
         {
             $match: {
-                key
+                index,
+                level,
+                group: {
+                    provider,
+                    name
+                }
             }
         },
         {
@@ -56,7 +59,7 @@ export default async function retrievePath(
             $addFields: {
                 hash: "$path.hash",
                 sibling: "$path.siblingHash",
-                index: { $mod: ["$path.key.index", 2] },
+                index: { $mod: ["$path.index", 2] },
                 level: "$path.level"
             }
         },
