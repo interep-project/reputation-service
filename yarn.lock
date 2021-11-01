@@ -2219,10 +2219,10 @@
   dependencies:
     "@libsem/identity" "^1.0.17"
 
-"@interrep/telegram-bot@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.2.1.tgz#ba2ead15d814a89425cf8852c3d15812b5261b49"
-  integrity sha512-cw4psoB+zujS3pjFQDWuPv4SNlDibfvgAeKWe2L6ayINTUNLasmkyoNHBvaOcZFeWdYaxsi3iSmiXU3p3nifTw==
+"@interrep/telegram-bot@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.2.2.tgz#a99c842179d613ed33bbaf60db90c096353be049"
+  integrity sha512-1DFWp3JmxTNPmQ5JzOqqCm6GMzUUz5RQcl2z4hPVkBm4A/6hK67CzT8vFgHgU+rXqJGZ2OKy2FGpO4IeqVta0w==
   dependencies:
     "@interrep/data-models" "~0.1.2"
     grammy "^1.3.4"
