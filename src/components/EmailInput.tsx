@@ -1,7 +1,6 @@
 import EmailAddressBox from "src/components/EmailAddressBox"
 import React, { useState } from "react"
 import { Button, VStack} from "@chakra-ui/react"
-
 import { FaEnvelope } from "react-icons/fa"
 
 
