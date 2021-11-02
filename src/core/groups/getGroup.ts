@@ -1,5 +1,5 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
-import { MerkleTreeNode } from "@interrep/data-models"
+import { MerkleTreeNode } from "@interrep/db"
 import { Group, Provider } from "src/types/groups"
 import checkGroup from "./checkGroup"
 import { PoapGroupName } from "./poap"

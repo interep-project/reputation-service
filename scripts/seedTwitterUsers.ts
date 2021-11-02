@@ -31,7 +31,7 @@ async function main() {
 
     await seedTwitterUsers(twitterUsernames, true)
 
-    dbDisconnect()
+    await dbDisconnect()
 }
 
 main()

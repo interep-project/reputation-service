@@ -1,7 +1,7 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/db"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
@@ -20,7 +20,7 @@ export default async function previewNewRoot(
     }
 
     // Get the zero hashes.
-    const zeroes = await MerkleTreeZero.findZeroes()
+    const zeroes = await MerkleTreeZero.find()
 
     if (!zeroes || zeroes.length === 0) {
         throw new Error(`The zero hashes have not yet been created`)

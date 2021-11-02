@@ -1,6 +1,6 @@
 import { TwitterParameters, OAuthProvider } from "@interrep/reputation-criteria"
-import { OAuthAccount } from "@interrep/data-models"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { OAuthAccount } from "@interrep/db"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import createOAuthAccount from "./createOAuthAccount"
 
 const providerAccountId = "user_id"
@@ -27,7 +27,7 @@ describe("Core OAuth account functions", () => {
 
     describe("Create OAuth account", () => {
         beforeAll(async () => {
-            await connect()
+            await connectDatabase()
         })
 
         afterAll(async () => {

@@ -1,9 +1,9 @@
 import createMockTokenObject from "src/mocks/createMockToken"
-import { TokenStatus, Token } from "@interrep/data-models"
+import { TokenStatus, Token } from "@interrep/db"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractEvents from "src/utils/common/getContractEvents"
 import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkAndUpdateTokenStatus from "./checkAndUpdateTokenStatus"
 
 jest.mock("src/utils/backend/getBackendContractInstance", () => ({
@@ -25,7 +25,7 @@ jest.mock("src/utils/backend/isTransactionConfirmed", () => ({
 
 describe("checkAndUpdateTokenStatus", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

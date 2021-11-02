@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { retrievePath } from "src/core/groups/mts"
-import { MerkleTreeNode } from "@interrep/data-models"
+import { MerkleTreeNode } from "@interrep/db"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"

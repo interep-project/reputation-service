@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { Token } from "@interrep/data-models"
+import { Token } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 

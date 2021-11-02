@@ -1,5 +1,5 @@
 import { ContractName } from "src/config"
-import { TokenDocument, TokenStatus } from "@interrep/data-models"
+import { TokenDocument, TokenStatus } from "@interrep/db"
 import { zeroAddress } from "src/utils/common/crypto/constants"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractAddress from "src/utils/common/getContractAddress"

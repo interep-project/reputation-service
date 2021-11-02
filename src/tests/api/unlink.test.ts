@@ -1,7 +1,7 @@
 import createNextMocks from "src/mocks/createNextMocks"
 import jwt from "next-auth/jwt"
 import handler from "src/pages/api/linking/unlink"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import unlinkAccounts from "src/core/linking/unlink"
 import logger from "src/utils/backend/logger"
 
@@ -16,7 +16,7 @@ const unlinkAccountsMocked = unlinkAccounts as jest.MockedFunction<typeof unlink
 
 describe("api/linking/unlink", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

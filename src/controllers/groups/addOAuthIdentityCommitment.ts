@@ -1,7 +1,7 @@
 import { calculateReputation, ReputationLevel, OAuthProvider, getReputationLevels } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { OAuthAccount } from "@interrep/data-models"
+import { OAuthAccount } from "@interrep/db"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"

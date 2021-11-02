@@ -2,9 +2,9 @@ import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/check
 import mintToken from "src/core/linking/mintToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
-import { Token } from "@interrep/data-models"
+import { Token } from "@interrep/db"
 import logger from "src/utils/backend/logger"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { getTokensByAddressController, mintTokenController } from "."
 
 jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
@@ -26,7 +26,7 @@ jest.mock("src/core/linking/mintToken", () => ({
 
 describe("TokenController", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

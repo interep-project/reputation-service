@@ -3,10 +3,10 @@ import { RequestMethod } from "node-mocks-http"
 import linkAccounts from "src/core/linking"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
-import { Token } from "@interrep/data-models"
+import { Token } from "@interrep/db"
 import handler from "src/pages/api/linking/link"
 import logger from "src/utils/backend/logger"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
 jest.mock("src/core/linking", () => jest.fn())
 jest.mock("next-auth/client", () => ({
@@ -35,7 +35,7 @@ const createCall = (bodyOverride?: { [key: string]: unknown }) => ({
 
 describe("api/linking", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

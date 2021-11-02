@@ -4,7 +4,7 @@ import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
 import config from "src/config"
 import { createOAuthAccount, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
-import { OAuthAccount } from "@interrep/data-models"
+import { OAuthAccount } from "@interrep/db"
 import { User } from "src/types/next-auth"
 import logger from "src/utils/backend/logger"
 

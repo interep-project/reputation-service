@@ -1,37 +1,19 @@
-import mongoose from "mongoose"
+import { clear, connect, disconnect, drop } from "@interrep/db"
 import { MongoMemoryServer } from "mongodb-memory-server"
 
-let mongod: MongoMemoryServer
+let mms: MongoMemoryServer
 
-export const connect = async () => {
-    mongod = await MongoMemoryServer.create()
-
-    await mongoose.connect(mongod.getUri(), {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-        useCreateIndex: true,
-        autoIndex: true
-    })
+export async function connectDatabase() {
+    mms = await MongoMemoryServer.create()
+    await connect(mms.getUri())
 }
 
-export const dropDatabaseAndDisconnect = async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.connection.close()
-    await mongod.stop()
+export async function dropDatabaseAndDisconnect() {
+    await drop()
+    await disconnect()
+    await mms.stop()
 }
 
-export const clearDatabase = async () => {
-    const { collections } = mongoose.connection
-    const promises: Promise<any>[] = []
-
-    for (const key in collections) {
-        if (Object.prototype.hasOwnProperty.call(collections, key)) {
-            const collection = collections[key]
-
-            promises.push(collection.deleteMany({}))
-        }
-    }
-
-    await Promise.all(promises)
+export async function clearDatabase() {
+    await clear()
 }

@@ -2,8 +2,8 @@ import { OAuthProvider } from "@interrep/reputation-criteria"
 import { Wallet } from "ethers"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
-import { TokenStatus, Token, OAuthAccount } from "@interrep/data-models"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { TokenStatus, Token, OAuthAccount } from "@interrep/db"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
 import unlinkAccounts from "./unlink"
 
@@ -43,7 +43,7 @@ const createMockBackendAttestation = async ({
 
 describe("unlink", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

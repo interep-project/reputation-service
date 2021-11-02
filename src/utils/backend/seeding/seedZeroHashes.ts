@@ -1,6 +1,6 @@
 import config from "src/config"
 import colors from "colors"
-import { MerkleTreeZero } from "@interrep/data-models"
+import { MerkleTreeZero } from "@interrep/db"
 import poseidonHash from "src/utils/common/crypto/hasher"
 
 export default async function seedZeroHashes(logger = false): Promise<void> {
@@ -11,7 +11,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
     let level = 0
     let zeroHash = "0"
 
-    const zeroHashes = await MerkleTreeZero.findZeroes()
+    const zeroHashes = await MerkleTreeZero.find()
 
     if (zeroHashes && zeroHashes.length > 0) {
         log(colors.white(`There are already ${zeroHashes.length} zero hashes!\n`))

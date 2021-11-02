@@ -2,9 +2,9 @@ import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import config from "src/config"
-import { MerkleTreeNodeDocument, MerkleTreeNode } from "@interrep/data-models"
+import { MerkleTreeNodeDocument, MerkleTreeNode } from "@interrep/db"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { appendLeaf, previewNewRoot, retrievePath } from "."
 import { PoapGroupName } from "../poap"
@@ -15,7 +15,7 @@ describe("Merkle Trees", () => {
     const reputation = ReputationLevel.GOLD
 
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

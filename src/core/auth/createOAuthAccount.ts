@@ -6,7 +6,7 @@ import {
     OAuthProvider
 } from "@interrep/reputation-criteria"
 import { Account } from "next-auth"
-import { OAuthAccount } from "@interrep/data-models"
+import { OAuthAccount } from "@interrep/db"
 import { User } from "src/types/next-auth"
 import { dbConnect } from "src/utils/backend/database"
 
