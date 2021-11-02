@@ -2212,10 +2212,10 @@
   resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.12.0.tgz#c7cdb07430ee97a64be73b5764341d7a0ea871ad"
   integrity sha512-pMhduXG2qJ23DffSpEE/ZzJCU043508tWrI/5+kUZg8Y+XzREPk5PDV+nHiXsklAuslH1kGS+JXVKb+0S44P6Q==
 
-"@interrep/semethid@^0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.9.1.tgz#df3018b247ad10da200c47e3a559eef92f6f7a32"
-  integrity sha512-lDiAFZPPARN8Hy2/JEbbgPPmGeZ9ylIehD3HF852+1WqWhOYD0z3JqIABT4DEb1MD/dnxxG8QC4DB7oVDJk55g==
+"@interrep/semethid@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.10.0.tgz#f168f76da04a81d118f011d4fd9471576619a133"
+  integrity sha512-cKHhbsMHQLIpLrDBgj6R9m63q1DIk5D5zCAWCNKy74lD5G3YlFhLScx1TNPgIBN/sAA8JqX7hFROs5s+ESl/KA==
   dependencies:
     "@libsem/identity" "^1.0.17"
 

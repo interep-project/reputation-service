@@ -33,7 +33,7 @@
         "@fontsource/raleway": "^4.5.0",
         "@interrep/data-models": "^0.1.4",
         "@interrep/reputation-criteria": "^0.12.0",
-        "@interrep/semethid": "^0.9.1",
+        "@interrep/semethid": "^0.10.0",
         "@interrep/telegram-bot": "^0.2.2",
         "@sentry/nextjs": "^6.12.0",
         "bnc-onboard": "^1.34.1",
