@@ -1,6 +1,7 @@
 import {verifyUser } from  '../../../utils/email/mongo_verify_user';
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
+import verifyEmailAccount from "src/core/email/verifyEmailAccount"
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
@@ -16,20 +17,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 		console.log("Domain is matched. Information is from Authentic email");
 		console.log(req.query.id)
 
-		verifyUser(email,rand).then((result) => {
-			if(result == "VERIFIED_USER") {
-				console.log("email is verified");
-				res.end("Email "+email+" has been Successfully verified");
-			}else if(result == "USER_ALREADY_VERIFIED") {
-				console.log("email already verified");
-				res.end("Email "+email+" is already verified");
-			}else{
-                res.end("Email "+email+" not in system");
-            }
-		}).catch((err) => {
-			console.log(err)
-		})
+		try {
+			console.log("trying to make account")
+			await verifyEmailAccount(email, rand).then((message) => {
+				console.log("createEmailAccount message", message)
+				res.end(message)
+			})
 	
+		} catch (err) {
+			console.log(err)
+		}
+		
 	} else {
 		res.end("Request is from unknown source");
 	}
