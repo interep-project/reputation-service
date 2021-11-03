@@ -1,7 +1,4 @@
 import EmailUser from "../../models/emailUser/EmailUser.model"
-// import EmailUserSchema from "../../models/emailUser/EmailUser.schema"
-// import { findByHashId } from "../../models/emailUser/EmailUser.statics"
-// import {EmailUserData, EmailUserDocument, EmailUserModel} from "../../models/emailUser/EmailUser.types"
 import sendEmail from "./sendEmail"
 
 import { dbConnect } from "src/utils/backend/database"
@@ -51,9 +48,14 @@ export default async function createEmailAccount(
                     })
 
                     return message
+
                 } catch (error) {
                     throw new Error(`Error trying to save the account: ${error}`)
                 }
+            } else {
+                //account is already verified
+                message = "address already verified"
+                return message
             }
         } catch (error) {
             throw new Error(`Error trying to save the account: ${error}`)
