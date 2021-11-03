@@ -1,6 +1,4 @@
 import config from "src/config"
-// import sendEmail from "src/pages/api/email/sendEmail";
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 
 var nodemailer = require("nodemailer");
 
