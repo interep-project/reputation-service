@@ -45,14 +45,13 @@ export default async function createEmailAccount(
                 console.log("account not verified yet")
                 try {
                     console.log("trying to send email")
-                    await sendEmail(hashId, String(randEmailToken)).then((message) => {
-                        console.log("sendEmail message", message)
-                        message = "good"
-                        console.log("sendEmail message", message)
-                        return message
+                    var message = await sendEmail(hashId, String(randEmailToken)).then((result) => {
+                        console.log("sendEmail message internal", result)
+                        return result
                     })
+
+                    return message
                 } catch (error) {
-                    console.log("error sending email", error)
                     throw new Error(`Error trying to save the account: ${error}`)
                 }
             }
@@ -60,8 +59,6 @@ export default async function createEmailAccount(
             throw new Error(`Error trying to save the account: ${error}`)
         }
     } catch (error) {
-        console.log("error!!!!!!")
-        console.log(error)
         throw new Error(`Error trying to retrieve the account: ${error}`)
     }
 }
