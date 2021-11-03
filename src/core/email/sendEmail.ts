@@ -25,20 +25,22 @@ export default async function sendEmail(emailAddress:String, randToken:String): 
         subject : "Interrep email confirmation",
         html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click here to verify</a>"	
     }
-    var message;
 
     console.log("in send email file")      
-    await smtpTransport.sendMail(mailOptions, function(error:any, response:string){
-        if(error){
-            message = "Error sending email to " + emailAddress
-            console.log("error sending email", error)      
-            return message
-        }else{
-            message = "Verification email sent, please check your inbox (might be in spam)"   
-            console.log("successfully sent email", response)         
-            return message
-            
-        } // end else
-    }) // end smtpTransport
+
+    try {
+        const response = await smtpTransport.sendMail(mailOptions)
+        const message = "Verification email sent, please check your inbox (might be in spam)"   
+        console.log("successfully sent email", response)
+
+        return message
+      } catch(error) {
+        const message = "Error sending email to " + emailAddress
+        console.log("error sending email", error)
+        
+        return message
+      }
+      
+
 }
 
