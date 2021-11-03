@@ -8,7 +8,7 @@ import { dbConnect } from "src/utils/backend/database"
 export default async function verifyEmailAccount(
     hashId: string,
     randToken: string,
-    provider: String,
+    // provider: String,
 ): Promise<string | void> {
     await dbConnect()
     
