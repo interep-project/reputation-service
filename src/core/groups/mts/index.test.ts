@@ -130,7 +130,7 @@ describe("Merkle Trees", () => {
             await expect(fun).rejects.toThrow()
         })
 
-        it(`Should return a path of ${config.MERKLE_TREE_LEVELS} hashes`, async () => {
+        it(`Should return a path of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
             await seedZeroHashes(false)
 
             const idCommitments = []
@@ -143,16 +143,14 @@ describe("Merkle Trees", () => {
 
             const path = await retrievePath(provider, reputation, idCommitments[5])
 
-            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_LEVELS)
-            expect(path.indices).toHaveLength(config.MERKLE_TREE_LEVELS)
+            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(path.indices).toHaveLength(config.MERKLE_TREE_DEPTH)
         })
 
         it("Should match the path obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new IncrementalQuinTree(config.MERKLE_TREE_LEVELS, 0, 2, (inputs: BigInt[]) =>
-                poseidon(inputs)
-            )
+            const tree = new IncrementalQuinTree(config.MERKLE_TREE_DEPTH, 0, 2, (inputs: BigInt[]) => poseidon(inputs))
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {

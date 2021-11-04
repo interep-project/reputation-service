@@ -2,7 +2,7 @@ import getNextConfig from "next/config"
 import { NetworkData } from "./types/network"
 
 const defaultEnv = {
-    MERKLE_TREE_LEVELS: 16,
+    MERKLE_TREE_DEPTH: 16, // 2^16 = 65536
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
@@ -126,6 +126,6 @@ export default {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
-    MERKLE_TREE_LEVELS: Number(process.env.MERKLE_TREE_LEVELS) || defaultEnv.MERKLE_TREE_LEVELS,
+    MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
     API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
 }

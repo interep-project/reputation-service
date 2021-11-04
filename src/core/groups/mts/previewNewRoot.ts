@@ -29,13 +29,13 @@ export default async function previewNewRoot(
     // Get next available index at level 0.
     let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
-    if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
+    if (currentIndex >= 2 ** config.MERKLE_TREE_DEPTH) {
         throw new Error(`The tree is full`)
     }
 
     let hash = identityCommitment
 
-    for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
+    for (let level = 0; level < config.MERKLE_TREE_DEPTH; level++) {
         if (currentIndex % 2 === 0) {
             const siblingHash = zeroes[level].hash
 
