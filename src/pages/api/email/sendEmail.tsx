@@ -30,7 +30,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(200).send({ data: false })
     } catch (error) {
         logger.error(error)
-
         return res.status(500).end()
     }
 }
