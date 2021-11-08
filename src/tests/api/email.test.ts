@@ -6,19 +6,20 @@ import verifyHandler from "src/pages/api/email/verifyEmail"
 import createNextMocks from "src/mocks/createNextMocks"
 // import fetchMock from "jest-fetch-mock";
 
-import config from "src/config"
+//import config from "src/config"
 
-import linkAccounts from "src/core/email/sendEmail"
+//import linkAccounts from "src/core/email/sendEmail"
 
-const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
+//const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
 
+/*
 const bodyParams = {
     accountId: "6087dabb0b3af8703a581bef",
     address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
     userSignature: "0xSignature",
     userPublicKey: "publicKey"
 }
-
+*/
 
 describe("Email verification APIs", () => {
     beforeAll(async () => {
@@ -44,7 +45,7 @@ describe("Email verification APIs", () => {
             })
     
             await handler(req, res)
-            expect(res._getStatusCode()).toBe(405)
+            expect(res._getStatusCode()).toBe(402)
         })
 
         // // reject email address not from @hotmail
