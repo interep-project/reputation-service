@@ -4,21 +4,23 @@ import handler from "src/pages/api/email/sendEmail"
 import verifyHandler from "src/pages/api/email/verifyEmail"
 
 import createNextMocks from "src/mocks/createNextMocks"
+import { RequestMethod } from "node-mocks-http"
 // import fetchMock from "jest-fetch-mock";
 
-import config from "src/config"
+//import config from "src/config"
 
-import linkAccounts from "src/core/email/sendEmail"
+//import linkAccounts from "src/core/email/sendEmail"
 
-const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
+//const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
 
+/*
 const bodyParams = {
     accountId: "6087dabb0b3af8703a581bef",
     address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
     userSignature: "0xSignature",
     userPublicKey: "publicKey"
 }
-
+*/
 
 describe("Email verification APIs", () => {
     beforeAll(async () => {
@@ -38,30 +40,30 @@ describe("Email verification APIs", () => {
         // return error if no email address given
         it("Should return error 405 if the no address", async () => {
             const { req, res } = createNextMocks({
-                method: "POST",
+                method: "POST" as RequestMethod,
                 headers: { 'Content-Type': 'application/json' },
                 body: { address: "" }
             })
     
             await handler(req, res)
-            expect(res._getStatusCode()).toBe(405)
+            expect(res._getStatusCode()).toBe(402)
         })
 
         // // reject email address not from @hotmail
         it("Should return error 405 if wrong type of email entered", async () => {
             const { req, res } = createNextMocks({
-                method: "POST",
+                body: { address: "test@outlook.com" },
+                method: "POST" as RequestMethod,
                 headers: { 'Content-Type': 'application/json' },
-                body: { address: "test@outlook.com" }
             })
     
             await handler(req, res)
-            expect(res._getStatusCode()).toBe(405)
+            expect(res._getStatusCode()).toBe(402)
         })
 
         it("Should return 200 if correct type of email entered (@hotmail) ", async () => {
             const { req, res } = createNextMocks({
-                method: "POST",
+                method: "POST" as RequestMethod,
                 headers: { 'Content-Type': 'application/json' },
                 body: { address: "test@hotmail.com" }
             })
@@ -73,7 +75,7 @@ describe("Email verification APIs", () => {
         it("Should return 200 if correct type of email entered (@hotmail) ", async () => {
             const { req, res } = createNextMocks({
                 query: {id: "="+"1234"+"?email="+"test@hotmail.co.uk"},
-                method: "PUT",
+                method: "PUT" as RequestMethod,
             })
 
             const account = new EmailUser({

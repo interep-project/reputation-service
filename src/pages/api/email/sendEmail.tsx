@@ -4,11 +4,13 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
 import createEmailAccount from "src/core/email/createEmailAccount"
+import logger from "src/utils/backend/logger"
 
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
 	console.log("**********Checking address & sending email************")
+	logger.silly(`Request: ${req.body}`)
 
 	const userEmail = JSON.parse(req.body)["address"]
 	console.log("req", req)
