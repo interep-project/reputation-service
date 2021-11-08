@@ -16,9 +16,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 	var message
 
 	// -------------------checking email format-----------------
-	if(userEmail.includes("@hotmail") != true){
+	if(!userEmail || userEmail.includes("@hotmail") != true){
 		message = "invalid email, must be an @hotmail address"
         res.status(402).json({ message })
+		return
 	}
 
 	// -------------------checking user is new-----------------
