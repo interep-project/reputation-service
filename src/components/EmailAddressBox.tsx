@@ -1,9 +1,6 @@
 import React, { useState } from "react"
 
-import { Container, Input, Button, HStack,
-    Alert, AlertIcon, AlertTitle} from "@chakra-ui/react"
-
-
+import { Container, Input, Button, HStack, Alert, AlertIcon, AlertTitle } from "@chakra-ui/react"
 
 export default function EmailAddressBox(): JSX.Element {
     const [_alertDisplay, setAlertDisplay] = useState<string>("none")
@@ -12,20 +9,21 @@ export default function EmailAddressBox(): JSX.Element {
 
     async function submitEmail() {
         setAlertDisplay("none")
-        const adr = document.getElementById('emailaddress') as HTMLInputElement
+        const adr = document.getElementById("emailaddress") as HTMLInputElement
         if (adr != null) {
             const address_string = adr.value
-            if(address_string.includes("@hotmail")){
+            if (address_string.includes("@hotmail")) {
                 console.log("address", address_string)
-                var message = ""; 
-    
+                var message = ""
+
                 const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    address: address_string })
-                };
-    
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        address: address_string
+                    })
+                }
+
                 console.log("status: ", message)
                 setAlertDisplay("true")
                 setAlertType("info")
@@ -34,20 +32,18 @@ export default function EmailAddressBox(): JSX.Element {
                 console.log("sending email address to server...")
                 message = "sending email address to server..."
                 console.log("status: ", message)
-                const response = await fetch('/api/email/sendEmail', requestOptions);
-                const data = await response.json();
+                const response = await fetch("/api/email/sendEmail", requestOptions)
+                const data = await response.json()
                 console.log(data)
                 console.log(data.message)
                 message = data.message
                 setAlertMessage(message)
-
-            }else{
+            } else {
                 setAlertType("error")
                 setAlertDisplay("true")
                 setAlertMessage("Email address must be @hotmail")
             }
-    
-        }else{
+        } else {
             setAlertType("error")
             setAlertDisplay("true")
             setAlertMessage("Please enter an email address")
@@ -56,23 +52,21 @@ export default function EmailAddressBox(): JSX.Element {
     }
 
     return (
-            <Container my="15px" px="60px" maxW="container.xl">
-                <HStack justify="space-between">
-                    <Input placeholder="Enter Email" id="emailaddress"/>
-                    <Button 
-                    onClick={() => submitEmail()} >
-                        Submit
-                    </Button>
-                </HStack>
+        <Container my="15px" px="60px" maxW="container.xl">
+            <HStack justify="space-between">
+                <Input placeholder="Enter Email" id="emailaddress" />
+                <Button onClick={() => submitEmail()}>Submit</Button>
+            </HStack>
 
-                {_alertDisplay=="true" ? 
+            {_alertDisplay == "true" ? (
                 <Alert status={_alertType} marginTop={"5px"}>
                     <AlertIcon />
                     <AlertTitle>{_alertMessage}</AlertTitle>
-                </Alert> 
-                : "" 
-                }
-                
-            </Container>
+                </Alert>
+            ) : (
+                ""
+            )}
+        </Container>
     )
 }
+
