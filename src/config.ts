@@ -128,6 +128,7 @@ export default {
     JWT_SECRET: process.env.JWT_SECRET,
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
     API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST,
+    HOST: process.env.HOST,
     GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
     GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
     GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
