@@ -6,6 +6,7 @@ export async function dbConnect() {
     // check if we have a connection to the database or if it's currently
     // connecting or disconnecting (readyState 1, 2 and 3)
     if (mongoose.connection.readyState >= 1) {
+        logger.silly(`DB connection ${mongoose.connection.readyState}`)
         return
     }
 

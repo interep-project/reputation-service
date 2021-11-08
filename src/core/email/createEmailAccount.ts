@@ -2,6 +2,7 @@ import EmailUser from "../../models/emailUser/EmailUser.model"
 import sendEmail from "./sendEmail"
 
 import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger";
 
 export default async function createEmailAccount(
     hashId: string,
@@ -9,14 +10,15 @@ export default async function createEmailAccount(
 ): Promise<string | void> {
     await dbConnect()
     var verified = false;
-    console.log("making account")
+    logger.silly(`making account ${hashId}`)
     try {
         let account = await EmailUser.findByHashId( hashId ) // not sure if this is right info
+        logger.silly(`account ${JSON.stringify(account)}`)
         var randEmailToken = Math.floor((Math.random() * 10000));
 
         if (!account) {
             // account doesn't exist, make one and then send email
-            console.log("no account present")
+            logger.silly("no account present")
             account = new EmailUser({
                 provider,
                 hashId,
@@ -26,24 +28,24 @@ export default async function createEmailAccount(
             })
 
         } else {
-            console.log("account exists")
+            logger.silly("account exists")
             //account does exist see if it's verified if not update emailRandomToken and send email
             verified = account.verified
             if(!verified){
                 account.emailRandomToken = String(randEmailToken)
             }
-            console.log(verified)
+            logger.silly(`verified ${verified}`)
         }
 
         try {
             await account.save()
             // save new account info and then send email if account not verified
             if(!verified){
-                console.log("account not verified yet")
+                logger.silly("account not verified yet")
                 try {
-                    console.log("trying to send email")
+                    logger.silly("trying to send email")
                     var message = await sendEmail(hashId, String(randEmailToken)).then((result) => {
-                        console.log("sendEmail message internal", result)
+                        logger.silly("sendEmail message internal", result)
                         return result
                     })
 

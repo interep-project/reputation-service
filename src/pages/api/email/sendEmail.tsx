@@ -9,13 +9,13 @@ import logger from "src/utils/backend/logger"
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
-	console.log("**********Checking address & sending email************")
+	logger.silly("**********Checking address & sending email************")
 	logger.silly(`Request: ${req.body}`)
 
 	const { address } = JSON.parse(req.body)
 	const userEmail = address
-	console.log(userEmail)
-	console.log("Email address: ",userEmail)
+	//console.log(userEmail)
+	logger.silly(`Email address: ${userEmail}`)
 	var message
 
 	// -------------------checking email format-----------------
@@ -26,14 +26,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 	// -------------------checking user is new-----------------
 	try {
-		console.log("trying to make account")
+		logger.silly("trying to make account")
 		await createEmailAccount(userEmail, "hotmail").then((message) => {
-			console.log("createEmailAccount message", message)
+			logger.silly("createEmailAccount message", message)
 			return res.status(200).json({message})
 		})
 
 	} catch (err) {
-		console.log(err)
+		logger.error(err)
 	}
 
 }
