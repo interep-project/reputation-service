@@ -17,7 +17,7 @@ var smtpTransport = nodemailer.createTransport({
 export default async function sendEmail(emailAddress:String, randToken:String): Promise<string | void> {
 
     // var link="http://"+host+"/api/email/verifyEmail?id="+randToken+"?email="+emailAddress;
-    var link="http://localhost:3000"+"/api/email/verifyEmail?id="+randToken+"?email="+emailAddress;
+    var link = config.HOST+"/api/email/verifyEmail?id="+randToken+"?email="+emailAddress;
     var mailOptions={
         to : emailAddress,
         subject : "Interrep email confirmation",

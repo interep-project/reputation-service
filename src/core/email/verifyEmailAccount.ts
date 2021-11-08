@@ -1,7 +1,4 @@
 import EmailUser from "../../models/emailUser/EmailUser.model"
-// import EmailUserSchema from "../../models/emailUser/EmailUser.schema"
-// import { findByHashId } from "../../models/emailUser/EmailUser.statics"
-// import {EmailUserData, EmailUserDocument, EmailUserModel} from "../../models/emailUser/EmailUser.types"
 
 import { dbConnect } from "src/utils/backend/database"
 
