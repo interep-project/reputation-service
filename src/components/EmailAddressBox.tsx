@@ -23,7 +23,7 @@ export default function EmailAddressBox(): JSX.Element {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    address: address_string })
+                    "address": address_string })
                 };
     
                 console.log("status: ", message)
