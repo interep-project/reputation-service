@@ -21,7 +21,7 @@ export enum Environment {
 }
 
 export enum ContractName {
-    INTERREP_GROUPS = "InterRepGroups",
+    GROUPS = "Groups",
     REPUTATION_BADGE = "ReputationBadge"
 }
 
@@ -40,7 +40,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
-        [ContractName.INTERREP_GROUPS]: "0x0165878A594ca255338adfa4d48449f69242Eb8F"
+        [ContractName.GROUPS]: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -48,7 +48,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xD6B4f70b441e9E2F4473F53Fe1cAe50F49C42E18",
             reddit: "0x55d2d15631078cC555d06f14fD45bF2A7D86B4Cf"
         },
-        [ContractName.INTERREP_GROUPS]: "0xD2C9435C0E9e051e37456C01B2478f3e48ce735B"
+        [ContractName.GROUPS]: "0xD2C9435C0E9e051e37456C01B2478f3e48ce735B"
     },
     [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -56,7 +56,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
-        [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
+        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
 
     [SupportedChainId.ARBITRUM_TESTNET]: {
@@ -65,7 +65,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
-        [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
+        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
     [SupportedChainId.ARBITRUM]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -73,7 +73,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
-        [ContractName.INTERREP_GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
+        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     }
 }
 

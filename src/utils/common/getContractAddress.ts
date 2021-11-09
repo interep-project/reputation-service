@@ -2,8 +2,8 @@ import { OAuthProvider } from "@interrep/reputation-criteria"
 import { contractAddresses, ContractName, currentNetwork } from "src/config"
 
 export default function getContractAddress(contractName: ContractName, provider?: OAuthProvider): string {
-    if (contractName === ContractName.INTERREP_GROUPS) {
-        return contractAddresses[currentNetwork.chainId][ContractName.INTERREP_GROUPS]
+    if (contractName === ContractName.GROUPS) {
+        return contractAddresses[currentNetwork.chainId][ContractName.GROUPS]
     }
 
     if (!provider) {
