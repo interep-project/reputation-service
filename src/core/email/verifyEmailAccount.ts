@@ -14,7 +14,7 @@ export default async function verifyEmailAccount(
     var message
 
     try {
-        let account = await EmailUser.findByHashId( hashId ) // not sure if this is right info
+        let account = await EmailUser.findByHashId( hashId )
 
         if (!account) {
             // account doesn't exist, make one and then send email

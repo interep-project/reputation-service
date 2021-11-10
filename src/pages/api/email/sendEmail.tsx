@@ -20,9 +20,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 	try {
 		// -------------------checking email format-----------------
-		if(userEmail.includes("@hotmail") != true){
+		if(!userEmail || userEmail.includes("@hotmail") != true){
 			message = "invalid email, must be an @hotmail address"
-			res.status(405).json({ message })
+			res.status(402).json({ message })
 		} else {
 			// user has valid hotmail account
 			try {
@@ -39,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 		}
 	} catch (err) {
 		message = "invalid email, must be an @hotmail address"
-		res.status(405).json({ message })
+		res.status(402).json({ message })
 	}
 
 }
