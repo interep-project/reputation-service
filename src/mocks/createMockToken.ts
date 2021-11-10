@@ -1,5 +1,5 @@
 import { OAuthProvider } from "@interrep/reputation-criteria"
-import { TokenDocument, TokenStatus } from "@interrep/data-models"
+import { TokenDocument, TokenStatus } from "@interrep/db"
 
 const createMockTokenObject = (override?: Partial<TokenDocument>) => ({
     contractAddress: "0x8398bCD4f633C72939F9043dB78c574A91C99c0A",

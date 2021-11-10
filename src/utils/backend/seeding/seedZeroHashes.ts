@@ -1,6 +1,6 @@
 import config from "src/config"
 import colors from "colors"
-import { MerkleTreeZero } from "@interrep/data-models"
+import { MerkleTreeZero } from "@interrep/db"
 import poseidonHash from "src/utils/common/crypto/hasher"
 
 export default async function seedZeroHashes(logger = false): Promise<void> {
@@ -11,7 +11,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
     let level = 0
     let zeroHash = "0"
 
-    const zeroHashes = await MerkleTreeZero.findZeroes()
+    const zeroHashes = await MerkleTreeZero.find()
 
     if (zeroHashes && zeroHashes.length > 0) {
         log(colors.white(`There are already ${zeroHashes.length} zero hashes!\n`))
@@ -20,7 +20,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
         zeroHash = zeroHashes[level - 1].hash
     }
 
-    for (level; level < config.MERKLE_TREE_LEVELS; level++) {
+    for (level; level < config.MERKLE_TREE_DEPTH; level++) {
         zeroHash = level === 0 ? zeroHash : poseidonHash(zeroHash, zeroHash)
 
         const zeroHashDocument = await MerkleTreeZero.create({
@@ -33,7 +33,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
         log(colors.white(`Document with id: ${zeroHashDocument.id} inserted`))
     }
 
-    if (level === config.MERKLE_TREE_LEVELS) {
+    if (level === config.MERKLE_TREE_DEPTH) {
         log(colors.green.bold("\nDocuments inserted correctly ✓\n"))
     }
 }

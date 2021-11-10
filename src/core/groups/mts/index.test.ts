@@ -2,11 +2,11 @@ import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlib"
 import { IncrementalQuinTree } from "incrementalquintree"
 import config from "src/config"
-import { MerkleTreeNodeDocument, MerkleTreeNode } from "@interrep/data-models"
+import { MerkleTreeNodeDocument, MerkleTreeNode } from "@interrep/db"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import poseidonHash from "src/utils/common/crypto/hasher"
-import { appendLeaf, previewNewRoot, retrievePath } from "."
+import { appendLeaf, retrievePath } from "."
 import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
@@ -15,7 +15,7 @@ describe("Merkle Trees", () => {
     const reputation = ReputationLevel.GOLD
 
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {
@@ -86,39 +86,6 @@ describe("Merkle Trees", () => {
         })
     })
 
-    describe("previewNewRoot", () => {
-        beforeEach(async () => {
-            await clearDatabase()
-        })
-
-        it("Should not return the root hash if the group id does not exist", async () => {
-            await seedZeroHashes(false)
-
-            const fun = (): Promise<string> => previewNewRoot(provider, PoapGroupName.DEVCON_3, idCommitment)
-
-            await expect(fun).rejects.toThrow()
-        })
-
-        it("Should not calculate the root hash without first creating the zero hashes", async () => {
-            const fun = (): Promise<string> => previewNewRoot(provider, reputation, idCommitment)
-
-            await expect(fun).rejects.toThrow()
-        })
-
-        it("Should return the right root hash", async () => {
-            await seedZeroHashes(false)
-
-            for (let i = 0; i < 10; i++) {
-                const idCommitment = poseidon([BigInt(i)]).toString()
-
-                const expectedRootHash = await previewNewRoot(provider, reputation, idCommitment)
-                const rootHash = await appendLeaf(provider, reputation, idCommitment)
-
-                expect(rootHash).toBe(expectedRootHash)
-            }
-        })
-    })
-
     describe("retrievePath", () => {
         beforeEach(async () => {
             await clearDatabase()
@@ -130,7 +97,7 @@ describe("Merkle Trees", () => {
             await expect(fun).rejects.toThrow()
         })
 
-        it(`Should return a path of ${config.MERKLE_TREE_LEVELS} hashes`, async () => {
+        it(`Should return a path of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
             await seedZeroHashes(false)
 
             const idCommitments = []
@@ -143,16 +110,14 @@ describe("Merkle Trees", () => {
 
             const path = await retrievePath(provider, reputation, idCommitments[5])
 
-            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_LEVELS)
-            expect(path.indices).toHaveLength(config.MERKLE_TREE_LEVELS)
+            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(path.indices).toHaveLength(config.MERKLE_TREE_DEPTH)
         })
 
         it("Should match the path obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new IncrementalQuinTree(config.MERKLE_TREE_LEVELS, 0, 2, (inputs: BigInt[]) =>
-                poseidon(inputs)
-            )
+            const tree = new IncrementalQuinTree(config.MERKLE_TREE_DEPTH, 0, 2, (inputs: BigInt[]) => poseidon(inputs))
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {

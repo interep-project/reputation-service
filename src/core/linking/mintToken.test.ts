@@ -1,8 +1,8 @@
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
 import createMockTokenObject from "src/mocks/createMockToken"
-import { TokenDocument, TokenStatus, Token } from "@interrep/data-models"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { TokenDocument, TokenStatus, Token } from "@interrep/db"
+import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import mintToken from "./mintToken"
 
 const mockTxResponse = {
@@ -29,7 +29,7 @@ describe("mintToken", () => {
     let mockToken: TokenDocument
 
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
         mockToken = await Token.create(createMockTokenObject())
     })
 

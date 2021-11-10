@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import { Token } from "@interrep/data-models"
+import { Token } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"

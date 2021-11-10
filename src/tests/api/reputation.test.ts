@@ -1,5 +1,5 @@
 import getReputation from "src/pages/api/reputation/[provider]/[username]"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import createNextMocks from "src/mocks/createNextMocks"
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 
@@ -13,7 +13,7 @@ jest.mock("src/core/reputation/twitter", () => ({
 
 describe("Reputation APIs", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

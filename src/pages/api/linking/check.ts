@@ -1,7 +1,7 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { withSentry } from "@sentry/nextjs"
 import { getSession } from "next-auth/client"
-import { OAuthAccount } from "@interrep/data-models"
+import { OAuthAccount } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 

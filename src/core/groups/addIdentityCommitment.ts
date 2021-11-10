@@ -1,10 +1,10 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import { ethers } from "ethers"
-import { ContractName } from "src/config"
+import config, { ContractName } from "src/config"
 import { Provider } from "src/types/groups"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractAddress from "src/utils/common/getContractAddress"
-import { appendLeaf, previewNewRoot } from "./mts"
+import { appendLeaf } from "./mts"
 import { PoapGroupName } from "./poap"
 
 export default async function addIdentityCommitment(
@@ -12,20 +12,32 @@ export default async function addIdentityCommitment(
     name: ReputationLevel | PoapGroupName | string,
     identityCommitment: string
 ): Promise<string> {
-    // Get the value of the next root hash without saving anything in the db.
-    const rootHash = await previewNewRoot(provider, name, identityCommitment)
-
     // Update the contract with new root.
-    const contractAddress = getContractAddress(ContractName.INTERREP_GROUPS)
-    const contractInstance = await getBackendContractInstance(ContractName.INTERREP_GROUPS, contractAddress)
+    const contractAddress = getContractAddress(ContractName.GROUPS)
+    const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
+    const contractOwner = await contractInstance.signer.getAddress()
 
-    await contractInstance.addRootHash(
+    const groupSize = await contractInstance.getSize(
         ethers.utils.formatBytes32String(provider),
-        ethers.utils.formatBytes32String(name),
-        identityCommitment,
-        rootHash
+        ethers.utils.formatBytes32String(name)
     )
 
-    // Update the db with the new merkle tree.
+    // If the group has not yet been created, it creates it.
+    if (groupSize.toNumber() === 0) {
+        await contractInstance.createGroup(
+            ethers.utils.formatBytes32String(provider),
+            ethers.utils.formatBytes32String(name),
+            config.MERKLE_TREE_DEPTH,
+            contractOwner
+        )
+    }
+
+    await contractInstance.addIdentityCommitment(
+        ethers.utils.formatBytes32String(provider),
+        ethers.utils.formatBytes32String(name),
+        identityCommitment
+    )
+
+    // Update the db with the new Merkle tree.
     return appendLeaf(provider, name, identityCommitment)
 }

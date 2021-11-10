@@ -1,5 +1,5 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { TokenStatus, Token } from "@interrep/data-models"
+import { TokenStatus, Token } from "@interrep/db"
 import logger from "src/utils/backend/logger"
 import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
 import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"

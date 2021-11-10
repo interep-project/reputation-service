@@ -6,7 +6,7 @@ async function main() {
 
     await seedZeroHashes(true)
 
-    dbDisconnect()
+    await dbDisconnect()
 }
 
 main()

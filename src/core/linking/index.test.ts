@@ -2,9 +2,9 @@ import { ContractTransaction } from "@ethersproject/contracts"
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
-import { Token, OAuthAccountDocument, OAuthAccount } from "@interrep/data-models"
+import { Token, OAuthAccountDocument, OAuthAccount } from "@interrep/db"
 import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
-import { connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { Wallet } from "ethers"
 
@@ -67,7 +67,7 @@ describe("linkAccounts", () => {
     checkIfUserSignatureIsValidMocked.mockImplementation(() => true)
 
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

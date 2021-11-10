@@ -1,4 +1,4 @@
-import { FaGithub, FaMedium, FaTwitter } from "react-icons/fa"
+import { FaGithub, FaMedium, FaTelegram, FaTwitter } from "react-icons/fa"
 import React from "react"
 import { Container, Link, Icon, Text, HStack, Box, useColorMode } from "@chakra-ui/react"
 
@@ -21,6 +21,9 @@ export default function Footer(): JSX.Element {
                         </Link>
                         <Link href="https://twitter.com/PrivacyScaling" isExternal>
                             <Icon boxSize="20px" as={FaTwitter} />
+                        </Link>
+                        <Link href="https://t.me/interrep" isExternal>
+                            <Icon boxSize="20px" as={FaTelegram} />
                         </Link>
                         <Link href="https://github.com/InterRep" isExternal>
                             <Icon boxSize="20px" as={FaGithub} />

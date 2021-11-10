@@ -91,13 +91,11 @@ export default function useGroups(): ReturnParameters {
             try {
                 setLoading(true)
 
-                const identityCommitment = await semethid(
-                    (message) => signer.signMessage(message),
-                    capitalize(provider)
-                )
+                const identity = await semethid((message) => signer.signMessage(message), capitalize(provider))
+                const identityCommitment = identity.genIdentityCommitment()
 
                 setLoading(false)
-                return identityCommitment
+                return identityCommitment.toString()
             } catch (error) {
                 console.error(error)
 

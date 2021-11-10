@@ -2,9 +2,9 @@ import { OAuthProvider } from "@interrep/reputation-criteria"
 import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
-import { OAuthAccount } from "@interrep/data-models"
+import { OAuthAccount } from "@interrep/db"
 import handler from "src/pages/api/linking/check"
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
 jest.mock("next-auth/client", () => ({
     getSession: jest.fn()
@@ -14,7 +14,7 @@ const getSessionMocked = getSession as jest.MockedFunction<typeof getSession>
 
 describe("api/linking/checkLink", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {

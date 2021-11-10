@@ -1,7 +1,7 @@
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/data-models"
+import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/db"
 import { Provider } from "src/types/groups"
 import poseidonHash from "src/utils/common/crypto/hasher"
 import { PoapGroupName } from "../poap"
@@ -20,7 +20,7 @@ export default async function appendLeaf(
     }
 
     // Get the zero hashes.
-    const zeroes = await MerkleTreeZero.findZeroes()
+    const zeroes = await MerkleTreeZero.find()
 
     if (!zeroes || zeroes.length === 0) {
         throw new Error(`The zero hashes have not yet been created`)
@@ -29,7 +29,7 @@ export default async function appendLeaf(
     // Get next available index at level 0.
     let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
-    if (currentIndex >= 2 ** config.MERKLE_TREE_LEVELS) {
+    if (currentIndex >= 2 ** config.MERKLE_TREE_DEPTH) {
         throw new Error(`The tree is full`)
     }
 
@@ -40,7 +40,7 @@ export default async function appendLeaf(
         hash: identityCommitment
     })
 
-    for (let level = 0; level < config.MERKLE_TREE_LEVELS; level++) {
+    for (let level = 0; level < config.MERKLE_TREE_DEPTH; level++) {
         if (currentIndex % 2 === 0) {
             node.siblingHash = zeroes[level].hash
 
