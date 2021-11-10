@@ -18,8 +18,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
 
     const step1 = useCallback(
         async (signer: Signer) => {
-            const identityCommitment = await retrieveIdentityCommitment(signer, "telegram")
-
+            const identityCommitment = await retrieveIdentityCommitment(signer, "telegram")            
             if (identityCommitment) {
                 if (await checkIdentityCommitment(identityCommitment, "telegram", groupId)) {
                     setIdentityCommitment(identityCommitment)
