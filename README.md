@@ -97,16 +97,10 @@ cd contracts
 yarn start
 ```
 
-3. In another terminal, deploy the contracts on the local network:
+3. In another terminal, deploy mocked contracts and groups:
 
 ```bash
-yarn deploy:mocks --network localhost
-```
-
-4. Finally create the default groups:
-
-```bash
-yarn create-groups --address <contractAddress> --depth 16 --network localhost
+yarn mocks --network localhost
 ```
 
 ### Running InterRep (production)
