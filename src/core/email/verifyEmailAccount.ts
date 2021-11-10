@@ -1,6 +1,7 @@
 import EmailUser from "../../models/emailUser/EmailUser.model"
 
 import { dbConnect } from "src/utils/backend/database"
+import logger from "src/utils/backend/logger"
 
 export default async function verifyEmailAccount(
     hashId: string,
@@ -9,7 +10,7 @@ export default async function verifyEmailAccount(
 ): Promise<string | void> {
     await dbConnect()
     
-    console.log("making account")
+    logger.silly(`making account for ${hashId}`)
     var verifiedStatus = false
     var message
 

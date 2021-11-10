@@ -9,7 +9,7 @@ import logger from "src/utils/backend/logger"
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
-	console.log("**********Checking address & sending email************")
+	logger.silly("**********Checking address & sending email************")
 	logger.silly(`Request: ${req.body}`)
 
 	const userEmail = JSON.parse(req.body)["address"]
@@ -26,7 +26,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 		} else {
 			// user has valid hotmail account
 			try {
-				console.log("trying to make account")
+				logger.silly("trying to make account")
 				await createEmailAccount(userEmail, "hotmail").then((message) => {
 					console.log("createEmailAccount message", message)
 					res.status(200).json({message})

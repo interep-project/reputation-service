@@ -5,6 +5,7 @@ import verifyHandler from "src/pages/api/email/verifyEmail"
 
 import createNextMocks from "src/mocks/createNextMocks"
 import { RequestMethod } from "node-mocks-http"
+import logger from "src/utils/backend/logger"
 // import fetchMock from "jest-fetch-mock";
 
 //import config from "src/config"
@@ -32,6 +33,7 @@ describe("Email verification APIs", () => {
     })
 
     afterEach(async () => {
+        logger.silly(`clear DB`)
         await clearDatabase()
     })
 
@@ -72,7 +74,7 @@ describe("Email verification APIs", () => {
             expect(res._getStatusCode()).toBe(200)
         })
 
-        it("Should return 200 if correct type of email entered (@hotmail) ", async () => {
+        it("Should verify email ", async () => {
             const { req, res } = createNextMocks({
                 query: {id: "="+"1234"+"?email="+"test@hotmail.co.uk"},
                 method: "PUT" as RequestMethod,
@@ -83,10 +85,14 @@ describe("Email verification APIs", () => {
                 hashId: "test@hotmail.co.uk",
                 verified: false,
                 joined: false,
-                emailRandomToken: "1234"
+                emailRandomToken: "1234",
             })
 
             await account.save()
+
+            const acc = await EmailUser.findByHashId(account.hashId)
+            expect(acc).toBeDefined()
+            logger.silly(`accid  ${acc?.id}`)
 
             // const link = config.HOST+"/api/email/verifyEmail?id="+"1234"+"?email="+"test@hotmail.co.uk";
             
