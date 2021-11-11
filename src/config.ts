@@ -36,8 +36,8 @@ export enum SupportedChainId {
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
         [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+            twitter: "0xDD23A6Bb55887ff892f8728165E6A964Cd89960c",
+            github: "0xE5B0302aB7F0c137E8236a42B08572e4f39ed344",
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
         [ContractName.GROUPS]: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
