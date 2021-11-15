@@ -3,10 +3,11 @@ import { withSentry } from "@sentry/nextjs"
 import verifyEmailAccount from "src/core/email/verifyEmailAccount"
 import logger from 'src/utils/backend/logger';
 import config from "src/config"
+import { BreadcrumbLink } from "@chakra-ui/breadcrumb";
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
-	console.log(req)
+	// console.log(req)
 	let id = (req.query.id as string)
 
 	// id comes in form like 6557?email=johnsmith@hotmail.co.uk
@@ -23,7 +24,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 			logger.silly("trying to make account")
 			await verifyEmailAccount(email, rand).then((message) => {
 				logger.silly("createEmailAccount message", message)
-				res.status(200).end(message)
+				
+				switch(message) {
+					case "No account present":
+						res.status(401).end(message)
+						break;
+					case "Email "+email+" not in system":
+						res.status(402).end(message)
+						break;
+					case "Email "+email+" is already verified":
+						res.status(201).end(message)
+						break;
+					case "Email "+email+" has been Successfully verified":
+						res.status(200).end(message)
+						break;
+					default:
+						res.status(400).end("Error")
+						break;
+				}
 			})
 	
 		} catch (err) {
