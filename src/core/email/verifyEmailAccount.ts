@@ -20,6 +20,7 @@ export default async function verifyEmailAccount(
         if (!account) {
             // account doesn't exist, make one and then send email
             console.log("no account present")
+            message = "No account present"
 
         } else {
             console.log("account exists")
