@@ -1,4 +1,4 @@
-import { clearDatabase, connect, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import EmailUser from "../../models/emailUser/EmailUser.model"
 import handler from "src/pages/api/email/sendEmail"
 import verifyHandler from "src/pages/api/email/verifyEmail"
@@ -6,6 +6,7 @@ import verifyHandler from "src/pages/api/email/verifyEmail"
 import createNextMocks from "src/mocks/createNextMocks"
 import { RequestMethod } from "node-mocks-http"
 import logger from "src/utils/backend/logger"
+import * as nodemailer from 'nodemailer'
 // import fetchMock from "jest-fetch-mock";
 
 //import config from "src/config"
@@ -23,13 +24,28 @@ const bodyParams = {
 }
 */
 
+// Set up nodemailer mock
+jest.mock("nodemailer", () => {
+    return {
+        createTransport: jest.fn().mockImplementation((opts: any) => {
+            return { sendMail: jest.fn() }
+        }),
+    }
+});
+const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock
+//const sendMailMock = jest.fn()
+
 describe("Email verification APIs", () => {
     beforeAll(async () => {
-        await connect()
+        await connectDatabase()
     })
 
     afterAll(async () => {
         await dropDatabaseAndDisconnect()
+    })
+
+    beforeEach(async () => {
+        sendMailMock.mockClear();
     })
 
     afterEach(async () => {
@@ -75,6 +91,7 @@ describe("Email verification APIs", () => {
         })
 
         it("Should verify email ", async () => {
+
             const { req, res } = createNextMocks({
                 query: {id: "="+"1234"+"?email="+"test@hotmail.co.uk"},
                 method: "PUT" as RequestMethod,
@@ -88,7 +105,11 @@ describe("Email verification APIs", () => {
                 emailRandomToken: "1234",
             })
 
+            expect(nodemailer.createTransport).toBeDefined();
+ 
             await account.save()
+
+            //expect(sendMailMock).toHaveBeenCalled()
 
             const acc = await EmailUser.findByHashId(account.hashId)
             expect(acc).toBeDefined()
@@ -99,8 +120,6 @@ describe("Email verification APIs", () => {
             await verifyHandler(req, res)
             expect(res._getStatusCode()).toBe(200)
         })
-
-
 
     })
 })

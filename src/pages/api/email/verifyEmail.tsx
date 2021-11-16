@@ -6,7 +6,7 @@ import config from "src/config"
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
 
-	console.log(req)
+	//console.log(req)
 	let id = (req.query.id as string)
 
 	// id comes in form like 6557?email=johnsmith@hotmail.co.uk
