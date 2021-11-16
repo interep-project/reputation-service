@@ -13,12 +13,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 	logger.silly(`Request: ${req.body}`)
 
 	// console.log("req", req)
+	console.log("req body", req)
+
+	// console.log("req body", JSON.parse(req.body)["address"])
 	console.log("req body", req.body["address"])
 
 	// const userEmail = JSON.parse(req.body)["address"]
 	const userEmail = req.body["address"]
 
-	console.log("req", req)
+	// console.log("req", req)
 	console.log(userEmail)
 	console.log("Email address: ",userEmail)
 	var message

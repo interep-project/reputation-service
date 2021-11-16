@@ -18,7 +18,7 @@ export default function EmailAddressBox(): JSX.Element {
             if(address_string.includes("@hotmail")){
                 console.log("address", address_string)
                 var message = ""; 
-    
+                    
                 const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -34,6 +34,7 @@ export default function EmailAddressBox(): JSX.Element {
                 console.log("sending email address to server...")
                 message = "sending email address to server..."
                 console.log("status: ", message)
+                
                 const response = await fetch('/api/email/sendEmail', requestOptions);
                 const data = await response.json();
                 console.log(data)
