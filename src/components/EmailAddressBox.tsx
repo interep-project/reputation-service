@@ -69,4 +69,3 @@ export default function EmailAddressBox(): JSX.Element {
         </Container>
     )
 }
-
