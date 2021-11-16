@@ -1,8 +1,7 @@
+import * as nodemailer from "nodemailer"
 import config from "src/config"
 
-var nodemailer = require("nodemailer")
-
-var smtpTransport = nodemailer.createTransport({
+const smtpTransport = nodemailer.createTransport({
     host: "smtp.gmail.com",
     auth: {
         type: "OAuth2",
@@ -14,28 +13,31 @@ var smtpTransport = nodemailer.createTransport({
     }
 })
 
-export default async function sendEmail(emailAddress: String, randToken: String): Promise<string | void> {
-    // var link="http://"+host+"/api/email/verifyEmail?id="+randToken+"?email="+emailAddress;
-    var link = config.HOST + "/api/email/verifyEmail?id=" + randToken + "?email=" + emailAddress
-    var mailOptions = {
+export default async function sendEmail(
+    emailAddress: string,
+    randToken: String,
+    groupId: String
+): Promise<boolean | void> {
+    // const link = `${config.HOST}/api/email/verifyEmail?id=${randToken}?email=${emailAddress}`
+    const link = `${config.HOST}/groups/email/${randToken}/${emailAddress}/${groupId}`
+
+    const mailOptions = {
         to: emailAddress,
         subject: "Interrep email confirmation",
-        html:
-            "Hello,<br> Please Click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
+        html: `Hello,<br> Please Click on the link to verify your email.<br><a href=${link}>Click here to verify</a>.
+        <br> You will be redirected to the Semaphore gropu page.`
     }
 
-    console.log("in send email file")
+    console.log(`in send email file ${typeof smtpTransport}`)
 
     try {
         const response = await smtpTransport.sendMail(mailOptions)
-        const message = "Verification email sent, please check your inbox (might be in spam)"
         console.log("successfully sent email", response)
 
-        return message
+        return true
     } catch (error) {
-        const message = "Error sending email to " + emailAddress
         console.log("error sending email", error)
 
-        return message
+        return false
     }
 }
