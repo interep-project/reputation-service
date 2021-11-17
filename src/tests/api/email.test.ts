@@ -23,16 +23,16 @@ const bodyParams = {
 */
 
 // Set up nodemailer mock
-jest.mock('nodemailer', () => ({
+jest.mock("nodemailer", () => ({
     __esModule: true,
     namedExport: { createTransport: jest.fn() },
     default: { createTransport: jest.fn() },
-    createTransport: jest.fn().mockImplementation(() => ({ sendMail: jest.fn().mockImplementation(
-        (mailOptions: any) => {
+    createTransport: jest.fn().mockImplementation(() => ({
+        sendMail: jest.fn().mockImplementation((mailOptions: any) => {
             console.log(`sendMail text: ${mailOptions.html}`)
-        }
-    )}))
-}));
+        })
+    }))
+}))
 
 // const MockNodemailer = () => {
 //     createTransport: jest.fn().mockImplementation(() => ({ sendMail: jest.fn().mockImplementation(
@@ -48,7 +48,7 @@ describe("Email verification APIs", () => {
     beforeAll(async () => {
         await connectDatabase()
         // @ts-ignore
-        //nodemailer.mockImplementation(MockNodemailer)
+        // nodemailer.mockImplementation(MockNodemailer)
     })
 
     afterAll(async () => {
@@ -89,7 +89,7 @@ describe("Email verification APIs", () => {
         })
 
         it("Should return 200 and be in the db if correct type of email entered (@hotmail)", async () => {
-            const TEST_ADDRESS = 'test@hotmail.com'
+            const TEST_ADDRESS = "test@hotmail.com"
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
                 headers: { "Content-Type": "application/json" },
@@ -107,12 +107,11 @@ describe("Email verification APIs", () => {
 
             expect(acc?.verified).toBeFalsy()
 
-            //expect(sendMailMock).toHaveBeenCalled()
-
+            // expect(sendMailMock).toHaveBeenCalled()
         })
 
         it("should return 200 with previously verified account", async () => {
-            const TEST_ADDRESS = 'test@hotmail.com'
+            const TEST_ADDRESS = "test@hotmail.com"
 
             // Set up verified account DB entry
             const account = new EmailUser({
@@ -136,18 +135,17 @@ describe("Email verification APIs", () => {
 
             // Account should still be there
             const acc = await EmailUser.findByHashId(TEST_ADDRESS)
-            
+
             expect(acc).toBeDefined()
 
             expect(acc?.verified).toBeTruthy()
-
         })
 
         it("Should verify email", async () => {
             logger.silly(`verify email...`)
-            
+
             const { req, res } = createNextMocks({
-                headers: { host: 'foo' },
+                headers: { host: "foo" },
                 query: { id: "1234?email=test@hotmail.co.uk" },
                 method: "PUT" as RequestMethod
             })
