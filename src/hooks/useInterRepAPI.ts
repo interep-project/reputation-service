@@ -11,7 +11,8 @@ import {
     getUserTokens as _getUserTokens,
     linkAccounts as _linkAccounts,
     mintToken as _mintToken,
-    unlinkAccounts as _unlinkAccounts
+    unlinkAccounts as _unlinkAccounts,
+    sendEmail as _sendEmail
 } from "src/utils/frontend/api"
 
 type API = {
@@ -26,6 +27,7 @@ type API = {
     getReputation: typeof _getReputation
     getUserTokens: typeof _getUserTokens
     unlinkAccounts: typeof _unlinkAccounts
+    sendEmail: typeof _sendEmail
 }
 
 /**
@@ -78,6 +80,7 @@ export default function useInterRepAPI(): API {
         linkAccounts: (parameters) => handleApiFunction(_linkAccounts, parameters),
         getReputation: (parameters) => handleApiFunction(_getReputation, parameters),
         getUserTokens: (parameters) => handleApiFunction(_getUserTokens, parameters),
-        unlinkAccounts: (parameters) => handleApiFunction(_unlinkAccounts, parameters)
+        unlinkAccounts: (parameters) => handleApiFunction(_unlinkAccounts, parameters),
+        sendEmail: (parameters) => handleApiFunction(_sendEmail, parameters)
     }
 }
