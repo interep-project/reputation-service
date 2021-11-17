@@ -1,71 +1,54 @@
-import { Alert, AlertIcon, AlertTitle, Button, Container, HStack, Input } from "@chakra-ui/react"
+import { Alert, AlertIcon, AlertTitle, Button, HStack, Input } from "@chakra-ui/react"
 import React, { useState } from "react"
+import useInterRepAPI from "src/hooks/useInterRepAPI"
 
 export default function EmailAddressBox(): JSX.Element {
-    const [_alertDisplay, setAlertDisplay] = useState<string>("none")
-    const [_alertMessage, setAlertMessage] = useState<string>("")
-    const [_alertType, setAlertType] = useState<"info" | "warning" | "success" | "error" | undefined>("info")
+    const { sendEmail } = useInterRepAPI()
+    const [email, setEmail] = useState<string>("")
+    const [alertMessage, setAlertMessage] = useState<string>("")
+    const [alertType, setAlertType] = useState<"info" | "warning" | "success" | "error">("info")
 
-    async function submitEmail() {
-        setAlertDisplay("none")
-        const adr = document.getElementById("emailaddress") as HTMLInputElement
-        if (adr != null) {
-            const address_string = adr.value
-            if (address_string.includes("@hotmail")) {
-                console.log("address", address_string)
-                let message = ""
+    async function submitEmail(email: string) {
+        setAlertMessage("")
 
-                const requestOptions = {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        address: address_string
-                    })
-                }
-
-                console.log("status: ", message)
-                setAlertDisplay("true")
-                setAlertType("info")
-                setAlertMessage("Sending email address to server...")
-
-                console.log("sending email address to server...")
-                message = "sending email address to server..."
-                console.log("status: ", message)
-
-                const response = await fetch("/api/email/sendEmail", requestOptions)
-                const data = await response.json()
-                console.log(data)
-                console.log(data.message)
-                message = data.message
-                setAlertMessage(message)
-            } else {
-                setAlertType("error")
-                setAlertDisplay("true")
-                setAlertMessage("Email address must be @hotmail")
-            }
-        } else {
+        if (!email) {
             setAlertType("error")
-            setAlertDisplay("true")
             setAlertMessage("Please enter an email address")
-            console.log("null adr")
+
+            return
+        }
+
+        if (!email.includes("@hotmail")) {
+            setAlertType("error")
+            setAlertMessage("Email address must be @hotmail")
+
+            return
+        }
+
+        setAlertType("info")
+        setAlertMessage("Sending a magic link to your email address")
+
+        const response = await sendEmail({ email })
+
+        if (response) {
+            setEmail("")
+            setAlertMessage("Magic link sent correctly, please check your email")
         }
     }
 
     return (
-        <Container my="15px" px="60px" maxW="container.xl">
+        <>
             <HStack justify="space-between">
-                <Input placeholder="Enter Email" id="emailaddress" />
-                <Button onClick={() => submitEmail()}>Submit</Button>
+                <Input placeholder="Enter Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+                <Button onClick={() => submitEmail(email)}>Submit</Button>
             </HStack>
 
-            {_alertDisplay === "true" ? (
-                <Alert status={_alertType} marginTop="5px">
+            {alertMessage && (
+                <Alert status={alertType} marginTop="5px">
                     <AlertIcon />
-                    <AlertTitle>{_alertMessage}</AlertTitle>
+                    <AlertTitle>{alertMessage}</AlertTitle>
                 </Alert>
-            ) : (
-                ""
             )}
-        </Container>
+        </>
     )
 }
