@@ -17,6 +17,7 @@ import React, { useContext } from "react"
 import { FaInfoCircle } from "react-icons/fa"
 import PoapGroups from "src/components/PoapGroups"
 import TelegramGroups from "src/components/TelegramGroups"
+import EmailGroups from "src/components/EmailGroups"
 import OAuthGroups from "src/components/OAuthGroups"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
@@ -35,6 +36,10 @@ export default function Groups(): JSX.Element {
 
     function isTelegramMagicLink(parameters: string[]): boolean {
         return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
+    }
+
+    function isEmailMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
     }
 
     return (
@@ -61,7 +66,7 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters) ? (
+            ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters)  && !isEmailMagicLink(parameters)? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, sign in with one of our supported providers!</Text>
                 </VStack>
@@ -69,6 +74,7 @@ export default function Groups(): JSX.Element {
                 <Tabs mt="20px" variant="solid-rounded">
                     <TabList>
                         {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
+                        {isEmailMagicLink(parameters) && <Tab mr="10px">Email</Tab>}
                         {session && <Tab mr="10px">{capitalize(session.provider)}</Tab>}
                         {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
@@ -76,6 +82,11 @@ export default function Groups(): JSX.Element {
                         {isTelegramMagicLink(parameters) && (
                             <TabPanel>
                                 <TelegramGroups userId={parameters[1]} groupId={parameters[2]} />
+                            </TabPanel>
+                        )}
+                        {isEmailMagicLink(parameters) && (
+                            <TabPanel>
+                                <EmailGroups userId={parameters[2]} userToken={parameters[1]} groupId={parameters[3]} />
                             </TabPanel>
                         )}
                         {session && (
