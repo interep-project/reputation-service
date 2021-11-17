@@ -1,54 +1,46 @@
-import { Alert, AlertIcon, AlertTitle, Button, HStack, Input } from "@chakra-ui/react"
+import { Button, HStack, Input, useToast } from "@chakra-ui/react"
 import React, { useState } from "react"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
 
 export default function EmailAddressBox(): JSX.Element {
+    const toast = useToast()
     const { sendEmail } = useInterRepAPI()
-    const [email, setEmail] = useState<string>("")
-    const [alertMessage, setAlertMessage] = useState<string>("")
-    const [alertType, setAlertType] = useState<"info" | "warning" | "success" | "error">("info")
+    const [_email, setEmail] = useState<string>("")
+    const [_loading, setLoading] = useState<boolean>(false)
 
     async function submitEmail(email: string) {
-        setAlertMessage("")
-
-        if (!email) {
-            setAlertType("error")
-            setAlertMessage("Please enter an email address")
-
-            return
-        }
-
         if (!email.includes("@hotmail")) {
-            setAlertType("error")
-            setAlertMessage("Email address must be @hotmail")
+            toast({
+                description: "You must enter a @hotmail address.",
+                variant: "subtle",
+                status: "error",
+                isClosable: true
+            })
 
             return
         }
 
-        setAlertType("info")
-        setAlertMessage("Sending a magic link to your email address")
+        setLoading(true)
 
         const response = await sendEmail({ email })
 
         if (response) {
+            toast({
+                description: "Magic link sent correctly, please check your email.",
+                variant: "subtle",
+                isClosable: true
+            })
+            setLoading(false)
             setEmail("")
-            setAlertMessage("Magic link sent correctly, please check your email")
         }
     }
 
     return (
-        <>
-            <HStack justify="space-between">
-                <Input placeholder="Enter Email" value={email} onChange={(event) => setEmail(event.target.value)} />
-                <Button onClick={() => submitEmail(email)}>Submit</Button>
-            </HStack>
-
-            {alertMessage && (
-                <Alert status={alertType} marginTop="5px">
-                    <AlertIcon />
-                    <AlertTitle>{alertMessage}</AlertTitle>
-                </Alert>
-            )}
-        </>
+        <HStack justify="space-between">
+            <Input placeholder="Enter Email" value={_email} onChange={(event) => setEmail(event.target.value)} />
+            <Button onClick={() => submitEmail(_email)} isLoading={_loading} isDisabled={!_email}>
+                Submit
+            </Button>
+        </HStack>
     )
 }

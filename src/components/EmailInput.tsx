@@ -1,23 +1,21 @@
-import EmailAddressBox from "src/components/EmailAddressBox"
-import React, { useState } from "react"
-import { Button, VStack } from "@chakra-ui/react"
-import { FaEnvelope } from "react-icons/fa"
+import { Button, useBoolean, VStack } from "@chakra-ui/react"
 import { Session } from "next-auth"
+import React from "react"
+import { FaEnvelope } from "react-icons/fa"
+import EmailAddressBox from "src/components/EmailAddressBox"
 
 type Parameters = {
     session: Session | null
 }
 
 export default function EmailInputButton({ session }: Parameters): JSX.Element {
-    const [showResults, setShowResults] = useState(false)
-
-    const onClick = () => setShowResults(!showResults)
+    const [_emailInput, showEmailInput] = useBoolean()
 
     return (
         <div>
             <VStack spacing={4} align="left">
                 <Button
-                    onClick={() => onClick()}
+                    onClick={showEmailInput.on}
                     leftIcon={<FaEnvelope />}
                     colorScheme="purple"
                     variant="semisolid"
@@ -25,7 +23,7 @@ export default function EmailInputButton({ session }: Parameters): JSX.Element {
                 >
                     @hotmail Email
                 </Button>
-                {showResults ? <EmailAddressBox /> : null}
+                {_emailInput ? <EmailAddressBox /> : null}
             </VStack>
         </div>
     )
