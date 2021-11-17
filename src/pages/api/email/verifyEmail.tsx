@@ -13,10 +13,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 	// id comes in form like 6557?email=johnsmith@hotmail.co.uk
 	var rand = id.split('?')[0]
     var email = id.split('=')[1]
-	logger.silly("incoming verification link stats")
+	logger.silly(`incoming verification link stats ${config.HOST} ${req.headers.host}`)
 
 	// this url will need to be replaced
-	if(("http://"+req.headers.host)==(config.HOST)) {
+	if(("http://"+req.headers.host)===(config.HOST)) {
 		logger.silly("Domain is matched. Information is from Authentic email");
 		logger.silly(`query.id ${req.query.id}`)
 
