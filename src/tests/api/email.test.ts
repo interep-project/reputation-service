@@ -65,7 +65,7 @@ describe("Email verification APIs", () => {
     })
 
     describe("Get user reputation", () => {
-        it("Should return error 405 if the no address", async () => {
+        it("Should return error 400 if the no address", async () => {
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
                 headers: { "Content-Type": "application/json" },
@@ -73,11 +73,11 @@ describe("Email verification APIs", () => {
             })
 
             await handler(req, res)
-            expect(res._getStatusCode()).toBe(402)
+            expect(res._getStatusCode()).toBe(400)
         })
 
         // // reject email address not from @hotmail
-        it("Should return error 405 if wrong type of email entered", async () => {
+        it("Should return error 400 if wrong type of email entered", async () => {
             const { req, res } = createNextMocks({
                 body: { address: "test@outlook.com" },
                 method: "POST" as RequestMethod,
@@ -85,15 +85,15 @@ describe("Email verification APIs", () => {
             })
 
             await handler(req, res)
-            expect(res._getStatusCode()).toBe(402)
+            expect(res._getStatusCode()).toBe(400)
         })
 
         it("Should return 200 and be in the db if correct type of email entered (@hotmail)", async () => {
             const TEST_ADDRESS = "test@hotmail.com"
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
-                headers: { "Content-Type": "application/json" },
-                body: { address: TEST_ADDRESS }
+                // headers: { "Content-Type": "application/json" },
+                body: { email: TEST_ADDRESS }
             })
 
             await handler(req, res)
@@ -126,7 +126,7 @@ describe("Email verification APIs", () => {
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
                 headers: { "Content-Type": "application/json" },
-                body: { address: TEST_ADDRESS }
+                body: { email: TEST_ADDRESS }
             })
 
             await handler(req, res)
