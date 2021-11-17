@@ -107,12 +107,48 @@ describe("Email verification APIs", () => {
 
             expect(acc?.verified).toBeFalsy()
 
+            //expect(sendMailMock).toHaveBeenCalled()
+
+        })
+
+        it("should return 200 with previously verified account", async () => {
+            const TEST_ADDRESS = 'test@hotmail.com'
+
+            // Set up verified account DB entry
+            const account = new EmailUser({
+                provider: "hotmail",
+                hashId: TEST_ADDRESS,
+                verified: true,
+                joined: false,
+                emailRandomToken: "1234"
+            })
+            await account.save()
+
+            const { req, res } = createNextMocks({
+                method: "POST" as RequestMethod,
+                headers: { "Content-Type": "application/json" },
+                body: { address: TEST_ADDRESS }
+            })
+
+            await handler(req, res)
+
+            expect(res._getStatusCode()).toBe(200)
+
+            // Account should still be there
+            const acc = await EmailUser.findByHashId(TEST_ADDRESS)
+            
+            expect(acc).toBeDefined()
+
+            expect(acc?.verified).toBeTruthy()
+
         })
 
         it("Should verify email", async () => {
             logger.silly(`verify email...`)
+            
             const { req, res } = createNextMocks({
-                query: { id: "=1234?email=test@hotmail.co.uk" },
+                headers: { host: 'foo' },
+                query: { id: "1234?email=test@hotmail.co.uk" },
                 method: "PUT" as RequestMethod
             })
 
