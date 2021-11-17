@@ -16,7 +16,6 @@ export default async function verifyEmailAccount(hashId: string, randToken: stri
         if (!account) {
             // Account doesn't exist, make one and then send email.
             console.log("no account present")
-            message = "No account present"
 
             return "No account present"
         }

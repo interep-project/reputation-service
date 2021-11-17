@@ -5,7 +5,6 @@ import React from "react"
 
 import EmailInputButton from "src/components/EmailInput"
 
-
 export default function Signin(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
@@ -58,7 +57,7 @@ export default function Signin(): JSX.Element {
                     Reddit
                 </Button>
 
-                <EmailInputButton session={session}/>
+                <EmailInputButton session={session} />
             </VStack>
         </>
     )

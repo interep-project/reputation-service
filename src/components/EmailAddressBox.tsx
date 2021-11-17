@@ -1,6 +1,5 @@
+import { Alert, AlertIcon, AlertTitle, Button, Container, HStack, Input } from "@chakra-ui/react"
 import React, { useState } from "react"
-
-import { Container, Input, Button, HStack, Alert, AlertIcon, AlertTitle } from "@chakra-ui/react"
 
 export default function EmailAddressBox(): JSX.Element {
     const [_alertDisplay, setAlertDisplay] = useState<string>("none")
@@ -14,7 +13,7 @@ export default function EmailAddressBox(): JSX.Element {
             const address_string = adr.value
             if (address_string.includes("@hotmail")) {
                 console.log("address", address_string)
-                var message = ""
+                let message = ""
 
                 const requestOptions = {
                     method: "POST",
@@ -32,6 +31,7 @@ export default function EmailAddressBox(): JSX.Element {
                 console.log("sending email address to server...")
                 message = "sending email address to server..."
                 console.log("status: ", message)
+
                 const response = await fetch("/api/email/sendEmail", requestOptions)
                 const data = await response.json()
                 console.log(data)
@@ -58,8 +58,8 @@ export default function EmailAddressBox(): JSX.Element {
                 <Button onClick={() => submitEmail()}>Submit</Button>
             </HStack>
 
-            {_alertDisplay == "true" ? (
-                <Alert status={_alertType} marginTop={"5px"}>
+            {_alertDisplay === "true" ? (
+                <Alert status={_alertType} marginTop="5px">
                     <AlertIcon />
                     <AlertTitle>{_alertMessage}</AlertTitle>
                 </Alert>
