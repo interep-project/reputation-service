@@ -15,6 +15,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     if (!email.includes("@hotmail")) {
+        console.log("hi")
         return res.status(402).send("Invalid email, it must be an @hotmail address")
     }
 
