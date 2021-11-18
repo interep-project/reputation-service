@@ -70,6 +70,7 @@ export function addIdentityCommitment({
     userSignature,
     telegramUserId,
     emailUserId,
+    emailUserToken,
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
@@ -79,13 +80,15 @@ export function addIdentityCommitment({
     userSignature?: string
     telegramUserId?: string
     emailUserId?: string
+    emailUserToken?: string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
         accountId,
         userAddress,
         userSignature,
         telegramUserId,
-        emailUserId
+        emailUserId,
+        emailUserToken
     })
 }
 

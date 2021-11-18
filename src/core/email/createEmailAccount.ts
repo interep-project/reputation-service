@@ -49,7 +49,7 @@ export default async function createEmailAccount(hashId: string, provider: Strin
                 try {
                     logger.silly("trying to send email")
 
-                    return await sendEmail(hashId, String(randEmailToken)).then((result) => {
+                    return await sendEmail(hashId, String(randEmailToken),provider).then((result) => {
                         logger.silly("sendEmail message internal", result)
                         return result
                     })
