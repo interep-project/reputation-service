@@ -19,6 +19,12 @@ export default async function getGroups(provider?: Provider): Promise<Group[]> {
             return Promise.all(telegramGroupNames.map((telegramGroupName) => getGroup(provider, telegramGroupName)))
         }
 
+        if (provider === "email") {
+            const emailGroupNames = await MerkleTreeNode.getGroupNamesByProvider(provider)
+
+            return Promise.all(emailGroupNames.map((emailGroupName) => getGroup(provider, emailGroupName)))
+        }
+
         const reputationLevels = getReputationLevels(provider)
 
         return Promise.all(reputationLevels.map((reputation) => getGroup(provider, reputation)))

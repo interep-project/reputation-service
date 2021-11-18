@@ -3,7 +3,7 @@ import { Provider, Web3Provider } from "src/types/groups"
 import { getPoapGroupNames, PoapGroupName } from "./poap"
 
 export default function checkGroup(provider: Provider, name: ReputationLevel | PoapGroupName | string): boolean {
-    if (provider === "telegram") {
+    if (provider === "telegram" || provider === "email") {
         return true
     }
 

@@ -33,7 +33,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
 
     const step2 = useCallback(
         async (identityCommitment: string) => {
-            if (await joinGroup(identityCommitment, "email", groupId, { telegramUserId: userId })) {
+            if (await joinGroup(identityCommitment, "email", groupId, { emailUserId: userId })) {
                 setCurrentStep(0)
             }
         },

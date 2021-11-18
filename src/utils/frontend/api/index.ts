@@ -50,6 +50,10 @@ export async function checkIdentityCommitment({
     groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
 }): Promise<boolean | null> {
+    console.log("************frontendAPI")
+    console.log("provider",provider )
+    console.log("groupname",groupName )
+    console.log("identityCommitment",identityCommitment )
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
 }
 
@@ -64,7 +68,8 @@ export function addIdentityCommitment({
     accountId,
     userAddress,
     userSignature,
-    telegramUserId
+    telegramUserId,
+    emailUserId,
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
@@ -73,12 +78,14 @@ export function addIdentityCommitment({
     userAddress?: string
     userSignature?: string
     telegramUserId?: string
+    emailUserId?: string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
         accountId,
         userAddress,
         userSignature,
-        telegramUserId
+        telegramUserId,
+        emailUserId
     })
 }
 
