@@ -17,16 +17,10 @@ export default async function addIdentityCommitment(
     const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
     const contractOwner = await contractInstance.signer.getAddress()
 
-    console.log("contractAddress",contractAddress)
-    console.log("provider",provider)
-    console.log("name",name)
-
-    console.log("in here a")
     const groupSize = await contractInstance.getSize(
         ethers.utils.formatBytes32String(provider),
         ethers.utils.formatBytes32String(name)
     )
-    console.log("in here b")
     // If the group has not yet been created, it creates it.
     if (groupSize.toNumber() === 0) {
         await contractInstance.createGroup(
@@ -36,13 +30,13 @@ export default async function addIdentityCommitment(
             contractOwner
         )
     }
-    console.log("in here c")
+
     await contractInstance.addIdentityCommitment(
         ethers.utils.formatBytes32String(provider),
         ethers.utils.formatBytes32String(name),
         identityCommitment
     )
-    console.log("in here d")
+
     // Update the db with the new Merkle tree.
     return appendLeaf(provider, name, identityCommitment)
 }

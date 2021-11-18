@@ -9,7 +9,7 @@ import logger from "src/utils/backend/logger"
 export default async function addEmailIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
-    const { emailUserId } = JSON.parse(req.body)
+    const { emailUserId, emailUserToken } = JSON.parse(req.body)
 
     console.log("name", name)
     console.log("identityCommitment", identityCommitment)
@@ -30,7 +30,6 @@ export default async function addEmailIdentityCommitmentController(req: NextApiR
     console.log(emailUser)
 
     if (!emailUser) {
-        console.log("HERE")
         return res.status(403).end()
     }
 
@@ -41,16 +40,29 @@ export default async function addEmailIdentityCommitmentController(req: NextApiR
 
         await dbConnect()
 
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the Email group ${name}`)
+        // check if emailUserToken is same as in db if not fail if so change to verified and continue
+        
+        // already being verified shouldn't be a problem as that will change at the same
+        // time the joined changes which will not allow duplicates
 
-        await addIdentityCommitment("email", name, identityCommitment)
+        if (emailUser.emailRandomToken === emailUserToken) {
+            // not verified and random token matches
+            logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the Email group ${name}`)
 
-        console.log("added id commit")
-        emailUser.joined = true
-
-        await emailUser.save()
-
-        return res.status(201).send({ data: true })
+            await addIdentityCommitment("email", name, identityCommitment)
+    
+            console.log("added id commit")
+            emailUser.verified = true
+            emailUser.joined = true
+    
+            await emailUser.save()
+    
+            return res.status(201).send({ data: true })
+    
+        } else {
+            await emailUser.save()
+            return res.status(405).end()
+        }
     } catch (error) {
         logger.error(error)
 
