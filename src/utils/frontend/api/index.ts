@@ -76,6 +76,35 @@ export function addIdentityCommitment({
     })
 }
 
+export function removeIdentityCommitment({
+    provider,
+    groupName,
+    identityCommitment,
+    accountId,
+    userAddress,
+    userSignature,
+    telegramUserId
+}: {
+    provider: Provider
+    groupName: ReputationLevel | PoapGroupName | string
+    identityCommitment: string
+    accountId?: string
+    userAddress?: string
+    userSignature?: string
+    telegramUserId?: string
+}): Promise<any | null> {
+    return sendRequest(
+        `/api/groups/${provider}/${groupName}/${identityCommitment}`,
+        {
+            accountId,
+            userAddress,
+            userSignature,
+            telegramUserId
+        },
+        "DELETE"
+    )
+}
+
 export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation: string }): Promise<any | null> {
     return sendRequest("/api/linking/unlink", { decryptedAttestation })
 }

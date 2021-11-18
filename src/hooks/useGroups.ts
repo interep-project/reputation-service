@@ -12,8 +12,14 @@ type ReturnParameters = {
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
     signMessage: (signer: Signer, message: string) => Promise<string | null>
     retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
-    checkIdentityCommitment: (identityCommitment: string, provider: Provider, groupName: string) => Promise<true | null>
+    checkIdentityCommitment: (
+        identityCommitment: string,
+        provider: Provider,
+        groupName: string,
+        join: boolean
+    ) => Promise<true | null>
     joinGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
+    leaveGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     _loading: boolean
 }
 
@@ -21,6 +27,7 @@ export default function useGroups(): ReturnParameters {
     const [_loading, setLoading] = useState<boolean>(false)
     const {
         addIdentityCommitment,
+        removeIdentityCommitment,
         checkIdentityCommitment: _checkIdentityCommitment,
         checkGroup: _checkGroup,
         getGroup: _getGroup
@@ -113,7 +120,12 @@ export default function useGroups(): ReturnParameters {
     )
 
     const checkIdentityCommitment = useCallback(
-        async (identityCommitment: string, provider: Provider, groupName: string): Promise<true | null> => {
+        async (
+            identityCommitment: string,
+            provider: Provider,
+            groupName: string,
+            join = true
+        ): Promise<true | null> => {
             setLoading(true)
 
             const alreadyExist = await _checkIdentityCommitment({
@@ -127,9 +139,19 @@ export default function useGroups(): ReturnParameters {
                 return null
             }
 
-            if (alreadyExist) {
+            if (join && alreadyExist) {
                 toast({
                     description: `You already joined this group.`,
+                    variant: "subtle",
+                    isClosable: true
+                })
+                setLoading(false)
+                return null
+            }
+
+            if (!join && !alreadyExist) {
+                toast({
+                    description: `You have not joined this group yet.`,
                     variant: "subtle",
                     isClosable: true
                 })
@@ -170,6 +192,33 @@ export default function useGroups(): ReturnParameters {
         [toast, addIdentityCommitment]
     )
 
+    const leaveGroup = useCallback(
+        async (identityCommitment: string, provider: Provider, groupName: string, body: any): Promise<true | null> => {
+            setLoading(true)
+
+            const response = await removeIdentityCommitment({
+                provider,
+                groupName,
+                identityCommitment,
+                ...body
+            })
+
+            if (response === null) {
+                setLoading(false)
+                return null
+            }
+
+            setLoading(false)
+            toast({
+                description: `You leaved the ${capitalize(provider)} group correctly.`,
+                variant: "subtle",
+                isClosable: true
+            })
+            return true
+        },
+        [toast, removeIdentityCommitment]
+    )
+
     return {
         checkGroup,
         getGroup,
@@ -177,6 +226,7 @@ export default function useGroups(): ReturnParameters {
         retrieveIdentityCommitment,
         checkIdentityCommitment,
         joinGroup,
+        leaveGroup,
         _loading
     }
 }
