@@ -116,6 +116,8 @@ export default function useGroups(): ReturnParameters {
         async (identityCommitment: string, provider: Provider, groupName: string): Promise<true | null> => {
             setLoading(true)
 
+            console.log("hi")
+
             const alreadyExist = await _checkIdentityCommitment({
                 provider,
                 groupName,

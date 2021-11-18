@@ -7,6 +7,7 @@ import apiMiddleware from "src/utils/backend/apiMiddleware"
 import logger from "src/utils/backend/logger"
 import addPoapIdentityCommitmentController from "./addPoapIdentityCommitment"
 import addTelegramIdentityCommitmentController from "./addTelegramIdentityCommitment"
+import addEmailIdentityCommitmentController from "./addEmailIdentityCommitment"
 import addOAuthIdentityCommitmentController from "./addOAuthIdentityCommitment"
 
 export default async function addIdentityCommitmentController(
@@ -36,6 +37,8 @@ export default async function addIdentityCommitmentController(
             return addPoapIdentityCommitmentController(req, res)
         case "telegram":
             return addTelegramIdentityCommitmentController(req, res)
+        case "email":
+            return addEmailIdentityCommitmentController(req, res)
         default:
             return addOAuthIdentityCommitmentController(req, res, provider as OAuthProvider)
     }
