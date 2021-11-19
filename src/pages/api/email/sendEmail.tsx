@@ -22,9 +22,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     try {
         logger.silly("Creating email account")
 
-        await createEmailAccount(email, "hotmail")
+        const status = await createEmailAccount(email, "hotmail")
+        console.log("status", status)
 
-        return res.status(200).send({ data: true })
+        if(status){
+            return res.status(200).send({ data: true })
+        } else {
+            return res.status(200).send({ data: false })
+        }
+        
     } catch (error) {
         logger.error(error)
 

@@ -24,9 +24,9 @@ export default async function addEmailIdentityCommitmentController(req: NextApiR
         return res.status(400).end()
     }
 
-    // const hashId = sha256(emailUserId + name)
+    const hashId = sha256(emailUserId + name)
     // const emailUser = await EmailUser.findByHashId(hashId)
-    const emailUser = await EmailUser.findByHashId(emailUserId)
+    const emailUser = await EmailUser.findByHashId(hashId)
     console.log(emailUser)
 
     if (!emailUser) {
