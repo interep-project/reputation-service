@@ -1,5 +1,5 @@
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
-import { poseidon } from "circomlib"
+import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
 import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
