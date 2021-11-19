@@ -3,7 +3,6 @@ import { findByHashId } from "./EmailUser.statics"
 import { EmailUserData, EmailUserDocument, EmailUserModel } from "./EmailUser.types"
 
 const EmailUserSchemaFields: Record<keyof EmailUserData, any> = {
-    provider: { type: String, required: true },
     hashId: { type: String, required: true, index: true, unique: true },
     verified: {type: Boolean, required: true},
     joined: { type: Boolean, required: true },

@@ -15,7 +15,7 @@ export default function EmailInputButton({ session }: Parameters): JSX.Element {
         <div>
             <VStack spacing={4} align="left">
                 <Button
-                    onClick={showEmailInput.on}
+                    onClick={showEmailInput.toggle}
                     leftIcon={<FaEnvelope />}
                     colorScheme="purple"
                     variant="semisolid"

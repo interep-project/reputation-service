@@ -2,7 +2,6 @@ import type { Document, Model } from "mongoose"
 import type { findByHashId } from "./EmailUser.statics"
 
 export type EmailUserData = {
-    provider: string
     hashId: string
     verified: boolean
     joined: boolean

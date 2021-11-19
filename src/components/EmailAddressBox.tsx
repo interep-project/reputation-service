@@ -23,10 +23,19 @@ export default function EmailAddressBox(): JSX.Element {
         setLoading(true)
 
         const response = await sendEmail({ email })
+        console.log("response",response)
 
         if (response) {
             toast({
                 description: "Magic link sent correctly, please check your email.",
+                variant: "subtle",
+                isClosable: true
+            })
+            setLoading(false)
+            setEmail("")
+        } else {
+            toast({
+                description: `Error sending email to ${email}`,
                 variant: "subtle",
                 isClosable: true
             })

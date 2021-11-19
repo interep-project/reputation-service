@@ -1,14 +1,17 @@
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import { sha256 } from "@interrep/telegram-bot"
 import EmailUser from "../../models/emailUser/EmailUser.model"
 import sendEmail from "./sendEmail"
 
-export default async function createEmailAccount(hashId: string, provider: String): Promise<string | void> {
+export default async function createEmailAccount(userId: string, provider: String): Promise<boolean | void> {
     await dbConnect()
 
     let verified = false
 
-    logger.silly(`making account ${hashId}`)
+    logger.silly(`making account ${userId}`)
+
+    const hashId = sha256(userId + provider)
 
     try {
         let account = await EmailUser.findByHashId(hashId) // not sure if this is right info
@@ -16,11 +19,12 @@ export default async function createEmailAccount(hashId: string, provider: Strin
 
         logger.silly(`account ${JSON.stringify(account)}`)
 
+
+
         if (!account) {
             // account doesn't exist, make one and then send email
             logger.silly("no account present")
             account = new EmailUser({
-                provider,
                 hashId,
                 verified: false,
                 joined: false,
@@ -49,7 +53,7 @@ export default async function createEmailAccount(hashId: string, provider: Strin
                 try {
                     logger.silly("trying to send email")
 
-                    return await sendEmail(hashId, String(randEmailToken),provider).then((result) => {
+                    return await sendEmail(userId, String(randEmailToken),provider).then((result) => {
                         logger.silly("sendEmail message internal", result)
                         return result
                     })
@@ -58,7 +62,7 @@ export default async function createEmailAccount(hashId: string, provider: Strin
                 }
             } else {
                 // Account is already verified.
-                return "address already verified"
+                return false
             }
         } catch (error) {
             throw new Error(`Error trying to save the account: ${error}`)
