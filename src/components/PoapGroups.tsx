@@ -14,8 +14,16 @@ export default function PoapGroups(): JSX.Element {
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_group, setGroup] = useState<Group | null>(null)
     const [_currentStep, setCurrentStep] = useState<number>(1)
+    const [_hasJoined, setHasJoined] = useState<boolean>()
     const { getGroup } = useInterRepAPI()
-    const { signMessage, retrieveIdentityCommitment, checkIdentityCommitment, joinGroup, _loading } = useGroups()
+    const {
+        signMessage,
+        retrieveIdentityCommitment,
+        checkIdentityCommitment,
+        joinGroup,
+        leaveGroup,
+        _loading
+    } = useGroups()
 
     const step1 = useCallback(
         async (groupName: PoapGroupName) => {
@@ -41,28 +49,40 @@ export default function PoapGroups(): JSX.Element {
             const identityCommitment = await retrieveIdentityCommitment(signer, Web3Provider.POAP)
 
             if (identityCommitment) {
-                if (await checkIdentityCommitment(identityCommitment, Web3Provider.POAP, group.name)) {
-                    setIdentityCommitment(identityCommitment)
-                    setCurrentStep(3)
+                const hasJoined = await checkIdentityCommitment(identityCommitment, Web3Provider.POAP, group.name)
+
+                if (hasJoined === null) {
+                    return
                 }
+
+                setIdentityCommitment(identityCommitment)
+                setCurrentStep(3)
+                setHasJoined(hasJoined)
             }
         },
         [retrieveIdentityCommitment, checkIdentityCommitment]
     )
 
     const step3 = useCallback(
-        async (signer: Signer, userAddress: string, group: Group, identityCommitment: string) => {
+        async (signer: Signer, userAddress: string, group: Group, identityCommitment: string, hasJoined: boolean) => {
             const userSignature = await signMessage(signer, identityCommitment)
 
             if (userSignature) {
                 if (
-                    await joinGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature })
+                    !hasJoined &&
+                    (await joinGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature }))
                 ) {
-                    setCurrentStep(0)
+                    setCurrentStep(1)
+                    setHasJoined(undefined)
+                } else if (
+                    await leaveGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature })
+                ) {
+                    setCurrentStep(1)
+                    setHasJoined(undefined)
                 }
             }
         },
-        [joinGroup, signMessage]
+        [joinGroup, leaveGroup, signMessage]
     )
 
     return !_poapGroupNames.length ? (
@@ -91,16 +111,24 @@ export default function PoapGroups(): JSX.Element {
                     loading={_currentStep === 2 && _loading}
                     disabled={_currentStep !== 2}
                 />
-                <Step
-                    title="Step 3"
-                    message="Join the selected group."
-                    actionText="Join Group"
-                    actionFunction={() =>
-                        step3(_signer as Signer, _address as string, _group as Group, _identityCommitment as string)
-                    }
-                    loading={_currentStep === 3 && _loading}
-                    disabled={_currentStep !== 3}
-                />
+                {_hasJoined !== undefined && (
+                    <Step
+                        title="Step 3"
+                        message={`${!_hasJoined ? "Join" : "Leave"} our Semaphore group.`}
+                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
+                        actionFunction={() =>
+                            step3(
+                                _signer as Signer,
+                                _address as string,
+                                _group as Group,
+                                _identityCommitment as string,
+                                _hasJoined
+                            )
+                        }
+                        loading={_currentStep === 3 && _loading}
+                        disabled={_currentStep !== 3}
+                    />
+                )}
             </VStack>
         </>
     )

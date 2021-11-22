@@ -9,6 +9,7 @@ import logger from "src/utils/backend/logger"
 import addOAuthIdentityCommitmentController from "./addOAuthIdentityCommitment"
 import addPoapIdentityCommitmentController from "./addPoapIdentityCommitment"
 import addTelegramIdentityCommitmentController from "./addTelegramIdentityCommitment"
+import deletePoapIdentityCommitmentController from "./deletePoapIdentityCommitment"
 import deleteTelegramIdentityCommitmentController from "./deleteTelegramIdentityCommitment"
 
 export default async function handleIdentityCommitmentController(
@@ -47,6 +48,8 @@ export default async function handleIdentityCommitmentController(
             }
         case "DELETE":
             switch (provider) {
+                case Web3Provider.POAP:
+                    return deletePoapIdentityCommitmentController(req, res)
                 case "telegram":
                     return deleteTelegramIdentityCommitmentController(req, res)
                 default:

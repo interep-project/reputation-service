@@ -16,8 +16,8 @@ type ReturnParameters = {
         identityCommitment: string,
         provider: Provider,
         groupName: string,
-        join: boolean
-    ) => Promise<true | null>
+        join?: boolean
+    ) => Promise<boolean | null>
     joinGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     leaveGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     _loading: boolean
@@ -120,49 +120,24 @@ export default function useGroups(): ReturnParameters {
     )
 
     const checkIdentityCommitment = useCallback(
-        async (
-            identityCommitment: string,
-            provider: Provider,
-            groupName: string,
-            join = true
-        ): Promise<true | null> => {
+        async (identityCommitment: string, provider: Provider, groupName: string): Promise<boolean | null> => {
             setLoading(true)
 
-            const alreadyExist = await _checkIdentityCommitment({
+            const hasJoined = await _checkIdentityCommitment({
                 provider,
                 groupName,
                 identityCommitment
             })
 
-            if (alreadyExist === null) {
-                setLoading(false)
-                return null
-            }
-
-            if (join && alreadyExist) {
-                toast({
-                    description: `You already joined this group.`,
-                    variant: "subtle",
-                    isClosable: true
-                })
-                setLoading(false)
-                return null
-            }
-
-            if (!join && !alreadyExist) {
-                toast({
-                    description: `You have not joined this group yet.`,
-                    variant: "subtle",
-                    isClosable: true
-                })
+            if (hasJoined === null) {
                 setLoading(false)
                 return null
             }
 
             setLoading(false)
-            return true
+            return hasJoined
         },
-        [toast, _checkIdentityCommitment]
+        [_checkIdentityCommitment]
     )
 
     const joinGroup = useCallback(
