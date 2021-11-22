@@ -2141,10 +2141,10 @@
   dependencies:
     "@libsem/identity" "^1.0.17"
 
-"@interrep/telegram-bot@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.4.1.tgz#fe2615065a9fceb15ef47bd95117284517bbc198"
-  integrity sha512-Ttr6DkxE+FxJkhNE0hGOoChaLQmZzqOhjQEa+JRY2DH16Ed3EUG37keItUkUTxx6xsYfzLjZZc2RywHFMVhBJw==
+"@interrep/telegram-bot@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.4.2.tgz#ac8b5db8c2f46220c2e885e7396ef785498bed29"
+  integrity sha512-O8RD9QOf33JuyyWtYtDB2XpZveWyuW4rC2x4LPTMZ8bnKipCM4ygdLOcViCSX9v/5Kj4M6OVg53xhmnVQw1G6Q==
   dependencies:
     "@interrep/db" "^0.2.0"
     grammy "^1.3.4"

@@ -34,7 +34,7 @@
         "@interrep/db": "^0.2.0",
         "@interrep/reputation-criteria": "^0.12.0",
         "@interrep/semethid": "^0.10.0",
-        "@interrep/telegram-bot": "^0.4.1",
+        "@interrep/telegram-bot": "^0.4.2",
         "@sentry/nextjs": "^6.12.0",
         "bnc-onboard": "^1.34.1",
         "botometer": "^1.0.12",
