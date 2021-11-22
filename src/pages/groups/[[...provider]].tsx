@@ -34,12 +34,7 @@ export default function Groups(): JSX.Element {
     }
 
     function isTelegramMagicLink(parameters: string[]): boolean {
-        return (
-            Array.isArray(parameters) &&
-            parameters.length === 4 &&
-            parameters[0] === "telegram" &&
-            (parameters[1] === "join" || parameters[1] === "leave")
-        )
+        return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
     }
 
     return (
@@ -80,11 +75,7 @@ export default function Groups(): JSX.Element {
                     <TabPanels>
                         {isTelegramMagicLink(parameters) && (
                             <TabPanel>
-                                <TelegramGroups
-                                    userId={parameters[2]}
-                                    groupId={parameters[3]}
-                                    join={parameters[1] === "join"}
-                                />
+                                <TelegramGroups userId={parameters[1]} groupId={parameters[2]} />
                             </TabPanel>
                         )}
                         {session && (

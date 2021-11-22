@@ -8,35 +8,42 @@ import useGroups from "src/hooks/useGroups"
 type Properties = {
     userId: string
     groupId: string
-    join: boolean
 }
 
-export default function TelegramGroups({ userId, groupId, join = true }: Properties): JSX.Element {
+export default function TelegramGroups({ userId, groupId }: Properties): JSX.Element {
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
+    const [_hasJoined, setHasJoined] = useState<boolean>()
     const { retrieveIdentityCommitment, checkIdentityCommitment, joinGroup, leaveGroup, _loading } = useGroups()
 
     const step1 = useCallback(
-        async (signer: Signer, groupId: string, join: boolean) => {
+        async (signer: Signer, groupId: string) => {
             const identityCommitment = await retrieveIdentityCommitment(signer, "telegram")
 
             if (identityCommitment) {
-                if (await checkIdentityCommitment(identityCommitment, "telegram", groupId, join)) {
-                    setIdentityCommitment(identityCommitment)
-                    setCurrentStep(2)
+                const hasJoined = await checkIdentityCommitment(identityCommitment, "telegram", groupId)
+
+                if (hasJoined === null) {
+                    return
                 }
+
+                setIdentityCommitment(identityCommitment)
+                setCurrentStep(2)
+                setHasJoined(hasJoined)
             }
         },
         [retrieveIdentityCommitment, checkIdentityCommitment]
     )
 
     const step2 = useCallback(
-        async (identityCommitment: string, groupId: string, userId: string, join: boolean) => {
-            if (join && (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId }))) {
-                setCurrentStep(0)
+        async (identityCommitment: string, groupId: string, userId: string, hasJoined: boolean) => {
+            if (!hasJoined && (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId }))) {
+                setCurrentStep(1)
+                setHasJoined(undefined)
             } else if (await leaveGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
-                setCurrentStep(0)
+                setCurrentStep(1)
+                setHasJoined(undefined)
             }
         },
         [joinGroup, leaveGroup]
@@ -48,18 +55,20 @@ export default function TelegramGroups({ userId, groupId, join = true }: Propert
                 title="Step 1"
                 message="Generate your Semaphore identity."
                 actionText="Generate Identity"
-                actionFunction={() => step1(_signer as Signer, groupId, join)}
+                actionFunction={() => step1(_signer as Signer, groupId)}
                 loading={_currentStep === 1 && _loading}
                 disabled={_currentStep !== 1}
             />
-            <Step
-                title="Step 2"
-                message={`${join ? "Join" : "Leave"} our Semaphore group.`}
-                actionText={`${join ? "Join" : "Leave"} Group`}
-                actionFunction={() => step2(_identityCommitment as string, groupId, userId, join)}
-                loading={_currentStep === 2 && _loading}
-                disabled={_currentStep !== 2}
-            />
+            {_hasJoined !== undefined && (
+                <Step
+                    title="Step 2"
+                    message={`${!_hasJoined ? "Join" : "Leave"} our Semaphore group.`}
+                    actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
+                    actionFunction={() => step2(_identityCommitment as string, groupId, userId, _hasJoined)}
+                    loading={_currentStep === 2 && _loading}
+                    disabled={_currentStep !== 2}
+                />
+            )}
         </VStack>
     )
 }
