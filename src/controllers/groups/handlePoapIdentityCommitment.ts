@@ -1,12 +1,12 @@
 import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment } from "src/core/groups"
+import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import { getPoapGroupNamesByAddress, PoapGroupName } from "src/core/groups/poap"
 import { Web3Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function addPoapIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handlePoapIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
     const { userSignature, userAddress } = JSON.parse(req.body)
@@ -35,9 +35,11 @@ export default async function addPoapIdentityCommitmentController(req: NextApiRe
 
         await dbConnect()
 
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the POAP group ${name}`)
-
-        await addIdentityCommitment(Web3Provider.POAP, name as PoapGroupName, identityCommitment)
+        if (req.method === "POST") {
+            await addIdentityCommitment(Web3Provider.POAP, name, identityCommitment)
+        } else if (req.method === "DELETE") {
+            await deleteIdentityCommitment(Web3Provider.POAP, name, identityCommitment)
+        }
 
         return res.status(201).send({ data: true })
     } catch (error) {

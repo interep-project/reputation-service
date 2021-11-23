@@ -1,47 +1,38 @@
-import { Spinner, useToast, VStack } from "@chakra-ui/react"
+import { Text, VStack } from "@chakra-ui/react"
 import { Signer } from "ethers"
 import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { getPoapEventName, PoapGroupName } from "src/core/groups/poap"
 import useGroups from "src/hooks/useGroups"
-import useInterRepAPI from "src/hooks/useInterRepAPI"
 import { Group, Web3Provider } from "src/types/groups"
 
 export default function PoapGroups(): JSX.Element {
-    const toast = useToast()
     const { _signer, _poapGroupNames, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
-    const [_group, setGroup] = useState<Group | null>(null)
+    const [_group, setGroup] = useState<Group>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const { getGroup } = useInterRepAPI()
     const {
         signMessage,
         retrieveIdentityCommitment,
         checkIdentityCommitment,
         joinGroup,
         leaveGroup,
+        getGroup,
         _loading
     } = useGroups()
 
     const step1 = useCallback(
         async (groupName: PoapGroupName) => {
-            const group = await getGroup({ provider: Web3Provider.POAP, groupName })
+            const group = await getGroup(Web3Provider.POAP, groupName)
 
-            if (group === null) {
-                return
+            if (group) {
+                setGroup(group)
+                setCurrentStep(2)
             }
-
-            setGroup(group)
-            toast({
-                description: `The selected POAP group has ${group.size} ${group.size === 1 ? "member" : "members"}.`,
-                variant: "subtle",
-                isClosable: true
-            })
-            setCurrentStep(2)
         },
-        [toast, getGroup]
+        [getGroup]
     )
 
     const step2 = useCallback(
@@ -74,24 +65,28 @@ export default function PoapGroups(): JSX.Element {
                 ) {
                     setCurrentStep(1)
                     setHasJoined(undefined)
+                    setGroup(undefined)
                 } else if (
                     await leaveGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature })
                 ) {
                     setCurrentStep(1)
                     setHasJoined(undefined)
+                    setGroup(undefined)
                 }
             }
         },
         [joinGroup, leaveGroup, signMessage]
     )
 
-    return !_poapGroupNames.length ? (
-        <VStack h="300px" align="center" justify="center">
-            <Spinner thickness="4px" speed="0.65s" size="xl" />
-        </VStack>
-    ) : (
+    return (
         <>
-            <VStack mt="10px" spacing={4} align="left">
+            {_group && (
+                <Text fontWeight="semibold">
+                    The {_group.name} POAP group has {_group.size} members. Follow the steps below to join/leave it.
+                </Text>
+            )}
+
+            <VStack mt="20px" spacing={4} align="left">
                 <Step
                     title="Step 1"
                     message="Select a POAP group."
@@ -114,7 +109,7 @@ export default function PoapGroups(): JSX.Element {
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 3"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our Semaphore group.`}
+                        message={`${!_hasJoined ? "Join" : "Leave"} our POAP Semaphore group.`}
                         actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
                         actionFunction={() =>
                             step3(

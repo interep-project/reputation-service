@@ -1,4 +1,3 @@
-import { OAuthProvider } from "@interrep/reputation-criteria"
 import Cors from "cors"
 import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
@@ -6,11 +5,9 @@ import { getProviders } from "src/core/groups"
 import { Provider, Web3Provider } from "src/types/groups"
 import apiMiddleware from "src/utils/backend/apiMiddleware"
 import logger from "src/utils/backend/logger"
-import addOAuthIdentityCommitmentController from "./addOAuthIdentityCommitment"
-import addPoapIdentityCommitmentController from "./addPoapIdentityCommitment"
-import addTelegramIdentityCommitmentController from "./addTelegramIdentityCommitment"
-import deletePoapIdentityCommitmentController from "./deletePoapIdentityCommitment"
-import deleteTelegramIdentityCommitmentController from "./deleteTelegramIdentityCommitment"
+import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
+import handleTelegramIdentityCommitmentController from "./handleTelegramIdentityCommitment"
+import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
 
 export default async function handleIdentityCommitmentController(
     req: NextApiRequest,
@@ -22,6 +19,10 @@ export default async function handleIdentityCommitmentController(
         logger.error(error)
 
         return res.status(500).end()
+    }
+
+    if (req.method !== "POST" && req.method !== "DELETE") {
+        return res.status(405).end()
     }
 
     const provider = req.query?.provider
@@ -36,26 +37,12 @@ export default async function handleIdentityCommitmentController(
         return res.status(400).end()
     }
 
-    switch (req.method) {
-        case "POST":
-            switch (provider) {
-                case Web3Provider.POAP:
-                    return addPoapIdentityCommitmentController(req, res)
-                case "telegram":
-                    return addTelegramIdentityCommitmentController(req, res)
-                default:
-                    return addOAuthIdentityCommitmentController(req, res, provider as OAuthProvider)
-            }
-        case "DELETE":
-            switch (provider) {
-                case Web3Provider.POAP:
-                    return deletePoapIdentityCommitmentController(req, res)
-                case "telegram":
-                    return deleteTelegramIdentityCommitmentController(req, res)
-                default:
-                    return res.status(501).end()
-            }
+    switch (provider) {
+        case Web3Provider.POAP:
+            return handlePoapIdentityCommitmentController(req, res)
+        case "telegram":
+            return handleTelegramIdentityCommitmentController(req, res)
         default:
-            return res.status(405).end()
+            return handleOAuthIdentityCommitmentController(req, res)
     }
 }

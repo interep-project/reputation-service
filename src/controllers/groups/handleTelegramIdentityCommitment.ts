@@ -1,11 +1,11 @@
-import { TelegramUser } from "@interrep/db"
 import { sha256 } from "@interrep/telegram-bot"
+import { TelegramUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import { deleteIdentityCommitment } from "src/core/groups"
+import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function deleteTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handleTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
     const { telegramUserId } = JSON.parse(req.body)
@@ -27,18 +27,26 @@ export default async function deleteTelegramIdentityCommitmentController(req: Ne
         const telegramUser = await TelegramUser.findByHashId(hashId)
 
         if (!telegramUser) {
-            return res.status(404).end()
+            return res.status(403).end()
         }
 
-        if (!telegramUser.joined) {
-            throw new Error(`Telegram user has not joined yet`)
+        if (req.method === "POST") {
+            if (telegramUser.joined) {
+                throw new Error(`Telegram user already joined this group`)
+            }
+
+            await addIdentityCommitment("telegram", name, identityCommitment)
+
+            telegramUser.joined = true
+        } else if (req.method === "DELETE") {
+            if (!telegramUser.joined) {
+                throw new Error(`Telegram user has not joined this group yet`)
+            }
+
+            await deleteIdentityCommitment("telegram", name, identityCommitment)
+
+            telegramUser.joined = false
         }
-
-        logger.silly(`Deleting identity commitment ${identityCommitment} from the tree of the Telegram group ${name}`)
-
-        await deleteIdentityCommitment("telegram", name, identityCommitment)
-
-        telegramUser.joined = false
 
         await telegramUser.save()
 

@@ -1,24 +1,28 @@
-import { calculateReputation, ReputationLevel, OAuthProvider, getReputationLevels } from "@interrep/reputation-criteria"
+import { OAuthAccount } from "@interrep/db"
+import { calculateReputation, OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { OAuthAccount } from "@interrep/db"
+import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import getBotometerScore from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
-import addIdentityCommitments from "src/core/groups/addIdentityCommitments"
 
-export default async function addOAuthIdentityCommitmentController(
-    req: NextApiRequest,
-    res: NextApiResponse,
-    provider: OAuthProvider
-) {
+export default async function handleOAuthIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+    const provider = req.query?.provider
     const name = req.query?.name
     const identityCommitment = req.query?.identityCommitment
 
-    if (!name || typeof name !== "string" || !identityCommitment || typeof identityCommitment !== "string") {
+    if (
+        !provider ||
+        typeof provider !== "string" ||
+        !name ||
+        typeof name !== "string" ||
+        !identityCommitment ||
+        typeof identityCommitment !== "string"
+    ) {
         return res.status(400).end()
     }
 
@@ -93,31 +97,23 @@ export default async function addOAuthIdentityCommitmentController(
                 })
             }
 
-            if (account.hasJoinedAGroup) {
-                throw new Error(`Account already joined a ${provider} group`)
+            if (req.method === "POST") {
+                if (account.hasJoinedAGroup) {
+                    throw new Error(`Account already joined a ${provider} group`)
+                }
+
+                await addIdentityCommitment(provider, name, identityCommitment)
+
+                account.hasJoinedAGroup = true
+            } else if (req.method === "DELETE") {
+                if (!account.hasJoinedAGroup) {
+                    throw new Error(`Account has not joined a ${provider} group yet`)
+                }
+
+                await deleteIdentityCommitment(provider, name, identityCommitment)
+
+                account.hasJoinedAGroup = false
             }
-
-            const reputationLevels = getReputationLevels()
-
-            switch (name) {
-                case ReputationLevel.GOLD:
-                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                    break
-                case ReputationLevel.SILVER:
-                    reputationLevels.shift()
-                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                    break
-                case ReputationLevel.BRONZE:
-                    reputationLevels.shift()
-                    reputationLevels.shift()
-                    await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                    break
-                default:
-                    await addIdentityCommitments(provider, [ReputationLevel.NOT_SUFFICIENT], identityCommitment)
-                    break
-            }
-
-            account.hasJoinedAGroup = true
 
             await account.save()
 
@@ -148,8 +144,6 @@ export default async function addOAuthIdentityCommitmentController(
     try {
         await dbConnect()
 
-        logger.silly(`Adding identity commitment ${identityCommitment} to the tree of the ${provider} group ${name}`)
-
         const account = await OAuthAccount.findById(accountId)
 
         if (!account) {
@@ -164,31 +158,23 @@ export default async function addOAuthIdentityCommitmentController(
             throw new Error("Account doesn't have the right reputation")
         }
 
-        if (account.hasJoinedAGroup) {
-            throw new Error(`Account already joined a ${provider} group`)
+        if (req.method === "POST") {
+            if (account.hasJoinedAGroup) {
+                throw new Error(`Account already joined a ${provider} group`)
+            }
+
+            await addIdentityCommitment(provider, name, identityCommitment)
+
+            account.hasJoinedAGroup = true
+        } else if (req.method === "DELETE") {
+            if (!account.hasJoinedAGroup) {
+                throw new Error(`Account has not joined a ${provider} group yet`)
+            }
+
+            await deleteIdentityCommitment(provider, name, identityCommitment)
+
+            account.hasJoinedAGroup = false
         }
-
-        const reputationLevels = getReputationLevels()
-
-        switch (name) {
-            case ReputationLevel.GOLD:
-                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                break
-            case ReputationLevel.SILVER:
-                reputationLevels.shift()
-                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                break
-            case ReputationLevel.BRONZE:
-                reputationLevels.shift()
-                reputationLevels.shift()
-                await addIdentityCommitments(provider, reputationLevels, identityCommitment)
-                break
-            default:
-                await addIdentityCommitments(provider, [ReputationLevel.NOT_SUFFICIENT], identityCommitment)
-                break
-        }
-
-        account.hasJoinedAGroup = true
 
         await account.save()
 
