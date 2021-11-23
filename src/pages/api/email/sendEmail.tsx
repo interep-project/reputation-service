@@ -8,7 +8,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(405).end()
     }
 
-    const { email } = JSON.parse(req.body)
+    const { email, groupId } = JSON.parse(req.body)
 
     if (!email) {
         return res.status(400).end()
@@ -22,7 +22,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     try {
         logger.silly("Creating email account")
 
-        const status = await createEmailAccount(email, "hotmail")
+        const status = await createEmailAccount(email, groupId)
         console.log("status", status)
 
         if(status){
