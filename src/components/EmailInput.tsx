@@ -1,7 +1,7 @@
-import { Button, useBoolean, VStack } from "@chakra-ui/react"
+import { Button, useBoolean, VStack, Tooltip, useColorMode,Icon } from "@chakra-ui/react"
 import { Session } from "next-auth"
 import React from "react"
-import { FaEnvelope } from "react-icons/fa"
+import { FaEnvelope,FaInfoCircle } from "react-icons/fa"
 import EmailAddressBox from "src/components/EmailAddressBox"
 
 type Parameters = {
@@ -21,7 +21,22 @@ export default function EmailInputButton({ session }: Parameters): JSX.Element {
                     variant="semisolid"
                     isDisabled={!!session}
                 >
-                    @hotmail Email
+                    Email
+                    
+                <Tooltip
+                    label="Supported email domains include @hotmail."
+                    placement="right-start"
+                >
+                    <span>
+                        <Icon
+                            boxSize="20px"
+                            ml="10px"
+                            mb="5px"
+                            as={FaInfoCircle}
+                        />
+                    </span>
+                </Tooltip>
+
                 </Button>
                 {_emailInput ? <EmailAddressBox /> : null}
             </VStack>

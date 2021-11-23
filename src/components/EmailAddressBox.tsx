@@ -1,6 +1,7 @@
 import { Button, HStack, Input, useToast } from "@chakra-ui/react"
 import React, { useState } from "react"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
+import checkEmailAddress from "src/core/email/emailAddressChecker"
 
 export default function EmailAddressBox(): JSX.Element {
     const toast = useToast()
@@ -9,7 +10,13 @@ export default function EmailAddressBox(): JSX.Element {
     const [_loading, setLoading] = useState<boolean>(false)
 
     async function submitEmail(email: string) {
-        if (!email.includes("@hotmail")) {
+
+        let groupId = checkEmailAddress(email)
+
+        console.log("groupId",groupId)
+               
+
+        if (!groupId) {
             toast({
                 description: "You must enter a @hotmail address.",
                 variant: "subtle",
@@ -21,8 +28,9 @@ export default function EmailAddressBox(): JSX.Element {
         }
 
         setLoading(true)
+        console.log(email)
 
-        const response = await sendEmail({ email })
+        const response = await sendEmail({ email, groupId })
         console.log("response",response)
 
         if (response) {
@@ -42,6 +50,7 @@ export default function EmailAddressBox(): JSX.Element {
             setLoading(false)
             setEmail("")
         }
+
     }
 
     return (
