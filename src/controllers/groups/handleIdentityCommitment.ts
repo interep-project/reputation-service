@@ -8,6 +8,7 @@ import logger from "src/utils/backend/logger"
 import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
 import handleTelegramIdentityCommitmentController from "./handleTelegramIdentityCommitment"
 import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
+import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
 
 export default async function handleIdentityCommitmentController(
     req: NextApiRequest,
@@ -42,6 +43,8 @@ export default async function handleIdentityCommitmentController(
             return handlePoapIdentityCommitmentController(req, res)
         case "telegram":
             return handleTelegramIdentityCommitmentController(req, res)
+        case "email":
+            return handleEmailIdentityCommitmentController(req, res)
         default:
             return handleOAuthIdentityCommitmentController(req, res)
     }

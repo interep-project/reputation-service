@@ -3,7 +3,7 @@ import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
-export function sendEmail({ email, groupId }: { email: string, groupId: string }) {
+export function sendEmail({ email, groupId }: { email: string; groupId: string }) {
     return sendRequest(`/api/email/sendEmail`, {
         email,
         groupId
@@ -51,10 +51,6 @@ export async function checkIdentityCommitment({
     groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
 }): Promise<boolean | null> {
-    console.log("************frontendAPI")
-    console.log("provider",provider )
-    console.log("groupname",groupName )
-    console.log("identityCommitment",identityCommitment )
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
 }
 
@@ -71,7 +67,7 @@ export function addIdentityCommitment({
     userSignature,
     telegramUserId,
     emailUserId,
-    emailUserToken,
+    emailUserToken
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string

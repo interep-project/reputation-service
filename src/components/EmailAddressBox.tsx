@@ -10,11 +10,7 @@ export default function EmailAddressBox(): JSX.Element {
     const [_loading, setLoading] = useState<boolean>(false)
 
     async function submitEmail(email: string) {
-
-        let groupId = checkEmailAddress(email)
-
-        console.log("groupId",groupId)
-               
+        const groupId = checkEmailAddress(email)
 
         if (!groupId) {
             toast({
@@ -31,7 +27,7 @@ export default function EmailAddressBox(): JSX.Element {
         console.log(email)
 
         const response = await sendEmail({ email, groupId })
-        console.log("response",response)
+        console.log("response", response)
 
         if (response) {
             toast({
@@ -50,7 +46,6 @@ export default function EmailAddressBox(): JSX.Element {
             setLoading(false)
             setEmail("")
         }
-
     }
 
     return (
