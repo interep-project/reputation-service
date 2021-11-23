@@ -1,5 +1,5 @@
-import Groups from "contract-artifacts/contracts/Groups.sol/Groups.json"
-import ReputationBadge from "contract-artifacts/contracts/ReputationBadge.sol/ReputationBadge.json"
+import Groups from "contract-artifacts/Groups.json"
+import ReputationBadge from "contract-artifacts/ReputationBadge.json"
 import { Contract } from "ethers"
 import { ContractName } from "src/config"
 
