@@ -31,21 +31,21 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
         }
 
         if (req.method === "POST") {
-            if (telegramUser.joined) {
+            if (telegramUser.hasJoined) {
                 throw new Error(`Telegram user already joined this group`)
             }
 
             await addIdentityCommitment("telegram", name, identityCommitment)
 
-            telegramUser.joined = true
+            telegramUser.hasJoined = true
         } else if (req.method === "DELETE") {
-            if (!telegramUser.joined) {
+            if (!telegramUser.hasJoined) {
                 throw new Error(`Telegram user has not joined this group yet`)
             }
 
             await deleteIdentityCommitment("telegram", name, identityCommitment)
 
-            telegramUser.joined = false
+            telegramUser.hasJoined = false
         }
 
         await telegramUser.save()
