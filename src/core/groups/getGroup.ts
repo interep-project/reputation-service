@@ -15,6 +15,6 @@ export default async function getGroup(
     return {
         name,
         provider,
-        size: await MerkleTreeNode.getNumberOfNodes({ name, provider }, 0)
+        size: await MerkleTreeNode.getNumberOfActiveLeaves({ name, provider })
     }
 }

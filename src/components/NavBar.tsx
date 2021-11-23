@@ -36,7 +36,7 @@ export default function NavBar(): JSX.Element {
     )
 
     function isTelegramMagicLink(parameters: string[]): boolean {
-        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "telegram"
+        return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
     }
 
     return (

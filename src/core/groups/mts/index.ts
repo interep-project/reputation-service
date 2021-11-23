@@ -1,4 +1,5 @@
 import appendLeaf from "./appendLeaf"
+import deleteLeaf from "./deleteLeaf"
 import retrievePath from "./retrievePath"
 
-export { appendLeaf, retrievePath }
+export { appendLeaf, deleteLeaf, retrievePath }
