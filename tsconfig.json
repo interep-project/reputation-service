@@ -18,7 +18,7 @@
         "target": "esnext",
         "baseUrl": ".",
         "typeRoots": ["node_modules/@types", "src/types"],
-        "types": ["react", "node", "jest", "circomlib", "next-auth", "incrementalquintree", "cors"]
+        "types": ["react", "node", "jest", "circomlibjs", "next-auth", "cors"]
     },
     "ts-node": {
         // these options are overrides used only by ts-node
