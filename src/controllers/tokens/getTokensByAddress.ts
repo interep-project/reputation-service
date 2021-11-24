@@ -3,7 +3,7 @@ import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/check
 import { Token } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
-import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"
+import { getChecksummedAddress } from "src/utils/common/crypto"
 
 export default async function getTokensByAddressController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method !== "GET") {

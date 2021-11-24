@@ -1,12 +1,12 @@
 import { ContractName } from "src/config"
 import { TokenDocument, TokenStatus } from "@interrep/db"
-import { zeroAddress } from "src/utils/common/crypto/constants"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractEvents from "src/utils/common/getContractEvents"
 import isTransactionConfirmed from "src/utils/backend/isTransactionConfirmed"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 import logger from "src/utils/backend/logger"
+import { ethers } from "ethers"
 
 export default async function checkAndUpdateTokenStatus(tokens: TokenDocument[]): Promise<any | null> {
     if (!tokens) return null
@@ -61,7 +61,7 @@ export default async function checkAndUpdateTokenStatus(tokens: TokenDocument[])
                     } else {
                         const burnedEvents = await getContractEvents(contractInstance, "Transfer", [
                             undefined,
-                            zeroAddress,
+                            ethers.constants.AddressZero,
                             stringToBigNumber(tokenId)
                         ])
 

@@ -1,12 +1,12 @@
 import { ContractTransaction } from "@ethersproject/contracts"
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthAccount, OAuthAccountDocument, Token } from "@interrep/db"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { Wallet } from "ethers"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"
-import { Token, OAuthAccountDocument, OAuthAccount } from "@interrep/db"
-import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
-import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
-import { Wallet } from "ethers"
+import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { encryptMessageWithSalt } from "src/utils/common/crypto"
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4"
 const getParams = (override?: Record<string, unknown>) => ({
@@ -55,7 +55,7 @@ jest.mock("../blockchain/ReputationBadge/mintNewToken", () => ({
     )
 }))
 
-jest.mock("src/utils/common/crypto/encryption", () => ({
+jest.mock("src/utils/common/crypto/encryptMessage", () => ({
     encryptMessageWithSalt: jest.fn(() => "encryptedMessage")
 }))
 
