@@ -1,9 +1,9 @@
+import { EmailUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"
-import EmailUser from "../../models/emailUser/EmailUser.model"
 
 export default async function handleEmailIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name
@@ -15,7 +15,8 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
         typeof name !== "string" ||
         !identityCommitment ||
         typeof identityCommitment !== "string" ||
-        !emailUserId
+        !emailUserId ||
+        !emailUserToken
     ) {
         return res.status(400).end()
     }
@@ -31,26 +32,26 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
         }
 
         // Check if the user has the right token.
-        if (emailUser.emailRandomToken !== emailUserToken) {
+        if (emailUser.verificationToken !== emailUserToken) {
             return res.status(401).end()
         }
 
         if (req.method === "POST") {
-            if (emailUser.joined) {
+            if (emailUser.hasJoined) {
                 throw new Error(`Email user already joined this group`)
             }
 
             await addIdentityCommitment("email", name, identityCommitment)
 
-            emailUser.joined = true
+            emailUser.hasJoined = true
         } else if (req.method === "DELETE") {
-            if (!emailUser.joined) {
+            if (!emailUser.hasJoined) {
                 throw new Error(`Email user has not joined this group yet`)
             }
 
             await deleteIdentityCommitment("email", name, identityCommitment)
 
-            emailUser.joined = false
+            emailUser.hasJoined = false
         }
 
         await emailUser.save()

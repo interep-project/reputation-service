@@ -2124,6 +2124,14 @@
     "@interrep/reputation-criteria" "^0.12.0"
     mongoose "^5.12.1"
 
+"@interrep/db@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.5.0.tgz#8084d0c23b9fcc2d37656bc38b998720a260f5a6"
+  integrity sha512-FGgsTRgwRLr8vVOOZrp3K8YGy1C86afdJ50XFzx2IF5vj3Buqlld0FoYDfFLKqGK+SMPqTbos9Q8H1W4a4Gqsw==
+  dependencies:
+    "@interrep/reputation-criteria" "^0.12.0"
+    mongoose "^5.12.1"
+
 "@interrep/merkle-tree@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@interrep/merkle-tree/-/merkle-tree-0.2.1.tgz#d009ebc14141e3b4e6e52682b94778b6a61a91ca"

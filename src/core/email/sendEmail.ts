@@ -1,7 +1,7 @@
-import * as nodemailer from "nodemailer"
+import { createTransport } from "nodemailer"
 import config from "src/config"
 
-const smtpTransport = nodemailer.createTransport({
+const smtpTransport = createTransport({
     host: "smtp.gmail.com",
     auth: {
         type: "OAuth2",
@@ -13,31 +13,13 @@ const smtpTransport = nodemailer.createTransport({
     }
 })
 
-export default async function sendEmail(
-    emailAddress: string,
-    randToken: String,
-    groupId: String
-): Promise<boolean | void> {
-    // const link = `${config.HOST}/api/email/verifyEmail?id=${randToken}?email=${emailAddress}`
-    const link = `${config.HOST}/groups/email/${randToken}/${emailAddress}/${groupId}`
+export default async function sendEmail(email: string, verificationToken: String, groupId: String): Promise<void> {
+    const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${groupId}`
 
-    const mailOptions = {
-        to: emailAddress,
+    await smtpTransport.sendMail({
+        to: email,
         subject: "Interrep email confirmation",
         html: `Hello,<br> Please Click on the link to verify your email.<br><a href=${link}>Click here to verify</a>.
         <br> You will be redirected to the Semaphore gropu page.`
-    }
-
-    console.log(`in send email file ${typeof smtpTransport}`)
-
-    try {
-        const response = await smtpTransport.sendMail(mailOptions)
-        console.log("successfully sent email", response)
-
-        return true
-    } catch (error) {
-        console.log("error sending email", error)
-
-        return false
-    }
+    })
 }

@@ -1,17 +1,10 @@
+import { EmailUser } from "@interrep/db"
 import { RequestMethod } from "node-mocks-http"
 import * as nodemailer from "nodemailer"
 import createNextMocks from "src/mocks/createNextMocks"
 import handler from "src/pages/api/email/sendEmail"
-import verifyHandler from "src/pages/api/email/verifyEmail"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import EmailUser from "../../models/emailUser/EmailUser.model"
-
-// import config from "src/config"
-
-// import linkAccounts from "src/core/email/sendEmail"
-
-// const linkAccountsMocked = linkAccounts as jest.MockedFunction<typeof linkAccounts>
 
 /*
 const bodyParams = {
@@ -22,7 +15,7 @@ const bodyParams = {
 }
 */
 
-// Set up nodemailer mock
+// Set up nodemailer mock.
 jest.mock("nodemailer", () => ({
     __esModule: true,
     namedExport: { createTransport: jest.fn() },
@@ -68,11 +61,11 @@ describe("Email verification APIs", () => {
         it("Should return error 400 if the no address", async () => {
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
-                headers: { "Content-Type": "application/json" },
                 body: { address: "" }
             })
 
             await handler(req, res)
+
             expect(res._getStatusCode()).toBe(400)
         })
 
@@ -80,11 +73,11 @@ describe("Email verification APIs", () => {
         it("Should return error 400 if wrong type of email entered", async () => {
             const { req, res } = createNextMocks({
                 body: { address: "test@outlook.com" },
-                method: "POST" as RequestMethod,
-                headers: { "Content-Type": "application/json" }
+                method: "POST" as RequestMethod
             })
 
             await handler(req, res)
+
             expect(res._getStatusCode()).toBe(400)
         })
 
@@ -92,7 +85,6 @@ describe("Email verification APIs", () => {
             const TEST_ADDRESS = "test@hotmail.com"
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
-                // headers: { "Content-Type": "application/json" },
                 body: { email: TEST_ADDRESS }
             })
 
@@ -100,32 +92,24 @@ describe("Email verification APIs", () => {
 
             expect(res._getStatusCode()).toBe(200)
 
-            // Account should have been created, but not verified
+            // Account should have been created, but not verified.
             const acc = await EmailUser.findByHashId(TEST_ADDRESS)
             logger.silly(`acc ${acc?.id}`)
+
             expect(acc).toBeDefined()
-
-            expect(acc?.verified).toBeFalsy()
-
-            // expect(sendMailMock).toHaveBeenCalled()
         })
 
-        it("should return 200 with previously verified account", async () => {
+        it("Should return 200 with previously verified account", async () => {
             const TEST_ADDRESS = "test@hotmail.com"
 
-            // Set up verified account DB entry
-            const account = new EmailUser({
-                provider: "hotmail",
+            EmailUser.create({
                 hashId: TEST_ADDRESS,
-                verified: true,
-                joined: false,
-                emailRandomToken: "1234"
+                hasJoined: false,
+                verificationToken: "1234"
             })
-            await account.save()
 
             const { req, res } = createNextMocks({
                 method: "POST" as RequestMethod,
-                headers: { "Content-Type": "application/json" },
                 body: { email: TEST_ADDRESS }
             })
 
@@ -133,46 +117,10 @@ describe("Email verification APIs", () => {
 
             expect(res._getStatusCode()).toBe(200)
 
-            // Account should still be there
+            // Account should still be there.
             const acc = await EmailUser.findByHashId(TEST_ADDRESS)
 
             expect(acc).toBeDefined()
-
-            expect(acc?.verified).toBeTruthy()
-        })
-
-        it("Should verify email", async () => {
-            logger.silly(`verify email...`)
-
-            const { req, res } = createNextMocks({
-                headers: { host: "foo" },
-                query: { id: "1234?email=test@hotmail.co.uk" },
-                method: "PUT" as RequestMethod
-            })
-
-            const account = new EmailUser({
-                provider: "hotmail",
-                hashId: "test@hotmail.co.uk",
-                verified: false,
-                joined: false,
-                emailRandomToken: "1234"
-            })
-
-            expect(nodemailer.createTransport).toBeDefined()
-
-            await account.save()
-            logger.silly(`account.id  ${account?.id}`)
-
-            // expect(sendMailMock).toHaveBeenCalled()
-
-            const acc = await EmailUser.findByHashId(account.hashId)
-            expect(acc).toBeDefined()
-            logger.silly(`accid  ${acc?.id}`)
-
-            // const link = config.HOST+"/api/email/verifyEmail?id="+"1234"+"?email="+"test@hotmail.co.uk";
-
-            await verifyHandler(req, res)
-            expect(res._getStatusCode()).toBe(200)
         })
     })
 })

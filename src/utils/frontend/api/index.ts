@@ -117,7 +117,7 @@ export function removeIdentityCommitment({
             userSignature,
             telegramUserId,
             emailUserId,
-            emailUserToken    
+            emailUserToken
         },
         "DELETE"
     )
