@@ -35,7 +35,11 @@ export default function Groups(): JSX.Element {
     }
 
     function isTelegramMagicLink(parameters: string[]): boolean {
-        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "telegram"
+        return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
+    }
+
+    function isEmailMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
     }
 
     function isEmailMagicLink(parameters: string[]): boolean {
@@ -81,7 +85,12 @@ export default function Groups(): JSX.Element {
                     <TabPanels>
                         {isTelegramMagicLink(parameters) && (
                             <TabPanel>
-                                <TelegramGroups userId={parameters[2]} groupId={parameters[3]} />
+                                <TelegramGroups userId={parameters[1]} groupId={parameters[2]} />
+                            </TabPanel>
+                        )}
+                        {isEmailMagicLink(parameters) && (
+                            <TabPanel>
+                                <EmailGroups userId={parameters[2]} userToken={parameters[1]} groupId={parameters[3]} />
                             </TabPanel>
                         )}
                         {isEmailMagicLink(parameters) && (

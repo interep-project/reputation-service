@@ -49,7 +49,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0xD6B4f70b441e9E2F4473F53Fe1cAe50F49C42E18",
             reddit: "0x55d2d15631078cC555d06f14fD45bF2A7D86B4Cf"
         },
-        [ContractName.GROUPS]: "0xD2C9435C0E9e051e37456C01B2478f3e48ce735B"
+        [ContractName.GROUPS]: "0xF3C86A419a1F9aF498B1A570f2Ea874372d23763"
     },
     [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -136,5 +136,11 @@ export default {
     GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN,
 
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
-    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
+    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST,
+    HOST: process.env.HOST,
+    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
+    GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
+    GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
+    GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
+    GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN
 }

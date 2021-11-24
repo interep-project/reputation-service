@@ -2,6 +2,7 @@ import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import {
     addIdentityCommitment as _addIdentityCommitment,
+    removeIdentityCommitment as _removeIdentityCommitment,
     checkGroup as _checkGroup,
     checkIdentityCommitment as _checkIdentityCommitment,
     checkLink as _checkLink,
@@ -16,6 +17,7 @@ import {
 
 type API = {
     addIdentityCommitment: typeof _addIdentityCommitment
+    removeIdentityCommitment: typeof _removeIdentityCommitment
     checkIdentityCommitment: typeof _checkIdentityCommitment
     getGroup: typeof _getGroup
     checkLink: typeof _checkLink
@@ -69,6 +71,7 @@ export default function useInterRepAPI(): API {
 
     return {
         addIdentityCommitment: (parameters) => handleApiFunction(_addIdentityCommitment, parameters),
+        removeIdentityCommitment: (parameters) => handleApiFunction(_removeIdentityCommitment, parameters),
         checkIdentityCommitment: (parameters) => handleApiFunction(_checkIdentityCommitment, parameters),
         getGroup: (parameters) => handleApiFunction(_getGroup, parameters),
         checkLink: () => handleApiFunction(_checkLink),

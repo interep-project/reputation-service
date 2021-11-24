@@ -13,7 +13,11 @@ const smtpTransport = nodemailer.createTransport({
     }
 })
 
-export default async function sendEmail(emailAddress: string, randToken: String, groupId: String): Promise<boolean | void> {
+export default async function sendEmail(
+    emailAddress: string,
+    randToken: String,
+    groupId: String
+): Promise<boolean | void> {
     // const link = `${config.HOST}/api/email/verifyEmail?id=${randToken}?email=${emailAddress}`
     const link = `${config.HOST}/groups/email/${randToken}/${emailAddress}/${groupId}`
 

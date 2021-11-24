@@ -48,9 +48,9 @@ If you want an overwiew of InterRep, read our announcement post: https://jaygrab
 Clone this repository and install the dependencies:
 
 ```bash
-$ git clone https://github.com/InterRep/reputation-service.git
-$ cd reputation-service
-$ yarn
+git clone https://github.com/InterRep/reputation-service.git
+cd reputation-service
+yarn
 ```
 
 ## Usage
@@ -62,7 +62,7 @@ All environment variables need to be provided. The format for the MongoDB URI is
 ### Running tests
 
 ```bash
-$ yarn test
+yarn test
 ```
 
 ### Seeding
@@ -70,37 +70,37 @@ $ yarn test
 To seed the database (optional) you can run:
 
 ```bash
-$ yarn seed:twitterUsers
-$ yarn seed:zeroHashes
+yarn seed:twitterUsers
+yarn seed:zeroHashes
 ```
 
 ### Running InterRep (development)
 
 ```bash
-$ yarn dev
+yarn dev
 ```
 
 The pages auto-update as you edit files.
 
-To test all the features, you will need to run and deploy the InterRep contracts locally. Here's how:
+To test all the features, you will need to deploy the InterRep contracts in a local network. Here's how:
 
 1. Clone the `contracts` repository:
 
 ```bash
-$ git clone https://github.com/InterRep/contracts.git
-$ cd contracts
+git clone https://github.com/InterRep/contracts.git
+cd contracts
 ```
 
-1. Start a local network in one terminal:
+2. Start a local network in one terminal:
 
 ```bash
-$ yarn start
+yarn start
 ```
 
-2. In another terminal, deploy the contracts on the local network:
+3. In another terminal, deploy mocked contracts and groups:
 
 ```bash
-$ yarn deploy:mocks --network localhost
+yarn mocks --network localhost
 ```
 
 ### Running InterRep (production)
@@ -110,11 +110,11 @@ $ yarn deploy:mocks --network localhost
 **Build**
 
 ```bash
-$ yarn build
+yarn build
 ```
 
 **Start the server**
 
 ```bash
-$ yarn start
+yarn start
 ```

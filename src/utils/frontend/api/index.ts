@@ -3,7 +3,7 @@ import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
-export function sendEmail({ email, groupId }: { email: string, groupId: string }) {
+export function sendEmail({ email, groupId }: { email: string; groupId: string }) {
     return sendRequest(`/api/email/sendEmail`, {
         email,
         groupId
@@ -71,7 +71,7 @@ export function addIdentityCommitment({
     userSignature,
     telegramUserId,
     emailUserId,
-    emailUserToken,
+    emailUserToken
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
@@ -91,6 +91,35 @@ export function addIdentityCommitment({
         emailUserId,
         emailUserToken
     })
+}
+
+export function removeIdentityCommitment({
+    provider,
+    groupName,
+    identityCommitment,
+    accountId,
+    userAddress,
+    userSignature,
+    telegramUserId
+}: {
+    provider: Provider
+    groupName: ReputationLevel | PoapGroupName | string
+    identityCommitment: string
+    accountId?: string
+    userAddress?: string
+    userSignature?: string
+    telegramUserId?: string
+}): Promise<any | null> {
+    return sendRequest(
+        `/api/groups/${provider}/${groupName}/${identityCommitment}`,
+        {
+            accountId,
+            userAddress,
+            userSignature,
+            telegramUserId
+        },
+        "DELETE"
+    )
 }
 
 export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation: string }): Promise<any | null> {

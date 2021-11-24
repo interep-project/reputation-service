@@ -6,7 +6,7 @@ import { PoapGroupName } from "../poap"
 
 export default async function retrievePath(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName,
+    name: ReputationLevel | PoapGroupName | string,
     identityCommitment: string
 ): Promise<any> {
     if (!checkGroup(provider, name)) {

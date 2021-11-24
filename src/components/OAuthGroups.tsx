@@ -1,26 +1,25 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
 import { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
-import { Group } from "src/types/groups"
 import capitalize from "src/utils/common/capitalize"
 
 export default function OAuthGroups(): JSX.Element {
     const [session] = useSession()
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
-    const [_description, setDescription] = useState<string>()
-    const [_group, setGroup] = useState<Group | null>(null)
+    const [_groupSize, setGroupSize] = useState<number>(0)
     const [_currentStep, setCurrentStep] = useState<number>(0)
+    const [_hasJoined, setHasJoined] = useState<boolean>()
     const {
         retrieveIdentityCommitment,
         checkIdentityCommitment,
         joinGroup,
-        checkGroup,
+        leaveGroup,
         getGroup,
         _loading
     } = useGroups()
@@ -29,23 +28,10 @@ export default function OAuthGroups(): JSX.Element {
         ;(async () => {
             if (session) {
                 const { provider, user } = session
-                const hasJoinedAGroup = await checkGroup(provider as OAuthProvider)
-
-                if (hasJoinedAGroup) {
-                    setDescription(`It seems you already joined a ${capitalize(provider as string)} group.`)
-                    return
-                }
-
                 const group = await getGroup(provider, user.reputation as ReputationLevel)
 
                 if (group) {
-                    setGroup(group)
-
-                    setDescription(
-                        `The ${user.reputation} ${capitalize(provider as string)} group has ${
-                            group.size
-                        } members. Follow the steps below to join it.`
-                    )
+                    setGroupSize(group.size)
                     setCurrentStep(1)
                 }
             }
@@ -54,27 +40,41 @@ export default function OAuthGroups(): JSX.Element {
     }, [session])
 
     const step1 = useCallback(
-        async (signer: Signer, group: Group) => {
-            const identityCommitment = await retrieveIdentityCommitment(signer, group.provider)
+        async (signer: Signer, provider: OAuthProvider, reputation: ReputationLevel) => {
+            const identityCommitment = await retrieveIdentityCommitment(signer, provider)
 
             if (identityCommitment) {
-                if (await checkIdentityCommitment(identityCommitment, group.provider, group.name)) {
-                    setIdentityCommitment(identityCommitment)
-                    setCurrentStep(2)
+                const hasJoined = await checkIdentityCommitment(identityCommitment, provider, reputation, true)
+
+                if (hasJoined === null) {
+                    return
                 }
+
+                setIdentityCommitment(identityCommitment)
+                setCurrentStep(2)
+                setHasJoined(hasJoined)
             }
         },
         [retrieveIdentityCommitment, checkIdentityCommitment]
     )
 
     const step2 = useCallback(
-        async (group: Group, identityCommitment: string, accountId: string) => {
-            if (await joinGroup(identityCommitment, group.provider, group.name, { accountId })) {
-                setCurrentStep(0)
-                setDescription("")
+        async (
+            provider: OAuthProvider,
+            reputation: ReputationLevel,
+            identityCommitment: string,
+            accountId: string,
+            hasJoined: boolean
+        ) => {
+            if (!hasJoined && (await joinGroup(identityCommitment, provider, reputation, { accountId }))) {
+                setHasJoined(true)
+                setGroupSize((v) => v + 1)
+            } else if (await leaveGroup(identityCommitment, provider, reputation, { accountId })) {
+                setHasJoined(false)
+                setGroupSize((v) => v - 1)
             }
         },
-        [joinGroup]
+        [joinGroup, leaveGroup]
     )
 
     return !session || (_loading && _currentStep === 0) ? (
@@ -83,27 +83,42 @@ export default function OAuthGroups(): JSX.Element {
         </VStack>
     ) : (
         <>
-            <Text fontWeight="semibold">{_description}</Text>
+            <Text fontWeight="semibold">
+                The {session.user.reputation} {capitalize(session.provider as string)} group has {_groupSize} members.
+                Follow the steps below to join/leave it.
+            </Text>
 
             <VStack mt="20px" spacing={4} align="left">
                 <Step
                     title="Step 1"
-                    message="Create your Semaphore identity."
-                    actionText="Create Identity"
-                    actionFunction={() => step1(_signer as Signer, _group as Group)}
+                    message="Generate your Semaphore identity."
+                    actionText="Generate Identity"
+                    actionFunction={() =>
+                        step1(_signer as Signer, session.provider, session.user.reputation as ReputationLevel)
+                    }
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />
-                <Step
-                    title="Step 2"
-                    message={`Join the ${session.user.reputation} ${capitalize(session.provider as string)} group.`}
-                    actionText="Join Group"
-                    actionFunction={() =>
-                        step2(_group as Group, _identityCommitment as string, session.accountId as string)
-                    }
-                    loading={_currentStep === 2 && _loading}
-                    disabled={_currentStep !== 2}
-                />
+                {_hasJoined !== undefined && (
+                    <Step
+                        title="Step 2"
+                        message={`${!_hasJoined ? "Join" : "Leave"} our ${capitalize(
+                            session.provider as string
+                        )} Semaphore group.`}
+                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
+                        actionFunction={() =>
+                            step2(
+                                session.provider,
+                                session.user.reputation as ReputationLevel,
+                                _identityCommitment as string,
+                                session.accountId as string,
+                                _hasJoined
+                            )
+                        }
+                        loading={_currentStep === 2 && _loading}
+                        disabled={_currentStep !== 2}
+                    />
+                )}
             </VStack>
         </>
     )
