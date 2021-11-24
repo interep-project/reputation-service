@@ -32,7 +32,6 @@ export default async function sendEmail(
 
     try {
         const response = await smtpTransport.sendMail(mailOptions)
-
         console.log("successfully sent email", response)
 
         return true

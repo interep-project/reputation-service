@@ -51,6 +51,10 @@ export async function checkIdentityCommitment({
     groupName: ReputationLevel | PoapGroupName | string
     identityCommitment: string
 }): Promise<boolean | null> {
+    console.log("************frontendAPI")
+    console.log("provider",provider )
+    console.log("groupname",groupName )
+    console.log("identityCommitment",identityCommitment )
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
 }
 
