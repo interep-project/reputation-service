@@ -1,7 +1,7 @@
 import config from "src/config"
 import colors from "colors"
 import { MerkleTreeZero } from "@interrep/db"
-import poseidonHash from "src/utils/common/crypto/hasher"
+import { poseidon } from "src/utils/common/crypto"
 
 export default async function seedZeroHashes(logger = false): Promise<void> {
     const log = logger ? console.log : (message: string) => message
@@ -21,7 +21,7 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
     }
 
     for (level; level < config.MERKLE_TREE_DEPTH; level++) {
-        zeroHash = level === 0 ? zeroHash : poseidonHash(zeroHash, zeroHash)
+        zeroHash = level === 0 ? zeroHash : poseidon(zeroHash, zeroHash)
 
         const zeroHashDocument = await MerkleTreeZero.create({
             level,

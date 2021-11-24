@@ -1,4 +1,4 @@
-import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"
+import { getChecksummedAddress } from "src/utils/common/crypto"
 
 export default function shortenAddress(address: string, chars = 4): string {
     const parsed = getChecksummedAddress(address)

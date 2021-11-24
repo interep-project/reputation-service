@@ -1,5 +1,4 @@
-// import { ethers } from "ethers";
-import * as encryption from "./encryption"
+import * as encryption from "./encryptMessage"
 
 jest.spyOn(encryption, "encryptMessage")
 

@@ -1,8 +1,8 @@
-import { sha256 } from "@interrep/telegram-bot"
 import { NextApiRequest, NextApiResponse } from "next"
 import { addIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import { sha256 } from "src/utils/common/crypto"
 import EmailUser from "../../models/emailUser/EmailUser.model"
 
 export default async function handleEmailIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {

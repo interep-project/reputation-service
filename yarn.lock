@@ -2116,14 +2116,6 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@interrep/db@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.2.0.tgz#406958ffc07fae385b66698a74d2f179ba3cb905"
-  integrity sha512-6s/V9gDhOj15mXDocSU7SmhYs2Mv/AHJLdvhQNvtQav655r0Sq6txGJqKWoLLHOEJHkQgMXyajxE8vs6RJRbzQ==
-  dependencies:
-    "@interrep/reputation-criteria" "^0.12.0"
-    mongoose "^5.12.1"
-
 "@interrep/db@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.4.0.tgz#545de8e071afd6d3879d893f9391855301c32357"
@@ -2132,10 +2124,10 @@
     "@interrep/reputation-criteria" "^0.12.0"
     mongoose "^5.12.1"
 
-"@interrep/merkle-tree@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@interrep/merkle-tree/-/merkle-tree-0.1.0.tgz#588b1122c5a4c68f31fee339f3d0705abd85ad2e"
-  integrity sha512-tROtsy6E6MFmbf2bZNz7xfb2M+Z6pqPMc0wDXVgEI++o1KLbiTiDFpS4nFF4V7QmtUXLQZIuBzTn6Us9lnlrkQ==
+"@interrep/merkle-tree@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@interrep/merkle-tree/-/merkle-tree-0.2.1.tgz#d009ebc14141e3b4e6e52682b94778b6a61a91ca"
+  integrity sha512-r36zDCU28TT7JzWYLAWUyBHVTsot+qR2ZO8BJNMsVdj3gy0FHVigyMBnd1AhC3ZQz947OmZUX+D8bOasilGwpw==
 
 "@interrep/reputation-criteria@^0.12.0":
   version "0.12.0"
@@ -2149,12 +2141,12 @@
   dependencies:
     "@libsem/identity" "^1.0.17"
 
-"@interrep/telegram-bot@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.4.2.tgz#ac8b5db8c2f46220c2e885e7396ef785498bed29"
-  integrity sha512-O8RD9QOf33JuyyWtYtDB2XpZveWyuW4rC2x4LPTMZ8bnKipCM4ygdLOcViCSX9v/5Kj4M6OVg53xhmnVQw1G6Q==
+"@interrep/telegram-bot@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.4.3.tgz#686cd48981e193d9a374d1b6656c83fb2e76d191"
+  integrity sha512-zXG+kA1XBREDQhVZo8Ta2Q8GslxyPaZA1BZLIbgt7IPd4jKh88K5qBGjtxMGaxKmcU6Du/kD1SXPZYe+wu6hDg==
   dependencies:
-    "@interrep/db" "^0.2.0"
+    "@interrep/db" "^0.4.0"
     grammy "^1.3.4"
     js-sha256 "^0.9.0"
 

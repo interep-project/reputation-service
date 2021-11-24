@@ -3,7 +3,7 @@ import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
 import { Provider } from "src/types/groups"
-import poseidonHash from "src/utils/common/crypto/hasher"
+import { poseidon } from "src/utils/common/crypto"
 import { PoapGroupName } from "../poap"
 
 export default async function deleteLeaf(
@@ -53,9 +53,9 @@ export default async function deleteLeaf(
         }
 
         if (currentIndex % 2 === 0) {
-            parentNode.hash = poseidonHash(node.hash, node.siblingHash as string)
+            parentNode.hash = poseidon(node.hash, node.siblingHash as string)
         } else {
-            parentNode.hash = poseidonHash(node.siblingHash as string, node.hash)
+            parentNode.hash = poseidon(node.siblingHash as string, node.hash)
         }
 
         await parentNode.save()

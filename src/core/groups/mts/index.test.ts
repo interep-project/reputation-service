@@ -1,16 +1,15 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
 import { MerkleTree } from "@interrep/merkle-tree"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
-import { poseidon } from "circomlibjs"
 import config from "src/config"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import poseidonHash from "src/utils/common/crypto/hasher"
+import { poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, retrievePath } from "."
 import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
-    const idCommitment = poseidon([2n, 1n]).toString()
+    const idCommitment = poseidon(2, 1)
     const provider = OAuthProvider.TWITTER
     const reputation = ReputationLevel.GOLD
 
@@ -52,7 +51,7 @@ describe("Merkle Trees", () => {
 
         it("Should append two leaves and their parent hash should match the hash of the id commitments", async () => {
             await seedZeroHashes(false)
-            const idCommitments = [poseidon([1]).toString(), poseidon([2]).toString()]
+            const idCommitments = [poseidon(1), poseidon(2)]
 
             await appendLeaf(provider, reputation, idCommitments[0])
             await appendLeaf(provider, reputation, idCommitments[1])
@@ -62,7 +61,7 @@ describe("Merkle Trees", () => {
                 1,
                 0
             )) as MerkleTreeNodeDocument
-            const hash = poseidonHash(idCommitments[0], idCommitments[1])
+            const hash = poseidon(idCommitments[0], idCommitments[1])
 
             expect(hash).toBe(node.hash)
         })
@@ -71,7 +70,7 @@ describe("Merkle Trees", () => {
             await seedZeroHashes(false)
 
             for (let i = 0; i < 10; i++) {
-                const idCommitment = poseidon([BigInt(i)]).toString()
+                const idCommitment = poseidon(i)
 
                 await appendLeaf(provider, reputation, idCommitment)
             }
@@ -107,41 +106,41 @@ describe("Merkle Trees", () => {
 
         it("Should delete a leaf", async () => {
             await seedZeroHashes(false)
-            const idCommitments = [[1], [2]].map(poseidon)
+            const idCommitments = [1, 2].map((v) => poseidon(v))
 
             await appendLeaf(provider, reputation, idCommitments[0].toString())
             await appendLeaf(provider, reputation, idCommitments[1].toString())
 
             const root = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
-            const tree = new MerkleTree(poseidon, config.MERKLE_TREE_DEPTH)
+            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
 
             tree.insert(idCommitments[0])
             tree.insert(idCommitments[1])
             tree.delete(0)
 
-            expect(root).toBe(tree.root.toString())
+            expect(root).toBe(tree.root)
         })
 
         it("Should delete 5 leaves correctly", async () => {
-            const tree = new MerkleTree(poseidon, config.MERKLE_TREE_DEPTH)
+            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
 
             await seedZeroHashes(false)
 
             for (let i = 0; i < 10; i++) {
-                const idCommitment = poseidon([BigInt(i)])
+                const idCommitment = poseidon(i)
 
                 await appendLeaf(provider, reputation, idCommitment.toString())
                 tree.insert(idCommitment)
             }
 
             for (let i = 0; i < 5; i++) {
-                const idCommitment = poseidon([BigInt(i)])
+                const idCommitment = poseidon(i)
 
                 const root = await deleteLeaf(provider, reputation, idCommitment.toString())
                 tree.delete(i)
 
-                expect(root).toBe(tree.root.toString())
+                expect(root).toBe(tree.root)
             }
         })
     })
@@ -163,7 +162,7 @@ describe("Merkle Trees", () => {
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {
-                idCommitments.push(poseidon([BigInt(i)]).toString())
+                idCommitments.push(poseidon(i))
 
                 await appendLeaf(provider, reputation, idCommitments[i])
             }
@@ -177,11 +176,11 @@ describe("Merkle Trees", () => {
         it("Should match the path obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new MerkleTree(poseidon, config.MERKLE_TREE_DEPTH)
+            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {
-                idCommitments.push(poseidon([BigInt(i)]).toString())
+                idCommitments.push(poseidon(i))
 
                 await appendLeaf(provider, reputation, idCommitments[i])
                 tree.insert(BigInt(idCommitments[i]))

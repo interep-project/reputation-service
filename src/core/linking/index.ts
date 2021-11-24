@@ -1,15 +1,14 @@
-import getChecksummedAddress from "src/utils/common/crypto/getChecksummedAddress"
-import logger from "src/utils/backend/logger"
+import { OAuthAccount, Token, TokenDocument, TokenStatus } from "@interrep/db"
+import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ethers } from "ethers"
+import { ContractName, currentNetwork } from "src/config"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
-import getContractAddress from "src/utils/common/getContractAddress"
-import { TokenDocument, TokenStatus, Token, OAuthAccount } from "@interrep/db"
-import { encryptMessageWithSalt } from "src/utils/common/crypto/encryption"
-import stringToBigNumber from "src/utils/common/stringToBigNumber"
-import { ReputationLevel } from "@interrep/reputation-criteria"
-import { ContractName, currentNetwork } from "src/config"
 import getSigner from "src/utils/backend/getSigner"
-import { ethers } from "ethers"
+import logger from "src/utils/backend/logger"
+import { getChecksummedAddress, encryptMessageWithSalt } from "src/utils/common/crypto"
+import getContractAddress from "src/utils/common/getContractAddress"
+import stringToBigNumber from "src/utils/common/stringToBigNumber"
 
 type LinkAccountsParams = {
     address: string

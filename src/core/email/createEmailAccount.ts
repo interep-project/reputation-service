@@ -1,6 +1,6 @@
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
-import { sha256 } from "@interrep/telegram-bot"
+import { sha256 } from "src/utils/common/crypto"
 import EmailUser from "../../models/emailUser/EmailUser.model"
 import sendEmail from "./sendEmail"
 
@@ -18,8 +18,6 @@ export default async function createEmailAccount(userId: string, provider: Strin
         const randEmailToken = Math.floor(Math.random() * 10000)
 
         logger.silly(`account ${JSON.stringify(account)}`)
-
-
 
         if (!account) {
             // account doesn't exist, make one and then send email
@@ -53,7 +51,7 @@ export default async function createEmailAccount(userId: string, provider: Strin
                 try {
                     logger.silly("trying to send email")
 
-                    return await sendEmail(userId, String(randEmailToken),provider).then((result) => {
+                    return await sendEmail(userId, String(randEmailToken), provider).then((result) => {
                         logger.silly("sendEmail message internal", result)
                         return result
                     })

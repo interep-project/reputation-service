@@ -1,9 +1,9 @@
-import { sha256 } from "@interrep/telegram-bot"
 import { TelegramUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name
