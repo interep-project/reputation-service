@@ -185,7 +185,7 @@ export default function useGroups(): ReturnParameters {
 
             setLoading(false)
             toast({
-                description: `You leaved the ${capitalize(provider)} group correctly.`,
+                description: `You left the ${capitalize(provider)} group correctly.`,
                 variant: "subtle",
                 isClosable: true
             })
