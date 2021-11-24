@@ -43,7 +43,6 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
 
             await addIdentityCommitment("email", name, identityCommitment)
 
-            emailUser.verified = true
             emailUser.joined = true
 
             await emailUser.save()

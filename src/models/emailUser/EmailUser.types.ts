@@ -3,7 +3,6 @@ import type { findByHashId } from "./EmailUser.statics"
 
 export type EmailUserData = {
     hashId: string
-    verified: boolean
     joined: boolean
     emailRandomToken: String
 }

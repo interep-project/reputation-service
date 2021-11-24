@@ -7,8 +7,8 @@ import sendEmail from "./sendEmail"
 export default async function createEmailAccount(userId: string, provider: String): Promise<boolean | void> {
     await dbConnect()
 
-    let verified = false
-
+    let joined
+    
     logger.silly(`making account ${userId}`)
 
     const hashId = sha256(userId + provider)
@@ -26,7 +26,6 @@ export default async function createEmailAccount(userId: string, provider: Strin
             logger.silly("no account present")
             account = new EmailUser({
                 hashId,
-                verified: false,
                 joined: false,
                 emailRandomToken: randEmailToken
             })
@@ -35,20 +34,20 @@ export default async function createEmailAccount(userId: string, provider: Strin
 
             // Account does exist see if it's verified if not update emailRandomToken and send email.
             //
-            verified = account.verified
+            joined = account.joined
 
-            if (!verified) {
+            if (!joined) {
                 account.emailRandomToken = String(randEmailToken)
             }
 
-            logger.silly(`verified ${verified}`)
+            logger.silly(`verified ${joined}`)
         }
 
         try {
             await account.save()
 
             // Save new account info and then send email if account not verified.
-            if (!verified) {
+            if (!joined) {
                 logger.silly("account not verified yet")
                 try {
                     logger.silly("trying to send email")

@@ -4,7 +4,6 @@ import { EmailUserData, EmailUserDocument, EmailUserModel } from "./EmailUser.ty
 
 const EmailUserSchemaFields: Record<keyof EmailUserData, any> = {
     hashId: { type: String, required: true, index: true, unique: true },
-    verified: {type: Boolean, required: true},
     joined: { type: Boolean, required: true },
     emailRandomToken: { type: String, required: true }
 }

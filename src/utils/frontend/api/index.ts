@@ -3,10 +3,9 @@ import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
-export function sendEmail({ email, groupId }: { email: string; groupId: string }) {
+export function sendEmail({ email }: { email: string }) {
     return sendRequest(`/api/email/sendEmail`, {
-        email,
-        groupId
+        email    
     })
 }
 

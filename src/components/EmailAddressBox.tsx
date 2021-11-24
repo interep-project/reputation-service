@@ -26,7 +26,7 @@ export default function EmailAddressBox(): JSX.Element {
         setLoading(true)
         console.log(email)
 
-        const response = await sendEmail({ email, groupId })
+        const response = await sendEmail({ email })
         console.log("response", response)
 
         if (response) {
