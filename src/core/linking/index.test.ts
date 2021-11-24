@@ -55,7 +55,7 @@ jest.mock("../blockchain/ReputationBadge/mintNewToken", () => ({
     )
 }))
 
-jest.mock("src/utils/common/crypto/encryption", () => ({
+jest.mock("src/utils/common/crypto/encryptMessage", () => ({
     encryptMessageWithSalt: jest.fn(() => "encryptedMessage")
 }))
 
