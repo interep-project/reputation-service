@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment } from "src/core/groups"
+import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"
@@ -30,27 +30,32 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
             return res.status(403).end()
         }
 
-        if (emailUser.joined) {
-            throw new Error(`Email user already joined this group`)
+        // Check if the user has the right token.
+        if (emailUser.emailRandomToken !== emailUserToken) {
+            return res.status(401).end()
         }
 
-        // Check if emailUserToken is same as in db if not fail if so change to verified and continue
-        // already being verified shouldn't be a problem as that will change at the same
-        // time the joined changes which will not allow duplicates
-
-        if (emailUser.emailRandomToken === emailUserToken) {
-            // Not verified and random token matches.
+        if (req.method === "POST") {
+            if (emailUser.joined) {
+                throw new Error(`Email user already joined this group`)
+            }
 
             await addIdentityCommitment("email", name, identityCommitment)
 
             emailUser.joined = true
+        } else if (req.method === "DELETE") {
+            if (!emailUser.joined) {
+                throw new Error(`Email user has not joined this group yet`)
+            }
 
-            await emailUser.save()
+            await deleteIdentityCommitment("email", name, identityCommitment)
 
-            return res.status(201).send({ data: true })
+            emailUser.joined = false
         }
 
-        return res.status(405).end()
+        await emailUser.save()
+
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 

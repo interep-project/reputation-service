@@ -66,9 +66,11 @@ export default function OAuthGroups(): JSX.Element {
             accountId: string,
             hasJoined: boolean
         ) => {
-            if (!hasJoined && (await joinGroup(identityCommitment, provider, reputation, { accountId }))) {
-                setHasJoined(true)
-                setGroupSize((v) => v + 1)
+            if (!hasJoined) {
+                if (await joinGroup(identityCommitment, provider, reputation, { accountId })) {
+                    setHasJoined(true)
+                    setGroupSize((v) => v + 1)
+                }
             } else if (await leaveGroup(identityCommitment, provider, reputation, { accountId })) {
                 setHasJoined(false)
                 setGroupSize((v) => v - 1)

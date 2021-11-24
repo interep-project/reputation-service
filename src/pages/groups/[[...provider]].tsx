@@ -42,10 +42,6 @@ export default function Groups(): JSX.Element {
         return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
     }
 
-    function isEmailMagicLink(parameters: string[]): boolean {
-        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
-    }
-
     return (
         <>
             <Heading as="h2" size="xl">
@@ -70,7 +66,10 @@ export default function Groups(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session && _poapGroupNames.length === 0 && !isTelegramMagicLink(parameters)  && !isEmailMagicLink(parameters)? (
+            ) : !session &&
+              _poapGroupNames.length === 0 &&
+              !isTelegramMagicLink(parameters) &&
+              !isEmailMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, sign in with one of our supported providers!</Text>
                 </VStack>
@@ -90,12 +89,7 @@ export default function Groups(): JSX.Element {
                         )}
                         {isEmailMagicLink(parameters) && (
                             <TabPanel>
-                                <EmailGroups userId={parameters[2]} userToken={parameters[1]} groupId={parameters[3]} />
-                            </TabPanel>
-                        )}
-                        {isEmailMagicLink(parameters) && (
-                            <TabPanel>
-                                <EmailGroups userId={parameters[2]} userToken={parameters[1]} groupId={parameters[3]} />
+                                <EmailGroups userToken={parameters[1]} userId={parameters[2]} groupId={parameters[3]} />
                             </TabPanel>
                         )}
                         {session && (

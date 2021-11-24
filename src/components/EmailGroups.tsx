@@ -16,7 +16,15 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_groupSize, setGroupSize] = useState<number>(0)
-    const { retrieveIdentityCommitment, checkIdentityCommitment, getGroup, joinGroup, _loading } = useGroups()
+    const [_hasJoined, setHasJoined] = useState<boolean>()
+    const {
+        retrieveIdentityCommitment,
+        checkIdentityCommitment,
+        getGroup,
+        joinGroup,
+        leaveGroup,
+        _loading
+    } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -31,7 +39,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
     }, [])
 
     const step1 = useCallback(
-        async (signer: Signer) => {
+        async (signer: Signer, groupId: string) => {
             const identityCommitment = await retrieveIdentityCommitment(signer, "email")
 
             if (identityCommitment) {
@@ -43,24 +51,35 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
 
                 setIdentityCommitment(identityCommitment)
                 setCurrentStep(2)
+                setHasJoined(hasJoined)
             }
         },
-        [groupId, retrieveIdentityCommitment, checkIdentityCommitment]
+        [retrieveIdentityCommitment, checkIdentityCommitment]
     )
 
     const step2 = useCallback(
-        async (identityCommitment: string) => {
-            if (
-                await joinGroup(identityCommitment, "email", groupId, {
+        async (identityCommitment: string, groupId: string, userId: string, userToken: string, hasJoined: boolean) => {
+            if (!hasJoined) {
+                if (
+                    await joinGroup(identityCommitment, "email", groupId, {
+                        emailUserId: userId,
+                        emailUserToken: userToken
+                    })
+                ) {
+                    setHasJoined(true)
+                    setGroupSize((v) => v + 1)
+                }
+            } else if (
+                await leaveGroup(identityCommitment, "email", groupId, {
                     emailUserId: userId,
                     emailUserToken: userToken
                 })
             ) {
-                setCurrentStep(0)
-                setGroupSize((v) => v + 1)
+                setHasJoined(false)
+                setGroupSize((v) => v - 1)
             }
         },
-        [groupId, userId, userToken, joinGroup]
+        [joinGroup, leaveGroup]
     )
 
     return _loading && _currentStep === 0 ? (
@@ -78,18 +97,22 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
                     title="Step 1"
                     message="Generate your Semaphore identity."
                     actionText="Generate Identity"
-                    actionFunction={() => step1(_signer as Signer)}
+                    actionFunction={() => step1(_signer as Signer, groupId)}
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />
-                <Step
-                    title="Step 2"
-                    message="Join the selected group."
-                    actionText="Join Group"
-                    actionFunction={() => step2(_identityCommitment as string)}
-                    loading={_currentStep === 2 && _loading}
-                    disabled={_currentStep !== 2}
-                />
+                {_hasJoined !== undefined && (
+                    <Step
+                        title="Step 2"
+                        message="Join the selected group."
+                        actionText="Join Group"
+                        actionFunction={() =>
+                            step2(_identityCommitment as string, groupId, userId, userToken, _hasJoined)
+                        }
+                        loading={_currentStep === 2 && _loading}
+                        disabled={_currentStep !== 2}
+                    />
+                )}
             </VStack>
         </>
     )

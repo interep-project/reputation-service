@@ -58,9 +58,11 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
 
     const step2 = useCallback(
         async (identityCommitment: string, groupId: string, userId: string, hasJoined: boolean) => {
-            if (!hasJoined && (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId }))) {
-                setHasJoined(true)
-                setGroupSize((v) => v + 1)
+            if (!hasJoined) {
+                if (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
+                    setHasJoined(true)
+                    setGroupSize((v) => v + 1)
+                }
             } else if (await leaveGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
                 setHasJoined(false)
                 setGroupSize((v) => v - 1)

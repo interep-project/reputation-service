@@ -59,13 +59,17 @@ export default function PoapGroups(): JSX.Element {
             const userSignature = await signMessage(signer, identityCommitment)
 
             if (userSignature) {
-                if (
-                    !hasJoined &&
-                    (await joinGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature }))
-                ) {
-                    setCurrentStep(1)
-                    setHasJoined(undefined)
-                    setGroup(undefined)
+                if (!hasJoined) {
+                    if (
+                        await joinGroup(identityCommitment, Web3Provider.POAP, group.name, {
+                            userAddress,
+                            userSignature
+                        })
+                    ) {
+                        setCurrentStep(1)
+                        setHasJoined(undefined)
+                        setGroup(undefined)
+                    }
                 } else if (
                     await leaveGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature })
                 ) {
