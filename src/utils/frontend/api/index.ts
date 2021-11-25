@@ -3,6 +3,12 @@ import { PoapGroupName } from "src/core/groups/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
+export function sendEmail({ email }: { email: string }) {
+    return sendRequest(`/api/email/sendEmail`, {
+        email
+    })
+}
+
 export function getReputation({
     provider,
     username
@@ -58,7 +64,9 @@ export function addIdentityCommitment({
     accountId,
     userAddress,
     userSignature,
-    telegramUserId
+    telegramUserId,
+    emailUserId,
+    emailUserToken
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
@@ -67,12 +75,16 @@ export function addIdentityCommitment({
     userAddress?: string
     userSignature?: string
     telegramUserId?: string
+    emailUserId?: string
+    emailUserToken?: string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
         accountId,
         userAddress,
         userSignature,
-        telegramUserId
+        telegramUserId,
+        emailUserId,
+        emailUserToken
     })
 }
 
@@ -83,7 +95,9 @@ export function removeIdentityCommitment({
     accountId,
     userAddress,
     userSignature,
-    telegramUserId
+    telegramUserId,
+    emailUserId,
+    emailUserToken
 }: {
     provider: Provider
     groupName: ReputationLevel | PoapGroupName | string
@@ -92,6 +106,8 @@ export function removeIdentityCommitment({
     userAddress?: string
     userSignature?: string
     telegramUserId?: string
+    emailUserId?: string
+    emailUserToken?: string
 }): Promise<any | null> {
     return sendRequest(
         `/api/groups/${provider}/${groupName}/${identityCommitment}`,
@@ -99,7 +115,9 @@ export function removeIdentityCommitment({
             accountId,
             userAddress,
             userSignature,
-            telegramUserId
+            telegramUserId,
+            emailUserId,
+            emailUserToken
         },
         "DELETE"
     )

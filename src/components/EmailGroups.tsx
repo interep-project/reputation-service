@@ -7,10 +7,11 @@ import useGroups from "src/hooks/useGroups"
 
 type Properties = {
     userId: string
+    userToken: string
     groupId: string
 }
 
-export default function TelegramGroups({ userId, groupId }: Properties): JSX.Element {
+export default function EmailGroups({ userId, userToken, groupId }: Properties): JSX.Element {
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(0)
@@ -27,7 +28,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
 
     useEffect(() => {
         ;(async () => {
-            const group = await getGroup("telegram", groupId)
+            const group = await getGroup("email", groupId)
 
             if (group) {
                 setGroupSize(group.size)
@@ -39,10 +40,10 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
 
     const step1 = useCallback(
         async (signer: Signer, groupId: string) => {
-            const identityCommitment = await retrieveIdentityCommitment(signer, "telegram")
+            const identityCommitment = await retrieveIdentityCommitment(signer, "email")
 
             if (identityCommitment) {
-                const hasJoined = await checkIdentityCommitment(identityCommitment, "telegram", groupId)
+                const hasJoined = await checkIdentityCommitment(identityCommitment, "email", groupId)
 
                 if (hasJoined === null) {
                     return
@@ -57,13 +58,23 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     )
 
     const step2 = useCallback(
-        async (identityCommitment: string, groupId: string, userId: string, hasJoined: boolean) => {
+        async (identityCommitment: string, groupId: string, userId: string, userToken: string, hasJoined: boolean) => {
             if (!hasJoined) {
-                if (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
+                if (
+                    await joinGroup(identityCommitment, "email", groupId, {
+                        emailUserId: userId,
+                        emailUserToken: userToken
+                    })
+                ) {
                     setHasJoined(true)
                     setGroupSize((v) => v + 1)
                 }
-            } else if (await leaveGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
+            } else if (
+                await leaveGroup(identityCommitment, "email", groupId, {
+                    emailUserId: userId,
+                    emailUserToken: userToken
+                })
+            ) {
                 setHasJoined(false)
                 setGroupSize((v) => v - 1)
             }
@@ -78,7 +89,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     ) : (
         <>
             <Text fontWeight="semibold">
-                This Telegram group has {_groupSize} members. Follow the steps below to join/leave it.
+                This Email group has {_groupSize} members. Follow the steps below to join/leave it.
             </Text>
 
             <VStack mt="20px" spacing={4} align="left">
@@ -93,9 +104,11 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 2"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our Telegram Semaphore group.`}
-                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
-                        actionFunction={() => step2(_identityCommitment as string, groupId, userId, _hasJoined)}
+                        message="Join the selected group."
+                        actionText="Join Group"
+                        actionFunction={() =>
+                            step2(_identityCommitment as string, groupId, userId, userToken, _hasJoined)
+                        }
                         loading={_currentStep === 2 && _loading}
                         disabled={_currentStep !== 2}
                     />

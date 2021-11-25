@@ -3,6 +3,8 @@ import { FaGithub, FaRedditAlien, FaTwitter, FaInfoCircle } from "react-icons/fa
 import { signIn, useSession } from "next-auth/client"
 import React from "react"
 
+import EmailInputButton from "src/components/EmailInput"
+
 export default function Signin(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
@@ -54,6 +56,8 @@ export default function Signin(): JSX.Element {
                 >
                     Reddit
                 </Button>
+
+                <EmailInputButton session={session} />
             </VStack>
         </>
     )

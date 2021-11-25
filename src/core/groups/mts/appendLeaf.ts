@@ -3,7 +3,7 @@ import config from "src/config"
 import { checkGroup } from "src/core/groups"
 import { MerkleTreeNodeDocument, MerkleTreeNode, MerkleTreeZero } from "@interrep/db"
 import { Provider } from "src/types/groups"
-import poseidonHash from "src/utils/common/crypto/hasher"
+import { poseidon } from "src/utils/common/crypto"
 import { PoapGroupName } from "../poap"
 
 export default async function appendLeaf(
@@ -51,7 +51,7 @@ export default async function appendLeaf(
             )
 
             if (parentNode) {
-                parentNode.hash = poseidonHash(node.hash, node.siblingHash)
+                parentNode.hash = poseidon(node.hash, node.siblingHash)
 
                 await parentNode.save()
             } else {
@@ -62,7 +62,7 @@ export default async function appendLeaf(
                     },
                     level: level + 1,
                     index: Math.floor(currentIndex / 2),
-                    hash: poseidonHash(node.hash, node.siblingHash)
+                    hash: poseidon(node.hash, node.siblingHash)
                 })
             }
 
@@ -87,7 +87,7 @@ export default async function appendLeaf(
                 Math.floor(currentIndex / 2)
             )) as MerkleTreeNodeDocument
 
-            parentNode.hash = poseidonHash(siblingNode.hash, node.hash)
+            parentNode.hash = poseidon(siblingNode.hash, node.hash)
 
             node.parent = parentNode
 

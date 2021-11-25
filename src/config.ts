@@ -41,6 +41,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
         },
         [ContractName.GROUPS]: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
+
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.REPUTATION_BADGE]: {
@@ -126,6 +127,20 @@ export default {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
+
+    HOST: process.env.HOST,
+    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
+    GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
+    GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
+    GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
+    GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN,
+
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
-    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
+    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST,
+    HOST: process.env.HOST,
+    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
+    GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
+    GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
+    GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
+    GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN
 }

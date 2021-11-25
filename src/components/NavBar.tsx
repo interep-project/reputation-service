@@ -39,6 +39,10 @@ export default function NavBar(): JSX.Element {
         return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
     }
 
+    function isEmailMagicLink(parameters: string[]): boolean {
+        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
+    }
+
     return (
         <Container
             zIndex="1"
@@ -63,7 +67,10 @@ export default function NavBar(): JSX.Element {
                             isActive={router.route === "/groups/[[...provider]]"}
                             isDisabled={
                                 !_address ||
-                                (!appIsReady() && !_poapGroupNames.length && !isTelegramMagicLink(parameters))
+                                (!appIsReady() &&
+                                    !_poapGroupNames.length &&
+                                    !isTelegramMagicLink(parameters) &&
+                                    !isEmailMagicLink(parameters))
                             }
                         >
                             Groups

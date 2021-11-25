@@ -21,7 +21,6 @@ export default async function addIdentityCommitment(
         ethers.utils.formatBytes32String(provider),
         ethers.utils.formatBytes32String(name)
     )
-
     // If the group has not yet been created, it creates it.
     if (groupSize.toNumber() === 0) {
         await contractInstance.createGroup(
