@@ -19,7 +19,7 @@
         "precommit": "lint-staged"
     },
     "engines": {
-        "node": "14.x",
+        "node": "16.x",
         "yarn": "1.x"
     },
     "cacheDirectories": [
@@ -33,7 +33,7 @@
         "@fontsource/raleway": "^4.5.0",
         "@interrep/db": "^0.5.0",
         "@interrep/reputation-criteria": "^0.12.0",
-        "@interrep/semethid": "^0.10.0",
+        "@interrep/identity": "^0.10.0",
         "@interrep/telegram-bot": "^0.4.3",
         "@sentry/nextjs": "^6.12.0",
         "@types/nodemailer": "^6.4.4",

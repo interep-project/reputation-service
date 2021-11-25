@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react"
 import { OAuthProvider } from "@interrep/reputation-criteria"
-import semethid from "@interrep/semethid"
+import createIdentity from "@interrep/identity"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
 import { Group, Provider } from "src/types/groups"
@@ -98,7 +98,7 @@ export default function useGroups(): ReturnParameters {
             try {
                 setLoading(true)
 
-                const identity = await semethid((message) => signer.signMessage(message), capitalize(provider))
+                const identity = await createIdentity((message) => signer.signMessage(message), capitalize(provider))
                 const identityCommitment = identity.genIdentityCommitment()
 
                 setLoading(false)

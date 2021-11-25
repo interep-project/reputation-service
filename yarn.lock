@@ -2132,6 +2132,13 @@
     "@interrep/reputation-criteria" "^0.12.0"
     mongoose "^5.12.1"
 
+"@interrep/identity@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@interrep/identity/-/identity-0.10.0.tgz#694b507ca8be789fba70bd2ad02c9098d64f38f3"
+  integrity sha512-EB6PNReMjKNLDRfLonFrTr/hiVK8Wo7ykab4AsoLSb5P2ZC84WQNpJ/nD1+thpd0bIUwrmnzDvptFqazuRWkzg==
+  dependencies:
+    "@libsem/identity" "^1.0.17"
+
 "@interrep/merkle-tree@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@interrep/merkle-tree/-/merkle-tree-0.2.1.tgz#d009ebc14141e3b4e6e52682b94778b6a61a91ca"
@@ -2141,13 +2148,6 @@
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.12.0.tgz#c7cdb07430ee97a64be73b5764341d7a0ea871ad"
   integrity sha512-pMhduXG2qJ23DffSpEE/ZzJCU043508tWrI/5+kUZg8Y+XzREPk5PDV+nHiXsklAuslH1kGS+JXVKb+0S44P6Q==
-
-"@interrep/semethid@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@interrep/semethid/-/semethid-0.10.0.tgz#f168f76da04a81d118f011d4fd9471576619a133"
-  integrity sha512-cKHhbsMHQLIpLrDBgj6R9m63q1DIk5D5zCAWCNKy74lD5G3YlFhLScx1TNPgIBN/sAA8JqX7hFROs5s+ESl/KA==
-  dependencies:
-    "@libsem/identity" "^1.0.17"
 
 "@interrep/telegram-bot@^0.4.3":
   version "0.4.3"
