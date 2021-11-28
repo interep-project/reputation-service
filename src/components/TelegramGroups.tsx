@@ -27,11 +27,13 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
 
     useEffect(() => {
         ;(async () => {
-            const group = await getGroup("telegram", groupId)
+            if (_currentStep === 0) {
+                const group = await getGroup("telegram", groupId)
 
-            if (group) {
-                setGroupSize(group.size)
-                setCurrentStep(1)
+                if (group) {
+                    setGroupSize(group.size)
+                    setCurrentStep(1)
+                }
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps

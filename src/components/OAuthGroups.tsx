@@ -26,7 +26,7 @@ export default function OAuthGroups(): JSX.Element {
 
     useEffect(() => {
         ;(async () => {
-            if (session) {
+            if (session && _currentStep === 0) {
                 const { provider, user } = session
                 const group = await getGroup(provider, user.reputation as ReputationLevel)
 

@@ -28,11 +28,13 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
 
     useEffect(() => {
         ;(async () => {
-            const group = await getGroup("email", groupId)
+            if (_currentStep === 0) {
+                const group = await getGroup("email", groupId)
 
-            if (group) {
-                setGroupSize(group.size)
-                setCurrentStep(1)
+                if (group) {
+                    setGroupSize(group.size)
+                    setCurrentStep(1)
+                }
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
