@@ -70,7 +70,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     const botometerResult = await getBotometerScore(screen_name)
 
                     accountId = id_str
-                    reputation = calculateReputation(OAuthProvider.REDDIT, {
+                    reputation = calculateReputation(OAuthProvider.TWITTER, {
                         followers: followers_count,
                         verifiedProfile: verified,
                         botometerOverallScore: botometerResult?.display_scores?.universal?.overall
