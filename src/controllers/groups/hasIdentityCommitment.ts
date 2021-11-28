@@ -9,12 +9,8 @@ export default async function hasIdentityCommitmentController(
     res: NextApiResponse
 ): Promise<void> {
     if (req.method !== "GET") {
-        console.log("**************hasIdentityCommitmentController")
         return res.status(405).end()
     }
-
-    console.log("**************hasIdentityCommitmentController")
-    console.log("req.query", req.query)
 
     const provider = req.query?.provider as Provider
     const name = req.query?.name
