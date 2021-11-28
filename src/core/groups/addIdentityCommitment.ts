@@ -17,18 +17,20 @@ export default async function addIdentityCommitment(
     const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
     const contractOwner = await contractInstance.signer.getAddress()
 
-    const groupSize = await contractInstance.getSize(
+    const groupRoot = await contractInstance.getRoot(
         ethers.utils.formatBytes32String(provider),
         ethers.utils.formatBytes32String(name)
     )
     // If the group has not yet been created, it creates it.
-    if (groupSize.toNumber() === 0) {
-        await contractInstance.createGroup(
+    if (groupRoot.toString() === "0") {
+        const tx = await contractInstance.createGroup(
             ethers.utils.formatBytes32String(provider),
             ethers.utils.formatBytes32String(name),
             config.MERKLE_TREE_DEPTH,
             contractOwner
         )
+
+        await tx.wait(1)
     }
 
     await contractInstance.addIdentityCommitment(
