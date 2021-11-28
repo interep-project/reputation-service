@@ -122,24 +122,16 @@ export default {
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     REDDIT_CLIENT_ID: process.env.REDDIT_CLIENT_ID,
     REDDIT_CLIENT_SECRET: process.env.REDDIT_CLIENT_SECRET,
-    RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
-    JWT_SECRET: process.env.JWT_SECRET,
-
-    HOST: process.env.HOST,
     GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
     GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
     GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
     GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
     GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN,
-
-    MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
-    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST,
+    RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
+    JWT_SECRET: process.env.JWT_SECRET,
     HOST: process.env.HOST,
-    GMAIL_ADDRESS: process.env.GMAIL_ADDRESS,
-    GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID,
-    GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET,
-    GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
-    GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN
+    MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
+    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
 }
