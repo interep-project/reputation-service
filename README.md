@@ -97,7 +97,7 @@ cd contracts
 yarn start
 ```
 
-3. In another terminal, deploy mocked contracts and groups:
+3. In another terminal, deploy mocked contracts:
 
 ```bash
 yarn mocks --network localhost
