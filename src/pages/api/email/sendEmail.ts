@@ -17,7 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     const groupId = checkEmailAddress(email)
 
-    if (!groupId) {
+    if (groupId.length == 0) {
         return res.status(402).send("Invalid email, must be from registered domains.")
     }
 
