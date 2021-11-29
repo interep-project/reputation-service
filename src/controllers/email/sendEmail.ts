@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import createEmailAccount from "src/core/email/createEmailAccount"
-import checkEmailAddress from "src/core/email/emailAddressChecker"
+// import createEmailAccount from "src/core/email/createEmailAccount"
+import {createEmailAccount, checkEmailAddress} from "src/core/email"
 import logger from "src/utils/backend/logger"
 
 export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
