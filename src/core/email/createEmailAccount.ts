@@ -3,32 +3,37 @@ import { dbConnect } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 import sendEmail from "./sendEmail"
 
-export default async function createEmailAccount(email: string, groupId: string): Promise<void> {
+export default async function createEmailAccount(email: string, groupId: string[]): Promise<void> {
     try {
         await dbConnect()
 
-        const hashId = sha256(email + groupId)
-        const verificationToken = Math.floor(Math.random() * 10000).toString()
+        var verificationToken = sha256(Math.floor(Math.random() * 10000).toString())
 
-        let account = await EmailUser.findByHashId(hashId)
+        for(let i = groupId.length - 1; i>=0; i--){
+            const hashId = sha256(email + groupId[i])
 
-        if (!account) {
-            account = new EmailUser({
-                hashId,
-                hasJoined: false,
-                verificationToken
-            })
-        } else if (!account.hasJoined) {
-            account.verificationToken = verificationToken
+            let account = await EmailUser.findByHashId(hashId)
+
+            if (!account) {
+                account = new EmailUser({
+                    hashId,
+                    hasJoined: false,
+                    verificationToken
+                })
+            } else {
+                verificationToken = account.verificationToken 
+            }
+    
+            await account.save()
+
         }
-
-        await account.save()
 
         try {
             await sendEmail(email, verificationToken, groupId)
         } catch (error) {
             throw new Error(`Error trying to send the magic link: ${error}`)
         }
+        
     } catch (error) {
         throw new Error(`Error trying to create the email account: ${error}`)
     }

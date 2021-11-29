@@ -1,3 +1,4 @@
+import { group } from "console"
 import { createTransport } from "nodemailer"
 import config from "src/config"
 
@@ -13,13 +14,45 @@ const smtpTransport = createTransport({
     }
 })
 
-export default async function sendEmail(email: string, verificationToken: String, groupId: String): Promise<void> {
-    const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${groupId}`
+export default async function sendEmail(email: string, verificationToken: String, groupId: String[]): Promise<void> {
+    var group_string = groupId[0]
+
+    for(let i=1; i<groupId.length; i++){
+        group_string = group_string + "+" + groupId[i] 
+    }
+
+    const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${group_string}`
 
     await smtpTransport.sendMail({
         to: email,
         subject: "Interrep email confirmation",
-        html: `Hello,<br> Please Click on the link to verify your email.<br><a href=${link}>Click here to verify</a>.
-        <br> You will be redirected to the Semaphore gropu page.`
+        html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <style>
+        .button {
+        border: 2px solid black;
+        border-radius: 5%;
+        background-color: white;
+        padding: 5px 10px;
+        text-align: center;
+        // display: inline-block;
+        cursor: pointer;
+        }
+
+        </style>
+        </head>
+
+        <body>
+
+        Hello,<br> Please Click below to be join/leave the <b>${groupId}</b> Semaphore group.
+        <br>
+        <a href=${link}><button class="button button1">Join Group</button></a>
+        
+        </body>
+        </html>
+            
+    `
     })
 }
