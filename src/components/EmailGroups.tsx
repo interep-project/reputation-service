@@ -1,10 +1,10 @@
 import { VStack, Text, Spinner } from "@chakra-ui/react"
 import { Signer } from "ethers"
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
-import { Group, Web3Provider } from "src/types/groups"
+import { Group } from "src/types/groups"
 
 type Properties = {
     userId: string
@@ -30,18 +30,6 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
         leaveGroup,
         _loading
     } = useGroups()
-
-    // useEffect(() => {
-    //     ;(async () => {
-    //         const group = await getGroup("email", groupId)
-
-    //         if (group) {
-    //             setGroupSize(group.size)
-    //             setCurrentStep(1)
-    //         }
-    //     })()
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [])
 
     const step1 = useCallback(
         async (groupName: string) => {

@@ -1,7 +1,8 @@
 import { Button, HStack, Input, useToast } from "@chakra-ui/react"
 import React, { useState } from "react"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import checkEmailAddress from "src/core/email/emailAddressChecker"
+import checkEmailAddress from "src/core/email/checkEmailAddress"
+
 
 export default function EmailAddressBox(): JSX.Element {
     const toast = useToast()
@@ -27,8 +28,6 @@ export default function EmailAddressBox(): JSX.Element {
         console.log(email)
 
         const response = await sendEmail({ email })
-        console.log("HHHHHHHHH", response)
-        console.log("HHHHHHHHH", response.data)
 
         if (response) {
             toast({
