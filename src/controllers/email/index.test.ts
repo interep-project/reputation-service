@@ -1,47 +1,25 @@
-import { EmailUser } from "@interrep/db"
-import { RequestMethod } from "node-mocks-http"
+import { EmailUser, EmailUserDocument } from "@interrep/db"
 import * as nodemailer from "nodemailer"
 import createNextMocks from "src/mocks/createNextMocks"
-import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { sha256 } from "src/utils/common/crypto"
 import { sendEmailController } from "."
 
-/*
-const bodyParams = {
-    accountId: "6087dabb0b3af8703a581bef",
-    address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
-    userSignature: "0xSignature",
-    userPublicKey: "publicKey"
-}
-*/
-
-// Set up nodemailer mock.
 jest.mock("nodemailer", () => ({
     __esModule: true,
-    namedExport: { createTransport: jest.fn() },
-    default: { createTransport: jest.fn() },
-    createTransport: jest.fn().mockImplementation(() => ({
-        sendMail: jest.fn().mockImplementation((mailOptions: any) => {
-            console.log(`sendMail text: ${mailOptions.html}`)
-        })
+    createTransport: jest.fn(() => ({
+        sendMail: jest.fn()
     }))
 }))
 
-// const MockNodemailer = () => {
-//     createTransport: jest.fn().mockImplementation(() => ({ sendMail: jest.fn().mockImplementation(
-//         (mailOptions: any) => {
-//             console.log(`sendMail text: ${mailOptions.html}`)
-//         }
-//     ) }))
-// }
-
 const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock
 
-describe("Email verification APIs", () => {
+describe("# controllers/email", () => {
+    const groupId = "outlook"
+    const email = "test@outlook.com"
+
     beforeAll(async () => {
         await connectDatabase()
-        // @ts-ignore
-        // nodemailer.mockImplementation(MockNodemailer)
     })
 
     afterAll(async () => {
@@ -53,15 +31,25 @@ describe("Email verification APIs", () => {
     })
 
     afterEach(async () => {
-        logger.silly(`clear DB`)
         await clearDatabase()
     })
 
-    describe("Get user reputation", () => {
-        it("Should return error 400 if the no address", async () => {
+    describe("# sendEmail", () => {
+        it("Should return error 405 if the http method is not a POST", async () => {
             const { req, res } = createNextMocks({
-                method: "POST" as RequestMethod,
-                body: { address: "" }
+                method: "GET",
+                body: { email }
+            })
+
+            await sendEmailController(req, res)
+
+            expect(res._getStatusCode()).toBe(405)
+        })
+
+        it("Should return error 400 if there is no email parameter", async () => {
+            const { req, res } = createNextMocks({
+                method: "POST",
+                body: {}
             })
 
             await sendEmailController(req, res)
@@ -69,58 +57,32 @@ describe("Email verification APIs", () => {
             expect(res._getStatusCode()).toBe(400)
         })
 
-        // // reject email address not from @hotmail
-        it("Should return error 400 if wrong type of email entered", async () => {
+        it("Should return error 402 if the email is wrong or not supported", async () => {
             const { req, res } = createNextMocks({
-                body: { address: "test@outlook.com" },
-                method: "POST" as RequestMethod
+                method: "POST",
+                body: { email: "test@gmail.com" }
             })
 
             await sendEmailController(req, res)
 
-            expect(res._getStatusCode()).toBe(400)
+            expect(res._getStatusCode()).toBe(402)
         })
 
-        it("Should return 200 and be in the db if correct type of email entered (@hotmail)", async () => {
-            const TEST_ADDRESS = "test@hotmail.com"
+        it("Should return 200 and should create an email user in the db", async () => {
             const { req, res } = createNextMocks({
-                method: "POST" as RequestMethod,
-                body: { email: TEST_ADDRESS }
+                method: "POST",
+                body: { email }
             })
 
             await sendEmailController(req, res)
 
-            expect(res._getStatusCode()).toBe(200)
-
-            // Account should have been created, but not verified.
-            const acc = await EmailUser.findByHashId(TEST_ADDRESS)
-            logger.silly(`acc ${acc?.id}`)
-
-            expect(acc).toBeDefined()
-        })
-
-        it("Should return 200 with previously verified account", async () => {
-            const TEST_ADDRESS = "test@hotmail.com"
-
-            EmailUser.create({
-                hashId: TEST_ADDRESS,
-                hasJoined: false,
-                verificationToken: "1234"
-            })
-
-            const { req, res } = createNextMocks({
-                method: "POST" as RequestMethod,
-                body: { email: TEST_ADDRESS }
-            })
-
-            await sendEmailController(req, res)
+            const { hasJoined, verificationToken } = (await EmailUser.findByHashId(
+                sha256(email + groupId)
+            )) as EmailUserDocument
 
             expect(res._getStatusCode()).toBe(200)
-
-            // Account should still be there.
-            const acc = await EmailUser.findByHashId(TEST_ADDRESS)
-
-            expect(acc).toBeDefined()
+            expect(verificationToken).toHaveLength(64)
+            expect(hasJoined).toBeFalsy()
         })
     })
 })
