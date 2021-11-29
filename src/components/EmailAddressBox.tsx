@@ -12,7 +12,7 @@ export default function EmailAddressBox(): JSX.Element {
     async function submitEmail(email: string) {
         const groupId = checkEmailAddress(email)
 
-        if (!groupId) {
+        if (groupId.length == 0) {
             toast({
                 description: "You must enter a @hotmail address.",
                 variant: "subtle",
@@ -27,7 +27,8 @@ export default function EmailAddressBox(): JSX.Element {
         console.log(email)
 
         const response = await sendEmail({ email })
-        console.log("response", response)
+        console.log("HHHHHHHHH", response)
+        console.log("HHHHHHHHH", response.data)
 
         if (response) {
             toast({
