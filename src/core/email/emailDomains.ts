@@ -1,3 +1,7 @@
 
-export const valid_email_domain_list = {"@hotmail": "hotmail", "@outlook": "outlook"}
+enum EmailDomains {
+    hotmail = "@hotmail",
+    outlook = "@outlook",
+}
 
+export default EmailDomains
