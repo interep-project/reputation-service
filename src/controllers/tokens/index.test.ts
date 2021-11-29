@@ -1,4 +1,4 @@
-import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
+import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
 import mintToken from "src/core/linking/mintToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
@@ -7,7 +7,7 @@ import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { getTokensByAddressController, mintTokenController } from "."
 
-jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
+jest.mock("src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
     default: jest.fn()
 }))

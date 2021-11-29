@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
+import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
 import { Token } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"

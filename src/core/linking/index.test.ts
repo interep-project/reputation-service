@@ -43,7 +43,7 @@ jest.mock("src/core/signing/checkIfUserSignatureIsValid", () => ({
     default: jest.fn()
 }))
 
-jest.mock("../blockchain/ReputationBadge/mintNewToken", () => ({
+jest.mock("../contracts/ReputationBadge/mintNewToken", () => ({
     __esModule: true,
     default: jest.fn(
         (): Partial<ContractTransaction> => ({

@@ -5,12 +5,12 @@ import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import { getPoapEventName, PoapGroupName } from "src/core/groups/poap"
+import { getPoapEvent, PoapEvent } from "src/core/poap"
 import capitalize from "src/utils/common/capitalize"
 
 type Properties = {
     session?: Session | null
-    poapGroupNames: PoapGroupName[]
+    poapGroupNames: PoapEvent[]
 }
 
 export default function SideBar({ session, poapGroupNames }: Properties): JSX.Element {
@@ -42,7 +42,7 @@ export default function SideBar({ session, poapGroupNames }: Properties): JSX.El
                         <Text fontSize="md">Your events:</Text>
                         {poapGroupNames.map((groupId) => (
                             <Text pl="10px" key={groupId} fontSize="md">
-                                {getPoapEventName(groupId)}
+                                {getPoapEvent(groupId)}
                             </Text>
                         ))}
                     </VStack>

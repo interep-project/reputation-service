@@ -2,13 +2,13 @@ import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeZero } from "@interre
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
+import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
-import { PoapGroupName } from "../poap"
 
 export default async function deleteLeaf(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName | string,
+    name: ReputationLevel | PoapEvent | string,
     identityCommitment: string
 ): Promise<string> {
     if (!checkGroup(provider, name)) {

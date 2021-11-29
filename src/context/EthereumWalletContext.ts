@@ -1,12 +1,12 @@
 import { Signer } from "ethers"
 import React from "react"
-import { PoapGroupName } from "src/core/groups/poap"
+import { PoapEvent } from "src/core/poap"
 
 export type EthereumWalletContextType = {
     _networkId?: number
     _signer?: Signer
     _address?: string
-    _poapGroupNames: PoapGroupName[]
+    _poapEvents: PoapEvent[]
     check: () => Promise<void>
     connect: () => Promise<void>
 }

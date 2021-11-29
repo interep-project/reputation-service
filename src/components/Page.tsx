@@ -10,7 +10,7 @@ type Parameters = {
 
 export default function Page({ children }: Parameters): JSX.Element {
     const [session] = useSession()
-    const { _poapGroupNames } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { _poapEvents } = useContext(EthereumWalletContext) as EthereumWalletContextType
 
     return (
         <Container
@@ -18,18 +18,16 @@ export default function Page({ children }: Parameters): JSX.Element {
             mb="80px"
             mt="180px"
             px="80px"
-            maxW={session || !!_poapGroupNames.length ? "container.lg" : "container.md"}
+            maxW={session || !!_poapEvents.length ? "container.lg" : "container.md"}
             display="flex"
         >
             <HStack flex="1" align="start">
-                {(session || !!_poapGroupNames.length) && (
-                    <SideBar session={session} poapGroupNames={_poapGroupNames} />
-                )}
+                {(session || !!_poapEvents.length) && <SideBar session={session} poapGroupNames={_poapEvents} />}
                 <Box
                     flex="1"
                     py="10px"
-                    pl={session || !!_poapGroupNames.length ? "30px" : "0"}
-                    borderLeftWidth={session || !!_poapGroupNames.length ? "4px" : "0"}
+                    pl={session || !!_poapEvents.length ? "30px" : "0"}
+                    borderLeftWidth={session || !!_poapEvents.length ? "4px" : "0"}
                 >
                     {children}
                 </Box>

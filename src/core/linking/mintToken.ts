@@ -1,8 +1,8 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { TokenStatus, Token } from "@interrep/db"
 import logger from "src/utils/backend/logger"
-import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
+import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
+import mintNewToken from "src/core/contracts/ReputationBadge/mintNewToken"
 
 const mintToken = async (tokenId: string): Promise<ContractTransaction> => {
     let token

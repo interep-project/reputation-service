@@ -1,12 +1,12 @@
+import { MerkleTreeNode } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import { checkGroup } from "src/core/groups"
-import { MerkleTreeNode } from "@interrep/db"
+import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
-import { PoapGroupName } from "../poap"
 
 export default async function retrievePath(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName | string,
+    name: ReputationLevel | PoapEvent | string,
     identityCommitment: string
 ): Promise<any> {
     if (!checkGroup(provider, name)) {

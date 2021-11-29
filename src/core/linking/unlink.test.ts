@@ -1,6 +1,6 @@
 import { OAuthProvider } from "@interrep/reputation-criteria"
 import { Wallet } from "ethers"
-import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
+import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
 import { TokenStatus, Token, OAuthAccount } from "@interrep/db"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
@@ -14,7 +14,7 @@ jest.mock("src/utils/backend/getSigner", () => ({
     default: jest.fn(() => mockedSigner)
 }))
 
-jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
+jest.mock("src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
     default: jest.fn()
 }))

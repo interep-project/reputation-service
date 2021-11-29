@@ -26,7 +26,7 @@ import capitalize from "src/utils/common/capitalize"
 export default function Groups(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
-    const { _address, _networkId, _poapGroupNames } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { _address, _networkId, _poapEvents } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const router = useRouter()
     const parameters = router.query.provider as string[]
 
@@ -67,7 +67,7 @@ export default function Groups(): JSX.Element {
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
             ) : !session &&
-              _poapGroupNames.length === 0 &&
+              _poapEvents.length === 0 &&
               !isTelegramMagicLink(parameters) &&
               !isEmailMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
@@ -79,7 +79,7 @@ export default function Groups(): JSX.Element {
                         {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
                         {isEmailMagicLink(parameters) && <Tab mr="10px">Email</Tab>}
                         {session && <Tab mr="10px">{capitalize(session.provider)}</Tab>}
-                        {_poapGroupNames.length !== 0 && <Tab>POAP</Tab>}
+                        {_poapEvents.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
                         {isTelegramMagicLink(parameters) && (
@@ -97,7 +97,7 @@ export default function Groups(): JSX.Element {
                                 <OAuthGroups />
                             </TabPanel>
                         )}
-                        {_poapGroupNames.length !== 0 && (
+                        {_poapEvents.length !== 0 && (
                             <TabPanel>
                                 <PoapGroups />
                             </TabPanel>

@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import { TokenStatus, Token, OAuthAccount } from "@interrep/db"
 import getSigner from "src/utils/backend/getSigner"
-import checkAndUpdateTokenStatus from "../blockchain/ReputationBadge/checkAndUpdateTokenStatus"
+import checkAndUpdateTokenStatus from "../contracts/ReputationBadge/checkAndUpdateTokenStatus"
 
 type UnlinkAccountsParams = {
     accountIdFromSession: string

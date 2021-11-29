@@ -4,15 +4,14 @@ import config, { ContractName } from "src/config"
 import { Provider } from "src/types/groups"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
 import getContractAddress from "src/utils/common/getContractAddress"
-import { appendLeaf } from "./mts"
-import { PoapGroupName } from "./poap"
+import { appendLeaf } from "src/core/groups/mts"
+import { PoapEvent } from "src/core/poap"
 
 export default async function addIdentityCommitment(
     provider: Provider,
-    name: ReputationLevel | PoapGroupName | string,
+    name: ReputationLevel | PoapEvent | string,
     identityCommitment: string
 ): Promise<string> {
-    // Update the contract with new root.
     const contractAddress = getContractAddress(ContractName.GROUPS)
     const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
     const contractOwner = await contractInstance.signer.getAddress()
@@ -39,6 +38,5 @@ export default async function addIdentityCommitment(
         identityCommitment
     )
 
-    // Update the db with the new Merkle tree.
     return appendLeaf(provider, name, identityCommitment)
 }

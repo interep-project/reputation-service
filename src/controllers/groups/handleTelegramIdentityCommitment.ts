@@ -1,6 +1,6 @@
 import { TelegramUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/groups"
+import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"

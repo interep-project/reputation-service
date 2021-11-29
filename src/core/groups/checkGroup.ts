@@ -1,16 +1,16 @@
 import { getReputationLevels, ReputationLevel } from "@interrep/reputation-criteria"
+import { getPoapEvents, PoapEvent } from "src/core/poap"
 import { Provider, Web3Provider } from "src/types/groups"
-import { getPoapGroupNames, PoapGroupName } from "./poap"
 
-export default function checkGroup(provider: Provider, name: ReputationLevel | PoapGroupName | string): boolean {
+export default function checkGroup(provider: Provider, name: ReputationLevel | PoapEvent | string): boolean {
     if (provider === "telegram" || provider === "email") {
         return true
     }
 
     if (provider === Web3Provider.POAP) {
-        const poapGroupNames = getPoapGroupNames()
+        const poapGroupNames = getPoapEvents()
 
-        return poapGroupNames.indexOf(name as PoapGroupName) !== -1
+        return poapGroupNames.indexOf(name as PoapEvent) !== -1
     }
 
     const reputationLevels = getReputationLevels(provider)

@@ -1,5 +1,5 @@
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
-import { PoapGroupName } from "src/core/groups/poap"
+import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
@@ -28,7 +28,7 @@ export function getGroup({
     groupName
 }: {
     provider: Provider
-    groupName: ReputationLevel | PoapGroupName | string
+    groupName: ReputationLevel | PoapEvent | string
 }): Promise<any | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}`)
 }
@@ -47,7 +47,7 @@ export async function checkIdentityCommitment({
     identityCommitment
 }: {
     provider: Provider
-    groupName: ReputationLevel | PoapGroupName | string
+    groupName: ReputationLevel | PoapEvent | string
     identityCommitment: string
 }): Promise<boolean | null> {
     return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
@@ -69,7 +69,7 @@ export function addIdentityCommitment({
     emailUserToken
 }: {
     provider: Provider
-    groupName: ReputationLevel | PoapGroupName | string
+    groupName: ReputationLevel | PoapEvent | string
     identityCommitment: string
     accountId?: string
     userAddress?: string
@@ -100,7 +100,7 @@ export function removeIdentityCommitment({
     emailUserToken
 }: {
     provider: Provider
-    groupName: ReputationLevel | PoapGroupName | string
+    groupName: ReputationLevel | PoapEvent | string
     identityCommitment: string
     accountId?: string
     userAddress?: string

@@ -2,11 +2,11 @@ import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
 import { MerkleTree } from "@interrep/merkle-tree"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
+import { PoapEvent } from "src/core/poap"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, retrievePath } from "."
-import { PoapGroupName } from "../poap"
 
 describe("Merkle Trees", () => {
     const idCommitment = poseidon(2, 1)
@@ -29,7 +29,7 @@ describe("Merkle Trees", () => {
         it("Should not append any leaf if the group id does not exist", async () => {
             await seedZeroHashes(false)
 
-            const fun = (): Promise<string> => appendLeaf(provider, PoapGroupName.DEVCON_3, idCommitment)
+            const fun = (): Promise<string> => appendLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
@@ -91,7 +91,7 @@ describe("Merkle Trees", () => {
         })
 
         it("Should not delete any leaf if the group id does not exist", async () => {
-            const fun = () => deleteLeaf(provider, PoapGroupName.DEVCON_3, idCommitment)
+            const fun = () => deleteLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })

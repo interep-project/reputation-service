@@ -23,7 +23,7 @@ export default function NavBar(): JSX.Element {
     const router = useRouter()
     const parameters = router.query.provider as string[]
     const [session] = useSession()
-    const { connect, check, _networkId, _address, _poapGroupNames } = useContext(
+    const { connect, check, _networkId, _address, _poapEvents } = useContext(
         EthereumWalletContext
     ) as EthereumWalletContextType
     const { hasCopied, onCopy } = useClipboard(_address as string)
@@ -68,7 +68,7 @@ export default function NavBar(): JSX.Element {
                             isDisabled={
                                 !_address ||
                                 (!appIsReady() &&
-                                    !_poapGroupNames.length &&
+                                    !_poapEvents.length &&
                                     !isTelegramMagicLink(parameters) &&
                                     !isEmailMagicLink(parameters))
                             }

@@ -1,5 +1,5 @@
-import checkAndUpdateTokenStatus from "src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus"
-import mintNewToken from "src/core/blockchain/ReputationBadge/mintNewToken"
+import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
+import mintNewToken from "src/core/contracts/ReputationBadge/mintNewToken"
 import createMockTokenObject from "src/mocks/createMockToken"
 import { TokenDocument, TokenStatus, Token } from "@interrep/db"
 import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
@@ -11,12 +11,12 @@ const mockTxResponse = {
     chainId: 888,
     timestamp: 121212
 }
-jest.mock("src/core/blockchain/ReputationBadge/mintNewToken", () => ({
+jest.mock("src/core/contracts/ReputationBadge/mintNewToken", () => ({
     __esModule: true,
     default: jest.fn(() => mockTxResponse)
 }))
 
-jest.mock("src/core/blockchain/ReputationBadge/checkAndUpdateTokenStatus", () => ({
+jest.mock("src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus", () => ({
     __esModule: true,
     default: jest.fn()
 }))

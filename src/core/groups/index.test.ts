@@ -1,11 +1,11 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
+import { PoapEvent } from "src/core/poap"
 import { Web3Provider } from "src/types/groups"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
-import { connectDatabase, clearDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { checkGroup, getProviders, getGroup, getGroups } from "."
-import { PoapGroupName } from "./poap"
+import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { checkGroup, getGroup, getGroups, getProviders } from "."
 
 describe("Core group functions", () => {
     beforeAll(async () => {
@@ -25,7 +25,7 @@ describe("Core group functions", () => {
         })
 
         it("Should return false if a group does not exist", () => {
-            const expectedValue = checkGroup(OAuthProvider.TWITTER, PoapGroupName.DEVCON_3)
+            const expectedValue = checkGroup(OAuthProvider.TWITTER, PoapEvent.DEVCON_3)
 
             expect(expectedValue).toBeFalsy()
         })

@@ -4,7 +4,7 @@ import { ethers, Signer } from "ethers"
 import { useCallback, useEffect, useState } from "react"
 import { currentNetwork } from "src/config"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { PoapGroupName, getPoapGroupNamesByAddress } from "src/core/groups/poap"
+import { PoapEvent, getPoapEventsByAddress } from "src/core/poap"
 import { getAddress } from "ethers/lib/utils"
 
 export default function useEthereumWallet(): EthereumWalletContextType {
@@ -12,7 +12,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
     const [_signer, setSigner] = useState<Signer>()
     const [_address, setAddress] = useState<string>()
     const [_networkId, setNetworkId] = useState<number>()
-    const [_poapGroupNames, setPoapGroupNames] = useState<PoapGroupName[]>([])
+    const [_poapEvents, setPoapEvents] = useState<PoapEvent[]>([])
 
     useEffect(() => {
         ;(async () => {
@@ -33,16 +33,16 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                             onboard.walletReset()
                             setSigner(undefined)
                             setAddress(undefined)
-                            setPoapGroupNames([])
+                            setPoapEvents([])
                             return
                         }
 
                         try {
                             setAddress(getAddress(address))
 
-                            const poapGroupIds = await getPoapGroupNamesByAddress(address)
+                            const poapGroupIds = await getPoapEventsByAddress(address)
 
-                            setPoapGroupNames(poapGroupIds)
+                            setPoapEvents(poapGroupIds)
                         } catch (error) {
                             console.error(error)
                         }
@@ -94,7 +94,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         _networkId,
         _signer,
         _address,
-        _poapGroupNames,
+        _poapEvents,
         check,
         connect
     }
