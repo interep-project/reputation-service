@@ -17,4 +17,3 @@ export async function dropDatabaseAndDisconnect() {
 export async function clearDatabase() {
     await clear()
 }
-

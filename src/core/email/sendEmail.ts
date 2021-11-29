@@ -1,4 +1,3 @@
-import { group } from "console"
 import { createTransport } from "nodemailer"
 import config from "src/config"
 
@@ -15,10 +14,10 @@ const smtpTransport = createTransport({
 })
 
 export default async function sendEmail(email: string, verificationToken: String, groupId: String[]): Promise<void> {
-    var group_string = groupId[0]
+    let group_string = groupId[0]
 
-    for(let i=1; i<groupId.length; i++){
-        group_string = group_string + "+" + groupId[i] 
+    for (let i = 1; i < groupId.length; i++) {
+        group_string = `${group_string}+${groupId[i]}`
     }
 
     const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${group_string}`
@@ -49,10 +48,8 @@ export default async function sendEmail(email: string, verificationToken: String
         Hello,<br> Please Click below to be join/leave the <b>${groupId}</b> Semaphore group.
         <br>
         <a href=${link}><button class="button button1">Join Group</button></a>
-        
         </body>
         </html>
-            
     `
     })
 }

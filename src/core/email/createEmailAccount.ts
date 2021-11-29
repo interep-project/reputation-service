@@ -7,9 +7,9 @@ export default async function createEmailAccount(email: string, groupId: string[
     try {
         await dbConnect()
 
-        var verificationToken = sha256(Math.floor(Math.random() * 10000).toString())
+        let verificationToken = sha256(Math.floor(Math.random() * 10000).toString())
 
-        for(let i = groupId.length - 1; i>=0; i--){
+        for (let i = groupId.length - 1; i >= 0; i--) {
             const hashId = sha256(email + groupId[i])
 
             let account = await EmailUser.findByHashId(hashId)
@@ -21,11 +21,10 @@ export default async function createEmailAccount(email: string, groupId: string[
                     verificationToken
                 })
             } else {
-                verificationToken = account.verificationToken 
+                verificationToken = account.verificationToken
             }
-    
-            await account.save()
 
+            await account.save()
         }
 
         try {
@@ -33,7 +32,6 @@ export default async function createEmailAccount(email: string, groupId: string[
         } catch (error) {
             throw new Error(`Error trying to send the magic link: ${error}`)
         }
-        
     } catch (error) {
         throw new Error(`Error trying to create the email account: ${error}`)
     }
