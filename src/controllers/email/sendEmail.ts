@@ -1,10 +1,9 @@
-import { withSentry } from "@sentry/nextjs"
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
+import { NextApiRequest, NextApiResponse } from "next"
 import createEmailAccount from "src/core/email/createEmailAccount"
-import logger from "src/utils/backend/logger"
 import checkEmailAddress from "src/core/email/emailAddressChecker"
+import logger from "src/utils/backend/logger"
 
-async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method !== "POST") {
         return res.status(405).end()
     }
@@ -17,7 +16,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     const groupId = checkEmailAddress(email)
 
-    if (groupId.length == 0) {
+    if (groupId.length === 0) {
         return res.status(402).send("Invalid email, must be from registered domains.")
     }
 
@@ -33,5 +32,3 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(500).end()
     }
 }
-
-export default withSentry(handler as NextApiHandler)

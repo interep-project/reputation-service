@@ -4,7 +4,7 @@ import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
 export function sendEmail({ email }: { email: string }) {
-    return sendRequest(`/api/email/sendEmail`, {
+    return sendRequest(`/api/email/send`, {
         email
     })
 }
