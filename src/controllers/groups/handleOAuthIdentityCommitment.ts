@@ -3,7 +3,7 @@ import { calculateReputation, OAuthProvider, ReputationLevel } from "@interrep/r
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
-import getBotometerScore from "src/services/botometer"
+import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"

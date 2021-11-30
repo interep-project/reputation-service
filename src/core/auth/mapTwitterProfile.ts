@@ -1,5 +1,5 @@
 import { TwitterParameters } from "@interrep/reputation-criteria"
-import getBotometerScore from "src/services/botometer"
+import { getBotometerScore } from "src/services/botometer"
 import { User } from "src/types/next-auth"
 
 export default async function mapTwitterProfile({
