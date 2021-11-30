@@ -15,7 +15,6 @@ const smtpTransport = createTransport({
 })
 
 export default async function sendEmail(email: string, verificationToken: String, groupId: String[]): Promise<void> {
-
     const link = createMagicLink(email, verificationToken, groupId)
 
     await smtpTransport.sendMail({

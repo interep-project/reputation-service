@@ -11,5 +11,3 @@ export default function createMagicLink(email: string, verificationToken: String
 
     return link
 }
-
-
