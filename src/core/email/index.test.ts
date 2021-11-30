@@ -4,8 +4,6 @@ import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/u
 import config from "src/config"
 import { EmailDomains, checkEmailAddress, createEmailAccount, createMagicLink } from "."
 
-
-
 const email_no_groups = "test@gmail.com"
 const email_one_group = "test@hotmail.co.uk"
 const email_two_groups = "test@outlook.edu"
