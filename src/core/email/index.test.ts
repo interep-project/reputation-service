@@ -4,6 +4,13 @@ import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/u
 import { sha256 } from "src/utils/common/crypto"
 import { checkEmailAddress, createEmailAccount, createMagicLink, EmailDomains } from "."
 
+jest.mock("nodemailer", () => ({
+    __esModule: true,
+    createTransport: jest.fn(() => ({
+        sendMail: jest.fn()
+    }))
+}))
+
 describe("# core/email", () => {
     const emailNoGroups = "test@gmail.com"
     const email1Group = "test@hotmail.co.uk"
