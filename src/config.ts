@@ -48,7 +48,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
             github: "0x14958dF52CC76c8f3a919A769006196601012311",
             reddit: "0x55d2d15631078cC555d06f14fD45bF2A7D86B4Cf"
         },
-        [ContractName.GROUPS]: "0x06d554D4122B694a507459Ce8D93E97d9Dd2Cdcc"
+        [ContractName.GROUPS]: "0x220fBdB6F996827b1Cf12f0C181E8d5e6de3a36F"
     },
     [SupportedChainId.ROPSTEN]: {
         [ContractName.REPUTATION_BADGE]: {
