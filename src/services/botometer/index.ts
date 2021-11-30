@@ -10,6 +10,6 @@ const botometer = new Botometer({
     usePro: true
 })
 
-export default async function getBotometerScore(username: string): Promise<any> {
+export async function getBotometerScore(username: string): Promise<any> {
     return botometer.getScore(username)
 }
