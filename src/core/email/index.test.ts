@@ -9,7 +9,7 @@ describe("# core/email", () => {
     const email1Group = "test@hotmail.co.uk"
     const email2Groups = "test@outlook.edu"
     const verificationTokenTest = "1234"
-    const expectedMagicLink = `${config.HOST}/groups/email/1234/test@outlook.edu/outlook+edu`
+    const expectedMagicLink = `${config.NEXTAUTH_URL}/groups/email/1234/test@outlook.edu/outlook+edu`
 
     beforeAll(async () => {
         await connectDatabase()

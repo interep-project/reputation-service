@@ -128,10 +128,10 @@ export default {
     GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
     GMAIL_ACCESS_TOKEN: process.env.GMAIL_ACCESS_TOKEN,
     RAPIDAPI_KEY: process.env.RAPIDAPI_KEY,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
-    HOST: process.env.HOST,
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
     API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
 }

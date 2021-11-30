@@ -7,7 +7,7 @@ export default function createMagicLink(email: string, verificationToken: String
         group_string = `${group_string}+${groupId[i]}`
     }
 
-    const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${group_string}`
+    const link = `${config.NEXTAUTH_URL}/groups/email/${verificationToken}/${email}/${group_string}`
 
     return link
 }
