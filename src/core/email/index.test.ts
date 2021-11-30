@@ -1,23 +1,15 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import { sha256 } from "src/utils/common/crypto"
-import * as nodemailer from "nodemailer"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { sendEmail, EmailDomains, checkEmailAddress, createEmailAccount } from "."
+import { sendEmail, EmailDomains, checkEmailAddress, createEmailAccount, createMagicLink } from "."
+import config from "src/config"
 
-
-jest.mock("nodemailer", () => ({
-    __esModule: true,
-    createTransport: jest.fn(() => ({
-        sendMail: jest.fn()
-    }))
-}))
-
-const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock
 
 const email_no_groups = "test@gmail.com"
 const email_one_group = "test@hotmail.co.uk"
 const email_two_groups = "test@outlook.edu"
 const verificationTokenTest = "1234"
+const expectedMagicLink = `${config.HOST}/groups/email/1234/test@outlook.edu/outlook+edu`
 
 describe("# core/email", () => {
     beforeAll(async () => {
@@ -26,10 +18,6 @@ describe("# core/email", () => {
 
     afterAll(async () => {
         await dropDatabaseAndDisconnect()
-    })
-
-    beforeEach(async () => {
-        sendMailMock.mockClear()
     })
 
     afterEach(async () => {
@@ -85,35 +73,32 @@ describe("# core/email", () => {
 
             await createEmailAccount(email, groupId)
 
-            var { hasJoined, verificationToken } = (await EmailUser.findByHashId(
+            const emailUserOne = (await EmailUser.findByHashId(
                 sha256(email + groupId[0])
             )) as EmailUserDocument
 
-            expect(verificationToken).toHaveLength(64)
-            expect(hasJoined).toBeFalsy()
 
-            var { hasJoined, verificationToken } = (await EmailUser.findByHashId(
+            const emailUserTwo = (await EmailUser.findByHashId(
                 sha256(email + groupId[1])
             )) as EmailUserDocument
 
-            expect(verificationToken).toHaveLength(64)
-            expect(hasJoined).toBeFalsy()
+            expect(emailUserOne.verificationToken).toHaveLength(64)
+            expect(emailUserOne.hasJoined).toBeFalsy()
+            expect(emailUserTwo.verificationToken).toHaveLength(64)
+            expect(emailUserTwo.hasJoined).toBeFalsy()
+
         })
     })
 
-    describe("send email tests", () => {
-        it("should create the right email link", async () => {
-            const email = email_one_group
-            const groupId = ["hotmail"]
+    describe("Magic link test", () => {
+        it("should create the right magic link", async () => {
+            const email = email_two_groups
+            // const groupId = ["outlook", "edu"]
+            const groupId = checkEmailAddress(email_two_groups)
 
-            await createEmailAccount(email, groupId)
+            const link = createMagicLink(email, verificationTokenTest, groupId)
 
-            const { hasJoined, verificationToken } = (await EmailUser.findByHashId(
-                sha256(email + groupId[0])
-            )) as EmailUserDocument
-
-            expect(verificationToken).toHaveLength(64)
-            expect(hasJoined).toBeFalsy()
+            expect(link).toBe(expectedMagicLink)
         })
     })
 })
