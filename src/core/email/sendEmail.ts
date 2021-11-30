@@ -1,5 +1,6 @@
 import { createTransport } from "nodemailer"
 import config from "src/config"
+import { createMagicLink } from "."
 
 const smtpTransport = createTransport({
     host: "smtp.gmail.com",
@@ -14,13 +15,8 @@ const smtpTransport = createTransport({
 })
 
 export default async function sendEmail(email: string, verificationToken: String, groupId: String[]): Promise<void> {
-    let group_string = groupId[0]
 
-    for (let i = 1; i < groupId.length; i++) {
-        group_string = `${group_string}+${groupId[i]}`
-    }
-
-    const link = `${config.HOST}/groups/email/${verificationToken}/${email}/${group_string}`
+    const link = createMagicLink(email, verificationToken, groupId)
 
     await smtpTransport.sendMail({
         to: email,
