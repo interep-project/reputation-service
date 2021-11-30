@@ -22,7 +22,7 @@ export default function EmailInputButton({ session }: Parameters): JSX.Element {
                     isDisabled={!!session}
                 >
                     Email
-                    <Tooltip label="Supported email domains include @hotmail." placement="right-start">
+                    <Tooltip label="Supported email domains include hotmail, outlook and all .edu addresses." placement="right-start">
                         <span>
                             <Icon boxSize="20px" ml="10px" mb="5px" as={FaInfoCircle} />
                         </span>
