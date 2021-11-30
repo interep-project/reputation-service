@@ -3,7 +3,6 @@ import React, { useState } from "react"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
 import checkEmailAddress from "src/core/email/checkEmailAddress"
 
-
 export default function EmailAddressBox(): JSX.Element {
     const toast = useToast()
     const { sendEmail } = useInterRepAPI()
@@ -13,7 +12,7 @@ export default function EmailAddressBox(): JSX.Element {
     async function submitEmail(email: string) {
         const groupId = checkEmailAddress(email)
 
-        if (groupId.length == 0) {
+        if (groupId.length === 0) {
             toast({
                 description: "You must enter a @hotmail address.",
                 variant: "subtle",
@@ -25,7 +24,6 @@ export default function EmailAddressBox(): JSX.Element {
         }
 
         setLoading(true)
-        console.log(email)
 
         const response = await sendEmail({ email })
 

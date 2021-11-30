@@ -16,7 +16,6 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
     const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
-    const [_groupSize, setGroupSize] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
     const [_group, setGroup] = useState<Group>()
 
