@@ -1,8 +1,9 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import { sha256 } from "src/utils/common/crypto"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { sendEmail, EmailDomains, checkEmailAddress, createEmailAccount, createMagicLink } from "."
 import config from "src/config"
+import { EmailDomains, checkEmailAddress, createEmailAccount, createMagicLink } from "."
+
 
 
 const email_no_groups = "test@gmail.com"
