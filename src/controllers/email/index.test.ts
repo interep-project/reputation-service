@@ -1,5 +1,4 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
-import * as nodemailer from "nodemailer"
 import createNextMocks from "src/mocks/createNextMocks"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { sha256 } from "src/utils/common/crypto"
@@ -12,8 +11,6 @@ jest.mock("nodemailer", () => ({
     }))
 }))
 
-const sendMailMock = nodemailer.createTransport().sendMail as jest.Mock
-
 describe("# controllers/email", () => {
     const groupId = "outlook"
     const email = "test@outlook.com"
@@ -24,10 +21,6 @@ describe("# controllers/email", () => {
 
     afterAll(async () => {
         await dropDatabaseAndDisconnect()
-    })
-
-    beforeEach(async () => {
-        sendMailMock.mockClear()
     })
 
     afterEach(async () => {
