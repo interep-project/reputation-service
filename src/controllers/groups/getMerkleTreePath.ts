@@ -4,6 +4,7 @@ import { MerkleTreeNode } from "@interrep/db"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import { checkGroup } from "src/core/groups"
 
 export default async function getMerkleTreePathController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method !== "GET") {
@@ -23,6 +24,10 @@ export default async function getMerkleTreePathController(req: NextApiRequest, r
         typeof identityCommitment !== "string"
     ) {
         return res.status(400).end()
+    }
+
+    if (!checkGroup(provider as Provider, name)) {
+        return res.status(404).end("The group does not exist")
     }
 
     try {
