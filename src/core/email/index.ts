@@ -1,7 +1,8 @@
 import sendEmail from "./sendEmail"
-import EmailDomains from "./emailDomains"
+import EmailDomain from "./emailDomain"
 import checkEmailAddress from "./checkEmailAddress"
 import createEmailAccount from "./createEmailAccount"
 import createMagicLink from "./createMagicLink"
+import getEmailDomains from "./getEmailDomains"
 
-export { sendEmail, EmailDomains, checkEmailAddress, createEmailAccount, createMagicLink }
+export { sendEmail, EmailDomain, checkEmailAddress, createEmailAccount, createMagicLink, getEmailDomains }

@@ -2,7 +2,8 @@ import { EmailUser, EmailUserDocument } from "@interrep/db"
 import config from "src/config"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { sha256 } from "src/utils/common/crypto"
-import { checkEmailAddress, createEmailAccount, createMagicLink, EmailDomains } from "."
+import { checkEmailAddress, createEmailAccount, createMagicLink, EmailDomain } from "."
+import getEmailDomains from "./getEmailDomains"
 
 jest.mock("nodemailer", () => ({
     __esModule: true,
@@ -30,9 +31,9 @@ describe("# core/email", () => {
         await clearDatabase()
     })
 
-    describe("Email domain checks", () => {
+    describe("# checkEmailAddress", () => {
         it("Should return correct string check value from email group", () => {
-            const expectedValue = EmailDomains.hotmail
+            const expectedValue = EmailDomain.hotmail
             expect(expectedValue).toBe("@hotmail")
         })
 
@@ -58,7 +59,7 @@ describe("# core/email", () => {
         })
     })
 
-    describe("create email account tests", () => {
+    describe("# createEmailAccount", () => {
         it("Should create 1 email account for user with one group", async () => {
             const email = email1Group
             const groupId = ["hotmail"]
@@ -89,15 +90,22 @@ describe("# core/email", () => {
         })
     })
 
-    describe("Magic link test", () => {
+    describe("# createMagicLink", () => {
         it("should create the right magic link", async () => {
             const email = email2Groups
-            // const groupId = ["outlook", "edu"]
             const groupId = checkEmailAddress(email2Groups)
 
             const link = createMagicLink(email, verificationTokenTest, groupId)
 
             expect(link).toBe(expectedMagicLink)
+        })
+    })
+
+    describe("# getEmailDomains", () => {
+        it("should return a list of supported email domains", async () => {
+            const expectedValue = getEmailDomains()
+
+            expect(expectedValue.length).toBeGreaterThan(0)
         })
     })
 })

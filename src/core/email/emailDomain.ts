@@ -1,7 +1,7 @@
-enum EmailDomains {
+enum EmailDomain {
     hotmail = "@hotmail",
     outlook = "@outlook",
     edu = ".edu"
 }
 
-export default EmailDomains
+export default EmailDomain
