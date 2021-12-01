@@ -1,5 +1,5 @@
 import PoapEvent from "./poapEvent"
 
-export default function getPoapEventFancyId(groupEvent: PoapEvent) {
-    return groupEvent.toLowerCase().replace("_", "")
+export default function getPoapEventFancyId(poapEvent: PoapEvent) {
+    return poapEvent.toLowerCase().replace("_", "")
 }
