@@ -32,30 +32,54 @@ describe("# core/email", () => {
     })
 
     describe("# checkEmailAddress", () => {
-        it("Should return correct string check value from email group", () => {
-            const expectedValue = EmailDomain.hotmail
-            expect(expectedValue).toBe("@hotmail")
+        describe("regex checks", () => {
+
+            it("regex test 1 should return groupId len 0", () => {
+                const expectedValue = checkEmailAddress("@outlook")
+                expect(expectedValue).toHaveLength(0)
+            })
+
+            it("regex test 2 should return groupId len 0", () => {
+                const expectedValue = checkEmailAddress("@outlook@outlook.com")
+                expect(expectedValue).toHaveLength(0)
+            })
+
+            it("regex test 3 should return groupId len 1", () => {
+                const expectedValue = checkEmailAddress("test@outlook.com")
+                expect(expectedValue).toHaveLength(1)
+            })
+
+
         })
 
-        it("Should return return groupId list of length 0 for email matching no groups", () => {
-            const expectedValue = checkEmailAddress(emailNoGroups)
-            expect(expectedValue).toHaveLength(0)
-        })
+        describe("# other checks", () => {
 
-        it("Should return return groupId list of length 1 for email matching 1 group", () => {
-            const expectedValue = checkEmailAddress(email1Group)
-            expect(expectedValue).toHaveLength(1)
-        })
+            it("Should return correct string check value from email group", () => {
+                const expectedValue = EmailDomain.hotmail
+                expect(expectedValue).toBe("hotmail")
+            })
 
-        it("Should return return groupId list with correct entry", () => {
-            const expectedValue = checkEmailAddress(email1Group)
-            const expectedGroup = expectedValue[0]
-            expect(expectedGroup).toBe("hotmail")
-        })
+            it("Should return return groupId list of length 0 for email matching no groups", () => {
+                const expectedValue = checkEmailAddress(emailNoGroups)
+                expect(expectedValue).toHaveLength(0)
+            })
 
-        it("Should return return groupId list of length 2 for email matching 2 groups", () => {
-            const expectedValue = checkEmailAddress(email2Groups)
-            expect(expectedValue).toHaveLength(2)
+            it("Should return return groupId list of length 1 for email matching 1 group", () => {
+                const expectedValue = checkEmailAddress(email1Group)
+                expect(expectedValue).toHaveLength(1)
+            })
+
+            it("Should return return groupId list with correct entry", () => {
+                const expectedValue = checkEmailAddress(email1Group)
+                const expectedGroup = expectedValue[0]
+                expect(expectedGroup).toBe("hotmail")
+            })
+
+            it("Should return return groupId list of length 2 for email matching 2 groups", () => {
+                const expectedValue = checkEmailAddress(email2Groups)
+                expect(expectedValue).toHaveLength(2)
+            })
+
         })
     })
 
