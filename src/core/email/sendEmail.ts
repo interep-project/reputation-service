@@ -1,8 +1,12 @@
 import { sendMail } from "src/services/nodemailer"
-import { createMagicLink } from "."
+import { createMagicLink, EmailDomain } from "."
 
-export default async function sendEmail(email: string, verificationToken: String, groupId: String[]): Promise<void> {
-    const link = createMagicLink(email, verificationToken, groupId)
+export default async function sendEmail(
+    email: string,
+    verificationToken: string,
+    emailDomains: EmailDomain[]
+): Promise<void> {
+    const link = createMagicLink(email, verificationToken, emailDomains)
     const subject = "Interrep email confirmation"
     const html = `
         <!DOCTYPE html>
@@ -24,7 +28,7 @@ export default async function sendEmail(email: string, verificationToken: String
 
         <body>
 
-        Hello,<br> Please Click below to be join/leave the <b>${groupId}</b> Semaphore group.
+        Hello,<br> Please Click below to be join/leave the <b>${emailDomains}</b> Semaphore group.
         <br>
         <a href=${link}><button class="button button1">Join Group</button></a>
         </body>
