@@ -3,9 +3,10 @@ import { Signer } from "ethers"
 import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { getPoapEvent, PoapEvent } from "src/core/poap"
+import { PoapEvent } from "src/core/poap"
 import useGroups from "src/hooks/useGroups"
 import { Group, Web3Provider } from "src/types/groups"
+import capitalize from "src/utils/common/capitalize"
 
 export default function PoapGroups(): JSX.Element {
     const { _signer, _poapEvents, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
@@ -98,7 +99,7 @@ export default function PoapGroups(): JSX.Element {
                     actionFunction={(groupName) => step1(groupName)}
                     actionType="select"
                     selectOptions={_poapEvents}
-                    selectOptionFilter={(option) => getPoapEvent(option as PoapEvent)}
+                    selectOptionFilter={(option) => capitalize(option)}
                     loading={_currentStep === 1 && _loading}
                     disabled={_currentStep !== 1}
                 />

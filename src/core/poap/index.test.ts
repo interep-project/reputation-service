@@ -1,4 +1,6 @@
-import { getPoapEventsByAddress, getPoapEventFancyId, getPoapEvent, getPoapEvents, PoapEvent } from "."
+import getPoapEvents from "./getPoapEvents"
+import getPoapEventsByAddress from "./getPoapEventsByAddress"
+import PoapEvent from "./poapEvent"
 
 jest.mock("src/services/poap", () => ({
     __esModule: true,
@@ -6,27 +8,11 @@ jest.mock("src/services/poap", () => ({
 }))
 
 describe("# core/poap", () => {
-    describe("# getPoapEvent", () => {
-        it("Should return a POAP event name", () => {
-            const expectedValue = getPoapEvent(PoapEvent.DEVCON_3)
-
-            expect(expectedValue).toBe("Devcon 3")
-        })
-    })
-
     describe("# getPoapEvents", () => {
         it("Should return all the POAP events", () => {
             const expectedValue = getPoapEvents()
 
             expect(expectedValue).toHaveLength(3)
-        })
-    })
-
-    describe("# getPoapEventFancyId", () => {
-        it("Should return an event fancy id", () => {
-            const expectedValue = getPoapEventFancyId(PoapEvent.DEVCON_3)
-
-            expect(expectedValue).toBe("devcon3")
         })
     })
 

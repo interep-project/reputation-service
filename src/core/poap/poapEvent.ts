@@ -1,7 +1,7 @@
 enum PoapEvent {
-    DEVCON_3 = "DEVCON_3",
-    DEVCON_4 = "DEVCON_4",
-    DEVCON_5 = "DEVCON_5"
+    DEVCON_3 = "devcon3",
+    DEVCON_4 = "devcon4",
+    DEVCON_5 = "devcon5"
 }
 
 export default PoapEvent

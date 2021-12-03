@@ -22,7 +22,7 @@ export default function Page({ children }: Parameters): JSX.Element {
             display="flex"
         >
             <HStack flex="1" align="start">
-                {(session || !!_poapEvents.length) && <SideBar session={session} poapGroupNames={_poapEvents} />}
+                {(session || !!_poapEvents.length) && <SideBar session={session} poapEvents={_poapEvents} />}
                 <Box
                     flex="1"
                     py="10px"

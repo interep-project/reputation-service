@@ -1,19 +1,19 @@
 import { Button, Divider, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import { getPoapEvent, PoapEvent } from "src/core/poap"
+import { PoapEvent } from "src/core/poap"
 import capitalize from "src/utils/common/capitalize"
 
 type Properties = {
     session?: Session | null
-    poapGroupNames: PoapEvent[]
+    poapEvents: PoapEvent[]
 }
 
-export default function SideBar({ session, poapGroupNames }: Properties): JSX.Element {
+export default function SideBar({ session, poapEvents }: Properties): JSX.Element {
     const { colorMode } = useColorMode()
 
     const getReputationColor = useCallback(
@@ -29,7 +29,7 @@ export default function SideBar({ session, poapGroupNames }: Properties): JSX.El
 
     return (
         <VStack align="left" divider={<Divider />} py="15px" pr="30px" spacing="4">
-            {!!poapGroupNames.length && (
+            {poapEvents.length > 0 && (
                 <VStack align="left" spacing="3">
                     <Text fontWeight="extrabold" fontSize="xl">
                         Web3
@@ -40,9 +40,9 @@ export default function SideBar({ session, poapGroupNames }: Properties): JSX.El
                     </HStack>
                     <VStack align="left" spacing="1">
                         <Text fontSize="md">Your events:</Text>
-                        {poapGroupNames.map((groupId) => (
-                            <Text pl="10px" key={groupId} fontSize="md">
-                                {getPoapEvent(groupId)}
+                        {poapEvents.map((poapEvent) => (
+                            <Text pl="10px" key={poapEvent} fontSize="md">
+                                {capitalize(poapEvent)}
                             </Text>
                         ))}
                     </VStack>
