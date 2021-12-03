@@ -1,7 +1,7 @@
 import { Button, HStack, Input, useToast } from "@chakra-ui/react"
 import React, { useState } from "react"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import checkEmailAddress from "src/core/email/checkEmailAddress"
+import getEmailDomainsByEmail from "src/core/email/getEmailDomainsByEmail"
 
 export default function EmailAddressBox(): JSX.Element {
     const toast = useToast()
@@ -10,7 +10,7 @@ export default function EmailAddressBox(): JSX.Element {
     const [_loading, setLoading] = useState<boolean>(false)
 
     async function submitEmail(email: string) {
-        const groupId = checkEmailAddress(email)
+        const groupId = getEmailDomainsByEmail(email)
 
         if (groupId.length === 0) {
             toast({
