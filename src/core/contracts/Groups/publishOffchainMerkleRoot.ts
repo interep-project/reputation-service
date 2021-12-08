@@ -1,0 +1,24 @@
+import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ethers } from "ethers"
+import { ContractName } from "src/config"
+import { PoapEvent } from "src/core/poap"
+import { Provider } from "src/types/groups"
+import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import getContractAddress from "src/utils/common/getContractAddress"
+
+export default async function publishOffchainMerkleRoots(
+    providers: Provider[],
+    names: (ReputationLevel | PoapEvent | string)[],
+    roots: string[]
+): Promise<void> {
+    const contractAddress = getContractAddress(ContractName.GROUPS)
+    const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
+
+    const tx = await contractInstance.publishOffchainMerkleRoots(
+        providers.map(ethers.utils.formatBytes32String),
+        names.map(ethers.utils.formatBytes32String),
+        roots
+    )
+
+    await tx.wait(1)
+}

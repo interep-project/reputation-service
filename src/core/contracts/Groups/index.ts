@@ -1,4 +1,3 @@
-import addIdentityCommitment from "./addIdentityCommitment"
-import deleteIdentityCommitment from "./deleteIdentityCommitment"
+import publishOffchainMerkleRoot from "./publishOffchainMerkleRoot"
 
-export { addIdentityCommitment, deleteIdentityCommitment }
+export { publishOffchainMerkleRoot }
