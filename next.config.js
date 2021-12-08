@@ -1,3 +1,4 @@
+const path = require("path")
 require("ts-node").register({ transpileOnly: true })
 
 // This file sets a custom webpack configuration to use your Next.js app
@@ -47,6 +48,21 @@ const moduleExports = {
                 headers: securityHeaders
             }
         ]
+    },
+    webpack: (config, { isServer }) => {
+        if (isServer) {
+            return {
+                ...config,
+                entry() {
+                    return config.entry().then((entry) => ({
+                        ...entry,
+                        cron: path.resolve(process.cwd(), "src/cron/index.ts")
+                    }))
+                }
+            }
+        } else {
+            return config
+        }
     }
 }
 
