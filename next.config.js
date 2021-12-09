@@ -56,7 +56,7 @@ const moduleExports = {
                 entry() {
                     return config.entry().then((entry) => ({
                         ...entry,
-                        cron: path.resolve(process.cwd(), "src/cron/index.ts")
+                        tasks: path.resolve(process.cwd(), "src/tasks/index.ts")
                     }))
                 }
             }
