@@ -1,3 +1,4 @@
-import publishOffchainMerkleRoot from "./publishOffchainMerkleRoot"
+import publishOffchainMerkleRoots from "./publishOffchainMerkleRoots"
+import retrieveEvents from "./retrieveEvents"
 
-export { publishOffchainMerkleRoot }
+export { publishOffchainMerkleRoots, retrieveEvents }
