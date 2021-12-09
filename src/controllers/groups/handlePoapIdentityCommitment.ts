@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
+import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
 import { getPoapEventsByAddress, PoapEvent } from "src/core/poap"
 import { Web3Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
@@ -36,9 +36,9 @@ export default async function handlePoapIdentityCommitmentController(req: NextAp
         await dbConnect()
 
         if (req.method === "POST") {
-            await addIdentityCommitment(Web3Provider.POAP, name, identityCommitment)
+            await appendLeaf(Web3Provider.POAP, name, identityCommitment)
         } else if (req.method === "DELETE") {
-            await deleteIdentityCommitment(Web3Provider.POAP, name, identityCommitment)
+            await deleteLeaf(Web3Provider.POAP, name, identityCommitment)
         }
 
         return res.status(201).send({ data: true })

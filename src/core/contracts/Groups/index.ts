@@ -1,4 +1,4 @@
-import addIdentityCommitment from "./addIdentityCommitment"
-import deleteIdentityCommitment from "./deleteIdentityCommitment"
+import publishOffchainMerkleRoots from "./publishOffchainMerkleRoots"
+import retrieveEvents from "./retrieveEvents"
 
-export { addIdentityCommitment, deleteIdentityCommitment }
+export { publishOffchainMerkleRoots, retrieveEvents }

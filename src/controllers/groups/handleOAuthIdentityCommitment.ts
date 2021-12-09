@@ -2,7 +2,7 @@ import { OAuthAccount } from "@interrep/db"
 import { calculateReputation, OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
+import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
 import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
@@ -102,7 +102,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     throw new Error(`Account already joined a ${provider} group`)
                 }
 
-                await addIdentityCommitment(provider, name, identityCommitment)
+                await appendLeaf(provider, name, identityCommitment)
 
                 account.hasJoinedAGroup = true
             } else if (req.method === "DELETE") {
@@ -110,7 +110,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     throw new Error(`Account has not joined a ${provider} group yet`)
                 }
 
-                await deleteIdentityCommitment(provider, name, identityCommitment)
+                await deleteLeaf(provider, name, identityCommitment)
 
                 account.hasJoinedAGroup = false
             }
@@ -163,7 +163,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 throw new Error(`Account already joined a ${provider} group`)
             }
 
-            await addIdentityCommitment(provider, name, identityCommitment)
+            await appendLeaf(provider, name, identityCommitment)
 
             account.hasJoinedAGroup = true
         } else if (req.method === "DELETE") {
@@ -171,7 +171,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 throw new Error(`Account has not joined a ${provider} group yet`)
             }
 
-            await deleteIdentityCommitment(provider, name, identityCommitment)
+            await deleteLeaf(provider, name, identityCommitment)
 
             account.hasJoinedAGroup = false
         }

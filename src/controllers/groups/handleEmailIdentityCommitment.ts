@@ -1,6 +1,6 @@
 import { EmailUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
+import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"
@@ -41,7 +41,7 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
                 throw new Error(`Email user already joined this group`)
             }
 
-            await addIdentityCommitment("email", name, identityCommitment)
+            await appendLeaf("email", name, identityCommitment)
 
             emailUser.hasJoined = true
         } else if (req.method === "DELETE") {
@@ -49,7 +49,7 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
                 throw new Error(`Email user has not joined this group yet`)
             }
 
-            await deleteIdentityCommitment("email", name, identityCommitment)
+            await deleteLeaf("email", name, identityCommitment)
 
             emailUser.hasJoined = false
         }

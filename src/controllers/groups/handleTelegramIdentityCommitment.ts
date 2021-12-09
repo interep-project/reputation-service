@@ -1,6 +1,6 @@
 import { TelegramUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import { addIdentityCommitment, deleteIdentityCommitment } from "src/core/contracts/Groups"
+import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"
@@ -35,7 +35,7 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
                 throw new Error(`Telegram user already joined this group`)
             }
 
-            await addIdentityCommitment("telegram", name, identityCommitment)
+            await appendLeaf("telegram", name, identityCommitment)
 
             telegramUser.hasJoined = true
         } else if (req.method === "DELETE") {
@@ -43,7 +43,7 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
                 throw new Error(`Telegram user has not joined this group yet`)
             }
 
-            await deleteIdentityCommitment("telegram", name, identityCommitment)
+            await deleteLeaf("telegram", name, identityCommitment)
 
             telegramUser.hasJoined = false
         }
