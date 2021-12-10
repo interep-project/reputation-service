@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeRootsBatch, MerkleTreeRootsBatchDocument } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
 import config from "src/config"
 import { publishOffchainMerkleRoots, retrieveEvents } from "src/core/contracts/Groups"
 import { Provider } from "src/types/groups"
@@ -30,10 +30,10 @@ export async function run() {
                 const transaction = await publishOffchainMerkleRoots(groupProviders, groupNames, rootHashes)
 
                 for (let i = 0; i < merkleRoots.length; i++) {
-                    const rootBatch = (await MerkleTreeRootsBatch.findOne({
+                    const rootBatch = (await MerkleTreeRootBatch.findOne({
                         group: { provider: groupProviders[i], name: groupNames[i] },
                         transaction: undefined
-                    })) as MerkleTreeRootsBatchDocument
+                    })) as MerkleTreeRootBatchDocument
 
                     rootBatch.transaction = {
                         hash: transaction.transactionHash,
@@ -48,7 +48,7 @@ export async function run() {
             logger.error(`Cron error: ${error.message}`)
         }
     )
-    const job = new SimpleIntervalJob({ seconds: 5, runImmediately: true }, task)
+    const job = new SimpleIntervalJob({ days: 1, runImmediately: true }, task)
 
     scheduler.addSimpleIntervalJob(job)
 }

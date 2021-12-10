@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootsBatch, MerkleTreeZero } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
@@ -101,10 +101,10 @@ export default async function appendLeaf(
         currentIndex = Math.floor(currentIndex / 2)
     }
 
-    let rootBatch = await MerkleTreeRootsBatch.findOne({ group: { provider, name }, transaction: undefined })
+    let rootBatch = await MerkleTreeRootBatch.findOne({ group: { provider, name }, transaction: undefined })
 
     if (!rootBatch) {
-        rootBatch = new MerkleTreeRootsBatch({
+        rootBatch = new MerkleTreeRootBatch({
             group: {
                 provider,
                 name
@@ -112,7 +112,7 @@ export default async function appendLeaf(
         })
     }
 
-    rootBatch.hashes.push(node.hash)
+    rootBatch.rootHashes.push(node.hash)
 
     await rootBatch.save()
 
