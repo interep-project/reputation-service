@@ -5,10 +5,10 @@ import { getProviders } from "src/core/groups"
 import { Provider, Web3Provider } from "src/types/groups"
 import apiMiddleware from "src/utils/backend/apiMiddleware"
 import logger from "src/utils/backend/logger"
+import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
+import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
 import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
 import handleTelegramIdentityCommitmentController from "./handleTelegramIdentityCommitment"
-import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
-import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
 
 export default async function handleIdentityCommitmentController(
     req: NextApiRequest,

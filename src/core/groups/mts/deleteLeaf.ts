@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeZero } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootsBatch, MerkleTreeZero } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation-criteria"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
@@ -63,6 +63,21 @@ export default async function deleteLeaf(
         currentIndex = Math.floor(currentIndex / 2)
         node = parentNode
     }
+
+    let rootBatch = await MerkleTreeRootsBatch.findOne({ group: { provider, name }, transaction: undefined })
+
+    if (!rootBatch) {
+        rootBatch = new MerkleTreeRootsBatch({
+            group: {
+                provider,
+                name
+            }
+        })
+    }
+
+    rootBatch.hashes.push(node.hash)
+
+    await rootBatch.save()
 
     return node.hash
 }
