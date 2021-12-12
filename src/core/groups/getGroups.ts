@@ -1,5 +1,5 @@
-import { MerkleTreeNode } from "@interrep/db"
 import { getReputationLevels } from "@interrep/reputation-criteria"
+import { getTelegramGroups } from "@interrep/telegram-bot"
 import { getPoapEvents } from "src/core/poap"
 import { Group, Provider, Web3Provider } from "src/types/groups"
 import { getProviders } from "."
@@ -15,9 +15,9 @@ export default async function getGroups(provider?: Provider): Promise<Group[]> {
         }
 
         if (provider === "telegram") {
-            const telegramGroupNames = await MerkleTreeNode.getGroupNamesByProvider(provider)
+            const telegramGroups = getTelegramGroups()
 
-            return Promise.all(telegramGroupNames.map((telegramGroupName) => getGroup(provider, telegramGroupName)))
+            return Promise.all(telegramGroups.map((telegramGroup) => getGroup(provider, telegramGroup)))
         }
 
         if (provider === "email") {

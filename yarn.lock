@@ -2128,14 +2128,6 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@interrep/db@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.4.0.tgz#545de8e071afd6d3879d893f9391855301c32357"
-  integrity sha512-DVgTgly5gNfZj9qsYfuCL5FNexV77Imc8F8FzoAA6NZg4fV3O5M/SlqE16Ycs2WFij1r9KgS8v4yesAq01GWNw==
-  dependencies:
-    "@interrep/reputation-criteria" "^0.12.0"
-    mongoose "^5.12.1"
-
 "@interrep/db@^0.6.4":
   version "0.6.4"
   resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.6.4.tgz#a0b5282a8c150c806ecaef1c8b615587c0fc0011"
@@ -2156,22 +2148,17 @@
   resolved "https://registry.yarnpkg.com/@interrep/merkle-tree/-/merkle-tree-0.2.1.tgz#d009ebc14141e3b4e6e52682b94778b6a61a91ca"
   integrity sha512-r36zDCU28TT7JzWYLAWUyBHVTsot+qR2ZO8BJNMsVdj3gy0FHVigyMBnd1AhC3ZQz947OmZUX+D8bOasilGwpw==
 
-"@interrep/reputation-criteria@^0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.12.0.tgz#c7cdb07430ee97a64be73b5764341d7a0ea871ad"
-  integrity sha512-pMhduXG2qJ23DffSpEE/ZzJCU043508tWrI/5+kUZg8Y+XzREPk5PDV+nHiXsklAuslH1kGS+JXVKb+0S44P6Q==
-
 "@interrep/reputation-criteria@^0.12.1":
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.12.1.tgz#79d5c0e399480268560e473ba9b8e75c0f8d047e"
   integrity sha512-NCea3ZF5gLZMqNagDBwswRqGiNQT9Fid/3ICP3gD3/uz9QBU7I/ex7eMOYhf5t4zZJ8QdtgXMHY4vfbD4oCacQ==
 
-"@interrep/telegram-bot@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.4.3.tgz#686cd48981e193d9a374d1b6656c83fb2e76d191"
-  integrity sha512-zXG+kA1XBREDQhVZo8Ta2Q8GslxyPaZA1BZLIbgt7IPd4jKh88K5qBGjtxMGaxKmcU6Du/kD1SXPZYe+wu6hDg==
+"@interrep/telegram-bot@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.5.0.tgz#7fffa41025844c589c279610217f1e6bf0f76742"
+  integrity sha512-i8lHoZ9v7iOPTw34/nCKpkxKWa/yBGNyMQF/uStVG/gePdlej3CCtyOgo7RWq1UJ9+mSCKFSm1swvqdVfCJ2fQ==
   dependencies:
-    "@interrep/db" "^0.4.0"
+    "@interrep/db" "^0.6.4"
     grammy "^1.3.4"
     js-sha256 "^0.9.0"
 
