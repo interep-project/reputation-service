@@ -8,8 +8,9 @@ export enum Web3Provider {
 export type Provider = OAuthProvider | Web3Provider | "telegram" | "email"
 
 export type Group = {
-    name: ReputationLevel | PoapEvent | string
     provider: Provider
+    name: ReputationLevel | PoapEvent | string
+    rootHash: string
     size: number
 }
 
