@@ -3,6 +3,7 @@ import getGroupController from "./getGroup"
 import getGroupsController from "./getGroups"
 import getMerkleTreeProofController from "./getMerkleTreeProof"
 import getMerkleTreeRootBatchesController from "./getMerkleTreeRootBatches"
+import getMerkleTreeRootBatchController from "./getMerkleTreeRootBatch"
 import hasIdentityCommitmentController from "./hasIdentityCommitment"
 import hasJoinedAGroupController from "./hasJoinedAGroup"
 
@@ -12,6 +13,7 @@ export {
     getGroupController,
     getMerkleTreeProofController,
     getMerkleTreeRootBatchesController,
+    getMerkleTreeRootBatchController,
     hasIdentityCommitmentController,
     hasJoinedAGroupController
 }

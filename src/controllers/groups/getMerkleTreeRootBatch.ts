@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getMerkleTreeRootBatchesController(
+export default async function getMerkleTreeRootBatchController(
     req: NextApiRequest,
     res: NextApiResponse
 ): Promise<void> {
@@ -11,17 +11,29 @@ export default async function getMerkleTreeRootBatchesController(
         return res.status(405).end()
     }
 
+    const rootHash = req.query?.rootHash
+
+    if (!rootHash || typeof rootHash !== "string") {
+        return res.status(400).end()
+    }
+
     try {
         await dbConnect()
 
-        const rootBatches = await MerkleTreeRootBatch.find()
+        const rootBatch = await MerkleTreeRootBatch.findOne({
+            rootHashes: { $elemMatch: { $eq: rootHash } }
+        })
+
+        if (!rootBatch) {
+            return res.status(404).end("The Merkle root does not exist")
+        }
 
         return res.status(200).send({
-            data: rootBatches.map((rootBatch) => ({
+            data: {
                 group: rootBatch.group,
                 rootHashes: rootBatch.rootHashes,
                 transaction: rootBatch.transaction
-            })) as MerkleTreeRootBatchData[]
+            } as MerkleTreeRootBatchData
         })
     } catch (error) {
         logger.error(error)
