@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { retrievePath } from "src/core/groups/mts"
 import { MerkleTreeNode } from "@interrep/db"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { checkGroup } from "src/core/groups"
+import { createProof } from "src/core/groups/mts"
 
-export default async function getMerkleTreePathController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getMerkleTreeProofController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method !== "GET") {
         return res.status(405).end()
     }
@@ -37,13 +37,13 @@ export default async function getMerkleTreePathController(req: NextApiRequest, r
             return res.status(404).send("The identity commitment does not exist")
         }
 
-        const path = await retrievePath(provider as Provider, name as any, identityCommitment)
+        const proof = await createProof(provider as Provider, name as any, identityCommitment)
 
-        if (!path) {
+        if (!proof) {
             return res.status(200).send({ data: [] })
         }
 
-        return res.status(200).send({ data: path })
+        return res.status(200).send({ data: proof })
     } catch (error) {
         logger.error(error)
 

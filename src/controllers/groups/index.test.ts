@@ -1,3 +1,4 @@
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
 import { Provider } from "src/types/groups"
@@ -5,11 +6,11 @@ import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import getGroup from "./getGroup"
 import getGroups from "./getGroups"
-import getMerkleTreePath from "./getMerkleTreePath"
+import getMerkleTreeProof from "./getMerkleTreeProof"
 
 describe("# controllers/groups", () => {
-    const provider = "twitter"
-    const name = "GOLD"
+    const provider = OAuthProvider.TWITTER
+    const name = ReputationLevel.GOLD
 
     beforeAll(async () => {
         await connectDatabase()
@@ -99,13 +100,13 @@ describe("# controllers/groups", () => {
         })
     })
 
-    describe("# getMerkleTreePath", () => {
+    describe("# getMerkleTreeProof", () => {
         it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
                 method: "POST"
             })
 
-            await getMerkleTreePath(req, res)
+            await getMerkleTreeProof(req, res)
 
             expect(res._getStatusCode()).toBe(405)
         })
@@ -116,7 +117,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name: 1, identityCommitment: "1" }
             })
 
-            await getMerkleTreePath(req, res)
+            await getMerkleTreeProof(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -127,7 +128,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name: "a", identityCommitment: "1" }
             })
 
-            await getMerkleTreePath(req, res)
+            await getMerkleTreeProof(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
@@ -138,7 +139,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name, identityCommitment: "1" }
             })
 
-            await getMerkleTreePath(req, res)
+            await getMerkleTreeProof(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
@@ -152,7 +153,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name, identityCommitment: "1" }
             })
 
-            await getMerkleTreePath(req, res)
+            await getMerkleTreeProof(req, res)
 
             const { data } = res._getData()
 
