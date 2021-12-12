@@ -2136,12 +2136,12 @@
     "@interrep/reputation-criteria" "^0.12.0"
     mongoose "^5.12.1"
 
-"@interrep/db@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.6.3.tgz#03fa90de3b5c4ecfc0508806d7bc289878124238"
-  integrity sha512-Nmmo+FIPBVmQ+6ZSWdAArIgVijFLYjzz7owC/kwiGEVzk1WDjNexmPzlTY6arpzlCsKReNXJ5LQDmZ3VYwnUww==
+"@interrep/db@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@interrep/db/-/db-0.6.4.tgz#a0b5282a8c150c806ecaef1c8b615587c0fc0011"
+  integrity sha512-mWu7dUg+lpj/UbZwiSsAzUGXlGAGMMkpvAiANSe3SSr9yJ1v3/NTf1z7T6gTyiiHcRxyBcbv6NmPjBewNwSEPg==
   dependencies:
-    "@interrep/reputation-criteria" "^0.12.0"
+    "@interrep/reputation-criteria" "^0.12.1"
     mongoose "^5.12.1"
 
 "@interrep/identity@^0.10.0":
