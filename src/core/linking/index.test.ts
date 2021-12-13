@@ -1,6 +1,6 @@
 import { ContractTransaction } from "@ethersproject/contracts"
 import { OAuthAccount, OAuthAccountDocument, Token } from "@interrep/db"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { Wallet } from "ethers"
 import { currentNetwork } from "src/config"
 import linkAccounts from "src/core/linking"

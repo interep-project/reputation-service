@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react"
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import createIdentity from "@interrep/identity"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"

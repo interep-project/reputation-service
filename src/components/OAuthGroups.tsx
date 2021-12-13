@@ -1,5 +1,5 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
 import { useCallback, useContext, useEffect, useState } from "react"

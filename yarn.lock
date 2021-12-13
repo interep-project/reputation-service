@@ -2153,6 +2153,11 @@
   resolved "https://registry.yarnpkg.com/@interrep/reputation-criteria/-/reputation-criteria-0.12.1.tgz#79d5c0e399480268560e473ba9b8e75c0f8d047e"
   integrity sha512-NCea3ZF5gLZMqNagDBwswRqGiNQT9Fid/3ICP3gD3/uz9QBU7I/ex7eMOYhf5t4zZJ8QdtgXMHY4vfbD4oCacQ==
 
+"@interrep/reputation@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@interrep/reputation/-/reputation-0.13.0.tgz#cdb5b50bf0ed61dc049c6101dc626088b171d7c5"
+  integrity sha512-UPcCQv90f5VE8BB6Ao/CvY9Tl3vhrAyNs61OPxy5K/NkDtfO3h5XSFym4JEcv+wyAbfWXUcP9Pf2M5nnKvjv9A==
+
 "@interrep/telegram-bot@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@interrep/telegram-bot/-/telegram-bot-0.5.0.tgz#7fffa41025844c589c279610217f1e6bf0f76742"

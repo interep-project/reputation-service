@@ -1,4 +1,4 @@
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import { TokenDocument, TokenStatus } from "@interrep/db"
 
 export default function createMockTokenObject(override?: Partial<TokenDocument>) {

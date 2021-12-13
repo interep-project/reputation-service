@@ -1,4 +1,4 @@
-import { getReputationLevels } from "@interrep/reputation-criteria"
+import { getReputationLevels } from "@interrep/reputation"
 import { getTelegramGroups } from "@interrep/telegram-bot"
 import { getPoapEvents } from "src/core/poap"
 import { Group, Provider, Web3Provider } from "src/types/groups"

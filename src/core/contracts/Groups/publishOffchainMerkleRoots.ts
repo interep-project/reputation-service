@@ -1,4 +1,4 @@
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel } from "@interrep/reputation"
 import { ContractReceipt, ethers } from "ethers"
 import { ContractName } from "src/config"
 import { PoapEvent } from "src/core/poap"

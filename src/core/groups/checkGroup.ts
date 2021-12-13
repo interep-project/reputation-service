@@ -1,4 +1,4 @@
-import { getReputationLevels, ReputationLevel } from "@interrep/reputation-criteria"
+import { getReputationLevels, ReputationLevel } from "@interrep/reputation"
 import { getPoapEvents, PoapEvent } from "src/core/poap"
 import { Provider, Web3Provider } from "src/types/groups"
 import { EmailDomain, getEmailDomains } from "../email"

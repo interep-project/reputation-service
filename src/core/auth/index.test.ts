@@ -1,4 +1,4 @@
-import { TwitterParameters, OAuthProvider } from "@interrep/reputation-criteria"
+import { TwitterParameters, OAuthProvider } from "@interrep/reputation"
 import { OAuthAccount } from "@interrep/db"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import createOAuthAccount from "./createOAuthAccount"

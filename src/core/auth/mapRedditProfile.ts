@@ -1,4 +1,4 @@
-import { RedditParameters } from "@interrep/reputation-criteria"
+import { RedditParameters } from "@interrep/reputation"
 import { User } from "src/types/next-auth"
 
 export default async function mapRedditProfile({

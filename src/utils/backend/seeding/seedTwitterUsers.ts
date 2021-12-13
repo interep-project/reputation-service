@@ -1,4 +1,4 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
 import colors from "colors"
 import { OAuthAccount } from "@interrep/db"
 import { getTwitterFriendsByUserId, getTwitterUserByUsername } from "src/services/twitter"

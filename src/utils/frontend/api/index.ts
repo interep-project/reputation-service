@@ -1,4 +1,4 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"

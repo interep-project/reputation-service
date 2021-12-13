@@ -1,5 +1,5 @@
 import { OAuthAccount } from "@interrep/db"
-import { calculateReputation, OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { calculateReputation, OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { appendLeaf, deleteLeaf } from "src/core/groups/mts"

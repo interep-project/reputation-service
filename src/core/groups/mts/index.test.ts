@@ -1,6 +1,6 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
 import { MerkleTree } from "@interrep/merkle-tree"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"

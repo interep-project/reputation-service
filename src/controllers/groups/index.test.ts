@@ -1,4 +1,4 @@
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
 import { Provider } from "src/types/groups"

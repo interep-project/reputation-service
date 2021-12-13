@@ -1,7 +1,7 @@
 import getReputation from "src/pages/api/reputation/[provider]/[username]"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import createNextMocks from "src/mocks/createNextMocks"
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
 
 jest.mock("src/core/reputation/twitter", () => ({
     getTwitterParametersByUsername: jest.fn(() => ({

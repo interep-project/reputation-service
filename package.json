@@ -37,7 +37,7 @@
         "@fontsource/raleway": "^4.5.0",
         "@interrep/db": "^0.6.4",
         "@interrep/identity": "^0.10.0",
-        "@interrep/reputation-criteria": "^0.12.1",
+        "@interrep/reputation": "^0.13.0",
         "@interrep/telegram-bot": "^0.5.0",
         "@sentry/nextjs": "^6.12.0",
         "@types/nodemailer": "^6.4.4",

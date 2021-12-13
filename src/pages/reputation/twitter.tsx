@@ -1,5 +1,5 @@
 import { Button, Heading, Input, InputGroup, InputRightElement, Text, useColorMode, VStack } from "@chakra-ui/react"
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import React, { useState } from "react"
 import { getReputation } from "src/utils/frontend/api"
 

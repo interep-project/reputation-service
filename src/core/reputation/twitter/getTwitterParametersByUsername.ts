@@ -1,4 +1,4 @@
-import { TwitterParameters } from "@interrep/reputation-criteria"
+import { TwitterParameters } from "@interrep/reputation"
 import { getBotometerScore } from "src/services/botometer"
 import { getTwitterUserByUsername } from "src/services/twitter"
 

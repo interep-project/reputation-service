@@ -1,4 +1,4 @@
-import { calculateReputation, OAuthProvider } from "@interrep/reputation-criteria"
+import { calculateReputation, OAuthProvider } from "@interrep/reputation"
 import { withSentry } from "@sentry/nextjs"
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { getTwitterParametersByUsername } from "src/core/reputation/twitter"

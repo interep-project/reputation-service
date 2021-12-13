@@ -1,5 +1,5 @@
 import { OAuthAccount, Token, TokenDocument, TokenStatus } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel } from "@interrep/reputation"
 import { ethers } from "ethers"
 import { ContractName, currentNetwork } from "src/config"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"

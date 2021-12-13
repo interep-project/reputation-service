@@ -1,5 +1,5 @@
 import { Heading, HStack, Icon, Link, Spinner, Text, Tooltip, useColorMode, useToast, VStack } from "@chakra-ui/react"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel } from "@interrep/reputation"
 import { ethers, Signer } from "ethers"
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/client"
