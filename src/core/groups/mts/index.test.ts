@@ -1,11 +1,10 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
-import { MerkleTree } from "@interrep/merkle-tree"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { poseidon } from "src/utils/common/crypto"
+import { createMerkleTree, poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, createProof } from "."
 
 describe("Merkle Trees", () => {
@@ -113,7 +112,7 @@ describe("Merkle Trees", () => {
 
             const root = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
 
             tree.insert(idCommitments[0])
             tree.insert(idCommitments[1])
@@ -123,7 +122,7 @@ describe("Merkle Trees", () => {
         })
 
         it("Should delete 5 leaves correctly", async () => {
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
 
             await seedZeroHashes(false)
 
@@ -176,7 +175,7 @@ describe("Merkle Trees", () => {
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {

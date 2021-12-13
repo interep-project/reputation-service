@@ -38,7 +38,7 @@ describe("Core group functions", () => {
             expect(expectedValue).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                rootHash: "0",
+                rootHash: "19217088683336594659449020493828377907203207941212636669271704950158751593251",
                 size: 0
             })
         })
