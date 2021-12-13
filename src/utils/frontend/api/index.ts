@@ -1,4 +1,4 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation-criteria"
+import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
@@ -37,11 +37,15 @@ export async function checkLink(): Promise<boolean | null> {
     return sendRequest("/api/linking/check")
 }
 
-export async function checkGroup(): Promise<boolean | null> {
-    return sendRequest(`/api/groups/check`)
+export async function hasJoinedAGroup(): Promise<boolean | null> {
+    return sendRequest(`/api/groups/has-joined`)
 }
 
-export async function checkIdentityCommitment({
+export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
+    return sendRequest(`/api/tokens/${tokenId}/mint`, undefined, "POST")
+}
+
+export function hasIdentityCommitment({
     provider,
     groupName,
     identityCommitment
@@ -49,12 +53,8 @@ export async function checkIdentityCommitment({
     provider: Provider
     groupName: ReputationLevel | PoapEvent | string
     identityCommitment: string
-}): Promise<boolean | null> {
-    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}/check`)
-}
-
-export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
-    return sendRequest(`/api/tokens/${tokenId}/mint`, undefined, "POST")
+}): Promise<any | null> {
+    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`)
 }
 
 export function addIdentityCommitment({

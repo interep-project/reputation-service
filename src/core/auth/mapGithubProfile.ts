@@ -1,4 +1,4 @@
-import { GithubParameters } from "@interrep/reputation-criteria"
+import { GithubParameters } from "@interrep/reputation"
 import { User } from "src/types/next-auth"
 
 export default async function mapGithubProfile({

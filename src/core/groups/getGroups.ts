@@ -1,28 +1,29 @@
-import { MerkleTreeNode } from "@interrep/db"
-import { getReputationLevels } from "@interrep/reputation-criteria"
+import { getReputationLevels } from "@interrep/reputation"
+import { getTelegramGroups } from "@interrep/telegram-bot"
 import { getPoapEvents } from "src/core/poap"
 import { Group, Provider, Web3Provider } from "src/types/groups"
 import { getProviders } from "."
+import { getEmailDomains } from "../email"
 import getGroup from "./getGroup"
 
 export default async function getGroups(provider?: Provider): Promise<Group[]> {
     if (provider) {
         if (provider === Web3Provider.POAP) {
-            const poapGroupNames = getPoapEvents()
+            const poapEvents = getPoapEvents()
 
-            return Promise.all(poapGroupNames.map((poapGroupName) => getGroup(provider, poapGroupName)))
+            return Promise.all(poapEvents.map((poapEvent) => getGroup(provider, poapEvent)))
         }
 
         if (provider === "telegram") {
-            const telegramGroupNames = await MerkleTreeNode.getGroupNamesByProvider(provider)
+            const telegramGroups = getTelegramGroups()
 
-            return Promise.all(telegramGroupNames.map((telegramGroupName) => getGroup(provider, telegramGroupName)))
+            return Promise.all(telegramGroups.map((telegramGroup) => getGroup(provider, telegramGroup)))
         }
 
         if (provider === "email") {
-            const emailGroupNames = await MerkleTreeNode.getGroupNamesByProvider(provider)
+            const emailDomains = getEmailDomains()
 
-            return Promise.all(emailGroupNames.map((emailGroupName) => getGroup(provider, emailGroupName)))
+            return Promise.all(emailDomains.map((emailDomain) => getGroup(provider, emailDomain)))
         }
 
         const reputationLevels = getReputationLevels(provider)

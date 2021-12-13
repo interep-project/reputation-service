@@ -1,4 +1,4 @@
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
@@ -36,8 +36,9 @@ describe("Core group functions", () => {
             const expectedValue = await getGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
 
             expect(expectedValue).toStrictEqual({
-                name: ReputationLevel.GOLD,
                 provider: OAuthProvider.TWITTER,
+                name: ReputationLevel.GOLD,
+                rootHash: "19217088683336594659449020493828377907203207941212636669271704950158751593251",
                 size: 0
             })
         })
@@ -54,8 +55,9 @@ describe("Core group functions", () => {
             const expectedGroup = await getGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
 
             expect(expectedGroup).toStrictEqual({
-                name: ReputationLevel.GOLD,
                 provider: OAuthProvider.TWITTER,
+                name: ReputationLevel.GOLD,
+                rootHash: "7823274241651847725886395043906089812509000229670073074851496209925190006195",
                 size: 10
             })
         })
@@ -66,8 +68,9 @@ describe("Core group functions", () => {
             const expectedGroups = await getGroups()
 
             expect(expectedGroups).toContainEqual({
-                name: ReputationLevel.GOLD,
                 provider: OAuthProvider.TWITTER,
+                name: ReputationLevel.GOLD,
+                rootHash: "7823274241651847725886395043906089812509000229670073074851496209925190006195",
                 size: 10
             })
         })

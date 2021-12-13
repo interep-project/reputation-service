@@ -1,12 +1,11 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
-import { MerkleTree } from "@interrep/merkle-tree"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
 import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import { poseidon } from "src/utils/common/crypto"
-import { appendLeaf, deleteLeaf, retrievePath } from "."
+import { createMerkleTree, poseidon } from "src/utils/common/crypto"
+import { appendLeaf, deleteLeaf, createProof } from "."
 
 describe("Merkle Trees", () => {
     const idCommitment = poseidon(2, 1)
@@ -113,7 +112,7 @@ describe("Merkle Trees", () => {
 
             const root = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
 
             tree.insert(idCommitments[0])
             tree.insert(idCommitments[1])
@@ -123,7 +122,7 @@ describe("Merkle Trees", () => {
         })
 
         it("Should delete 5 leaves correctly", async () => {
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
 
             await seedZeroHashes(false)
 
@@ -145,18 +144,18 @@ describe("Merkle Trees", () => {
         })
     })
 
-    describe("retrievePath", () => {
+    describe("createProof", () => {
         beforeEach(async () => {
             await clearDatabase()
         })
 
-        it(`Should not return any path if the identity commitment does not exist`, async () => {
-            const fun = (): Promise<string[]> => retrievePath(provider, reputation, idCommitment)
+        it(`Should not return any proof if the identity commitment does not exist`, async () => {
+            const fun = (): Promise<string[]> => createProof(provider, reputation, idCommitment)
 
             await expect(fun).rejects.toThrow()
         })
 
-        it(`Should return a path of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
+        it(`Should return a proof of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
             await seedZeroHashes(false)
 
             const idCommitments = []
@@ -167,16 +166,16 @@ describe("Merkle Trees", () => {
                 await appendLeaf(provider, reputation, idCommitments[i])
             }
 
-            const path = await retrievePath(provider, reputation, idCommitments[5])
+            const proof = await createProof(provider, reputation, idCommitments[5])
 
-            expect(path.pathElements).toHaveLength(config.MERKLE_TREE_DEPTH)
-            expect(path.indices).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(proof.siblingNodes).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(proof.path).toHaveLength(config.MERKLE_TREE_DEPTH)
         })
 
-        it("Should match the path obtained with the 'incrementalquintree' library", async () => {
+        it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes(false)
 
-            const tree = new MerkleTree((nodes) => poseidon(...nodes), config.MERKLE_TREE_DEPTH, 0)
+            const tree = createMerkleTree()
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {
@@ -186,12 +185,12 @@ describe("Merkle Trees", () => {
                 tree.insert(BigInt(idCommitments[i]))
             }
 
-            const path1 = await retrievePath(provider, reputation, idCommitments[5])
+            const proof = await createProof(provider, reputation, idCommitments[5])
 
             const { path, siblingNodes } = tree.createProof(5)
 
-            expect(path1.indices).toStrictEqual(path)
-            expect(path1.pathElements).toStrictEqual(siblingNodes.map(String))
+            expect(proof.path).toStrictEqual(path)
+            expect(proof.siblingNodes).toStrictEqual(siblingNodes.map(String))
         })
     })
 })

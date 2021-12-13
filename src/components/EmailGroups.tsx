@@ -21,14 +21,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
 
     const group_list = groupId.split("+")
 
-    const {
-        retrieveIdentityCommitment,
-        checkIdentityCommitment,
-        getGroup,
-        joinGroup,
-        leaveGroup,
-        _loading
-    } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
 
     const step1 = useCallback(
         async (groupName: string) => {
@@ -47,7 +40,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
             const identityCommitment = await retrieveIdentityCommitment(signer, "email")
 
             if (identityCommitment) {
-                const hasJoined = await checkIdentityCommitment(identityCommitment, "email", group.name)
+                const hasJoined = await hasIdentityCommitment(identityCommitment, "email", group.name)
 
                 if (hasJoined === null) {
                     return
@@ -58,7 +51,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
                 setHasJoined(hasJoined)
             }
         },
-        [retrieveIdentityCommitment, checkIdentityCommitment]
+        [retrieveIdentityCommitment, hasIdentityCommitment]
     )
 
     const step3 = useCallback(

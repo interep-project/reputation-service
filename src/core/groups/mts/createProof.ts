@@ -1,10 +1,10 @@
 import { MerkleTreeNode } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation-criteria"
+import { ReputationLevel } from "@interrep/reputation"
 import { checkGroup } from "src/core/groups"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 
-export default async function retrievePath(
+export default async function createProof(
     provider: Provider,
     name: ReputationLevel | PoapEvent | string,
     identityCommitment: string
@@ -13,7 +13,7 @@ export default async function retrievePath(
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    // Get path starting from leaf node.
+    // Get proof starting from the leaf node.
     const leafNode = await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)
 
     if (!leafNode) {
@@ -22,8 +22,8 @@ export default async function retrievePath(
 
     const { index, level } = leafNode
 
-    // Get path and return array.
-    const pathQuery = MerkleTreeNode.aggregate([
+    // Get proof and return array.
+    const proofQuery = MerkleTreeNode.aggregate([
         {
             $match: {
                 index,
@@ -76,16 +76,16 @@ export default async function retrievePath(
     ])
 
     return new Promise((resolve, reject) => {
-        pathQuery.exec((error, path) => {
+        proofQuery.exec((error, proof) => {
             if (error) {
                 reject(error)
             }
 
-            const root = path.pop().hash
-            const pathElements = path.map((n) => n.sibling)
-            const indices = path.map((n) => n.index)
+            const root = proof.pop().hash
+            const siblingNodes = proof.map((n) => n.sibling)
+            const path = proof.map((n) => n.index)
 
-            resolve({ pathElements, indices, root })
+            resolve({ siblingNodes, path, root })
         })
     })
 }

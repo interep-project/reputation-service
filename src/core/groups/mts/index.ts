@@ -1,5 +1,5 @@
 import appendLeaf from "./appendLeaf"
 import deleteLeaf from "./deleteLeaf"
-import retrievePath from "./retrievePath"
+import createProof from "./createProof"
 
-export { appendLeaf, deleteLeaf, retrievePath }
+export { appendLeaf, deleteLeaf, createProof }

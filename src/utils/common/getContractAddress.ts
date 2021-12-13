@@ -1,4 +1,4 @@
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import { contractAddresses, ContractName, currentNetwork } from "src/config"
 
 export default function getContractAddress(contractName: ContractName, provider?: OAuthProvider): string {

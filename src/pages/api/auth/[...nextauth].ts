@@ -1,4 +1,4 @@
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"

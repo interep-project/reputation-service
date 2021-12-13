@@ -1,5 +1,5 @@
 import { Button, Divider, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation-criteria"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"

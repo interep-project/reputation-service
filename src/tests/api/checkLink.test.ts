@@ -1,4 +1,4 @@
-import { OAuthProvider } from "@interrep/reputation-criteria"
+import { OAuthProvider } from "@interrep/reputation"
 import { getSession } from "next-auth/client"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"

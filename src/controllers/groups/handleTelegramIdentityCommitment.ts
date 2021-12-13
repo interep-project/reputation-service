@@ -6,17 +6,11 @@ import logger from "src/utils/backend/logger"
 import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
-    const name = req.query?.name
-    const identityCommitment = req.query?.identityCommitment
+    const name = req.query?.name as string
+    const identityCommitment = req.query?.identityCommitment as string
     const { telegramUserId } = JSON.parse(req.body)
 
-    if (
-        !name ||
-        typeof name !== "string" ||
-        !identityCommitment ||
-        typeof identityCommitment !== "string" ||
-        !telegramUserId
-    ) {
+    if (!telegramUserId) {
         return res.status(400).end()
     }
 

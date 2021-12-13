@@ -1,15 +1,12 @@
-import { appendLeaf } from "src/core/groups/mts"
+import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import createNextMocks from "src/mocks/createNextMocks"
-import { Provider } from "src/types/groups"
-import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import getGroup from "./getGroup"
 import getGroups from "./getGroups"
-import getMerkleTreePath from "./getMerkleTreePath"
 
 describe("# controllers/groups", () => {
-    const provider = "twitter"
-    const name = "GOLD"
+    const provider = OAuthProvider.TWITTER
+    const name = ReputationLevel.GOLD
 
     beforeAll(async () => {
         await connectDatabase()
@@ -96,68 +93,6 @@ describe("# controllers/groups", () => {
 
             expect(res._getStatusCode()).toBe(200)
             expect(data.length).toBeGreaterThan(0)
-        })
-    })
-
-    describe("# getMerkleTreePath", () => {
-        it("Should return error 405 if the http method is not a GET", async () => {
-            const { req, res } = createNextMocks({
-                method: "POST"
-            })
-
-            await getMerkleTreePath(req, res)
-
-            expect(res._getStatusCode()).toBe(405)
-        })
-
-        it("Should return error 400 if there the query parameters are wrong", async () => {
-            const { req, res } = createNextMocks({
-                method: "GET",
-                query: { provider, name: 1, identityCommitment: "1" }
-            })
-
-            await getMerkleTreePath(req, res)
-
-            expect(res._getStatusCode()).toBe(400)
-        })
-
-        it("Should return error 404 if the group does not exist", async () => {
-            const { req, res } = createNextMocks({
-                method: "GET",
-                query: { provider, name: "a", identityCommitment: "1" }
-            })
-
-            await getMerkleTreePath(req, res)
-
-            expect(res._getStatusCode()).toBe(404)
-        })
-
-        it("Should return error 404 if the identity commitment does not exist", async () => {
-            const { req, res } = createNextMocks({
-                method: "GET",
-                query: { provider, name, identityCommitment: "1" }
-            })
-
-            await getMerkleTreePath(req, res)
-
-            expect(res._getStatusCode()).toBe(404)
-        })
-
-        it("Should return a Merkle proof", async () => {
-            await seedZeroHashes()
-            await appendLeaf(provider as Provider, name, "1")
-
-            const { req, res } = createNextMocks({
-                method: "GET",
-                query: { provider, name, identityCommitment: "1" }
-            })
-
-            await getMerkleTreePath(req, res)
-
-            const { data } = res._getData()
-
-            expect(res._getStatusCode()).toBe(200)
-            expect(data.root).not.toBeUndefined()
         })
     })
 })
