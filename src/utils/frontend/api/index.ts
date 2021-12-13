@@ -1,4 +1,4 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
+import { ReputationLevel } from "@interrep/reputation"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
@@ -7,16 +7,6 @@ export function sendEmail({ email }: { email: string }) {
     return sendRequest(`/api/email/send`, {
         email
     })
-}
-
-export function getReputation({
-    provider,
-    username
-}: {
-    provider: OAuthProvider
-    username: string
-}): Promise<any | null> {
-    return sendRequest(`/api/reputation/${provider}/${username}`)
 }
 
 export function getUserTokens({ userAddress }: { userAddress: string }): Promise<any | null> {

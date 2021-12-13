@@ -7,7 +7,6 @@ import {
     hasIdentityCommitment as _hasIdentityCommitment,
     checkLink as _checkLink,
     getGroup as _getGroup,
-    getReputation as _getReputation,
     getUserTokens as _getUserTokens,
     linkAccounts as _linkAccounts,
     mintToken as _mintToken,
@@ -24,7 +23,6 @@ type API = {
     mintToken: typeof _mintToken
     hasJoinedAGroup: typeof _hasJoinedAGroup
     linkAccounts: typeof _linkAccounts
-    getReputation: typeof _getReputation
     getUserTokens: typeof _getUserTokens
     unlinkAccounts: typeof _unlinkAccounts
     sendEmail: typeof _sendEmail
@@ -78,7 +76,6 @@ export default function useInterRepAPI(): API {
         mintToken: (parameters) => handleApiFunction(_mintToken, parameters),
         hasJoinedAGroup: () => handleApiFunction(_hasJoinedAGroup),
         linkAccounts: (parameters) => handleApiFunction(_linkAccounts, parameters),
-        getReputation: (parameters) => handleApiFunction(_getReputation, parameters),
         getUserTokens: (parameters) => handleApiFunction(_getUserTokens, parameters),
         unlinkAccounts: (parameters) => handleApiFunction(_unlinkAccounts, parameters),
         sendEmail: (parameters) => handleApiFunction(_sendEmail, parameters)
