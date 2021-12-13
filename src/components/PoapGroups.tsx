@@ -17,7 +17,7 @@ export default function PoapGroups(): JSX.Element {
     const {
         signMessage,
         retrieveIdentityCommitment,
-        checkIdentityCommitment,
+        hasIdentityCommitment,
         joinGroup,
         leaveGroup,
         getGroup,
@@ -41,7 +41,7 @@ export default function PoapGroups(): JSX.Element {
             const identityCommitment = await retrieveIdentityCommitment(signer, Web3Provider.POAP)
 
             if (identityCommitment) {
-                const hasJoined = await checkIdentityCommitment(identityCommitment, Web3Provider.POAP, group.name)
+                const hasJoined = await hasIdentityCommitment(identityCommitment, Web3Provider.POAP, group.name)
 
                 if (hasJoined === null) {
                     return
@@ -52,7 +52,7 @@ export default function PoapGroups(): JSX.Element {
                 setHasJoined(hasJoined)
             }
         },
-        [retrieveIdentityCommitment, checkIdentityCommitment]
+        [retrieveIdentityCommitment, hasIdentityCommitment]
     )
 
     const step3 = useCallback(

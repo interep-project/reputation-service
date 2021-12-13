@@ -1,12 +1,13 @@
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
+import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import getGroup from "./getGroup"
-import getGroups from "./getGroups"
+import getMerkleProof from "./getMerkleProof"
 
 describe("# controllers/groups", () => {
-    const provider = OAuthProvider.TWITTER
-    const name = ReputationLevel.GOLD
+    const rootHash = "1"
+    const leafHash = "1"
 
     beforeAll(async () => {
         await connectDatabase()
@@ -20,14 +21,13 @@ describe("# controllers/groups", () => {
         await clearDatabase()
     })
 
-    describe("# getGroup", () => {
+    describe("# getMerkleProof", () => {
         it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
-                method: "POST",
-                query: { provider, name }
+                method: "POST"
             })
 
-            await getGroup(req, res)
+            await getMerkleProof(req, res)
 
             expect(res._getStatusCode()).toBe(405)
         })
@@ -35,64 +35,54 @@ describe("# controllers/groups", () => {
         it("Should return error 400 if there the query parameters are wrong", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name: 1 }
+                query: { rootHash }
             })
 
-            await getGroup(req, res)
+            await getMerkleProof(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
 
-        it("Should return error 404 if the group does not exist", async () => {
+        it("Should return error 404 if the root does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name: "a" }
+                query: { rootHash, leafHash }
             })
 
-            await getGroup(req, res)
+            await getMerkleProof(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
 
-        it("Should return a group", async () => {
+        it("Should return error 404 if the leaf does not exist", async () => {
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, leafHash)
+
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name }
+                query: { rootHash, leafHash: "0" }
             })
 
-            await getGroup(req, res)
+            await getMerkleProof(req, res)
+
+            expect(res._getStatusCode()).toBe(404)
+        })
+
+        it("Should return a Merkle proof", async () => {
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, leafHash)
+
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { rootHash, leafHash }
+            })
+
+            await getMerkleProof(req, res)
 
             const { data } = res._getData()
 
             expect(res._getStatusCode()).toBe(200)
-            expect(data.provider).toBe(provider)
-            expect(data.name).toBe(name)
-            expect(data.size).toBe(0)
-        })
-    })
-
-    describe("# getGroups", () => {
-        it("Should return error 405 if the http method is not a GET", async () => {
-            const { req, res } = createNextMocks({
-                method: "POST"
-            })
-
-            await getGroups(req, res)
-
-            expect(res._getStatusCode()).toBe(405)
-        })
-
-        it("Should return a list of groups", async () => {
-            const { req, res } = createNextMocks({
-                method: "GET"
-            })
-
-            await getGroups(req, res)
-
-            const { data } = res._getData()
-
-            expect(res._getStatusCode()).toBe(200)
-            expect(data.length).toBeGreaterThan(0)
+            expect(data.root).not.toBeUndefined()
         })
     })
 })

@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getMerkleTreeLeavesController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getLeavesController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     if (req.method !== "GET") {
         return res.status(405).end()
     }

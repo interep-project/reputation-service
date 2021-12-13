@@ -15,14 +15,7 @@ export default function OAuthGroups(): JSX.Element {
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const {
-        retrieveIdentityCommitment,
-        checkIdentityCommitment,
-        joinGroup,
-        leaveGroup,
-        getGroup,
-        _loading
-    } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, leaveGroup, getGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -44,7 +37,7 @@ export default function OAuthGroups(): JSX.Element {
             const identityCommitment = await retrieveIdentityCommitment(signer, provider)
 
             if (identityCommitment) {
-                const hasJoined = await checkIdentityCommitment(identityCommitment, provider, reputation, true)
+                const hasJoined = await hasIdentityCommitment(identityCommitment, provider, reputation, true)
 
                 if (hasJoined === null) {
                     return
@@ -55,7 +48,7 @@ export default function OAuthGroups(): JSX.Element {
                 setHasJoined(hasJoined)
             }
         },
-        [retrieveIdentityCommitment, checkIdentityCommitment]
+        [retrieveIdentityCommitment, hasIdentityCommitment]
     )
 
     const step2 = useCallback(

@@ -3,8 +3,8 @@ import { useCallback } from "react"
 import {
     addIdentityCommitment as _addIdentityCommitment,
     removeIdentityCommitment as _removeIdentityCommitment,
-    checkGroup as _checkGroup,
-    checkIdentityCommitment as _checkIdentityCommitment,
+    hasJoinedAGroup as _hasJoinedAGroup,
+    hasIdentityCommitment as _hasIdentityCommitment,
     checkLink as _checkLink,
     getGroup as _getGroup,
     getReputation as _getReputation,
@@ -18,11 +18,11 @@ import {
 type API = {
     addIdentityCommitment: typeof _addIdentityCommitment
     removeIdentityCommitment: typeof _removeIdentityCommitment
-    checkIdentityCommitment: typeof _checkIdentityCommitment
+    hasIdentityCommitment: typeof _hasIdentityCommitment
     getGroup: typeof _getGroup
     checkLink: typeof _checkLink
     mintToken: typeof _mintToken
-    checkGroup: typeof _checkGroup
+    hasJoinedAGroup: typeof _hasJoinedAGroup
     linkAccounts: typeof _linkAccounts
     getReputation: typeof _getReputation
     getUserTokens: typeof _getUserTokens
@@ -72,11 +72,11 @@ export default function useInterRepAPI(): API {
     return {
         addIdentityCommitment: (parameters) => handleApiFunction(_addIdentityCommitment, parameters),
         removeIdentityCommitment: (parameters) => handleApiFunction(_removeIdentityCommitment, parameters),
-        checkIdentityCommitment: (parameters) => handleApiFunction(_checkIdentityCommitment, parameters),
+        hasIdentityCommitment: (parameters) => handleApiFunction(_hasIdentityCommitment, parameters),
         getGroup: (parameters) => handleApiFunction(_getGroup, parameters),
         checkLink: () => handleApiFunction(_checkLink),
         mintToken: (parameters) => handleApiFunction(_mintToken, parameters),
-        checkGroup: () => handleApiFunction(_checkGroup),
+        hasJoinedAGroup: () => handleApiFunction(_hasJoinedAGroup),
         linkAccounts: (parameters) => handleApiFunction(_linkAccounts, parameters),
         getReputation: (parameters) => handleApiFunction(_getReputation, parameters),
         getUserTokens: (parameters) => handleApiFunction(_getUserTokens, parameters),

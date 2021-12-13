@@ -8,11 +8,11 @@ import capitalize from "src/utils/common/capitalize"
 import useInterRepAPI from "./useInterRepAPI"
 
 type ReturnParameters = {
-    checkGroup: (provider: OAuthProvider) => Promise<boolean | null>
+    hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
     signMessage: (signer: Signer, message: string) => Promise<string | null>
     retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
-    checkIdentityCommitment: (
+    hasIdentityCommitment: (
         identityCommitment: string,
         provider: Provider,
         groupName: string,
@@ -28,16 +28,16 @@ export default function useGroups(): ReturnParameters {
     const {
         addIdentityCommitment,
         removeIdentityCommitment,
-        checkIdentityCommitment: _checkIdentityCommitment,
-        checkGroup: _checkGroup,
+        hasIdentityCommitment: _hasIdentityCommitment,
+        hasJoinedAGroup: _hasJoinedAGroup,
         getGroup: _getGroup
     } = useInterRepAPI()
     const toast = useToast()
 
-    const checkGroup = useCallback(async (): Promise<boolean | null> => {
+    const hasJoinedAGroup = useCallback(async (): Promise<boolean | null> => {
         setLoading(true)
 
-        const hasJoinedAGroup = await _checkGroup()
+        const hasJoinedAGroup = await _hasJoinedAGroup()
 
         if (hasJoinedAGroup === null) {
             setLoading(false)
@@ -46,7 +46,7 @@ export default function useGroups(): ReturnParameters {
 
         setLoading(false)
         return hasJoinedAGroup
-    }, [_checkGroup])
+    }, [_hasJoinedAGroup])
 
     const getGroup = useCallback(
         async (provider: Provider, groupName: string): Promise<Group | null> => {
@@ -119,11 +119,11 @@ export default function useGroups(): ReturnParameters {
         [toast]
     )
 
-    const checkIdentityCommitment = useCallback(
+    const hasIdentityCommitment = useCallback(
         async (identityCommitment: string, provider: Provider, groupName: string): Promise<boolean | null> => {
             setLoading(true)
 
-            const hasJoined = await _checkIdentityCommitment({
+            const hasJoined = await _hasIdentityCommitment({
                 provider,
                 groupName,
                 identityCommitment
@@ -137,7 +137,7 @@ export default function useGroups(): ReturnParameters {
             setLoading(false)
             return hasJoined
         },
-        [_checkIdentityCommitment]
+        [_hasIdentityCommitment]
     )
 
     const joinGroup = useCallback(
@@ -195,11 +195,11 @@ export default function useGroups(): ReturnParameters {
     )
 
     return {
-        checkGroup,
+        hasJoinedAGroup,
         getGroup,
         signMessage,
         retrieveIdentityCommitment,
-        checkIdentityCommitment,
+        hasIdentityCommitment,
         joinGroup,
         leaveGroup,
         _loading

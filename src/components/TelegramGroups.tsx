@@ -16,14 +16,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const {
-        retrieveIdentityCommitment,
-        checkIdentityCommitment,
-        getGroup,
-        joinGroup,
-        leaveGroup,
-        _loading
-    } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -44,7 +37,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
             const identityCommitment = await retrieveIdentityCommitment(signer, "telegram")
 
             if (identityCommitment) {
-                const hasJoined = await checkIdentityCommitment(identityCommitment, "telegram", groupId)
+                const hasJoined = await hasIdentityCommitment(identityCommitment, "telegram", groupId)
 
                 if (hasJoined === null) {
                     return
@@ -55,7 +48,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
                 setHasJoined(hasJoined)
             }
         },
-        [retrieveIdentityCommitment, checkIdentityCommitment]
+        [retrieveIdentityCommitment, hasIdentityCommitment]
     )
 
     const step2 = useCallback(

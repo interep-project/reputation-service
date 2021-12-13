@@ -1,13 +1,13 @@
-import { withSentry } from "@sentry/nextjs"
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { MerkleTreeNode } from "@interrep/db"
+import { NextApiRequest, NextApiResponse } from "next"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
-    await dbConnect()
-
+export default async function hasIdentityCommitmentController(
+    req: NextApiRequest,
+    res: NextApiResponse
+): Promise<void> {
     if (req.method !== "GET") {
         return res.status(405).end()
     }
@@ -20,18 +20,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     try {
-        const node = await MerkleTreeNode.findByGroupProviderAndHash(provider as Provider, identityCommitment)
+        await dbConnect()
 
-        if (node && node.level === 0) {
-            return res.status(200).send({ data: true })
-        }
+        const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider as Provider, identityCommitment)
 
-        return res.status(200).send({ data: false })
+        return res.status(200).send({ data: !!leaf && leaf.level === 0 })
     } catch (error) {
         logger.error(error)
 
         return res.status(500).end()
     }
 }
-
-export default withSentry(handler as NextApiHandler)

@@ -7,18 +7,11 @@ import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
 export default async function handlePoapIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
-    const name = req.query?.name
-    const identityCommitment = req.query?.identityCommitment
+    const name = req.query?.name as string
+    const identityCommitment = req.query?.identityCommitment as string
     const { userSignature, userAddress } = JSON.parse(req.body)
 
-    if (
-        !name ||
-        typeof name !== "string" ||
-        !identityCommitment ||
-        typeof identityCommitment !== "string" ||
-        !userSignature ||
-        !userAddress
-    ) {
+    if (!userSignature || !userAddress) {
         return res.status(400).end()
     }
 
