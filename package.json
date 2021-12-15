@@ -35,7 +35,7 @@
         "@emotion/react": "^11",
         "@emotion/styled": "^11",
         "@fontsource/raleway": "^4.5.0",
-        "@interrep/db": "^0.6.4",
+        "@interrep/db": "^0.7.0",
         "@interrep/identity": "^0.10.0",
         "@interrep/merkle-tree": "^0.2.1",
         "@interrep/reputation": "^0.13.0",
