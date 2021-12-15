@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
 import { Token } from "@interrep/db"
+import { NextApiRequest, NextApiResponse } from "next"
+import { updateTokenStatus } from "src/core/badges"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 import { getChecksummedAddress } from "src/utils/common/crypto"
@@ -27,13 +27,9 @@ export default async function getTokensByAddressController(req: NextApiRequest, 
 
         const tokens = await Token.findByUserAddress(ownerChecksummedAddress)
 
-        if (!tokens) return res.status(200).send({ tokens: [] })
+        await updateTokenStatus(tokens)
 
-        await checkAndUpdateTokenStatus(tokens)
-
-        const tokensAsJSON = tokens.map((token) => token.toJSON())
-
-        return res.status(200).send({ data: tokensAsJSON })
+        return res.status(200).send({ data: tokens.map((token) => token.toJSON()) })
     } catch (error) {
         logger.error(error)
 
