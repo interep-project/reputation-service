@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/client"
 import { RequestMethod } from "node-mocks-http"
-import linkAccounts from "src/core/linking"
+import { linkAccounts } from "src/core/badges"
 import createNextMocks from "src/mocks/createNextMocks"
 import mockSession from "src/mocks/session"
 import { Token } from "@interrep/db"
@@ -8,7 +8,7 @@ import handler from "src/pages/api/linking/link"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 
-jest.mock("src/core/linking", () => jest.fn())
+jest.mock("src/core/badges", () => jest.fn())
 jest.mock("next-auth/client", () => ({
     getSession: jest.fn()
 }))
@@ -106,7 +106,9 @@ describe("api/linking", () => {
         })
 
         it("should call linkAccounts and return 201", async () => {
-            linkAccountsMocked.mockImplementation(({ address }) => Promise.resolve(new Token({ userAddress: address })))
+            linkAccountsMocked.mockImplementation(({ userAddress: address }) =>
+                Promise.resolve(new Token({ userAddress: address }))
+            )
 
             const { req, res } = createNextMocks(createCall())
 
