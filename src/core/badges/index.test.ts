@@ -3,10 +3,10 @@ import { OAuthAccount, OAuthAccountDocument, Token } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { Wallet } from "ethers"
 import { currentNetwork } from "src/config"
-import linkAccounts from "src/core/linking"
 import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
 import { connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { encryptMessageWithSalt } from "src/utils/common/crypto"
+import linkAccounts from "./linkAccounts"
 
 const addy = "0x622c62E3be972ABdF172DA466d425Df4C93470E4"
 const getParams = (override?: Record<string, unknown>) => ({
@@ -138,7 +138,7 @@ describe("linkAccounts", () => {
                 await expect(
                     linkAccounts({
                         accountId: accountNotLinked.id,
-                        address: addy,
+                        userAddress: addy,
                         userSignature: "signature",
                         userPublicKey: "pubKey"
                     })
@@ -166,7 +166,7 @@ describe("linkAccounts", () => {
             const userPublicKey = "xj93Xo97GEIhaO5mHcMNMfNnS5YReu/kexbGHIOtGXU="
             const token = await linkAccounts({
                 accountId: accountMock.id,
-                address: addy,
+                userAddress: addy,
                 userSignature: "signature",
                 userPublicKey
             })
@@ -179,10 +179,10 @@ describe("linkAccounts", () => {
 
             expect(account!.isLinkedToAddress).toBe(true)
             expect(savedToken.userAddress).toBe(addy)
-            expect(typeof savedToken.decimalId).toBe("string")
+            expect(typeof savedToken.tokenId).toBe("string")
             expect(encryptMessageWithSalt).toHaveBeenCalledWith(
                 userPublicKey,
-                '{"attestationMessage":"{\\"service\\":\\"InterRep\\",\\"decimalId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x9571034f3bf9a04cbaa984ee57119e50d3289fd2f815bb91c0d567312fa50e314b7d6c64b4f8d42b71fa984a625971b186a66a68eaa970416c68e288ecb978881c"}'
+                '{"attestationMessage":"{\\"tokenId\\":\\"1747858295241726277510434389086057765685193028078641675200900296144941574649\\",\\"userAddress\\":\\"0x622c62E3be972ABdF172DA466d425Df4C93470E4\\",\\"provider\\":\\"twitter\\",\\"providerAccountId\\":\\"999\\"}","backendAttestationSignature":"0x9571034f3bf9a04cbaa984ee57119e50d3289fd2f815bb91c0d567312fa50e314b7d6c64b4f8d42b71fa984a625971b186a66a68eaa970416c68e288ecb978881c"}'
             )
             expect(savedToken.encryptedAttestation).toEqual("encryptedMessage")
         })

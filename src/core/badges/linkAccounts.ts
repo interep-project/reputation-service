@@ -1,4 +1,4 @@
-import { OAuthAccount, Token, TokenDocument, TokenStatus } from "@interrep/db"
+import { OAuthAccount, Token, TokenDocument } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation"
 import { ethers } from "ethers"
 import { ContractName, currentNetwork } from "src/config"
@@ -6,27 +6,20 @@ import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIs
 import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import getSigner from "src/utils/backend/getSigner"
 import logger from "src/utils/backend/logger"
-import { getChecksummedAddress, encryptMessageWithSalt } from "src/utils/common/crypto"
+import { encryptMessageWithSalt, getChecksummedAddress } from "src/utils/common/crypto"
 import getContractAddress from "src/utils/common/getContractAddress"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 
-type LinkAccountsParams = {
-    address: string
+export default async function linkAccounts(
+    userAddress: string,
+    userSignature: string,
+    userPublicKey: string,
     accountId: string
-    userSignature: string
-    userPublicKey: string
-}
-
-const linkAccounts = async ({
-    address,
-    accountId,
-    userSignature,
-    userPublicKey
-}: LinkAccountsParams): Promise<TokenDocument> => {
-    const checksummedAddress = getChecksummedAddress(address)
+): Promise<TokenDocument> {
+    const checksummedAddress = getChecksummedAddress(userAddress)
 
     if (!checksummedAddress) {
-        throw new Error(`Invalid address ${address}`)
+        throw new Error(`Invalid address ${userAddress}`)
     }
 
     const isUserSignatureValid = checkIfUserSignatureIsValid({
@@ -76,20 +69,15 @@ const linkAccounts = async ({
             contractAddress,
             userAddress: checksummedAddress,
             provider: account.provider,
-            issuanceTimestamp: Date.now(),
-            status: TokenStatus.NOT_MINTED
+            issuanceTimestamp: Date.now()
         })
 
-        // hash the id
         const tokenIdHash = ethers.utils.id(token.id.toString())
-        // convert to BigNumber then string
-        const decimalId = stringToBigNumber(tokenIdHash).toString()
-
-        token.decimalId = decimalId
+        token.tokenId = stringToBigNumber(tokenIdHash).toString()
 
         const attestationMessage = createBackendAttestationMessage({
-            decimalId,
-            address: checksummedAddress,
+            tokenId: token.tokenId,
+            userAddress: checksummedAddress,
             provider: account.provider,
             providerAccountId: account.providerAccountId
         })
@@ -116,8 +104,7 @@ const linkAccounts = async ({
         return token
     } catch (error) {
         logger.error(error)
+
         throw new Error(`Error while creating attestation`)
     }
 }
-
-export default linkAccounts
