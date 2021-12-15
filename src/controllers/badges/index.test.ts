@@ -1,13 +1,12 @@
-import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
-import mintToken from "src/core/linking/mintToken"
+import { Token } from "@interrep/db"
+import { mintToken, updateTokenStatus } from "src/core/badges"
 import createMockTokenObject from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
-import { Token } from "@interrep/db"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { getTokensByAddressController, mintTokenController } from "."
 
-jest.mock("src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus", () => ({
+jest.mock("src/core/badges/updateTokenStatus", () => ({
     __esModule: true,
     default: jest.fn()
 }))
@@ -19,7 +18,7 @@ jest.mock("src/utils/backend/logger", () => ({
     }
 }))
 
-jest.mock("src/core/linking/mintToken", () => ({
+jest.mock("src/core/badges/mintToken", () => ({
     __esModule: true,
     default: jest.fn()
 }))
@@ -98,7 +97,7 @@ describe("TokenController", () => {
 
             await getTokensByAddressController(req, res)
 
-            expect(checkAndUpdateTokenStatus).toHaveBeenCalled()
+            expect(updateTokenStatus).toHaveBeenCalled()
             expect(res._getStatusCode()).toBe(200)
             expect(res._getData().data).toEqual([tokenMock.toJSON()])
         })
