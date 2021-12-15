@@ -9,8 +9,8 @@ export function sendEmail({ email }: { email: string }) {
     })
 }
 
-export function getUserTokens({ userAddress }: { userAddress: string }): Promise<any | null> {
-    return sendRequest(`/api/tokens/?userAddress=${userAddress}`)
+export function getUserBadges({ userAddress }: { userAddress: string }): Promise<any | null> {
+    return sendRequest(`/api/badges/?userAddress=${userAddress}`)
 }
 
 export function getGroup({
@@ -23,16 +23,22 @@ export function getGroup({
     return sendRequest(`/api/groups/${provider}/${groupName}`)
 }
 
-export async function checkLink(): Promise<boolean | null> {
-    return sendRequest("/api/linking/check")
+export async function isLinkedToAddress(): Promise<boolean | null> {
+    return sendRequest("/api/badges/is-linked")
 }
 
 export async function hasJoinedAGroup(): Promise<boolean | null> {
     return sendRequest(`/api/groups/has-joined`)
 }
 
-export function mintToken({ tokenId }: { tokenId: string }): Promise<any | null> {
-    return sendRequest(`/api/tokens/${tokenId}/mint`, undefined, "POST")
+export function mintBadge({ tokenId, accountId }: { tokenId: string; accountId: string }): Promise<any | null> {
+    return sendRequest(
+        `/api/badges/${tokenId}/mint`,
+        {
+            accountId
+        },
+        "POST"
+    )
 }
 
 export function hasIdentityCommitment({
@@ -113,25 +119,31 @@ export function removeIdentityCommitment({
     )
 }
 
-export function unlinkAccounts({ decryptedAttestation }: { decryptedAttestation: string }): Promise<any | null> {
-    return sendRequest("/api/linking/unlink", { decryptedAttestation })
+export function unlinkAccounts({
+    decryptedAttestation,
+    accountId
+}: {
+    decryptedAttestation: string
+    accountId: string
+}): Promise<any | null> {
+    return sendRequest("/api/badges/unlink", { decryptedAttestation, accountId }, "PUT")
 }
 
 export function linkAccounts({
-    address,
+    userAddress,
     accountId,
     userSignature,
     userPublicKey
 }: {
-    address: string
+    userAddress: string
     accountId: string
     userSignature: string
     userPublicKey: string
 }): Promise<any | null> {
     return sendRequest(
-        "/api/linking/link",
+        "/api/badges/link",
         {
-            address,
+            userAddress,
             accountId,
             userSignature,
             userPublicKey
