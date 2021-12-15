@@ -1,11 +1,11 @@
 import { OAuthProvider } from "@interrep/reputation"
 import { Wallet } from "ethers"
-import checkAndUpdateTokenStatus from "src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus"
 import createMockTokenObject from "src/mocks/createMockToken"
 import { TokenStatus, Token, OAuthAccount } from "@interrep/db"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { createBackendAttestationMessage } from "../signing/createBackendAttestationMessage"
-import unlinkAccounts from "./unlink"
+import unlinkAccounts from "./unlinkAccounts"
+import updateTokenStatus from "./updateTokenStatus"
 
 const mockedSigner = Wallet.fromMnemonic("test test test test test test test test test test test junk")
 
@@ -14,17 +14,17 @@ jest.mock("src/utils/backend/getSigner", () => ({
     default: jest.fn(() => mockedSigner)
 }))
 
-jest.mock("src/core/contracts/ReputationBadge/checkAndUpdateTokenStatus", () => ({
+jest.mock("src/core/badges/updateTokenStatus", () => ({
     __esModule: true,
     default: jest.fn()
 }))
 
 const createMockBackendAttestation = async ({
     providerAccountId,
-    decimalId
+    tokenId
 }: {
     providerAccountId: string
-    decimalId?: string
+    tokenId?: string
 }): Promise<{
     attestationMessage: string
     backendAttestationSignature: string
@@ -32,8 +32,8 @@ const createMockBackendAttestation = async ({
     const attestationMessage = createBackendAttestationMessage({
         providerAccountId,
         provider: "twitter",
-        address: "0x",
-        decimalId: decimalId || "573930924"
+        userAddress: "0x",
+        tokenId: tokenId || "573930924"
     })
 
     const backendAttestationSignature = await mockedSigner.signMessage(attestationMessage)
@@ -191,16 +191,16 @@ describe("unlink", () => {
                 })
             })
 
-        await expect(fun()).rejects.toThrow("Can't find token with decimalId 573930924")
+        await expect(fun()).rejects.toThrow("Can't find token with tokenId 573930924")
     })
 
     it("should not proceed with a token that is not burned", async () => {
         const token = await Token.create(createMockTokenObject())
 
-        if (!token.decimalId) throw new Error("Token creation failed")
+        if (!token.tokenId) throw new Error("Token creation failed")
 
         // @ts-ignore: mocked above
-        checkAndUpdateTokenStatus.mockImplementationOnce(async ([token]) => {
+        updateTokenStatus.mockImplementationOnce(async ([token]) => {
             token.status = "MINTED"
             await token.save()
         })
@@ -215,7 +215,7 @@ describe("unlink", () => {
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
             providerAccountId: account.providerAccountId,
-            decimalId: token.decimalId
+            tokenId: token.tokenId
         })
 
         const fun = () =>
@@ -238,10 +238,10 @@ describe("unlink", () => {
     it("should update account and mark token as REVOKED", async () => {
         const token = await Token.create(createMockTokenObject())
 
-        if (!token.decimalId) throw new Error("Token creation failed")
+        if (!token.tokenId) throw new Error("Token creation failed")
 
         // @ts-ignore: mocked above
-        checkAndUpdateTokenStatus.mockImplementationOnce(async ([token]) => {
+        updateTokenStatus.mockImplementationOnce(async ([token]) => {
             token.status = "BURNED"
             await token.save()
         })
@@ -256,7 +256,7 @@ describe("unlink", () => {
 
         const { attestationMessage, backendAttestationSignature } = await createMockBackendAttestation({
             providerAccountId: account.providerAccountId,
-            decimalId: token.decimalId
+            tokenId: token.tokenId
         })
 
         await unlinkAccounts({
@@ -273,7 +273,7 @@ describe("unlink", () => {
         const savedToken = await Token.findById(token.id)
         const savedAccount = await OAuthAccount.findById(account.id)
 
-        expect(savedToken?.status).toEqual(TokenStatus.REVOKED)
+        expect(savedToken?.status).toEqual(TokenStatus.BURNED)
         expect(savedAccount?.isLinkedToAddress).toEqual(false)
     })
 })

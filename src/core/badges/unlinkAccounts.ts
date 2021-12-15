@@ -1,15 +1,10 @@
 import { ethers } from "ethers"
 import { TokenStatus, Token, OAuthAccount } from "@interrep/db"
 import getSigner from "src/utils/backend/getSigner"
-import checkAndUpdateTokenStatus from "../contracts/ReputationBadge/checkAndUpdateTokenStatus"
+import updateTokenStatus from "./updateTokenStatus"
 
-type UnlinkAccountsParams = {
-    accountIdFromSession: string
-    decryptedAttestation: string
-}
-
-const unlinkAccounts = async ({ accountIdFromSession, decryptedAttestation }: UnlinkAccountsParams): Promise<void> => {
-    const account = await OAuthAccount.findById(accountIdFromSession)
+export default async function unlinkAccounts(decryptedAttestation: string, accountId: string): Promise<void> {
+    const account = await OAuthAccount.findById(accountId)
 
     if (!account) {
         throw new Error("Unable to find account")
@@ -34,7 +29,7 @@ const unlinkAccounts = async ({ accountIdFromSession, decryptedAttestation }: Un
         throw new Error("Attestation signature invalid")
     }
 
-    const { decimalId, provider, providerAccountId } = JSON.parse(attestationMessage)
+    const { tokenId, provider, providerAccountId } = JSON.parse(attestationMessage)
 
     const accountFromAttestation = await OAuthAccount.findByProviderAccountId(provider, providerAccountId)
 
@@ -44,13 +39,13 @@ const unlinkAccounts = async ({ accountIdFromSession, decryptedAttestation }: Un
         throw new Error("Accounts don't match")
     }
 
-    const token = await Token.findOne({ decimalId })
+    const token = await Token.findOne({ tokenId })
 
     if (!token) {
-        throw new Error(`Can't find token with decimalId ${decimalId}`)
+        throw new Error(`Can't find token with tokenId ${tokenId}`)
     }
 
-    await checkAndUpdateTokenStatus([token])
+    await updateTokenStatus([token])
 
     if (token.status !== TokenStatus.BURNED) {
         throw new Error(
@@ -58,11 +53,7 @@ const unlinkAccounts = async ({ accountIdFromSession, decryptedAttestation }: Un
         )
     }
 
-    token.status = TokenStatus.REVOKED
-    await token.save()
-
     account.isLinkedToAddress = false
+
     await account.save()
 }
-
-export default unlinkAccounts
