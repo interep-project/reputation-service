@@ -2,10 +2,10 @@ import createNextMocks from "src/mocks/createNextMocks"
 import jwt from "next-auth/jwt"
 import handler from "src/pages/api/linking/unlink"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
-import unlinkAccounts from "src/core/linking/unlink"
+import { unlinkAccounts } from "src/core/badges"
 import logger from "src/utils/backend/logger"
 
-jest.mock("src/core/linking/unlink", () => jest.fn())
+jest.mock("src/core/badges/unlink", () => jest.fn())
 jest.mock("next-auth/jwt", () => ({
     getToken: jest.fn()
 }))
@@ -85,6 +85,7 @@ describe("api/linking/unlink", () => {
     describe("unlink", () => {
         const decryptedAttestation = "decryptedAttestation"
         const accountIdFromSession = "accountId"
+
         beforeAll(() => {
             getTokenMocked.mockImplementation(() =>
                 // @ts-ignore: resolves to a JWT
