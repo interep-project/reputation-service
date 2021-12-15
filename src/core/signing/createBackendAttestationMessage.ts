@@ -1,20 +1,19 @@
 export type BackendAttestationMessageParams = {
-    address: string
-    decimalId: string
+    userAddress: string
+    tokenId: string
     provider: string
     providerAccountId: string
 }
 
 export const createBackendAttestationMessage = ({
-    address,
-    decimalId,
+    userAddress,
+    tokenId,
     provider,
     providerAccountId
 }: BackendAttestationMessageParams): string =>
     JSON.stringify({
-        service: "InterRep",
-        decimalId,
-        userAddress: address,
+        tokenId,
+        userAddress,
         provider,
         providerAccountId
     })
