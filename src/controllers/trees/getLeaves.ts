@@ -10,8 +10,14 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
 
     const rootHash = req.query?.rootHash
     const limit = req.query?.limit
+    const offset = req.query?.offset
 
-    if (!rootHash || typeof rootHash !== "string" || (limit && (typeof limit !== "string" || Number.isNaN(limit)))) {
+    if (
+        !rootHash ||
+        typeof rootHash !== "string" ||
+        (limit && (typeof limit !== "string" || Number.isNaN(limit))) ||
+        (offset && (typeof offset !== "string" || Number.isNaN(offset)))
+    ) {
         return res.status(400).end()
     }
 
@@ -26,6 +32,7 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
 
         const leaves = await MerkleTreeNode.find({ group: root.group, level: 0 })
             .sort({ $natural: -1 })
+            .skip(Number(offset || 0))
             .limit(Number(limit || 0))
 
         return res.status(200).send({
