@@ -99,7 +99,15 @@ export const supportedNetworks: Record<string, NetworkData> = {
 export const currentNetwork: NetworkData = (function IIFE(): NetworkData {
     switch (process.env.NODE_ENV as Environment) {
         case Environment.PRODUCTION: {
-            const { defaultNetwork } = getNextConfig().publicRuntimeConfig
+            const nextConfig = getNextConfig()
+            let defaultNetwork
+
+            if (nextConfig) {
+                defaultNetwork = getNextConfig().publicRuntimeConfig.defaultNetwork
+            } else {
+                // nextConfig is undefined when this file is imported from an external resource to nextJS.
+                defaultNetwork = process.env.DEFAULT_NETWORK
+            }
 
             if (!(defaultNetwork in supportedNetworks)) {
                 throw new Error("DEFAULT_NETWORK variable has not been defined correctly")
