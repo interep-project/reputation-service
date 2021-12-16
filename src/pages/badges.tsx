@@ -1,6 +1,7 @@
 import { Heading, HStack, Icon, Link, Spinner, Text, Tooltip, useColorMode, useToast, VStack } from "@chakra-ui/react"
+import type { TokenDocument } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation"
-import { ethers, Signer } from "ethers"
+import { Signer } from "ethers"
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/client"
 import { useContext, useEffect, useState } from "react"
@@ -9,10 +10,10 @@ import { FaInfoCircle } from "react-icons/fa"
 import Step from "src/components/Step"
 import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
+import createAttestationMessage from "src/core/badges/createAttestationMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import type { TokenDocument } from "@interrep/db"
 import capitalize from "src/utils/common/capitalize"
+import delay from "src/utils/common/delay"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractInstance from "src/utils/common/getContractInstance"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
@@ -30,15 +31,12 @@ export default function Badges(): JSX.Element {
     async function getPublicKey(): Promise<string | null> {
         try {
             // @ts-ignore: ignore
-            const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts"
+            const publicKey = await window.ethereum.request({
+                method: "eth_getEncryptionPublicKey",
+                params: [_address]
             })
-            // @ts-ignore: ignore
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            // @ts-ignore: ignore
-            const pubKey = await provider.send("eth_getEncryptionPublicKey", [accounts[0]])
 
-            return pubKey
+            return publicKey
         } catch (error) {
             console.error(error)
             return null
@@ -50,8 +48,7 @@ export default function Badges(): JSX.Element {
             // @ts-ignore: ignore
             const decrypted = await window.ethereum.request({
                 method: "eth_decrypt",
-                // @ts-ignore: ignore
-                params: [messageToDecrypt, window.ethereum.selectedAddress]
+                params: [messageToDecrypt, _address]
             })
 
             return decrypted
@@ -134,11 +131,9 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const message = createUserAttestationMessage({
-            checksummedAddress: address,
-            accountId
-        })
+        await delay(500)
 
+        const message = createAttestationMessage(address, accountId)
         const userSignature = await sign(signer, message)
 
         if (!userSignature) {
