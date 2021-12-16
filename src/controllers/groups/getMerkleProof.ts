@@ -1,6 +1,6 @@
 import { MerkleTreeNode } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import config from "src/config"
+import { checkGroup } from "src/core/groups"
 import { createProof } from "src/core/groups/mts"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
@@ -11,29 +11,33 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
         return res.status(405).end()
     }
 
-    const rootHash = req.query?.rootHash
-    const leafHash = req.query?.leafHash
+    const provider = req.query?.provider
+    const name = req.query?.name
+    const identityCommitment = req.query?.identityCommitment
 
-    if (!rootHash || typeof rootHash !== "string" || !leafHash || typeof leafHash !== "string") {
+    if (
+        !provider ||
+        typeof provider !== "string" ||
+        !name ||
+        typeof name !== "string" ||
+        !identityCommitment ||
+        typeof identityCommitment !== "string"
+    ) {
         return res.status(400).end()
+    }
+
+    if (!checkGroup(provider as Provider, name)) {
+        return res.status(404).end("The group does not exist")
     }
 
     try {
         await dbConnect()
 
-        const root = await MerkleTreeNode.findOne({ hash: rootHash })
-
-        if (!root || root.level !== config.MERKLE_TREE_DEPTH) {
-            return res.status(404).end("The root does not exist")
+        if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment))) {
+            return res.status(404).send("The identity commitment does not exist")
         }
 
-        const leaf = await MerkleTreeNode.findOne({ hash: leafHash })
-
-        if (!leaf || leaf.level !== 0) {
-            return res.status(404).end("The leaf does not exist")
-        }
-
-        const proof = await createProof(root.group.provider as Provider, root.group.name, leafHash)
+        const proof = await createProof(provider as Provider, name, identityCommitment)
 
         if (!proof) {
             return res.status(200).send({ data: [] })
