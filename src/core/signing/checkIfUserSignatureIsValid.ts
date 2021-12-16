@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import logger from "src/utils/backend/logger"
-import { createUserAttestationMessage } from "./createUserAttestationMessage"
+import { createAttestationMessage } from "../badges"
 
 type CheckIfUserSignatureIsValidParams = {
     checksummedAddress: string
@@ -13,10 +13,7 @@ export default function checkIfUserSignatureIsValid({
     accountId,
     userSignature
 }: CheckIfUserSignatureIsValidParams): boolean {
-    const recreatedMessageSignedByUser = createUserAttestationMessage({
-        checksummedAddress,
-        accountId
-    })
+    const recreatedMessageSignedByUser = createAttestationMessage(checksummedAddress, accountId)
 
     const signerAddress = ethers.utils.verifyMessage(recreatedMessageSignedByUser, userSignature)
 
