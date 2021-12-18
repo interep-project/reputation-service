@@ -24,7 +24,7 @@ export default async function sendEmailController(req: NextApiRequest, res: Next
 
         await createEmailAccount(email, emailDomains)
 
-        return res.status(200).send({ data: true })
+        return res.status(201).send({ data: true })
     } catch (error) {
         logger.error(error)
 
