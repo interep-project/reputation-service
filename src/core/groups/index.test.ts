@@ -7,7 +7,7 @@ import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { checkGroup, getGroup, getGroups, getProviders } from "."
 
-describe("Core group functions", () => {
+describe("# core/groups", () => {
     beforeAll(async () => {
         await connectDatabase()
     })
@@ -17,7 +17,7 @@ describe("Core group functions", () => {
         await dropDatabaseAndDisconnect()
     })
 
-    describe("Check group", () => {
+    describe("# checkGroup", () => {
         it("Should return true if a group exists", () => {
             const expectedValue = checkGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
 
@@ -31,7 +31,7 @@ describe("Core group functions", () => {
         })
     })
 
-    describe("Get group", () => {
+    describe("# getGroup", () => {
         it("Should return the correct group", async () => {
             const expectedValue = await getGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
 
@@ -63,7 +63,7 @@ describe("Core group functions", () => {
         })
     })
 
-    describe("Get groups", () => {
+    describe("# getGroups", () => {
         it("Should return all the existing groups", async () => {
             const expectedGroups = await getGroups()
 
@@ -76,7 +76,7 @@ describe("Core group functions", () => {
         })
     })
 
-    describe("Get all providers", () => {
+    describe("# getProviders", () => {
         it("Should return all the existing providers", async () => {
             const expectedValue = getProviders()
 
