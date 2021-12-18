@@ -1,6 +1,6 @@
 import { Token } from "@interrep/db"
 import { mintToken, updateTokenStatus } from "src/core/badges"
-import createMockTokenObject from "src/mocks/createMockToken"
+import createTokenMock from "src/mocks/createMockToken"
 import createNextMocks from "src/mocks/createNextMocks"
 import logger from "src/utils/backend/logger"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
@@ -85,7 +85,7 @@ describe("TokenController", () => {
             const userAddress = "0xddfAbCdc4D8FfC6d5beaf154f18B778f892A0740"
 
             const tokenMock = await Token.create(
-                createMockTokenObject({
+                createTokenMock({
                     userAddress
                 })
             )
@@ -112,7 +112,7 @@ describe("TokenController", () => {
             const userAddress = "0xddfAbCdc4D8FfC6d5beaf154f18B778f892A0740"
 
             await Token.create(
-                createMockTokenObject({
+                createTokenMock({
                     userAddress
                 })
             )
