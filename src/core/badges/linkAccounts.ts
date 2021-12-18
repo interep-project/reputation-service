@@ -1,110 +1,52 @@
-import { OAuthAccount, Token, TokenDocument } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
+import { OAuthAccountDocument, Token, TokenDocument } from "@interrep/db"
 import { ethers } from "ethers"
 import { ContractName, currentNetwork } from "src/config"
-import checkIfUserSignatureIsValid from "src/core/signing/checkIfUserSignatureIsValid"
-import { createBackendAttestationMessage } from "src/core/signing/createBackendAttestationMessage"
 import getSigner from "src/utils/backend/getSigner"
-import logger from "src/utils/backend/logger"
-import { encryptMessageWithSalt, getChecksummedAddress } from "src/utils/common/crypto"
+import { encryptMessageWithSalt } from "src/utils/common/crypto"
 import getContractAddress from "src/utils/common/getContractAddress"
 import stringToBigNumber from "src/utils/common/stringToBigNumber"
 
+/**
+ * Links a Web2 account with a Web3 account (Ethereum) creating a token ready to be minted.
+ * The token contains an encrypted link attestation which only the user can decrypt.
+ * @param account The OAuth account db document.
+ * @param userAddress The address of the user.
+ * @param userPublicKey The public key of the user.
+ * @returns The token created.
+ */
 export default async function linkAccounts(
+    account: OAuthAccountDocument,
     userAddress: string,
-    userSignature: string,
-    userPublicKey: string,
-    accountId: string
+    userPublicKey: string
 ): Promise<TokenDocument> {
-    const checksummedAddress = getChecksummedAddress(userAddress)
-
-    if (!checksummedAddress) {
-        throw new Error(`Invalid address ${userAddress}`)
-    }
-
-    const isUserSignatureValid = checkIfUserSignatureIsValid({
-        checksummedAddress,
-        accountId,
-        userSignature
-    })
-
-    if (!isUserSignatureValid) {
-        throw new Error(`Invalid signature`)
-    }
-
-    let account
-
-    try {
-        account = await OAuthAccount.findById(accountId)
-    } catch (e) {
-        logger.error(e)
-        throw new Error(`Error retrieving account`)
-    }
-
-    if (!account) {
-        throw new Error(`Account not found`)
-    }
-
-    if (account.isLinkedToAddress) {
-        throw new Error(`Account already linked`)
-    }
-
-    if (!account.reputation || account.reputation !== ReputationLevel.GOLD) {
-        throw new Error(`Insufficient account's reputation`)
-    }
-
+    const backendSigner = await getSigner()
     const contractAddress = getContractAddress(ContractName.REPUTATION_BADGE, account.provider)
 
-    if (!contractAddress) {
-        throw new Error(`Invalid badge address ${contractAddress}`)
-    }
+    const token = new Token({
+        chainId: currentNetwork.chainId,
+        contractAddress,
+        userAddress,
+        provider: account.provider,
+        issuanceTimestamp: Date.now()
+    })
 
-    try {
-        account.isLinkedToAddress = true
+    // The token id will be used as ERC721 id onchain.
+    const tokenIdHash = ethers.utils.id(token.id.toString())
+    token.tokenId = stringToBigNumber(tokenIdHash).toString()
 
-        await account.save()
+    // The backend attestation message contains all the parameters needed to identify the user token and the two accounts (Web2/Web3).
+    const attestationMessage = JSON.stringify([token.tokenId, userAddress, account.provider, account.providerAccountId])
+    const attestationSignature = await backendSigner.signMessage(attestationMessage)
 
-        const token = new Token({
-            chainId: currentNetwork.chainId,
-            contractAddress,
-            userAddress: checksummedAddress,
-            provider: account.provider,
-            issuanceTimestamp: Date.now()
-        })
+    token.encryptedAttestation = encryptMessageWithSalt(
+        userPublicKey,
+        JSON.stringify([attestationMessage, attestationSignature])
+    )
 
-        const tokenIdHash = ethers.utils.id(token.id.toString())
-        token.tokenId = stringToBigNumber(tokenIdHash).toString()
+    account.isLinkedToAddress = true
 
-        const attestationMessage = createBackendAttestationMessage({
-            tokenId: token.tokenId,
-            userAddress: checksummedAddress,
-            provider: account.provider,
-            providerAccountId: account.providerAccountId
-        })
+    await token.save()
+    await account.save()
 
-        const backendSigner = await getSigner()
-        const backendAttestationSignature = await backendSigner.signMessage(attestationMessage)
-
-        logger.silly(
-            `Attestation generated. Message: ${attestationMessage}. Backend Signature: ${backendAttestationSignature}`
-        )
-
-        const encryptedAttestation = encryptMessageWithSalt(
-            userPublicKey,
-            JSON.stringify({
-                attestationMessage,
-                backendAttestationSignature
-            })
-        )
-
-        token.encryptedAttestation = encryptedAttestation
-
-        await token.save()
-
-        return token
-    } catch (error) {
-        logger.error(error)
-
-        throw new Error(`Error while creating attestation`)
-    }
+    return token
 }

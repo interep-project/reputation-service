@@ -10,7 +10,7 @@ import { FaInfoCircle } from "react-icons/fa"
 import Step from "src/components/Step"
 import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import createAttestationMessage from "src/core/badges/createAttestationMessage"
+import createUserMessage from "src/core/badges/createUserMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
 import capitalize from "src/utils/common/capitalize"
 import delay from "src/utils/common/delay"
@@ -133,8 +133,8 @@ export default function Badges(): JSX.Element {
 
         await delay(500)
 
-        const message = createAttestationMessage(address, accountId)
-        const userSignature = await sign(signer, message)
+        const attestationMessage = createUserMessage(address, accountId)
+        const userSignature = await sign(signer, attestationMessage)
 
         if (!userSignature) {
             toast({
