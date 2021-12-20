@@ -23,7 +23,7 @@ jest.mock("src/utils/backend/getSigner", () => ({
 
 jest.mock("src/core/contracts/ReputationBadge/exists", () => ({
     __esModule: true,
-    default: jest.fn()
+    default: jest.fn(() => true)
 }))
 
 jest.mock("src/core/contracts/ReputationBadge/safeMint", () => ({
@@ -64,22 +64,20 @@ describe("# core/badges", () => {
             existsMock.mockImplementationOnce(() => Promise.resolve(true))
 
             await updateTokenStatus([token])
+            const expectedValue = await Token.findOne({ tokenId: "1" })
 
-            const newToken = await Token.findOne({ tokenId: "1" })
-
-            expect(newToken).not.toBeUndefined()
-            expect(newToken?.status).toBe(TokenStatus.MINTED)
+            expect(expectedValue).not.toBeUndefined()
+            expect(expectedValue?.status).toBe(TokenStatus.MINTED)
         })
 
         it("Should update the status of a burned token", async () => {
             existsMock.mockImplementationOnce(() => Promise.resolve(false))
 
             await updateTokenStatus([token])
+            const expectedValue = await Token.findOne({ tokenId: "1" })
 
-            const newToken = await Token.findOne({ tokenId: "1" })
-
-            expect(newToken).not.toBeUndefined()
-            expect(newToken?.status).toBe(TokenStatus.BURNED)
+            expect(expectedValue).not.toBeUndefined()
+            expect(expectedValue?.status).toBe(TokenStatus.BURNED)
         })
     })
 
@@ -97,13 +95,12 @@ describe("# core/badges", () => {
         it("Should call  with the right arguments and update the token status", async () => {
             await mintToken(token)
 
+            const expectedValue = await Token.findOne({ tokenId: "1" })
+
             expect(safeMint).toHaveBeenCalledWith(token.userAddress, token.tokenId, token.provider)
-
-            const newToken = await Token.findOne({ tokenId: "1" })
-
-            expect(newToken).not.toBeUndefined()
-            expect(newToken?.status).toBe(TokenStatus.MINTED)
-            expect(newToken?.transaction).toBeDefined()
+            expect(expectedValue).not.toBeUndefined()
+            expect(expectedValue?.status).toBe(TokenStatus.MINTED)
+            expect(expectedValue?.transaction).toBeDefined()
         })
 
         it("Should only mint a token with an undefined status", async () => {
@@ -155,12 +152,12 @@ describe("# core/badges", () => {
             await clearDatabase()
         })
 
-        it("Should link two Web2/Web3 accounts correctly", async () => {
-            const token = await linkAccounts(account, wallet.address, wallet.publicKey)
+        it("Should link two accounts correctly", async () => {
+            const expectedValue = await linkAccounts(account, wallet.address, wallet.publicKey)
 
             expect(account.isLinkedToAddress).toBe(true)
-            expect(token).not.toBeUndefined()
-            expect(token.encryptedAttestation).toBe("encryptedMessage")
+            expect(expectedValue).not.toBeUndefined()
+            expect(expectedValue.encryptedAttestation).toBe("encryptedMessage")
         })
     })
 
@@ -169,15 +166,31 @@ describe("# core/badges", () => {
         let token: TokenDocument
 
         beforeAll(async () => {
-            account = await OAuthAccount.create(createOAuthAccountMock({ isLinkedToAddress: true }))
-            token = await Token.create(createTokenMock({ status: TokenStatus.BURNED }))
+            account = await OAuthAccount.create(createOAuthAccountMock())
+            token = await Token.create(createTokenMock())
         })
 
         afterAll(async () => {
             await clearDatabase()
         })
 
-        it("Should unlink two Web2/Web3 accounts correctly", async () => {
+        it("Should not unlink two accounts if the OAuth account is not linked to any Web3 account", async () => {
+            const fun = () => unlinkAccounts(account, token)
+
+            await expect(fun).rejects.toThrow("The account has not been linked yet")
+        })
+
+        it("Should not unlink two accounts if the token has not been burned yet", async () => {
+            account.isLinkedToAddress = true
+
+            const fun = () => unlinkAccounts(account, token)
+
+            await expect(fun).rejects.toThrow("The attestation token has not been burned yet")
+        })
+
+        it("Should unlink two accounts correctly", async () => {
+            token.status = TokenStatus.BURNED
+
             await unlinkAccounts(account, token)
 
             expect(account.isLinkedToAddress).toBe(false)
