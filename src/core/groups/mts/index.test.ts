@@ -7,7 +7,7 @@ import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/u
 import { createMerkleTree, poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, createProof } from "."
 
-describe("Merkle Trees", () => {
+describe("# core/groups/mts", () => {
     const idCommitment = poseidon(2, 1)
     const provider = OAuthProvider.TWITTER
     const reputation = ReputationLevel.GOLD
@@ -20,7 +20,7 @@ describe("Merkle Trees", () => {
         await dropDatabaseAndDisconnect()
     })
 
-    describe("appendLeaf", () => {
+    describe("# appendLeaf", () => {
         beforeEach(async () => {
             await clearDatabase()
         })
@@ -84,7 +84,7 @@ describe("Merkle Trees", () => {
         })
     })
 
-    describe("deleteLeaf", () => {
+    describe("# deleteLeaf", () => {
         beforeEach(async () => {
             await clearDatabase()
         })
@@ -144,7 +144,7 @@ describe("Merkle Trees", () => {
         })
     })
 
-    describe("createProof", () => {
+    describe("# createProof", () => {
         beforeEach(async () => {
             await clearDatabase()
         })
