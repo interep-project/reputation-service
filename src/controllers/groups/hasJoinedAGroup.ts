@@ -4,15 +4,17 @@ import { OAuthAccount } from "@interrep/db"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function hasJoinedAGroupController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function hasJoinedAGroupController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const session = await getSession({ req })
 
     if (!session) {
-        return res.status(401).end()
+        res.status(401).end()
+        return
     }
 
     try {
@@ -21,13 +23,14 @@ export default async function hasJoinedAGroupController(req: NextApiRequest, res
         const account = await OAuthAccount.findById(session.accountId)
 
         if (!account) {
-            return res.status(500).send("Can't find account")
+            res.status(500).send("Can't find account")
+            return
         }
 
-        return res.status(200).send({ data: !!account.hasJoinedAGroup })
+        res.status(200).send({ data: !!account.hasJoinedAGroup })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

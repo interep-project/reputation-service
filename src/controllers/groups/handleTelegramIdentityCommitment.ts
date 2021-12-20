@@ -11,7 +11,8 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
     const { telegramUserId } = JSON.parse(req.body)
 
     if (!telegramUserId) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -21,7 +22,8 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
         const telegramUser = await TelegramUser.findByHashId(hashId)
 
         if (!telegramUser) {
-            return res.status(403).end()
+            res.status(403).end()
+            return
         }
 
         if (req.method === "POST") {
@@ -44,10 +46,10 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
 
         await telegramUser.save()
 
-        return res.status(201).send({ data: true })
+        res.status(201).send({ data: true })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

@@ -73,7 +73,7 @@ describe("# controllers/email", () => {
                 sha256(email + groupId)
             )) as EmailUserDocument
 
-            expect(res._getStatusCode()).toBe(200)
+            expect(res._getStatusCode()).toBe(201)
             expect(verificationToken).toHaveLength(64)
             expect(hasJoined).toBeFalsy()
         })

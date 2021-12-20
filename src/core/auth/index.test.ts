@@ -18,14 +18,14 @@ function createNexAuthAccount(override?: any) {
     }
 }
 
-describe("Core OAuth account functions", () => {
+describe("# core/auth", () => {
     const user: TwitterParameters | any = {
         verifiedProfile: true,
         followers: 100,
         botometerOverallScore: 2
     }
 
-    describe("Create OAuth account", () => {
+    describe("# createOAuthAccount", () => {
         beforeAll(async () => {
             await connectDatabase()
         })

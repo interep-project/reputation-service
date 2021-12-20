@@ -4,16 +4,18 @@ import config from "src/config"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function hasLeafController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function hasLeafController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const rootHash = req.query?.rootHash
     const leafHash = req.query?.leafHash
 
     if (!rootHash || typeof rootHash !== "string" || !leafHash || typeof leafHash !== "string") {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -22,12 +24,13 @@ export default async function hasLeafController(req: NextApiRequest, res: NextAp
         const root = await MerkleTreeNode.findOne({ hash: rootHash })
 
         if (!root || root.level !== config.MERKLE_TREE_DEPTH) {
-            return res.status(404).end("The root does not exist")
+            res.status(404).end("The root does not exist")
+            return
         }
 
         const leaf = await MerkleTreeNode.findOne({ hash: leafHash })
 
-        return res.status(200).send({
+        res.status(200).send({
             data:
                 !!leaf &&
                 leaf.level === 0 &&
@@ -35,8 +38,8 @@ export default async function hasLeafController(req: NextApiRequest, res: NextAp
                 root.group.name === leaf.group.name
         })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

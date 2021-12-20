@@ -42,6 +42,8 @@ export async function run() {
 
                     await rootBatch.save()
                 }
+
+                logger.info(`The Merkle roots have been published onchain (${merkleRoots.length})`)
             }
         },
         (error: Error) => {

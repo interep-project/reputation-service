@@ -3,9 +3,10 @@ import { getGroups } from "src/core/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getGroupsController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getGroupsController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     try {
@@ -13,10 +14,10 @@ export default async function getGroupsController(req: NextApiRequest, res: Next
 
         const groups = await getGroups()
 
-        return res.status(200).send({ data: groups })
+        res.status(200).send({ data: groups })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

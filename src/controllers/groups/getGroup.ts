@@ -4,20 +4,23 @@ import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getGroupController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getGroupController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const provider = req.query?.provider
     const name = req.query?.name
 
     if (!provider || typeof provider !== "string" || !name || typeof name !== "string") {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     if (!checkGroup(provider as Provider, name)) {
-        return res.status(404).end("The group does not exist")
+        res.status(404).end("The group does not exist")
+        return
     }
 
     try {
@@ -25,10 +28,10 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
 
         const group = await getGroup(provider as Provider, name as any)
 
-        return res.status(200).send({ data: group })
+        res.status(200).send({ data: group })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

@@ -11,11 +11,7 @@ export function encryptMessage(publicKey: string, message: string): string {
 
 export function encryptMessageWithSalt(publicKey: string, message: string): string {
     const salt = stringifiableToHex(ethers.utils.randomBytes(12))
-
-    const messageWithSalt = JSON.stringify({
-        message,
-        salt
-    })
+    const messageWithSalt = JSON.stringify([message, salt])
 
     return encryptMessage(publicKey, messageWithSalt)
 }

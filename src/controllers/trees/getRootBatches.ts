@@ -1,11 +1,13 @@
-import { MerkleTreeRootBatch, MerkleTreeRootBatchData } from "@interrep/db"
+import { MerkleTreeRootBatch } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import removeDBFields from "src/utils/backend/removeDBFields"
 
-export default async function getRootBatchesController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getRootBatchesController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     try {
@@ -13,16 +15,12 @@ export default async function getRootBatchesController(req: NextApiRequest, res:
 
         const rootBatches = await MerkleTreeRootBatch.find()
 
-        return res.status(200).send({
-            data: rootBatches.map((rootBatch) => ({
-                group: rootBatch.group,
-                rootHashes: rootBatch.rootHashes,
-                transaction: rootBatch.transaction
-            })) as MerkleTreeRootBatchData[]
+        res.status(200).send({
+            data: rootBatches.map((rootBatch) => removeDBFields(rootBatch.toJSON()))
         })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

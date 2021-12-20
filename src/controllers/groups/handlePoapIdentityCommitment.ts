@@ -12,7 +12,8 @@ export default async function handlePoapIdentityCommitmentController(req: NextAp
     const { userSignature, userAddress } = JSON.parse(req.body)
 
     if (!userSignature || !userAddress) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -34,10 +35,10 @@ export default async function handlePoapIdentityCommitmentController(req: NextAp
             await deleteLeaf(Web3Provider.POAP, name, identityCommitment)
         }
 
-        return res.status(201).send({ data: true })
+        res.status(201).send({ data: true })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

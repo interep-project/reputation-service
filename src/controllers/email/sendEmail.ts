@@ -2,32 +2,35 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { getEmailDomainsByEmail, createEmailAccount } from "src/core/email"
 import logger from "src/utils/backend/logger"
 
-export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const { email } = JSON.parse(req.body)
 
     if (!email) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     const emailDomains = getEmailDomainsByEmail(email)
 
     if (emailDomains.length === 0) {
-        return res.status(402).send("Invalid email, must be from registered domains.")
+        res.status(402).send("The email is not supported")
+        return
     }
 
     try {
-        logger.silly("Creating email account")
-
         await createEmailAccount(email, emailDomains)
 
-        return res.status(200).send({ data: true })
-    } catch (error) {
-        logger.error(error)
+        res.status(201).send({ data: true })
 
-        return res.status(500).end()
+        logger.info(`[${req.url}] The Email account has been created`)
+    } catch (error) {
+        res.status(500).end()
+
+        logger.error(error)
     }
 }

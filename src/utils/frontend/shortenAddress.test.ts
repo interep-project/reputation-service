@@ -2,7 +2,7 @@ import shortenAddress from "src/utils/frontend/shortenAddress"
 
 describe("#shortenAddress", () => {
     it("throws on invalid address", () => {
-        expect(() => shortenAddress("abc")).toThrow("Invalid 'address'")
+        expect(() => shortenAddress("abc")).toThrow("invalid address")
     })
 
     it("truncates middle characters", () => {

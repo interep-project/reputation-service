@@ -1,6 +1,7 @@
 import { Heading, HStack, Icon, Link, Spinner, Text, Tooltip, useColorMode, useToast, VStack } from "@chakra-ui/react"
+import type { TokenDocument } from "@interrep/db"
 import { ReputationLevel } from "@interrep/reputation"
-import { ethers, Signer } from "ethers"
+import { Signer } from "ethers"
 import { GetServerSideProps } from "next"
 import { useSession } from "next-auth/client"
 import { useContext, useEffect, useState } from "react"
@@ -9,10 +10,10 @@ import { FaInfoCircle } from "react-icons/fa"
 import Step from "src/components/Step"
 import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import { createUserAttestationMessage } from "src/core/signing/createUserAttestationMessage"
+import createUserMessage from "src/core/badges/createUserMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import type { TokenDocument } from "@interrep/db"
 import capitalize from "src/utils/common/capitalize"
+import delay from "src/utils/common/delay"
 import getContractAddress from "src/utils/common/getContractAddress"
 import getContractInstance from "src/utils/common/getContractInstance"
 import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
@@ -25,20 +26,17 @@ export default function Badges(): JSX.Element {
     const [_loading, setLoading] = useState<boolean>(false)
     const [_token, setToken] = useState<TokenDocument>()
     const [_currentStep, setCurrentStep] = useState<number>()
-    const { checkLink, getUserTokens, linkAccounts, mintToken, unlinkAccounts } = useInterRepAPI()
+    const { isLinkedToAddress, getUserBadges, linkAccounts, mintBadge, unlinkAccounts } = useInterRepAPI()
 
     async function getPublicKey(): Promise<string | null> {
         try {
             // @ts-ignore: ignore
-            const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts"
+            const publicKey = await window.ethereum.request({
+                method: "eth_getEncryptionPublicKey",
+                params: [_address]
             })
-            // @ts-ignore: ignore
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            // @ts-ignore: ignore
-            const pubKey = await provider.send("eth_getEncryptionPublicKey", [accounts[0]])
 
-            return pubKey
+            return publicKey
         } catch (error) {
             console.error(error)
             return null
@@ -50,8 +48,7 @@ export default function Badges(): JSX.Element {
             // @ts-ignore: ignore
             const decrypted = await window.ethereum.request({
                 method: "eth_decrypt",
-                // @ts-ignore: ignore
-                params: [messageToDecrypt, window.ethereum.selectedAddress]
+                params: [messageToDecrypt, _address]
             })
 
             return decrypted
@@ -78,24 +75,28 @@ export default function Badges(): JSX.Element {
         ;(async () => {
             if (session && walletIsConnected(_networkId, _address)) {
                 const { user } = session
+
                 if (user.reputation !== ReputationLevel.GOLD) {
                     setCurrentStep(0)
                     return
                 }
-                const accountLinked = await checkLink()
-                if (accountLinked === null) {
+
+                const isLinked = await isLinkedToAddress()
+
+                if (isLinked === null) {
                     return
                 }
-                if (accountLinked) {
-                    const tokens = await getUserTokens({ userAddress: _address as string })
+
+                if (isLinked) {
+                    const tokens = await getUserBadges({ userAddress: _address as string })
+
                     if (tokens === null || tokens.length === 0) {
                         return
                     }
+
                     const token = tokens[tokens.length - 1] as TokenDocument
+
                     switch (token.status) {
-                        case "NOT_MINTED":
-                            setCurrentStep(2)
-                            break
                         case "MINTED":
                             setCurrentStep(3)
                             break
@@ -103,8 +104,9 @@ export default function Badges(): JSX.Element {
                             setCurrentStep(4)
                             break
                         default:
-                            setCurrentStep(1)
+                            setCurrentStep(2)
                     }
+
                     setToken(token)
                     return
                 }
@@ -114,7 +116,7 @@ export default function Badges(): JSX.Element {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, _address, _networkId])
 
-    async function linkAccount(signer: Signer, address: string, accountId: string): Promise<void> {
+    async function link(signer: Signer, address: string, accountId: string): Promise<void> {
         setLoading(true)
 
         const publicKey = await getPublicKey()
@@ -129,12 +131,10 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const message = createUserAttestationMessage({
-            checksummedAddress: address,
-            accountId
-        })
+        await delay(500)
 
-        const userSignature = await sign(signer, message)
+        const attestationMessage = createUserMessage(address, accountId)
+        const userSignature = await sign(signer, attestationMessage)
 
         if (!userSignature) {
             toast({
@@ -147,7 +147,7 @@ export default function Badges(): JSX.Element {
         }
 
         const newToken = await linkAccounts({
-            address,
+            userAddress: address,
             accountId,
             userSignature,
             userPublicKey: publicKey
@@ -163,17 +163,17 @@ export default function Badges(): JSX.Element {
         setCurrentStep(2)
     }
 
-    async function mint(token: TokenDocument): Promise<void> {
+    async function mint(token: TokenDocument, accountId: string): Promise<void> {
         setLoading(true)
 
-        const response = await mintToken({ tokenId: token._id })
+        const response = await mintBadge({ tokenId: token._id, accountId })
 
         if (response === null) {
             setLoading(false)
             return
         }
 
-        const tokens = await getUserTokens({ userAddress: token.userAddress })
+        const tokens = await getUserBadges({ userAddress: token.userAddress })
 
         if (tokens === null) {
             setLoading(false)
@@ -203,8 +203,9 @@ export default function Badges(): JSX.Element {
         const contractInstance = getContractInstance(ContractName.REPUTATION_BADGE, contractAddress)
 
         try {
-            const tx = await contractInstance.connect(signer).burn(token.decimalId)
-            await tx.wait()
+            const transaction = await contractInstance.connect(signer).burn(token.tokenId)
+
+            await transaction.wait(1)
         } catch (error) {
             console.error(error)
             toast({
@@ -216,7 +217,7 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const tokens = await getUserTokens({ userAddress: token.userAddress })
+        const tokens = await getUserBadges({ userAddress: token.userAddress })
 
         if (tokens === null) {
             setLoading(false)
@@ -228,7 +229,7 @@ export default function Badges(): JSX.Element {
         setCurrentStep(4)
     }
 
-    async function unlinkAccount(token: TokenDocument): Promise<void> {
+    async function unlink(token: TokenDocument, accountId: string): Promise<void> {
         setLoading(true)
 
         const decryptedAttestation = await decrypt(token.encryptedAttestation)
@@ -243,7 +244,9 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const response = await unlinkAccounts({ decryptedAttestation })
+        const [attestation] = JSON.parse(decryptedAttestation)
+        const [attestationMessage, attestationSignature] = JSON.parse(attestation)
+        const response = await unlinkAccounts({ attestationMessage, attestationSignature, accountId })
 
         if (response === null) {
             setLoading(false)
@@ -286,12 +289,9 @@ export default function Badges(): JSX.Element {
             ) : (
                 <>
                     <HStack mt="10px">
-                        {_token && _token.status === "MINTED" && _token.mintTransactions && _token.mintTransactions[0] && (
+                        {_token && _token.status === "MINTED" && _token.transaction && (
                             <Link
-                                href={getExplorerLink(
-                                    _token.mintTransactions[0].response.hash,
-                                    ExplorerDataType.TRANSACTION
-                                )}
+                                href={getExplorerLink(_token.transaction.hash, ExplorerDataType.TRANSACTION)}
                                 isExternal
                                 px="10px"
                             >
@@ -305,14 +305,14 @@ export default function Badges(): JSX.Element {
                         <Text fontWeight="semibold">
                             {session.user.reputation !== ReputationLevel.GOLD
                                 ? `Sorry, you can create a badge only if your reputation is ${ReputationLevel.GOLD}.`
-                                : _token?.status === "NOT_MINTED"
+                                : _token && !_token.status
                                 ? `Your Ethereum/${capitalize(
                                       session.provider
                                   )} accounts are linked. Mint a token to create your reputation badge.`
                                 : _token?.status === "MINTED"
                                 ? `You have a ${capitalize(
                                       session.provider
-                                  )} reputation bedge. Follow the steps below if you want to burn the token or unlink your accounts.`
+                                  )} reputation badge. Follow the steps below if you want to burn the token or unlink your accounts.`
                                 : _token?.status === "BURNED"
                                 ? `You burnt your token. Unlink your accounts and create another badge.`
                                 : "Follow the steps below to create your reputation badge."}
@@ -324,7 +324,7 @@ export default function Badges(): JSX.Element {
                             title="Step 1"
                             message={`Link your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Link accounts"
-                            actionFunction={() => linkAccount(_signer as Signer, _address as string, session.accountId)}
+                            actionFunction={() => link(_signer as Signer, _address as string, session.accountId)}
                             loading={_currentStep === 1 && _loading}
                             disabled={_currentStep !== 1}
                         />
@@ -332,7 +332,7 @@ export default function Badges(): JSX.Element {
                             title="Step 2"
                             message="Mint your ERC721 token."
                             actionText="Mint token"
-                            actionFunction={() => mint(_token as TokenDocument)}
+                            actionFunction={() => mint(_token as TokenDocument, session.accountId)}
                             loading={_currentStep === 2 && _loading}
                             disabled={_currentStep !== 2}
                         />
@@ -348,7 +348,7 @@ export default function Badges(): JSX.Element {
                             title="Step 4"
                             message={`Unlink your Ethereum/${capitalize(session.provider)} accounts.`}
                             actionText="Unlink accounts"
-                            actionFunction={() => unlinkAccount(_token as TokenDocument)}
+                            actionFunction={() => unlink(_token as TokenDocument, session.accountId)}
                             loading={_currentStep === 4 && _loading}
                             disabled={_currentStep !== 4}
                         />

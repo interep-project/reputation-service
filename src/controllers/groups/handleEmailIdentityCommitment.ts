@@ -11,7 +11,8 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
     const { emailUserId, emailUserToken } = JSON.parse(req.body)
 
     if (!emailUserId || !emailUserToken) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -21,12 +22,14 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
         const emailUser = await EmailUser.findByHashId(hashId)
 
         if (!emailUser) {
-            return res.status(403).end()
+            res.status(403).end()
+            return
         }
 
         // Check if the user has the right token.
         if (emailUser.verificationToken !== emailUserToken) {
-            return res.status(401).end()
+            res.status(401).end()
+            return
         }
 
         if (req.method === "POST") {
@@ -49,10 +52,10 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
 
         await emailUser.save()
 
-        return res.status(201).send({ data: true })
+        res.status(201).send({ data: true })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }
