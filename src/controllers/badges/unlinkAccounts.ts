@@ -6,33 +6,39 @@ import { unlinkAccounts } from "src/core/badges"
 import { dbConnect } from "src/utils/backend/database"
 import getSigner from "src/utils/backend/getSigner"
 import logger from "src/utils/backend/logger"
+import capitalize from "src/utils/common/capitalize"
 
-export default async function unlinkAccountsController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function unlinkAccountsController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "PUT") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const session = await getSession({ req })
 
     if (!session) {
-        return res.status(401).end()
+        res.status(401).end()
+        return
     }
 
     const { attestationMessage, attestationSignature, accountId } = JSON.parse(req.body)
 
     if (!attestationMessage || !attestationSignature || !accountId) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     if (session.accountId !== accountId) {
-        return res.status(403).send("The account id does not match the session account id")
+        res.status(403).send("The account id does not match the session account id")
+        return
     }
 
     const backendSigner = await getSigner()
     const backendSignerAddress = await backendSigner.getAddress()
 
     if (utils.verifyMessage(attestationMessage, attestationSignature) !== backendSignerAddress) {
-        return res.status(400).send("The attestation signature is not valid")
+        res.status(400).send("The attestation signature is not valid")
+        return
     }
 
     try {
@@ -41,7 +47,7 @@ export default async function unlinkAccountsController(req: NextApiRequest, res:
         const account = await OAuthAccount.findById(accountId)
 
         if (!account) {
-            throw new Error(`The account id does not match any account in the db`)
+            throw new Error(`The account does not exist`)
         }
 
         const [tokenId, , provider, providerAccountId] = JSON.parse(attestationMessage)
@@ -60,10 +66,14 @@ export default async function unlinkAccountsController(req: NextApiRequest, res:
 
         await unlinkAccounts(account, token)
 
-        return res.status(200).send({ data: true })
-    } catch (err) {
-        logger.error(err)
+        res.status(200).send({ data: true })
 
-        return res.status(500).end()
+        logger.info(
+            `[${req.url}] ${capitalize(account.provider)} account ${account.providerAccountId} has been unlinked`
+        )
+    } catch (err) {
+        res.status(500).end()
+
+        logger.error(err)
     }
 }
