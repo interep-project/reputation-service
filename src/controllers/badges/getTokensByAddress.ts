@@ -4,6 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { updateTokenStatus } from "src/core/badges"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import removeDBFields from "src/utils/backend/removeDBFields"
 
 export default async function getTokensByAddressController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -30,7 +31,7 @@ export default async function getTokensByAddressController(req: NextApiRequest, 
 
         await updateTokenStatus(tokens)
 
-        res.status(200).send({ data: tokens.map((token) => token.toJSON()) })
+        res.status(200).send({ data: tokens.map((token) => removeDBFields(token.toJSON())) })
     } catch (error) {
         res.status(500).end()
 

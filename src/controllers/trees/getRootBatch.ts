@@ -1,7 +1,8 @@
-import { MerkleTreeRootBatch, MerkleTreeRootBatchData } from "@interrep/db"
+import { MerkleTreeRootBatch } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
+import removeDBFields from "src/utils/backend/removeDBFields"
 
 export default async function getRootBatchController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -29,11 +30,7 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
         }
 
         res.status(200).send({
-            data: {
-                group: rootBatch.group,
-                rootHashes: rootBatch.rootHashes,
-                transaction: rootBatch.transaction
-            } as MerkleTreeRootBatchData
+            data: removeDBFields(rootBatch.toJSON())
         })
     } catch (error) {
         res.status(500).end()
