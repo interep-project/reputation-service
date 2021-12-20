@@ -40,7 +40,7 @@
         "@interrep/merkle-tree": "^0.2.1",
         "@interrep/reputation": "^0.13.0",
         "@interrep/telegram-bot": "^0.5.0",
-        "@sentry/nextjs": "^6.12.0",
+        "@sentry/nextjs": "^6.16.1",
         "@types/nodemailer": "^6.4.4",
         "bnc-onboard": "^1.34.1",
         "botometer": "^1.0.12",
