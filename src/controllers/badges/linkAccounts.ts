@@ -64,7 +64,9 @@ export default async function linkAccountsController(req: NextApiRequest, res: N
 
         res.status(201).send({ data: token.toJSON() })
 
-        logger.info(`[${req.url}] ${capitalize(account.provider)} account ${account.providerAccountId} has been linked`)
+        logger.info(
+            `[${req.url}] The ${capitalize(account.provider)} account ${account.providerAccountId} has been linked`
+        )
     } catch (err) {
         res.status(500).end()
 

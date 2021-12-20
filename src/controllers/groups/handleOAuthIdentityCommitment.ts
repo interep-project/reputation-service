@@ -107,28 +107,33 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
 
             await account.save()
 
-            return res.status(201).send({ data: true })
+            res.status(201).send({ data: true })
         } catch (error) {
-            logger.error(error)
+            res.status(500).end()
 
-            return res.status(500).end()
+            logger.error(error)
         }
+
+        return
     }
 
     const { accountId } = JSON.parse(req.body)
 
     if (!accountId) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     const session = await getSession({ req })
 
     if (!session) {
-        return res.status(401).end()
+        res.status(401).end()
+        return
     }
 
     if (session.accountId !== accountId) {
-        return res.status(403).end()
+        res.status(403).end()
+        return
     }
 
     try {
@@ -168,10 +173,10 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
 
         await account.save()
 
-        return res.status(201).send({ data: true })
+        res.status(201).send({ data: true })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

@@ -4,19 +4,18 @@ import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function hasIdentityCommitmentController(
-    req: NextApiRequest,
-    res: NextApiResponse
-): Promise<void> {
+export default async function hasIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const provider = req.query?.provider
     const identityCommitment = req.query?.identityCommitment
 
     if (!provider || typeof provider !== "string" || !identityCommitment || typeof identityCommitment !== "string") {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -24,10 +23,10 @@ export default async function hasIdentityCommitmentController(
 
         const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider as Provider, identityCommitment)
 
-        return res.status(200).send({ data: !!leaf && leaf.level === 0 })
+        res.status(200).send({ data: !!leaf && leaf.level === 0 })
     } catch (error) {
         logger.error(error)
 
-        return res.status(500).end()
+        res.status(500).end()
     }
 }

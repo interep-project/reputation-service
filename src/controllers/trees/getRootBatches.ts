@@ -3,9 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getRootBatchesController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getRootBatchesController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     try {
@@ -13,7 +14,7 @@ export default async function getRootBatchesController(req: NextApiRequest, res:
 
         const rootBatches = await MerkleTreeRootBatch.find()
 
-        return res.status(200).send({
+        res.status(200).send({
             data: rootBatches.map((rootBatch) => ({
                 group: rootBatch.group,
                 rootHashes: rootBatch.rootHashes,
@@ -21,8 +22,8 @@ export default async function getRootBatchesController(req: NextApiRequest, res:
             })) as MerkleTreeRootBatchData[]
         })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

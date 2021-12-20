@@ -46,7 +46,7 @@ export default async function mintTokenController(req: NextApiRequest, res: Next
 
         res.status(200).send({ data: true })
 
-        logger.info(`[${req.url}] ${capitalize(token.provider)} token ${token.tokenId} has been minted`)
+        logger.info(`[${req.url}] The ${capitalize(token.provider)} token ${token.tokenId} has been minted`)
     } catch (error) {
         res.status(500).send(error)
 

@@ -12,12 +12,10 @@ import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommit
 import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
 import handleTelegramIdentityCommitmentController from "./handleTelegramIdentityCommitment"
 
-export default async function handleIdentityCommitmentController(
-    req: NextApiRequest,
-    res: NextApiResponse
-): Promise<void> {
+export default async function handleIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST" && req.method !== "DELETE" && req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const provider = req.query?.provider
@@ -32,11 +30,13 @@ export default async function handleIdentityCommitmentController(
         !identityCommitment ||
         typeof identityCommitment !== "string"
     ) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     if (!checkGroup(provider as Provider, name)) {
-        return res.status(404).end("The group does not exist")
+        res.status(404).end("The group does not exist")
+        return
     }
 
     if (req.method === "GET") {
@@ -45,30 +45,43 @@ export default async function handleIdentityCommitmentController(
 
             const leaf = await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment)
 
-            return res.status(200).send({ data: !!leaf && leaf.level === 0 })
+            res.status(200).send({ data: !!leaf && leaf.level === 0 })
         } catch (error) {
-            logger.error(error)
+            res.status(500).end()
 
-            return res.status(500).end()
+            logger.error(error)
         }
+
+        return
     }
 
     try {
         await apiMiddleware(Cors({ origin: config.API_WHITELIST }))(req, res)
     } catch (error) {
+        res.status(500).end()
+
         logger.error(error)
 
-        return res.status(500).end()
+        return
     }
 
     switch (provider) {
         case Web3Provider.POAP:
-            return handlePoapIdentityCommitmentController(req, res)
+            await handlePoapIdentityCommitmentController(req, res)
+            break
         case "telegram":
-            return handleTelegramIdentityCommitmentController(req, res)
+            await handleTelegramIdentityCommitmentController(req, res)
+            break
         case "email":
-            return handleEmailIdentityCommitmentController(req, res)
+            await handleEmailIdentityCommitmentController(req, res)
+            break
         default:
-            return handleOAuthIdentityCommitmentController(req, res)
+            await handleOAuthIdentityCommitmentController(req, res)
+    }
+
+    if (req.method === "POST") {
+        logger.info(`[${req.url}] The identity commitment has been added to the group`)
+    } else {
+        logger.info(`[${req.url}] The identity commitment has been deleted from the group`)
     }
 }

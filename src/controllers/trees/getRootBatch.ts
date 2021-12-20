@@ -3,15 +3,17 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getRootBatchController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getRootBatchController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const rootHash = req.query?.rootHash
 
     if (!rootHash || typeof rootHash !== "string") {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -22,10 +24,11 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
         })
 
         if (!rootBatch) {
-            return res.status(404).end("The Merkle root does not exist")
+            res.status(404).end("The Merkle root does not exist")
+            return
         }
 
-        return res.status(200).send({
+        res.status(200).send({
             data: {
                 group: rootBatch.group,
                 rootHashes: rootBatch.rootHashes,
@@ -33,8 +36,8 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
             } as MerkleTreeRootBatchData
         })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }

@@ -69,7 +69,7 @@ export default async function unlinkAccountsController(req: NextApiRequest, res:
         res.status(200).send({ data: true })
 
         logger.info(
-            `[${req.url}] ${capitalize(account.provider)} account ${account.providerAccountId} has been unlinked`
+            `[${req.url}] The ${capitalize(account.provider)} account ${account.providerAccountId} has been unlinked`
         )
     } catch (err) {
         res.status(500).end()

@@ -3,9 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
 
-export default async function getLeavesController(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+export default async function getLeavesController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
-        return res.status(405).end()
+        res.status(405).end()
+        return
     }
 
     const rootHash = req.query?.rootHash
@@ -18,7 +19,8 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
         (limit && (typeof limit !== "string" || Number.isNaN(limit))) ||
         (offset && (typeof offset !== "string" || Number.isNaN(offset)))
     ) {
-        return res.status(400).end()
+        res.status(400).end()
+        return
     }
 
     try {
@@ -27,7 +29,8 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
         const root = await MerkleTreeNode.findOne({ hash: rootHash })
 
         if (!root) {
-            return res.status(404).end("The root does not exist")
+            res.status(404).end("The root does not exist")
+            return
         }
 
         const leaves = await MerkleTreeNode.find({ group: root.group, level: 0 })
@@ -35,12 +38,12 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
             .skip(Number(offset || 0))
             .limit(Number(limit || 0))
 
-        return res.status(200).send({
+        res.status(200).send({
             data: leaves.map((leave) => leave.hash).reverse()
         })
     } catch (error) {
-        logger.error(error)
+        res.status(500).end()
 
-        return res.status(500).end()
+        logger.error(error)
     }
 }
