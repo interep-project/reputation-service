@@ -120,13 +120,15 @@ export function removeIdentityCommitment({
 }
 
 export function unlinkAccounts({
-    decryptedAttestation,
+    attestationMessage,
+    attestationSignature,
     accountId
 }: {
-    decryptedAttestation: string
+    attestationMessage: string
+    attestationSignature: string
     accountId: string
 }): Promise<any | null> {
-    return sendRequest("/api/badges/unlink", { decryptedAttestation, accountId }, "PUT")
+    return sendRequest("/api/badges/unlink", { attestationMessage, attestationSignature, accountId }, "PUT")
 }
 
 export function linkAccounts({

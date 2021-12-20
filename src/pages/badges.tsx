@@ -244,7 +244,9 @@ export default function Badges(): JSX.Element {
             return
         }
 
-        const response = await unlinkAccounts({ decryptedAttestation, accountId })
+        const [attestation] = JSON.parse(decryptedAttestation)
+        const [attestationMessage, attestationSignature] = JSON.parse(attestation)
+        const response = await unlinkAccounts({ attestationMessage, attestationSignature, accountId })
 
         if (response === null) {
             setLoading(false)
