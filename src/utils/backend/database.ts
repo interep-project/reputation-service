@@ -17,7 +17,7 @@ export async function dbConnect() {
         logger.error("Database connection error:", error)
     }).catch((error) => logger.error(error))
 
-    logger.info("🗄️ Connected to database")
+    logger.info("Mongo db has been connected")
 }
 
 export async function dbDisconnect() {
