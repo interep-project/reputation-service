@@ -13,8 +13,13 @@ export default async function getTokensByAddressController(req: NextApiRequest, 
 
     const userAddress = req.query?.userAddress
 
-    if (!userAddress || typeof userAddress !== "string" || !utils.isAddress(userAddress)) {
+    if (!userAddress || typeof userAddress !== "string") {
         res.status(400).end()
+        return
+    }
+
+    if (!utils.isAddress(userAddress)) {
+        res.status(400).send("The user address is not valid")
         return
     }
 
