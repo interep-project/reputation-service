@@ -20,20 +20,20 @@ export default async function seedZeroHashes(logger = false): Promise<void> {
         zeroHash = zeroHashes[level - 1].hash
     }
 
-    for (level; level < config.MERKLE_TREE_DEPTH; level++) {
-        zeroHash = level === 0 ? zeroHash : poseidon(zeroHash, zeroHash)
+    if (level < config.MERKLE_TREE_DEPTH) {
+        for (level; level < config.MERKLE_TREE_DEPTH; level++) {
+            zeroHash = level === 0 ? zeroHash : poseidon(zeroHash, zeroHash)
 
-        const zeroHashDocument = await MerkleTreeZero.create({
-            level,
-            hash: zeroHash
-        })
+            const zeroHashDocument = await MerkleTreeZero.create({
+                level,
+                hash: zeroHash
+            })
 
-        await zeroHashDocument.save()
+            await zeroHashDocument.save()
 
-        log(colors.white(`Document with id: ${zeroHashDocument.id} inserted`))
-    }
+            log(colors.white(`Document with id: ${zeroHashDocument.id} inserted`))
+        }
 
-    if (level === config.MERKLE_TREE_DEPTH) {
         log(colors.green.bold("\nDocuments inserted correctly ✓\n"))
     }
 }
