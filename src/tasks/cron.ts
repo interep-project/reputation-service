@@ -1,18 +1,16 @@
 import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
+import schedule from "node-schedule"
 import config from "src/config"
 import { publishOffchainMerkleRoots, retrieveEvents } from "src/core/contracts/Groups"
 import { Provider } from "src/types/groups"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
-import { AsyncTask, SimpleIntervalJob, ToadScheduler } from "toad-scheduler"
 
 export async function run() {
     await dbConnect()
 
-    const scheduler = new ToadScheduler()
-    const task = new AsyncTask(
-        "publish-offchain-merkle-roots",
-        async () => {
+    schedule.scheduleJob({ hour: 12, tz: "Europe/Rome" }, async () => {
+        try {
             // Get all the 'OffchainMerkleRoot' onchain events.
             const events = await retrieveEvents("OffchainMerkleRoot")
             // Get all the new db root nodes not yet published onchain.
@@ -45,12 +43,8 @@ export async function run() {
 
                 logger.info(`The Merkle roots have been published onchain (${merkleRoots.length})`)
             }
-        },
-        (error: Error) => {
+        } catch (error: any) {
             logger.error(`Cron error: ${error.message}`)
         }
-    )
-    const job = new SimpleIntervalJob({ days: 1, runImmediately: true }, task)
-
-    scheduler.addSimpleIntervalJob(job)
+    })
 }
