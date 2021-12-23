@@ -1,4 +1,3 @@
-
 # Python
 secrets.py
 __pycache__/*
@@ -45,3 +44,6 @@ yarn-error.log*
 # logs
 logs/
 node_modules
+
+# Sentry
+.sentryclirc
