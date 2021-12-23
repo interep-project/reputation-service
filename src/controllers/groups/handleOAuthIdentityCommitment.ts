@@ -80,10 +80,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 account = await OAuthAccount.create({
                     provider,
                     providerAccountId: accountId,
-                    isLinkedToAddress: false,
-                    reputation,
-                    uniqueKey: `${provider}:${accountId}`,
-                    createdAt: Date.now()
+                    reputation
                 })
             }
 

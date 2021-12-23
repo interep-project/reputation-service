@@ -7,11 +7,7 @@ import { TwitterUser } from "src/types/twitter"
 function createTwitterSeedUser(user: TwitterUser): any {
     return new OAuthAccount({
         provider: OAuthProvider.TWITTER,
-        uniqueKey: `${OAuthProvider.TWITTER}:${user.id}`,
-        createdAt: Date.now(),
         providerAccountId: user.id,
-        isSeedUser: true,
-        isLinkedToAddress: false,
         reputation: ReputationLevel.GOLD
     })
 }

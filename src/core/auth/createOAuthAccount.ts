@@ -28,11 +28,8 @@ export default async function createOAuthAccount(
             account = new OAuthAccount({
                 provider,
                 providerAccountId: nextAuthAccount.id,
-                isLinkedToAddress: false,
                 accessToken: nextAuthAccount.accessToken,
-                refreshToken: nextAuthAccount.refreshToken,
-                uniqueKey: `${provider}:${nextAuthAccount.id}`,
-                createdAt: Date.now()
+                refreshToken: nextAuthAccount.refreshToken
             })
 
             switch (provider) {

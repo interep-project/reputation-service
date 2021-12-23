@@ -67,10 +67,9 @@ describe("# core/auth", () => {
                 expect.objectContaining({
                     providerAccountId,
                     isLinkedToAddress: false,
-                    isSeedUser: false,
+                    hasJoinedAGroup: false,
                     accessToken,
-                    refreshToken,
-                    uniqueKey: `${OAuthProvider.TWITTER}:${providerAccountId}`
+                    refreshToken
                 })
             )
         })
