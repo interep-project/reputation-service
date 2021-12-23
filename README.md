@@ -43,6 +43,18 @@ If you want an overwiew of InterRep, read our announcement post: https://jaygrab
 
 ---
 
+## Code overview
+
+This repository contains the frontend and backend code of the InterRep application.
+
+The backend code consists mainly of api, controllers and core functions. Next.js maps the application's [page](https://nextjs.org/docs/basic-features/pages) and [api routes](https://nextjs.org/docs/api-routes/introduction) to files in the `src/pages` directory. Each API is associated with a handler/controller in the `src/controllers` directory, which checks that the request parameters are correct. If the checks are passed and the request is not trivial, the core functions are used, otherwise the db methods are called directly.
+
+The frontend consists of the pages defined in the `src/pages` directory. These pages are React components that in turn use the shared components in the `components` directory. The style of the Web application is defined in the `src/styles` directory, while `src/context` and `src/hooks` contain React contexts and hooks respectively.
+
+The services in the `src/services` folder usually contain external services APIs, while the `src/tasks` folder contains tasks that run externally to Next.js. Finally, the `src/config.ts` file contains the environment variables and data about the Ethereum network and contracts.
+
+The code is usually organized in modules (e.g. `src/core/badges`), where each function corresponds to a file with the same name, and an `index.ts` file exports all the functions of the module. Each module also contains an `index.test.ts` file where Jest tests are defined for each function in the module. Test files follow a standard structure for each module.
+
 ## Install
 
 Clone this repository and install the dependencies:
