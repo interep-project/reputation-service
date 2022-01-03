@@ -4,18 +4,19 @@
     "moduleDirectories": ["node_modules", "<rootDir>/src"],
     "modulePaths": ["<rootDir>"],
     "clearMocks": true,
-    "collectCoverage": true,
     "setupFiles": ["dotenv/config"],
-    "collectCoverageFrom": [
-        "src/**/*.{js,jsx,ts,tsx}",
-        "!src/mocks/**",
-        "!src/models/**",
-        "!src/types/**",
-        "!**/node_modules/**",
-        "!**/vendor/**"
-    ],
     "transform": {
         "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
     },
-    "transformIgnorePatterns": ["node_modules/(?!ethereum-cryptography).*"]
+    "transformIgnorePatterns": ["node_modules/(?!ethereum-cryptography).*"],
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/{core,controllers,utils}/**/*.{js,ts}"],
+    "coverageThreshold": {
+        "global": {
+            "branches": 90,
+            "functions": 95,
+            "lines": 95,
+            "statements": 95
+        }
+    }
 }
