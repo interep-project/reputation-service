@@ -1,10 +1,10 @@
 import { dbConnect, dbDisconnect } from "src/utils/backend/database"
-import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
+import { seedZeroHashes } from "src/utils/backend/seeding"
 
 async function main() {
     await dbConnect()
 
-    await seedZeroHashes(true)
+    await seedZeroHashes()
 
     await dbDisconnect()
 }

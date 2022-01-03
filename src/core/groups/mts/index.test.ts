@@ -2,7 +2,7 @@ import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
-import seedZeroHashes from "src/utils/backend/seeding/seedZeroHashes"
+import { seedZeroHashes } from "src/utils/backend/seeding"
 import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
 import { createMerkleTree, poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, createProof } from "."
@@ -26,7 +26,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should not append any leaf if the group id does not exist", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             const fun = (): Promise<string> => appendLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
 
@@ -40,7 +40,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should not append the same identity twice", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             await appendLeaf(provider, reputation, idCommitment)
             const fun = (): Promise<string> => appendLeaf(provider, reputation, idCommitment)
@@ -49,7 +49,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should append two leaves and their parent hash should match the hash of the id commitments", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
             const idCommitments = [poseidon(1), poseidon(2)]
 
             await appendLeaf(provider, reputation, idCommitments[0])
@@ -66,7 +66,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should append 10 leaves correctly", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon(i)
@@ -96,7 +96,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should not delete any leaf if it does not exist", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             const fun = () => deleteLeaf(provider, reputation, idCommitment)
 
@@ -104,7 +104,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should delete a leaf", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
             const idCommitments = [1, 2].map((v) => poseidon(v))
 
             await appendLeaf(provider, reputation, idCommitments[0].toString())
@@ -124,7 +124,7 @@ describe("# core/groups/mts", () => {
         it("Should delete 5 leaves correctly", async () => {
             const tree = createMerkleTree()
 
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             for (let i = 0; i < 10; i++) {
                 const idCommitment = poseidon(i)
@@ -156,7 +156,7 @@ describe("# core/groups/mts", () => {
         })
 
         it(`Should return a proof of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             const idCommitments = []
 
@@ -173,7 +173,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
-            await seedZeroHashes(false)
+            await seedZeroHashes()
 
             const tree = createMerkleTree()
             const idCommitments = []
