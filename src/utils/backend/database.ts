@@ -1,4 +1,4 @@
-import { connect, disconnect, getState } from "@interrep/db"
+import { clear, connect, disconnect, getState } from "@interrep/db"
 import config from "src/config"
 import logger from "./logger"
 
@@ -26,4 +26,16 @@ export async function dbDisconnect() {
     }
 
     await disconnect()
+
+    logger.info("Mongo db has been disconnected")
+}
+
+export async function dbClear() {
+    if (getState() !== 1) {
+        return
+    }
+
+    await clear()
+
+    logger.info("Mongo db has been cleared")
 }
