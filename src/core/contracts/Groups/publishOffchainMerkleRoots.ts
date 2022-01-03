@@ -4,7 +4,7 @@ import { ContractName } from "src/config"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
-import getContractAddress from "src/utils/common/getContractAddress"
+import { getContractAddress } from "src/utils/common"
 
 export default async function publishOffchainMerkleRoots(
     providers: Provider[],

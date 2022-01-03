@@ -6,7 +6,7 @@ import EthereumWalletContext, { EthereumWalletContextType } from "src/context/Et
 import { PoapEvent } from "src/core/poap"
 import useGroups from "src/hooks/useGroups"
 import { Group, Web3Provider } from "src/types/groups"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 
 export default function PoapGroups(): JSX.Element {
     const { _signer, _poapEvents, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType

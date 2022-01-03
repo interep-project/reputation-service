@@ -4,7 +4,7 @@ import { getSession } from "next-auth/client"
 import { mintToken } from "src/core/badges"
 import { dbConnect } from "src/utils/backend/database"
 import logger from "src/utils/backend/logger"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 
 export default async function mintTokenController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {

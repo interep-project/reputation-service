@@ -4,7 +4,7 @@ import createIdentity from "@interrep/identity"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
 import { Group, Provider } from "src/types/groups"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 import useInterRepAPI from "./useInterRepAPI"
 
 type ReturnParameters = {

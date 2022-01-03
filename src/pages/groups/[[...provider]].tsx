@@ -15,13 +15,13 @@ import { useSession } from "next-auth/client"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { FaInfoCircle } from "react-icons/fa"
-import PoapGroups from "src/components/PoapGroups"
-import TelegramGroups from "src/components/TelegramGroups"
 import EmailGroups from "src/components/EmailGroups"
 import OAuthGroups from "src/components/OAuthGroups"
+import PoapGroups from "src/components/PoapGroups"
+import TelegramGroups from "src/components/TelegramGroups"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 
 export default function Groups(): JSX.Element {
     const [session] = useSession()

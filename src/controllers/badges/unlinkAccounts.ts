@@ -6,7 +6,7 @@ import { unlinkAccounts } from "src/core/badges"
 import { dbConnect } from "src/utils/backend/database"
 import getSigner from "src/utils/backend/getSigner"
 import logger from "src/utils/backend/logger"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 
 export default async function unlinkAccountsController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "PUT") {
