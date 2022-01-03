@@ -1,13 +1,5 @@
 import winston from "winston"
 
-winston.addColors({
-    error: "red",
-    warn: "yellow",
-    info: "green",
-    http: "magenta",
-    debug: "white"
-})
-
 const format = winston.format.combine(
     winston.format.timestamp({ format: "DD-MM-YYYY HH:mm:ss:ms" }),
     winston.format.printf((info) => `${info.timestamp} ${info.level}: ${info.message}`)
@@ -15,7 +7,7 @@ const format = winston.format.combine(
 
 const transports: winston.transport[] = [
     new winston.transports.Console({
-        level: process.env.NODE_ENV === "production" ? "info" : process.env.NODE_ENV === "test" ? "warn" : "silly",
+        level: process.env.NODE_ENV === "production" ? "verbose" : process.env.NODE_ENV === "test" ? "error" : "silly",
         format: winston.format.combine(
             winston.format.colorize({
                 all: true
