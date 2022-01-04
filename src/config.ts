@@ -58,7 +58,6 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         },
         [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
-
     [SupportedChainId.ARBITRUM_TESTNET]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",

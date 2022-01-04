@@ -1,45 +1,18 @@
-import { currentNetwork, SupportedChainId } from "src/config"
-import { NetworkData } from "src/types/network"
-
-function getEtherscanPrefix(networkData: NetworkData): string {
-    switch (networkData.chainId) {
-        case SupportedChainId.KOVAN:
-        case SupportedChainId.ROPSTEN:
-            return `${networkData.name}.`
-        default:
-            return ""
-    }
-}
+import { currentNetwork } from "src/config"
 
 export enum ExplorerDataType {
-    TRANSACTION = "transaction",
+    TRANSACTION = "tx",
     TOKEN = "token",
-    ADDRESS = "address",
-    BLOCK = "block"
+    BLOCK = "block",
+    ADDRESS = "address"
 }
 
 /**
  * Return the explorer link for the given data and data type.
- * @param data The data to return a link for.
  * @param type The type of the data.
- * @returns the explorer link.
+ * @param data The data to return a link for.
+ * @returns The explorer link.
  */
-export function getExplorerLink(data: string, type: ExplorerDataType): string {
-    const url = `https://${getEtherscanPrefix(currentNetwork)}etherscan.io`
-
-    switch (type) {
-        case ExplorerDataType.TRANSACTION:
-            return `${url}/tx/${data}`
-
-        case ExplorerDataType.TOKEN:
-            return `${url}/token/${data}`
-
-        case ExplorerDataType.BLOCK:
-            return `${url}/block/${data}`
-
-        case ExplorerDataType.ADDRESS:
-            return `${url}/address/${data}`
-        default:
-            return `${url}`
-    }
+export default function getExplorerLink(type: ExplorerDataType, data: string): string {
+    return `https://${currentNetwork.name}.etherscan.io/${type}/${data}`
 }

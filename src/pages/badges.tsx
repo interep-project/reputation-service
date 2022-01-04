@@ -13,7 +13,7 @@ import EthereumWalletContext, { EthereumWalletContextType } from "src/context/Et
 import createUserMessage from "src/core/badges/createUserMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
 import { capitalize, delay, getContractAddress, getContractInstance } from "src/utils/common"
-import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
+import { ExplorerDataType, getExplorerLink } from "src/utils/frontend"
 
 export default function Badges(): JSX.Element {
     const [session] = useSession()
@@ -288,7 +288,7 @@ export default function Badges(): JSX.Element {
                     <HStack mt="10px">
                         {_token && _token.status === "MINTED" && _token.transaction && (
                             <Link
-                                href={getExplorerLink(_token.transaction.hash, ExplorerDataType.TRANSACTION)}
+                                href={getExplorerLink(ExplorerDataType.TRANSACTION, _token.transaction.hash)}
                                 isExternal
                                 px="10px"
                             >

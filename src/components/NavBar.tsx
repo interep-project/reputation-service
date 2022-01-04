@@ -17,7 +17,7 @@ import { FaMoon, FaSun } from "react-icons/fa"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { getNetworkFullName } from "src/utils/common"
-import shortenAddress from "src/utils/frontend/shortenAddress"
+import { shortenAddress } from "src/utils/frontend"
 
 export default function NavBar(): JSX.Element {
     const router = useRouter()
