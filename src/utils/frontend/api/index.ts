@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ReputationLevel } from "@interrep/reputation"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
