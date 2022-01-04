@@ -14,7 +14,7 @@
         "db:seed-zero-hashes": "yarn script scripts/seedZeroHashes.ts",
         "db:seed-twitter-users": "yarn script scripts/seedTwitterUsers.ts",
         "db:reset": "yarn script scripts/resetDB.ts",
-        "test": "jest",
+        "test": "jest --verbose",
         "test:w": "jest --watch",
         "test:prod": "yarn lint && yarn test",
         "lint": "eslint src --ext js,jsx,ts,tsx",
