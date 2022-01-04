@@ -4,17 +4,17 @@ import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
 import { Web3Provider } from "src/types/groups"
 import { seedZeroHashes } from "src/utils/backend/seeding"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { checkGroup, getGroup, getGroups, getProviders } from "."
 
 describe("# core/groups", () => {
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await clearDatabase()
-        await dropDatabaseAndDisconnect()
+        await clearTestingDatabase()
+        await disconnectTestingDatabase()
     })
 
     describe("# checkGroup", () => {

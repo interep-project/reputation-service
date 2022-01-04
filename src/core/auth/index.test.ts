@@ -1,6 +1,6 @@
 import { TwitterParameters, OAuthProvider } from "@interrep/reputation"
 import { OAuthAccount } from "@interrep/db"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import createOAuthAccount from "./createOAuthAccount"
 
 const providerAccountId = "user_id"
@@ -27,15 +27,15 @@ describe("# core/auth", () => {
 
     describe("# createOAuthAccount", () => {
         beforeAll(async () => {
-            await connectDatabase()
+            await connectTestingDatabase()
         })
 
         afterAll(async () => {
-            await dropDatabaseAndDisconnect()
+            await disconnectTestingDatabase()
         })
 
         afterEach(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should throw if the reponse has no user id", async () => {

@@ -1,12 +1,12 @@
+import { OAuthAccount } from "@interrep/db"
 import { OAuthProvider } from "@interrep/reputation"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
 import config from "src/config"
 import { createOAuthAccount, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
-import { OAuthAccount } from "@interrep/db"
 import { User } from "src/types/next-auth"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
 
 export default NextAuth({
     providers: [

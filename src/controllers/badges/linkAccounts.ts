@@ -4,8 +4,8 @@ import { utils } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { checkUserSignature, linkAccounts } from "src/core/badges"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 import { capitalize } from "src/utils/common"
 
 export default async function linkAccountsController(req: NextApiRequest, res: NextApiResponse) {
@@ -44,7 +44,7 @@ export default async function linkAccountsController(req: NextApiRequest, res: N
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const account = await OAuthAccount.findById(accountId)
 

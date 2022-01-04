@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next"
 import { Token } from "@interrep/db"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
-import removeDBFields from "src/utils/backend/removeDBFields"
+import { NextApiRequest, NextApiResponse } from "next"
+import { logger, removeDBFields } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getTokenController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -18,7 +17,7 @@ export default async function getTokenController(req: NextApiRequest, res: NextA
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const token = await Token.findById(tokenId)
 

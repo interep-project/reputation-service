@@ -8,14 +8,14 @@ import {
 import { Account } from "next-auth"
 import { OAuthAccount } from "@interrep/db"
 import { User } from "src/types/next-auth"
-import { dbConnect } from "src/utils/backend/database"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function createOAuthAccount(
     user: User,
     nextAuthAccount: Account,
     provider: OAuthProvider
 ): Promise<void> {
-    await dbConnect()
+    await connectDatabase()
 
     if (!nextAuthAccount.id) {
         throw new Error("Invalid account response")

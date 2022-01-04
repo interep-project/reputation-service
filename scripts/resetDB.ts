@@ -1,13 +1,13 @@
-import { dbClear, dbConnect, dbDisconnect } from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 
 async function main() {
-    await dbConnect()
-    await dbClear()
+    await connectDatabase()
+    await clearDatabase()
 
     await seedZeroHashes()
 
-    await dbDisconnect()
+    await disconnectDatabase()
 }
 
 main()

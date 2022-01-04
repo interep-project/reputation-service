@@ -3,7 +3,7 @@ import { Wallet } from "ethers"
 import { createTokenMock } from "src/mocks"
 import createOAuthAccountMock from "src/mocks/createOAuthAccountMock"
 import _createWalletMock from "src/mocks/createWalletMock"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { safeMint } from "../contracts/ReputationBadge"
 import exists from "../contracts/ReputationBadge/exists"
 import checkUserSignature from "./checkUserSignature"
@@ -42,11 +42,11 @@ describe("# core/badges", () => {
     const wallet = createWalletMock()
 
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     describe("# updateTokenStatus", () => {
@@ -57,7 +57,7 @@ describe("# core/badges", () => {
         })
 
         afterAll(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should not update the status of a minted token if it has not been burned", async () => {
@@ -89,7 +89,7 @@ describe("# core/badges", () => {
         })
 
         afterAll(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should call  with the right arguments and update the token status", async () => {
@@ -149,7 +149,7 @@ describe("# core/badges", () => {
         })
 
         afterAll(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should link two accounts correctly", async () => {
@@ -171,7 +171,7 @@ describe("# core/badges", () => {
         })
 
         afterAll(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should not unlink two accounts if the OAuth account is not linked to any Web3 account", async () => {

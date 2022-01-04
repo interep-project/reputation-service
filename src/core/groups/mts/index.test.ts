@@ -3,7 +3,7 @@ import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { createMerkleTree, poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, createProof } from "."
 
@@ -13,16 +13,16 @@ describe("# core/groups/mts", () => {
     const reputation = ReputationLevel.GOLD
 
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     describe("# appendLeaf", () => {
         beforeEach(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should not append any leaf if the group id does not exist", async () => {
@@ -86,7 +86,7 @@ describe("# core/groups/mts", () => {
 
     describe("# deleteLeaf", () => {
         beforeEach(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should not delete any leaf if the group id does not exist", async () => {
@@ -146,7 +146,7 @@ describe("# core/groups/mts", () => {
 
     describe("# createProof", () => {
         beforeEach(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it(`Should not return any proof if the identity commitment does not exist`, async () => {

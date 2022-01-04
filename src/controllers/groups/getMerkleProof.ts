@@ -3,8 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup } from "src/core/groups"
 import { createProof } from "src/core/groups/mts"
 import { Provider } from "src/types/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getMerkleProofController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -34,7 +34,7 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment))) {
             res.status(404).send("The identity commitment does not exist")

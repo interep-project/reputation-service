@@ -1,8 +1,8 @@
 import { MerkleTreeNode } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { Provider } from "src/types/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function hasIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -19,7 +19,7 @@ export default async function hasIdentityCommitmentController(req: NextApiReques
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider as Provider, identityCommitment)
 

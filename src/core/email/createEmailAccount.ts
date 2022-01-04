@@ -1,12 +1,12 @@
 import { EmailUser } from "@interrep/db"
-import { dbConnect } from "src/utils/backend/database"
+import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 import EmailDomain from "./emailDomain"
 import sendEmail from "./sendEmail"
 
 export default async function createEmailAccount(email: string, emailDomains: EmailDomain[]): Promise<void> {
     try {
-        await dbConnect()
+        await connectDatabase()
 
         let verificationToken = sha256(Math.floor(Math.random() * 10000).toString())
 

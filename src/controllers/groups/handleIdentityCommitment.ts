@@ -4,9 +4,8 @@ import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
 import { Provider, Web3Provider } from "src/types/groups"
-import apiMiddleware from "src/utils/backend/apiMiddleware"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger, setAPIMiddleware } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
 import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
 import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
@@ -41,7 +40,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
 
     if (req.method === "GET") {
         try {
-            await dbConnect()
+            await connectDatabase()
 
             const leaf = await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment)
 
@@ -56,7 +55,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
     }
 
     try {
-        await apiMiddleware(Cors({ origin: config.API_WHITELIST }))(req, res)
+        await setAPIMiddleware(Cors({ origin: config.API_WHITELIST }))(req, res)
     } catch (error) {
         res.status(500).end()
 

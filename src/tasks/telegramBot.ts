@@ -1,5 +1,5 @@
 import { InterRepBot } from "@interrep/telegram-bot"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
 
 export async function run() {
     const { TELEGRAM_BOT_TOKEN, MONGO_URL, NEXTAUTH_URL } = process.env

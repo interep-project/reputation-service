@@ -2,9 +2,8 @@ import { Token } from "@interrep/db"
 import { utils } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
 import { updateTokenStatus } from "src/core/badges"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
-import removeDBFields from "src/utils/backend/removeDBFields"
+import { logger, removeDBFields } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getTokensByAddressController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -25,7 +24,7 @@ export default async function getTokensByAddressController(req: NextApiRequest, 
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const tokens = await Token.findByUserAddress(userAddress)
 

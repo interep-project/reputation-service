@@ -3,7 +3,7 @@ import { ContractReceipt, ethers } from "ethers"
 import { ContractName } from "src/config"
 import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
-import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import { getBackendContractInstance } from "src/utils/backend"
 import { getContractAddress } from "src/utils/common"
 
 export default async function publishOffchainMerkleRoots(

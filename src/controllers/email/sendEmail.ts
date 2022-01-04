@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { getEmailDomainsByEmail, createEmailAccount } from "src/core/email"
-import logger from "src/utils/backend/logger"
+import { createEmailAccount, getEmailDomainsByEmail } from "src/core/email"
+import { logger } from "src/utils/backend"
 
 export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {

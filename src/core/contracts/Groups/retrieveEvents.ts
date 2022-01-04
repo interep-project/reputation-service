@@ -1,5 +1,5 @@
 import { ContractName } from "src/config"
-import getBackendContractInstance from "src/utils/backend/getBackendContractInstance"
+import { getBackendContractInstance } from "src/utils/backend"
 import { getContractAddress, getContractEvents } from "src/utils/common"
 
 export default async function retrieveEvents(eventName: string): Promise<any[]> {

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { getGroups } from "src/core/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { connectDatabase } from "src/utils/backend/database"
+import { logger } from "src/utils/backend"
 
 export default async function getGroupsController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -10,7 +10,7 @@ export default async function getGroupsController(req: NextApiRequest, res: Next
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const groups = await getGroups()
 

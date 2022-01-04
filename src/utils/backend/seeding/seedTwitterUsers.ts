@@ -1,7 +1,7 @@
 import { OAuthAccount } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { getTwitterUserByUsername } from "src/services/twitter"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
 
 export default async function seedTwitterUsers(twitterUsernames: string[]): Promise<void> {
     logger.verbose("Seeding Twitter accounts...")

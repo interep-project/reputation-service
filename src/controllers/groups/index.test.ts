@@ -2,7 +2,7 @@ import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
 import { seedZeroHashes } from "src/utils/backend/seeding"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import getGroup from "./getGroup"
 import getGroups from "./getGroups"
 import getMerkleProof from "./getMerkleProof"
@@ -12,15 +12,15 @@ describe("# controllers/groups", () => {
     const name = ReputationLevel.GOLD
 
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     afterEach(async () => {
-        await clearDatabase()
+        await clearTestingDatabase()
     })
 
     describe("# getGroup", () => {

@@ -2,8 +2,8 @@ import { Token } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { mintToken } from "src/core/badges"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { connectDatabase } from "src/utils/backend/database"
+import { logger } from "src/utils/backend"
 import { capitalize } from "src/utils/common"
 
 export default async function mintTokenController(req: NextApiRequest, res: NextApiResponse) {
@@ -33,7 +33,7 @@ export default async function mintTokenController(req: NextApiRequest, res: Next
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const token = await Token.findById(tokenId)
 

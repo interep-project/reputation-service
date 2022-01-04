@@ -1,8 +1,8 @@
 import { OAuthAccount } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function isLinkedToAddressController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -11,7 +11,7 @@ export default async function isLinkedToAddressController(req: NextApiRequest, r
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const session = await getSession({ req })
 

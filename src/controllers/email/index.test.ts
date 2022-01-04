@@ -1,6 +1,6 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import createNextMocks from "src/mocks/createNextMocks"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 import { sendEmailController } from "."
 
@@ -16,15 +16,15 @@ describe("# controllers/email", () => {
     const email = "test@outlook.com"
 
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     afterEach(async () => {
-        await clearDatabase()
+        await clearTestingDatabase()
     })
 
     describe("# sendEmail", () => {

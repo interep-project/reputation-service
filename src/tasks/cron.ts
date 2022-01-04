@@ -3,11 +3,11 @@ import schedule from "node-schedule"
 import config from "src/config"
 import { publishOffchainMerkleRoots, retrieveEvents } from "src/core/contracts/Groups"
 import { Provider } from "src/types/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export async function run() {
-    await dbConnect()
+    await connectDatabase()
 
     schedule.scheduleJob({ hour: 12, tz: "Europe/Rome" }, async () => {
         try {

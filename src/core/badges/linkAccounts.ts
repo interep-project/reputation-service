@@ -1,7 +1,7 @@
 import { OAuthAccountDocument, Token, TokenDocument } from "@interrep/db"
 import { ethers } from "ethers"
 import { ContractName, currentNetwork } from "src/config"
-import getSigner from "src/utils/backend/getSigner"
+import { getSigner } from "src/utils/backend"
 import { encryptMessageWithSalt } from "src/utils/common/crypto"
 import { getContractAddress } from "src/utils/common"
 

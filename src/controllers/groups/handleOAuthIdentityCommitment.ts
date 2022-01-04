@@ -8,8 +8,8 @@ import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
 import { Provider } from "src/types/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function handleOAuthIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const provider = req.query?.provider as Provider
@@ -72,7 +72,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     throw new Error(`Provider ${provider} is not supported`)
             }
 
-            await dbConnect()
+            await connectDatabase()
 
             let account = await OAuthAccount.findByProviderAccountId(provider, accountId)
 
@@ -134,7 +134,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const account = await OAuthAccount.findById(accountId)
 

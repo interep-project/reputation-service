@@ -1,8 +1,8 @@
 import { MerkleTreeZero, OAuthAccount } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
+import { connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { seedTwitterUsers } from "."
-import { connectDatabase, dropDatabaseAndDisconnect } from "../testDatabase"
 import seedZeroHashes from "./seedZeroHashes"
 
 jest.mock("src/services/twitter", () => ({
@@ -14,11 +14,11 @@ jest.mock("src/services/twitter", () => ({
 
 describe("# utils/backend/seeding", () => {
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     describe("# seedZeroHashes", () => {

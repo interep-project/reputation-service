@@ -1,8 +1,8 @@
 import { EmailUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleEmailIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
@@ -16,7 +16,7 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const hashId = sha256(emailUserId + name)
         const emailUser = await EmailUser.findByHashId(hashId)

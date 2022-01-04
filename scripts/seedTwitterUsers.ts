@@ -1,5 +1,5 @@
 import { seedTwitterUsers } from "src/utils/backend/seeding"
-import { dbConnect, dbDisconnect } from "src/utils/backend/database"
+import { connectDatabase, disconnectDatabase } from "src/utils/backend/database"
 
 const twitterUsernames = [
     // "twobitidiot",
@@ -28,11 +28,11 @@ const twitterUsernames = [
 ]
 
 async function main() {
-    await dbConnect()
+    await connectDatabase()
 
     await seedTwitterUsers(twitterUsernames)
 
-    await dbDisconnect()
+    await disconnectDatabase()
 }
 
 main()

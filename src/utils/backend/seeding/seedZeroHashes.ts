@@ -1,6 +1,6 @@
 import { MerkleTreeZero } from "@interrep/db"
 import config from "src/config"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
 import { poseidon } from "src/utils/common/crypto"
 
 export default async function seedZeroHashes(): Promise<void> {

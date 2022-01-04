@@ -1,8 +1,8 @@
 import { MerkleTreeNode } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function hasLeafController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -19,7 +19,7 @@ export default async function hasLeafController(req: NextApiRequest, res: NextAp
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const root = await MerkleTreeNode.findOne({ hash: rootHash })
 
