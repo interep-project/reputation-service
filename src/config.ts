@@ -6,11 +6,11 @@ const defaultEnv = {
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
-        /^https:\/\/kovan\\.interrep\\.link/,
-        /^https:\/\/ropsten\\.interrep\\.link/,
-        /^https:\/\/interrep\\.link/,
-        /^https:\/\/auti\\.sm/,
-        /^https:\/\/www\\.auti\\.sm/
+        /^https:\/\/kovan\.interrep\.link/,
+        /^https:\/\/ropsten\.interrep\.link/,
+        /^https:\/\/interrep\.link/,
+        /^https:\/\/auti\.sm/,
+        /^https:\/\/www\.auti\.sm/
     ]
 }
 
@@ -29,8 +29,7 @@ export enum SupportedChainId {
     LOCALHOST = 31337,
     KOVAN = 42,
     ROPSTEN = 3,
-    ARBITRUM = 42161,
-    ARBITRUM_TESTNET = 421611
+    ARBITRUM = 42161
 }
 
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
@@ -51,14 +50,6 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         [ContractName.GROUPS]: "0xc068f3F15f367a60eb2B7c0620961A15A3b36fA3"
     },
     [SupportedChainId.ROPSTEN]: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-        },
-        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
-    },
-    [SupportedChainId.ARBITRUM_TESTNET]: {
         [ContractName.REPUTATION_BADGE]: {
             twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
             github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
@@ -140,5 +131,5 @@ export default {
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
-    API_WHITELIST: process.env.API_WHITELIST?.replace(/ /g, "").split(",") || defaultEnv.API_WHITELIST
+    API_WHITELIST: defaultEnv.API_WHITELIST
 }
