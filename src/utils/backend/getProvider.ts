@@ -1,8 +1,9 @@
+/* istanbul ignore file */
 import { providers } from "ethers"
 import { currentNetwork, SupportedChainId } from "src/config"
 import { NetworkData } from "src/types/network"
 
-export default function getProvider(network: NetworkData = currentNetwork) {
+export default function getProvider(network: NetworkData = currentNetwork): providers.JsonRpcProvider {
     let url: string
 
     switch (network.chainId) {
@@ -11,9 +12,6 @@ export default function getProvider(network: NetworkData = currentNetwork) {
             break
         case SupportedChainId.ARBITRUM:
             url = "https://arb1.arbitrum.io/rpc"
-            break
-        case SupportedChainId.ARBITRUM_TESTNET:
-            url = "https://rinkeby.arbitrum.io/rpc"
             break
         default:
             if (!process.env.INFURA_API_KEY) {

@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Contract } from "ethers"
 import { ContractName } from "src/config"
 import { getSigner } from "src/utils/backend"

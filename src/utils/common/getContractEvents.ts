@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Contract, Event } from "ethers"
 
 /**
@@ -7,7 +8,6 @@ import { Contract, Event } from "ethers"
  * @param eventParameters A list of possible parameters to be used.
  * @returns A list of events.
  */
-/* istanbul ignore next */
 export default function getContractEvents(
     contractInstance: Contract,
     eventName: string,

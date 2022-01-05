@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import winston from "winston"
 
 const format = winston.format.combine(
