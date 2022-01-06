@@ -8,6 +8,7 @@
         "jsx": "preserve",
         "lib": ["dom", "es2017"],
         "module": "esnext",
+        "target": "esnext",
         "moduleResolution": "node",
         "noEmit": true,
         "noFallthroughCasesInSwitch": true,
@@ -15,15 +16,13 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "esnext",
         "baseUrl": ".",
         "typeRoots": ["node_modules/@types", "src/types"],
         "types": ["react", "node", "jest", "circomlibjs", "next-auth", "cors"]
     },
     "ts-node": {
-        // these options are overrides used only by ts-node
-        // same as our --compilerOptions flag and our TS_NODE_COMPILER_OPTIONS environment variable
         "compilerOptions": {
+            "target": "esnext",
             "module": "commonjs"
         }
     },
