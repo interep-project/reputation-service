@@ -40,7 +40,7 @@
         "@interrep/identity": "^0.10.0",
         "@interrep/merkle-tree": "^0.2.1",
         "@interrep/reputation": "^0.13.0",
-        "@interrep/telegram-bot": "^0.5.0",
+        "@interrep/telegram-bot": "^0.5.1",
         "@sentry/nextjs": "^6.16.1",
         "@types/node-schedule": "^1.3.2",
         "@types/nodemailer": "^6.4.4",

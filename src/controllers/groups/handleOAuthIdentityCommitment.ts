@@ -7,13 +7,13 @@ import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function handleOAuthIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
     const provider = req.query?.provider as Provider
-    const name = req.query?.name as string
+    const name = req.query?.name as GroupName
     const identityCommitment = req.query?.identityCommitment as string
 
     const token = req.headers.authorization

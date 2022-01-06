@@ -1,9 +1,7 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { PoapEvent } from "src/core/poap"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
 
 /**
@@ -15,7 +13,7 @@ import { poseidon } from "src/utils/common/crypto"
  */
 export default async function appendLeaf(
     provider: Provider,
-    name: ReputationLevel | PoapEvent | string,
+    name: GroupName,
     identityCommitment: string
 ): Promise<string> {
     if (!checkGroup(provider, name)) {

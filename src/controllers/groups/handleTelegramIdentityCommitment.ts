@@ -1,12 +1,13 @@
 import { TelegramUser } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
-import { connectDatabase } from "src/utils/backend/database"
+import { GroupName } from "src/types/groups"
 import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
-    const name = req.query?.name as string
+    const name = req.query?.name as GroupName
     const identityCommitment = req.query?.identityCommitment as string
     const { telegramUserId } = JSON.parse(req.body)
 

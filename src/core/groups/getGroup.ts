@@ -1,12 +1,10 @@
 import { MerkleTreeNode } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
-import { PoapEvent } from "src/core/poap"
-import { Group, Provider } from "src/types/groups"
+import { Group, GroupName, Provider } from "src/types/groups"
 import { defaultMerkleTreeRoot } from "src/utils/common/crypto"
 import checkGroup from "./checkGroup"
 
-export default async function getGroup(provider: Provider, name: ReputationLevel | PoapEvent | string): Promise<Group> {
+export default async function getGroup(provider: Provider, name: GroupName): Promise<Group> {
     if (!checkGroup(provider, name)) {
         throw new Error(`The ${provider} ${name} group does not exist`)
     }

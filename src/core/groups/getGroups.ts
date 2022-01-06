@@ -1,14 +1,14 @@
 import { getReputationLevels } from "@interrep/reputation"
 import { getTelegramGroups } from "@interrep/telegram-bot"
 import { getPoapEvents } from "src/core/poap"
-import { Group, Provider, Web3Provider } from "src/types/groups"
+import { Group, Provider } from "src/types/groups"
 import { getProviders } from "."
 import { getEmailDomains } from "../email"
 import getGroup from "./getGroup"
 
 export default async function getGroups(provider?: Provider): Promise<Group[]> {
     if (provider) {
-        if (provider === Web3Provider.POAP) {
+        if (provider === "poap") {
             const poapEvents = getPoapEvents()
 
             return Promise.all(poapEvents.map((poapEvent) => getGroup(provider, poapEvent)))

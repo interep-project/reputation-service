@@ -1,7 +1,7 @@
 import { MerkleTreeNode } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup } from "src/core/groups"
-import { Provider, Web3Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
@@ -15,9 +15,9 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         return
     }
 
-    const provider = req.query?.provider
-    const name = req.query?.name
-    const identityCommitment = req.query?.identityCommitment
+    const provider = req.query?.provider as Provider
+    const name = req.query?.name as GroupName
+    const identityCommitment = req.query?.identityCommitment as string
 
     if (
         !provider ||
@@ -31,7 +31,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         return
     }
 
-    if (!checkGroup(provider as Provider, name)) {
+    if (!checkGroup(provider, name)) {
         res.status(404).end("The group does not exist")
         return
     }
@@ -65,7 +65,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
     console.log(res.getHeader("Access-Control-Allow-Origin"))
 
     switch (provider) {
-        case Web3Provider.POAP:
+        case "poap":
             await handlePoapIdentityCommitmentController(req, res)
             break
         case "telegram":

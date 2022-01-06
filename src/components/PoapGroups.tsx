@@ -5,7 +5,7 @@ import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { PoapEvent } from "src/core/poap"
 import useGroups from "src/hooks/useGroups"
-import { Group, Web3Provider } from "src/types/groups"
+import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
 export default function PoapGroups(): JSX.Element {
@@ -26,7 +26,7 @@ export default function PoapGroups(): JSX.Element {
 
     const step1 = useCallback(
         async (groupName: PoapEvent) => {
-            const group = await getGroup(Web3Provider.POAP, groupName)
+            const group = await getGroup("poap", groupName)
 
             if (group) {
                 setGroup(group)
@@ -38,10 +38,10 @@ export default function PoapGroups(): JSX.Element {
 
     const step2 = useCallback(
         async (signer: Signer, group: Group) => {
-            const identityCommitment = await retrieveIdentityCommitment(signer, Web3Provider.POAP)
+            const identityCommitment = await retrieveIdentityCommitment(signer, "poap")
 
             if (identityCommitment) {
-                const hasJoined = await hasIdentityCommitment(identityCommitment, Web3Provider.POAP, group.name)
+                const hasJoined = await hasIdentityCommitment(identityCommitment, "poap", group.name)
 
                 if (hasJoined === null) {
                     return
@@ -62,7 +62,7 @@ export default function PoapGroups(): JSX.Element {
             if (userSignature) {
                 if (!hasJoined) {
                     if (
-                        await joinGroup(identityCommitment, Web3Provider.POAP, group.name, {
+                        await joinGroup(identityCommitment, "poap", group.name, {
                             userAddress,
                             userSignature
                         })
@@ -71,9 +71,7 @@ export default function PoapGroups(): JSX.Element {
                         setHasJoined(undefined)
                         setGroup(undefined)
                     }
-                } else if (
-                    await leaveGroup(identityCommitment, Web3Provider.POAP, group.name, { userAddress, userSignature })
-                ) {
+                } else if (await leaveGroup(identityCommitment, "poap", group.name, { userAddress, userSignature })) {
                     setCurrentStep(1)
                     setHasJoined(undefined)
                     setGroup(undefined)

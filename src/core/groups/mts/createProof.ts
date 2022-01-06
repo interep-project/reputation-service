@@ -1,8 +1,6 @@
 import { MerkleTreeNode } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
 import { checkGroup } from "src/core/groups"
-import { PoapEvent } from "src/core/poap"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 
 /**
  * Returns the Merkle proof of a tree leaf.
@@ -13,7 +11,7 @@ import { Provider } from "src/types/groups"
  */
 export default async function createProof(
     provider: Provider,
-    name: ReputationLevel | PoapEvent | string,
+    name: GroupName,
     identityCommitment: string
 ): Promise<any> {
     if (!checkGroup(provider, name)) {
