@@ -6,6 +6,13 @@ import { PoapEvent } from "src/core/poap"
 import { Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
 
+/**
+ * Deletes a leaf from a tree.
+ * @param provider The provider of the group.
+ * @param name The name of the group.
+ * @param identityCommitment The leaf of the tree.
+ * @returns The new Merkle tree root.
+ */
 export default async function deleteLeaf(
     provider: Provider,
     name: ReputationLevel | PoapEvent | string,
@@ -15,20 +22,20 @@ export default async function deleteLeaf(
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
+    // Get the zero hashes.
+    const zeroes = await MerkleTreeZero.find()
+
+    if (!zeroes || zeroes.length !== config.MERKLE_TREE_DEPTH) {
+        throw new Error(`The zero hashes have not yet been created`)
+    }
+
     let node = await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)
 
     if (!node) {
         throw new Error(`The identity commitment ${identityCommitment} does not exist`)
     }
 
-    // Get the first zero hash.
-    const zero = await MerkleTreeZero.findOne({ level: 0 })
-
-    if (!zero) {
-        throw new Error(`The zero hashes have not yet been created`)
-    }
-
-    node.hash = zero.hash
+    node.hash = zeroes[0].hash
 
     await node.save()
 

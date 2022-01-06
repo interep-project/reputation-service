@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeNodeDocument } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
@@ -28,41 +28,57 @@ describe("# core/groups/mts", () => {
         it("Should not append any leaf if the group id does not exist", async () => {
             await seedZeroHashes()
 
-            const fun = (): Promise<string> => appendLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
+            const fun = () => appendLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            await expect(fun).rejects.toThrow("does not exist")
         })
 
         it("Should not append any leaf without first creating the zero hashes", async () => {
-            const fun = (): Promise<string> => appendLeaf(provider, reputation, idCommitment)
+            const fun = () => appendLeaf(provider, reputation, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            await expect(fun).rejects.toThrow("not yet been created")
         })
 
         it("Should not append the same identity twice", async () => {
             await seedZeroHashes()
-
             await appendLeaf(provider, reputation, idCommitment)
-            const fun = (): Promise<string> => appendLeaf(provider, reputation, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            const fun = () => appendLeaf(provider, reputation, idCommitment)
+
+            await expect(fun).rejects.toThrow("already exist")
         })
 
         it("Should append two leaves and their parent hash should match the hash of the id commitments", async () => {
             await seedZeroHashes()
             const idCommitments = [poseidon(1), poseidon(2)]
+            const hash = poseidon(idCommitments[0], idCommitments[1])
 
             await appendLeaf(provider, reputation, idCommitments[0])
             await appendLeaf(provider, reputation, idCommitments[1])
 
-            const node = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
+            const expectedValue = (await MerkleTreeNode.findByGroupAndLevelAndIndex(
                 { provider, name: reputation },
                 1,
                 0
             )) as MerkleTreeNodeDocument
-            const hash = poseidon(idCommitments[0], idCommitments[1])
 
-            expect(hash).toBe(node.hash)
+            expect(expectedValue).not.toBeNull()
+            expect(expectedValue.hash).toBe(hash)
+        })
+
+        it("Should create a root batch without transaction if it does not exist", async () => {
+            await seedZeroHashes()
+            const idCommitments = [1, 2].map((v) => poseidon(v))
+
+            await appendLeaf(provider, reputation, idCommitments[0].toString())
+            await appendLeaf(provider, reputation, idCommitments[1].toString())
+
+            const expectedValue = (await MerkleTreeRootBatch.findOne({
+                group: { provider, name: reputation },
+                transaction: undefined
+            })) as MerkleTreeRootBatchDocument
+
+            expect(expectedValue).not.toBeNull()
         })
 
         it("Should append 10 leaves correctly", async () => {
@@ -92,7 +108,13 @@ describe("# core/groups/mts", () => {
         it("Should not delete any leaf if the group id does not exist", async () => {
             const fun = () => deleteLeaf(provider, PoapEvent.DEVCON_3, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            await expect(fun).rejects.toThrow("does not exist")
+        })
+
+        it("Should not delete any leaf without first creating the zero hashes", async () => {
+            const fun = () => deleteLeaf(provider, reputation, idCommitment)
+
+            await expect(fun).rejects.toThrow("not yet been created")
         })
 
         it("Should not delete any leaf if it does not exist", async () => {
@@ -100,7 +122,7 @@ describe("# core/groups/mts", () => {
 
             const fun = () => deleteLeaf(provider, reputation, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            await expect(fun).rejects.toThrow("does not exist")
         })
 
         it("Should delete a leaf", async () => {
@@ -110,7 +132,7 @@ describe("# core/groups/mts", () => {
             await appendLeaf(provider, reputation, idCommitments[0].toString())
             await appendLeaf(provider, reputation, idCommitments[1].toString())
 
-            const root = await deleteLeaf(provider, reputation, idCommitments[0].toString())
+            const expectedValue = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
             const tree = createMerkleTree()
 
@@ -118,7 +140,36 @@ describe("# core/groups/mts", () => {
             tree.insert(idCommitments[1])
             tree.delete(0)
 
-            expect(root).toBe(tree.root)
+            expect(expectedValue).toBe(tree.root)
+        })
+
+        it("Should create a root batch without transaction if it does not exist", async () => {
+            await seedZeroHashes()
+            const idCommitments = [1, 2].map((v) => poseidon(v))
+
+            await appendLeaf(provider, reputation, idCommitments[0].toString())
+            await appendLeaf(provider, reputation, idCommitments[1].toString())
+
+            const rootBatch = (await MerkleTreeRootBatch.findOne({
+                group: { provider, name: reputation },
+                transaction: undefined
+            })) as MerkleTreeRootBatchDocument
+
+            rootBatch.transaction = {
+                hash: "0x000",
+                blockNumber: 0
+            }
+
+            await rootBatch.save()
+
+            await deleteLeaf(provider, reputation, idCommitments[0].toString())
+
+            const expectedValue = (await MerkleTreeRootBatch.findOne({
+                group: { provider, name: reputation },
+                transaction: undefined
+            })) as MerkleTreeRootBatchDocument
+
+            expect(expectedValue).not.toBeNull()
         })
 
         it("Should delete 5 leaves correctly", async () => {
@@ -135,11 +186,11 @@ describe("# core/groups/mts", () => {
 
             for (let i = 0; i < 5; i++) {
                 const idCommitment = poseidon(i)
-
-                const root = await deleteLeaf(provider, reputation, idCommitment.toString())
                 tree.delete(i)
 
-                expect(root).toBe(tree.root)
+                const expectedValue = await deleteLeaf(provider, reputation, idCommitment.toString())
+
+                expect(expectedValue).toBe(tree.root)
             }
         })
     })
@@ -149,10 +200,16 @@ describe("# core/groups/mts", () => {
             await clearTestingDatabase()
         })
 
-        it(`Should not return any proof if the identity commitment does not exist`, async () => {
-            const fun = (): Promise<string[]> => createProof(provider, reputation, idCommitment)
+        it("Should not return any proof if the group id does not exist", async () => {
+            const fun = () => createProof(provider, PoapEvent.DEVCON_3, idCommitment)
 
-            await expect(fun).rejects.toThrow()
+            await expect(fun).rejects.toThrow("does not exist")
+        })
+
+        it(`Should not return any proof if the identity commitment does not exist`, async () => {
+            const fun = () => createProof(provider, reputation, idCommitment)
+
+            await expect(fun).rejects.toThrow("does not exist")
         })
 
         it(`Should return a proof of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
@@ -166,10 +223,10 @@ describe("# core/groups/mts", () => {
                 await appendLeaf(provider, reputation, idCommitments[i])
             }
 
-            const proof = await createProof(provider, reputation, idCommitments[5])
+            const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(proof.siblingNodes).toHaveLength(config.MERKLE_TREE_DEPTH)
-            expect(proof.path).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue.siblingNodes).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue.path).toHaveLength(config.MERKLE_TREE_DEPTH)
         })
 
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
@@ -185,12 +242,11 @@ describe("# core/groups/mts", () => {
                 tree.insert(BigInt(idCommitments[i]))
             }
 
-            const proof = await createProof(provider, reputation, idCommitments[5])
-
             const { path, siblingNodes } = tree.createProof(5)
+            const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(proof.path).toStrictEqual(path)
-            expect(proof.siblingNodes).toStrictEqual(siblingNodes.map(String))
+            expect(expectedValue.path).toStrictEqual(path)
+            expect(expectedValue.siblingNodes).toStrictEqual(siblingNodes.map(String))
         })
     })
 })
