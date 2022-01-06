@@ -2,7 +2,6 @@ import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
-import { Web3Provider } from "src/types/groups"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { checkGroup, getGroup, getGroups, getProviders } from "."
@@ -32,6 +31,12 @@ describe("# core/groups", () => {
     })
 
     describe("# getGroup", () => {
+        it("Should fail if the group does not exist", async () => {
+            const fun = () => getGroup(OAuthProvider.TWITTER, PoapEvent.DEVCON_3)
+
+            await expect(fun).rejects.toThrow("does not exist")
+        })
+
         it("Should return the correct group", async () => {
             const expectedValue = await getGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
 
@@ -80,7 +85,7 @@ describe("# core/groups", () => {
         it("Should return all the existing providers", async () => {
             const expectedValue = getProviders()
 
-            expect(expectedValue).toContainEqual(Web3Provider.POAP)
+            expect(expectedValue).toContainEqual("poap")
             expect(expectedValue).toContainEqual(OAuthProvider.TWITTER)
         })
     })
