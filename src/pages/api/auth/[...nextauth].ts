@@ -1,10 +1,10 @@
 import { OAuthAccount } from "@interrep/db"
-import { OAuthProvider } from "@interrep/reputation"
+import { getOAuthProviders, OAuthProvider } from "@interrep/reputation"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
 import config from "src/config"
-import { createOAuthAccount, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/auth"
+import { createOAuthAccount, mapGithubProfile, mapRedditProfile, mapTwitterProfile } from "src/core/oauth"
 import { User } from "src/types/next-auth"
 import { logger } from "src/utils/backend"
 
@@ -36,7 +36,9 @@ export default NextAuth({
     },
     callbacks: {
         async signIn(user: User, account: Account) {
-            if (!account?.provider || !(account.provider.toUpperCase() in OAuthProvider)) {
+            const providers = getOAuthProviders()
+
+            if (!account || !account.provider || !providers.includes(account.provider as OAuthProvider)) {
                 return false
             }
 

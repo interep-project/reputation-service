@@ -18,21 +18,21 @@ function createNexAuthAccount(override?: any) {
     }
 }
 
-describe("# core/auth", () => {
-    const user: TwitterParameters | any = {
-        verifiedProfile: true,
-        followers: 100,
-        botometerOverallScore: 2
-    }
+describe("# core/oauth", () => {
+    beforeAll(async () => {
+        await connectTestingDatabase()
+    })
+
+    afterAll(async () => {
+        await disconnectTestingDatabase()
+    })
 
     describe("# createOAuthAccount", () => {
-        beforeAll(async () => {
-            await connectTestingDatabase()
-        })
-
-        afterAll(async () => {
-            await disconnectTestingDatabase()
-        })
+        const user: TwitterParameters | any = {
+            verifiedProfile: true,
+            followers: 100,
+            botometerOverallScore: 2
+        }
 
         afterEach(async () => {
             await clearTestingDatabase()
