@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ReputationLevel } from "@interrep/reputation"
 import { ContractReceipt, ethers } from "ethers"
 import { ContractName } from "src/config"

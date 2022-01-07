@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ContractName } from "src/config"
 import { getBackendContractInstance } from "src/utils/backend"
 import { getContractAddress, getContractEvents } from "src/utils/common"
