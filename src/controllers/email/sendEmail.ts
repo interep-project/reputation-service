@@ -19,7 +19,7 @@ export default async function sendEmailController(req: NextApiRequest, res: Next
     const emailDomains = getEmailDomainsByEmail(email)
 
     if (emailDomains.length === 0) {
-        res.status(402).send("The email is not supported")
+        res.status(400).send("The email is not supported")
         return
     }
 
