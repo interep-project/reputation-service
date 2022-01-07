@@ -8,12 +8,13 @@ const format = winston.format.combine(
 
 const transports: winston.transport[] = [
     new winston.transports.Console({
-        level: process.env.NODE_ENV === "production" ? "verbose" : process.env.NODE_ENV === "test" ? "error" : "silly",
+        level: process.env.NODE_ENV === "production" ? "verbose" : "silly",
         format: winston.format.combine(
             winston.format.colorize({
                 all: true
             })
-        )
+        ),
+        silent: process.env.NODE_ENV === "test"
     })
 ]
 
