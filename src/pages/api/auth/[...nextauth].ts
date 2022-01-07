@@ -38,16 +38,21 @@ export default NextAuth({
         async signIn(user: User, account: Account) {
             const providers = getOAuthProviders()
 
-            if (!account || !account.provider || !providers.includes(account.provider as OAuthProvider)) {
+            if (
+                !account ||
+                !account.provider ||
+                !account.id ||
+                !providers.includes(account.provider as OAuthProvider)
+            ) {
                 return false
             }
 
             try {
-                await createOAuthAccount(user, account, account.provider as OAuthProvider)
+                await createOAuthAccount(user, account)
 
                 return true
-            } catch (err) {
-                logger.error(err)
+            } catch (error) {
+                logger.error(error)
 
                 return false
             }

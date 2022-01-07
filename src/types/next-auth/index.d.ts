@@ -1,4 +1,4 @@
-import { Session as NextAuthSession, Account as NextAuthAccount } from "next-auth"
+import { Session as NextAuthSession } from "next-auth"
 import { JWT as NextAuthJWT } from "next-auth/jwt"
 import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
 

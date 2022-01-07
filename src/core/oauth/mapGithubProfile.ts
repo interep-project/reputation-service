@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { GithubParameters } from "@interrep/reputation"
 import { User } from "src/types/next-auth"
 

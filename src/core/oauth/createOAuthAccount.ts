@@ -10,76 +10,63 @@ import { OAuthAccount } from "@interrep/db"
 import { User } from "src/types/next-auth"
 import { connectDatabase } from "src/utils/backend/database"
 
-export default async function createOAuthAccount(
-    user: User,
-    nextAuthAccount: Account,
-    provider: OAuthProvider
-): Promise<void> {
+export default async function createOAuthAccount(user: User, nextAuthAccount: Account): Promise<void> {
     await connectDatabase()
 
-    if (!nextAuthAccount.id) {
-        throw new Error("Invalid account response")
-    }
+    const provider = nextAuthAccount.provider as OAuthProvider
+    const providerAccountId = nextAuthAccount.id
 
-    try {
-        let account = await OAuthAccount.findByProviderAccountId(provider, nextAuthAccount.id)
+    let account = await OAuthAccount.findByProviderAccountId(provider, providerAccountId)
 
-        if (!account) {
-            account = new OAuthAccount({
-                provider,
-                providerAccountId: nextAuthAccount.id,
-                accessToken: nextAuthAccount.accessToken,
-                refreshToken: nextAuthAccount.refreshToken
-            })
+    if (!account) {
+        account = new OAuthAccount({
+            provider,
+            providerAccountId,
+            accessToken: nextAuthAccount.accessToken,
+            refreshToken: nextAuthAccount.refreshToken
+        })
 
-            switch (provider) {
-                case OAuthProvider.TWITTER: {
-                    const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
+        switch (provider) {
+            case OAuthProvider.TWITTER: {
+                const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
 
-                    account.reputation = calculateReputation(provider, {
-                        verifiedProfile,
-                        followers,
-                        botometerOverallScore
-                    })
+                account.reputation = calculateReputation(provider, {
+                    verifiedProfile,
+                    followers,
+                    botometerOverallScore
+                })
 
-                    break
-                }
-                case OAuthProvider.GITHUB: {
-                    const { proPlan, followers, receivedStars } = user as GithubParameters
-
-                    account.reputation = calculateReputation(provider, {
-                        proPlan,
-                        followers,
-                        receivedStars
-                    })
-
-                    break
-                }
-                case OAuthProvider.REDDIT: {
-                    const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
-
-                    account.reputation = calculateReputation(provider, {
-                        premiumSubscription,
-                        karma,
-                        coins,
-                        linkedIdentities
-                    })
-
-                    break
-                }
-                default:
+                break
             }
-        } else {
-            account.accessToken = nextAuthAccount.accessToken
-            account.refreshToken = nextAuthAccount.refreshToken
-        }
+            case OAuthProvider.GITHUB: {
+                const { proPlan, followers, receivedStars } = user as GithubParameters
 
-        try {
-            await account.save()
-        } catch (error) {
-            throw new Error(`Error trying to save the account: ${error}`)
+                account.reputation = calculateReputation(provider, {
+                    proPlan,
+                    followers,
+                    receivedStars
+                })
+
+                break
+            }
+            case OAuthProvider.REDDIT: {
+                const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
+
+                account.reputation = calculateReputation(provider, {
+                    premiumSubscription,
+                    karma,
+                    coins,
+                    linkedIdentities
+                })
+
+                break
+            }
+            default:
         }
-    } catch (error) {
-        throw new Error(`Error trying to retrieve the account: ${error}`)
+    } else {
+        account.accessToken = nextAuthAccount.accessToken
+        account.refreshToken = nextAuthAccount.refreshToken
     }
+
+    await account.save()
 }
