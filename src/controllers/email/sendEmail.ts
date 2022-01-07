@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { createEmailAccount, getEmailDomainsByEmail } from "src/core/email"
 import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function sendEmailController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
@@ -23,6 +24,8 @@ export default async function sendEmailController(req: NextApiRequest, res: Next
     }
 
     try {
+        await connectDatabase()
+
         await createEmailAccount(email, emailDomains)
 
         res.status(201).send({ data: true })
