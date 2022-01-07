@@ -139,20 +139,20 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
         const account = await OAuthAccount.findById(accountId)
 
         if (!account) {
-            throw new Error(`Account not found`)
+            throw new Error(`The account does not exist`)
         }
 
         if (account.provider !== provider) {
-            throw new Error("Account doesn't have the right provider")
+            throw new Error("The account provider is wrong")
         }
 
         if (!account.reputation || account.reputation !== name) {
-            throw new Error("Account doesn't have the right reputation")
+            throw new Error("The account reputation does not match")
         }
 
         if (req.method === "POST") {
             if (account.hasJoinedAGroup) {
-                throw new Error(`Account already joined a ${provider} group`)
+                throw new Error(`The account already joined a ${provider} group`)
             }
 
             await appendLeaf(provider, name, identityCommitment)
@@ -160,7 +160,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
             account.hasJoinedAGroup = true
         } else if (req.method === "DELETE") {
             if (!account.hasJoinedAGroup) {
-                throw new Error(`Account has not joined a ${provider} group yet`)
+                throw new Error(`The account has not joined a ${provider} group yet`)
             }
 
             await deleteLeaf(provider, name, identityCommitment)

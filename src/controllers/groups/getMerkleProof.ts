@@ -2,7 +2,7 @@ import { MerkleTreeNode } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup } from "src/core/groups"
 import { createProof } from "src/core/groups/mts"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
@@ -12,8 +12,8 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
         return
     }
 
-    const provider = req.query?.provider
-    const name = req.query?.name
+    const provider = req.query?.provider as Provider
+    const name = req.query?.name as GroupName
     const identityCommitment = req.query?.identityCommitment
 
     if (
@@ -28,7 +28,7 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
         return
     }
 
-    if (!checkGroup(provider as Provider, name)) {
+    if (!checkGroup(provider, name)) {
         res.status(404).end("The group does not exist")
         return
     }
@@ -41,12 +41,7 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
             return
         }
 
-        const proof = await createProof(provider as Provider, name, identityCommitment)
-
-        if (!proof) {
-            res.status(200).send({ data: [] })
-            return
-        }
+        const proof = await createProof(provider, name, identityCommitment)
 
         res.status(200).send({ data: proof })
     } catch (error) {

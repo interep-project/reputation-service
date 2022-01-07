@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup, getGroup } from "src/core/groups"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
@@ -10,15 +10,15 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
         return
     }
 
-    const provider = req.query?.provider
-    const name = req.query?.name
+    const provider = req.query?.provider as Provider
+    const name = req.query?.name as GroupName
 
     if (!provider || typeof provider !== "string" || !name || typeof name !== "string") {
         res.status(400).end()
         return
     }
 
-    if (!checkGroup(provider as Provider, name)) {
+    if (!checkGroup(provider, name)) {
         res.status(404).end("The group does not exist")
         return
     }
@@ -26,7 +26,7 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
     try {
         await connectDatabase()
 
-        const group = await getGroup(provider as Provider, name as any)
+        const group = await getGroup(provider, name)
 
         res.status(200).send({ data: group })
     } catch (error) {

@@ -58,11 +58,8 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         res.status(401).send(error.message)
 
         logger.error(error)
-
         return
     }
-
-    console.log(res.getHeader("Access-Control-Allow-Origin"))
 
     switch (provider) {
         case "poap":

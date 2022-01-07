@@ -23,8 +23,7 @@ export default async function hasJoinedAGroupController(req: NextApiRequest, res
         const account = await OAuthAccount.findById(session.accountId)
 
         if (!account) {
-            res.status(500).send("Can't find account")
-            return
+            throw new Error("The account does not exist")
         }
 
         res.status(200).send({ data: !!account.hasJoinedAGroup })
