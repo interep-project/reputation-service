@@ -12,6 +12,9 @@
     <a href="https://github.com/InterRep/reputation-service/actions/workflows/test.yaml">
         <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/test?label=test&logo=github">
     </a>
+    <a href="https://coveralls.io/github/InterRep/reputation-service">
+        <img alt="Coveralls" src="https://img.shields.io/coveralls/github/InterRep/reputation-service?style=flat-square&logo=coveralls">
+    </a>
     <a href="https://eslint.org/" target="_blank">
         <img alt="Linter eslint" src="https://img.shields.io/badge/linter-eslint-8080f2?style=flat-square&logo=eslint">
     </a>
