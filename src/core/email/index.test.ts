@@ -7,12 +7,11 @@ import createEmailAccount from "./createEmailAccount"
 import createMagicLink from "./createMagicLink"
 import EmailDomain from "./emailDomain"
 import getEmailDomains from "./getEmailDomains"
+import sendEmail from "./sendEmail"
 
-jest.mock("nodemailer", () => ({
+jest.mock("src/core/email/sendEmail", () => ({
     __esModule: true,
-    createTransport: jest.fn(() => ({
-        sendMail: jest.fn()
-    }))
+    default: jest.fn()
 }))
 
 describe("# core/email", () => {
@@ -93,6 +92,21 @@ describe("# core/email", () => {
             expect(emailUser1.hasJoined).toBeFalsy()
             expect(emailUser2.verificationToken).toHaveLength(64)
             expect(emailUser2.hasJoined).toBeFalsy()
+        })
+
+        it("Should use the old verification token if an account already exists", async () => {
+            const email = "test@hotmail.co.uk"
+            const emailDomains = [EmailDomain.HOTMAIL]
+
+            await EmailUser.create({
+                hashId: "3645f4ba05edd73cf03aaad828d1d08e0327a3d9e6c62c2095492a47d933f07b",
+                hasJoined: false,
+                verificationToken: "token"
+            })
+
+            await createEmailAccount(email, emailDomains)
+
+            expect(sendEmail).toHaveBeenCalledWith(email, "token", emailDomains)
         })
     })
 
