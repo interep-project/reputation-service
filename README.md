@@ -15,6 +15,9 @@
     <a href="https://coveralls.io/github/InterRep/reputation-service">
         <img alt="Coveralls" src="https://img.shields.io/coveralls/github/InterRep/reputation-service?style=flat-square&logo=coveralls">
     </a>
+    <a href="https://deepscan.io/dashboard#view=project&tid=16502&pid=19780&bid=519858">
+        <img alt="DeepScan grade" src="https://deepscan.io/api/teams/16502/projects/19780/branches/519858/badge/grade.svg">
+    </a>
     <a href="https://eslint.org/" target="_blank">
         <img alt="Linter eslint" src="https://img.shields.io/badge/linter-eslint-8080f2?style=flat-square&logo=eslint">
     </a>
