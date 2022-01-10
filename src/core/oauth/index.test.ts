@@ -47,7 +47,6 @@ describe("# core/oauth", () => {
                     reputation: ReputationLevel.GOLD,
                     provider: nextAuthAccount.provider,
                     providerAccountId: nextAuthAccount.id,
-                    isLinkedToAddress: false,
                     hasJoinedAGroup: false,
                     accessToken: nextAuthAccount.accessToken,
                     refreshToken: nextAuthAccount.refreshToken

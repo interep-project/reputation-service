@@ -6,7 +6,6 @@ export default function createOAuthAccountMock(override?: Partial<OAuthAccountDo
         provider: OAuthProvider.TWITTER,
         providerAccountId: "1",
         reputation: ReputationLevel.GOLD,
-        isLinkedToAddress: false,
         hasJoinedAGroup: false,
         createdAt: Date.now(),
         ...override
