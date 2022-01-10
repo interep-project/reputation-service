@@ -4,27 +4,25 @@ on:
     pull_request:
     push:
         branches:
-            - develop
             - main
+            - dev
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
+        steps:
+            - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 16.x
 
-      - uses: c-hive/gha-yarn-cache@v2
+            - uses: c-hive/gha-yarn-cache@v2
 
-      - name: Install dependencies
-        run: |
-          yarn install --immutable
+            - run: yarn --immutable
+            - run: yarn test:prod
 
-      - name: Run tests
-        run: yarn test:prod
+            - uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
