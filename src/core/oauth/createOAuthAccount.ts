@@ -27,17 +27,6 @@ export default async function createOAuthAccount(user: User, nextAuthAccount: Ac
         })
 
         switch (provider) {
-            case OAuthProvider.TWITTER: {
-                const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
-
-                account.reputation = calculateReputation(provider, {
-                    verifiedProfile,
-                    followers,
-                    botometerOverallScore
-                })
-
-                break
-            }
             case OAuthProvider.GITHUB: {
                 const { proPlan, followers, receivedStars } = user as GithubParameters
 
@@ -61,7 +50,17 @@ export default async function createOAuthAccount(user: User, nextAuthAccount: Ac
 
                 break
             }
-            default:
+            default: {
+                const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
+
+                account.reputation = calculateReputation(provider, {
+                    verifiedProfile,
+                    followers,
+                    botometerOverallScore
+                })
+
+                break
+            }
         }
     } else {
         account.accessToken = nextAuthAccount.accessToken

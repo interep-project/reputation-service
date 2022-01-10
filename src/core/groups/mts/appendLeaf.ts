@@ -34,6 +34,7 @@ export default async function appendLeaf(
     // Get next available index at level 0.
     let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
+    /* istanbul ignore next */
     if (currentIndex >= 2 ** config.MERKLE_TREE_DEPTH) {
         throw new Error(`The tree is full`)
     }

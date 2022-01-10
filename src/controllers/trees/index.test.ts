@@ -80,13 +80,12 @@ describe("# controllers/trees", () => {
         })
 
         it("Should return the leaves of an existing tree", async () => {
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "14609760376212188739174515935152741473834465719479776351628428906066285698800" }
+                query: { rootHash }
             })
-
-            await seedZeroHashes()
-            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
             await getLeavesController(req, res)
 
@@ -94,6 +93,25 @@ describe("# controllers/trees", () => {
 
             expect(res._getStatusCode()).toBe(200)
             expect(data).toContain("111")
+        })
+
+        it("Should return the leaves of an existing tree with limit and offset", async () => {
+            await seedZeroHashes()
+            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "222")
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "333")
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { rootHash, limit: "1", offset: "1" }
+            })
+
+            await getLeavesController(req, res)
+
+            const { data } = res._getData()
+
+            expect(res._getStatusCode()).toBe(200)
+            expect(data).toHaveLength(1)
+            expect(data).toContain("222")
         })
     })
 
@@ -146,16 +164,15 @@ describe("# controllers/trees", () => {
         })
 
         it("Should return false if a leaf does not exist", async () => {
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
-                    rootHash: "14609760376212188739174515935152741473834465719479776351628428906066285698800",
+                    rootHash,
                     leafHash: "222"
                 }
             })
-
-            await seedZeroHashes()
-            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
             await hasLeafController(req, res)
 
@@ -166,16 +183,15 @@ describe("# controllers/trees", () => {
         })
 
         it("Should return true if a leaf exists", async () => {
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
-                    rootHash: "14609760376212188739174515935152741473834465719479776351628428906066285698800",
+                    rootHash,
                     leafHash: "111"
                 }
             })
-
-            await seedZeroHashes()
-            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
             await hasLeafController(req, res)
 
@@ -235,16 +251,14 @@ describe("# controllers/trees", () => {
         })
 
         it("Should return a root batch if it exists", async () => {
-            const rootHash = "14609760376212188739174515935152741473834465719479776351628428906066285698800"
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
                     rootHash
                 }
             })
-
-            await seedZeroHashes()
-            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
             await getRootBatchController(req, res)
 
@@ -288,13 +302,11 @@ describe("# controllers/trees", () => {
         })
 
         it("Should return a list of root batches", async () => {
-            const rootHash = "14609760376212188739174515935152741473834465719479776351628428906066285698800"
+            await seedZeroHashes()
+            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET"
             })
-
-            await seedZeroHashes()
-            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
             await getRootBatchesController(req, res)
 
