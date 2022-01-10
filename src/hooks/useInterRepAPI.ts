@@ -5,12 +5,7 @@ import {
     removeIdentityCommitment as _removeIdentityCommitment,
     hasJoinedAGroup as _hasJoinedAGroup,
     hasIdentityCommitment as _hasIdentityCommitment,
-    isLinkedToAddress as _isLinkedToAddress,
     getGroup as _getGroup,
-    getUserBadges as _getUserBadges,
-    linkAccounts as _linkAccounts,
-    mintBadge as _mintBadge,
-    unlinkAccounts as _unlinkAccounts,
     sendEmail as _sendEmail
 } from "src/utils/frontend/api"
 
@@ -19,12 +14,7 @@ type API = {
     removeIdentityCommitment: typeof _removeIdentityCommitment
     hasIdentityCommitment: typeof _hasIdentityCommitment
     getGroup: typeof _getGroup
-    isLinkedToAddress: typeof _isLinkedToAddress
-    mintBadge: typeof _mintBadge
     hasJoinedAGroup: typeof _hasJoinedAGroup
-    linkAccounts: typeof _linkAccounts
-    getUserBadges: typeof _getUserBadges
-    unlinkAccounts: typeof _unlinkAccounts
     sendEmail: typeof _sendEmail
 }
 
@@ -72,12 +62,7 @@ export default function useInterRepAPI(): API {
         removeIdentityCommitment: (parameters) => handleApiFunction(_removeIdentityCommitment, parameters),
         hasIdentityCommitment: (parameters) => handleApiFunction(_hasIdentityCommitment, parameters),
         getGroup: (parameters) => handleApiFunction(_getGroup, parameters),
-        isLinkedToAddress: () => handleApiFunction(_isLinkedToAddress),
-        mintBadge: (parameters) => handleApiFunction(_mintBadge, parameters),
         hasJoinedAGroup: () => handleApiFunction(_hasJoinedAGroup),
-        linkAccounts: (parameters) => handleApiFunction(_linkAccounts, parameters),
-        getUserBadges: (parameters) => handleApiFunction(_getUserBadges, parameters),
-        unlinkAccounts: (parameters) => handleApiFunction(_unlinkAccounts, parameters),
         sendEmail: (parameters) => handleApiFunction(_sendEmail, parameters)
     }
 }

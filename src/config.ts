@@ -21,8 +21,7 @@ export enum Environment {
 }
 
 export enum ContractName {
-    GROUPS = "Groups",
-    REPUTATION_BADGE = "ReputationBadge"
+    GROUPS = "Groups"
 }
 
 export enum SupportedChainId {
@@ -34,35 +33,15 @@ export enum SupportedChainId {
 
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-        },
         [ContractName.GROUPS]: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
     },
     [SupportedChainId.KOVAN]: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x346a936b19071b2f619200848B8ADbb938D72250",
-            github: "0xb69aABB5D8d8e4920834761bD0C9DEEfa5D5502F",
-            reddit: "0x9f44be9F69aF1e049dCeCDb2d9296f36C49Ceafb"
-        },
         [ContractName.GROUPS]: "0xc068f3F15f367a60eb2B7c0620961A15A3b36fA3"
     },
     [SupportedChainId.ROPSTEN]: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-        },
         [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
     [SupportedChainId.ARBITRUM]: {
-        [ContractName.REPUTATION_BADGE]: {
-            twitter: "0x2F4d1333337b5C4C47Db5DB3A36eD547a549BC11",
-            github: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-            reddit: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
-        },
         [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     }
 }

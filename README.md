@@ -37,7 +37,7 @@
     </h4>
 </div>
 
-If you want an overwiew of InterRep, read our announcement post: https://jaygraber.medium.com/introducing-interrep-255d3f56682. For more details, please see our [documentation website](https://docs.interrep.link).
+Please, visit our [documentation website](https://docs.interrep.link) for more details.
 
 ⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of interRep. They will soon be updated. You can find an updated version at [kovan.interrep.link](https://kovan.interrep.link) (staging env).
 
@@ -53,7 +53,7 @@ The frontend consists of the pages defined in the `src/pages` directory. These p
 
 The services in the `src/services` folder usually contain external services APIs, while the `src/tasks` folder contains tasks that run externally to Next.js. Finally, the `src/config.ts` file contains the environment variables and data about the Ethereum network and contracts.
 
-The code is usually organized in modules (e.g. `src/core/badges`), where each function corresponds to a file with the same name, and an `index.ts` file exports all the functions of the module. Each module also contains an `index.test.ts` file where Jest tests are defined for each function in the module. Test files follow a standard structure for each module.
+The code is usually organized in modules (e.g. `src/core/groups`), where each function corresponds to a file with the same name, and an `index.ts` file exports all the functions of the module. Each module also contains an `index.test.ts` file where Jest tests are defined for each function in the module. Test files follow a standard structure for each module.
 
 ## Install
 
@@ -82,7 +82,6 @@ yarn test
 To seed the db you can run:
 
 ```bash
-yarn db:seed-twitter-users # optional
 yarn db:seed-zero-hashes # required
 ```
 
@@ -115,10 +114,10 @@ cd contracts
 yarn start
 ```
 
-3. In another terminal, deploy mocked contracts:
+3. In another terminal, deploy the `Groups.sol` contract:
 
 ```bash
-yarn mocks --network localhost
+yarn deploy:groups --network localhost
 ```
 
 ### Running InterRep (production)

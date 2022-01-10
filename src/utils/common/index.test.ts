@@ -1,4 +1,3 @@
-import { OAuthProvider } from "@interrep/reputation"
 import { Contract, ethers } from "ethers"
 import { ContractName } from "src/config"
 import { getNetworkFullName } from "."
@@ -35,21 +34,15 @@ describe("# utils/common", () => {
             expect(expectedValue).toContain("0x")
         })
 
-        it("Should not return a ReputationBadge contract address if there is no provider", async () => {
-            const fun = () => getContractAddress(ContractName.REPUTATION_BADGE)
+        it("Should fail if the contract name is not valid", async () => {
+            const fun = () => getContractAddress("hello" as any)
 
-            expect(fun).toThrow("You must specify a OAuth provider")
-        })
-
-        it("Should return a ReputationBadge contract address", async () => {
-            const expectedValue = getContractAddress(ContractName.REPUTATION_BADGE, OAuthProvider.GITHUB)
-
-            expect(expectedValue).toContain("0x")
+            expect(fun).toThrow("You must specify a valid contract name")
         })
     })
 
     describe("# getContractInstance", () => {
-        it("Should not return a contract instance if the contract name is wrong", async () => {
+        it("Should not return a contract instance if the contract name is not valid", async () => {
             const fun = () => getContractInstance("hello" as any, ethers.constants.AddressZero)
 
             expect(fun).toThrow("contract does not exist")
@@ -57,12 +50,6 @@ describe("# utils/common", () => {
 
         it("Should return a Groups contract instance", async () => {
             const expectedValue = getContractInstance(ContractName.GROUPS, ethers.constants.AddressZero)
-
-            expect(expectedValue).toBeInstanceOf(Contract)
-        })
-
-        it("Should return a ReputationBadge contract instance", async () => {
-            const expectedValue = getContractInstance(ContractName.REPUTATION_BADGE, ethers.constants.AddressZero)
 
             expect(expectedValue).toBeInstanceOf(Contract)
         })

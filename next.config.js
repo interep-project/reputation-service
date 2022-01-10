@@ -46,21 +46,6 @@ const moduleExports = {
                 headers: securityHeaders
             }
         ]
-    },
-    webpack: (config, { isServer }) => {
-        if (isServer) {
-            return {
-                ...config,
-                entry() {
-                    return config.entry().then((entry) => ({
-                        ...entry,
-                        tasks: path.resolve(process.cwd(), "src/tasks/index.ts")
-                    }))
-                }
-            }
-        } else {
-            return config
-        }
     }
 }
 

@@ -75,13 +75,6 @@ export default function NavBar(): JSX.Element {
                         >
                             Groups
                         </Button>
-                        <Button
-                            onClick={() => router.push("/badges")}
-                            isActive={router.route === "/badges"}
-                            isDisabled={!appIsReady()}
-                        >
-                            Badges
-                        </Button>
                     </ButtonGroup>
                 </HStack>
                 <HStack>
