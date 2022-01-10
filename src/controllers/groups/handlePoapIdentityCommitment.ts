@@ -2,12 +2,11 @@ import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
 import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
 import { getPoapEventsByAddress, PoapEvent } from "src/core/poap"
-import { GroupName } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function handlePoapIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
-    const name = req.query?.name as GroupName
+    const name = req.query?.name as PoapEvent
     const identityCommitment = req.query?.identityCommitment as string
     const { userSignature, userAddress } = JSON.parse(req.body)
 
@@ -16,11 +15,12 @@ export default async function handlePoapIdentityCommitmentController(req: NextAp
         return
     }
 
-    try {
-        if (ethers.utils.verifyMessage(identityCommitment, userSignature) !== userAddress) {
-            throw new Error(`The signature is not valid`)
-        }
+    if (ethers.utils.verifyMessage(identityCommitment, userSignature) !== userAddress) {
+        res.status(403).send("The signature is not valid")
+        return
+    }
 
+    try {
         const userPoapGroupNames = await getPoapEventsByAddress(userAddress)
 
         if (!userPoapGroupNames.includes(name as PoapEvent)) {
@@ -31,7 +31,7 @@ export default async function handlePoapIdentityCommitmentController(req: NextAp
 
         if (req.method === "POST") {
             await appendLeaf("poap", name, identityCommitment)
-        } else if (req.method === "DELETE") {
+        } else {
             await deleteLeaf("poap", name, identityCommitment)
         }
 

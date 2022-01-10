@@ -7,12 +7,12 @@ import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
-import { GroupName, Provider } from "src/types/groups"
+import { GroupName } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function handleOAuthIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
-    const provider = req.query?.provider as Provider
+    const provider = req.query?.provider as OAuthProvider
     const name = req.query?.name as GroupName
     const identityCommitment = req.query?.identityCommitment as string
 
@@ -20,14 +20,14 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
 
     if (token) {
         let reputation: ReputationLevel
-        let accountId: string
+        let providerAccountId: string
 
         try {
             switch (provider) {
                 case OAuthProvider.GITHUB: {
                     const { id, plan, followers, receivedStars } = await getGithubUserByToken(token)
 
-                    accountId = id
+                    providerAccountId = id
                     reputation = calculateReputation(OAuthProvider.GITHUB, {
                         proPlan: plan.name === "pro",
                         followers,
@@ -45,7 +45,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                         linked_identities
                     } = await getRedditUserByToken(token)
 
-                    accountId = id
+                    providerAccountId = id
                     reputation = calculateReputation(OAuthProvider.REDDIT, {
                         premiumSubscription: has_subscribed_to_premium,
                         karma: total_karma,
@@ -55,11 +55,11 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
 
                     break
                 }
-                case OAuthProvider.TWITTER: {
+                default: {
                     const { id_str, screen_name, followers_count, verified } = await getTwitterUserByToken(token)
                     const botometerResult = await getBotometerScore(screen_name)
 
-                    accountId = id_str
+                    providerAccountId = id_str
                     reputation = calculateReputation(OAuthProvider.TWITTER, {
                         followers: followers_count,
                         verifiedProfile: verified,
@@ -68,18 +68,16 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
 
                     break
                 }
-                default:
-                    throw new Error(`Provider ${provider} is not supported`)
             }
 
             await connectDatabase()
 
-            let account = await OAuthAccount.findByProviderAccountId(provider, accountId)
+            let account = await OAuthAccount.findByProviderAccountId(provider, providerAccountId)
 
             if (!account) {
                 account = await OAuthAccount.create({
                     provider,
-                    providerAccountId: accountId,
+                    providerAccountId,
                     reputation
                 })
             }
@@ -92,7 +90,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 await appendLeaf(provider, name, identityCommitment)
 
                 account.hasJoinedAGroup = true
-            } else if (req.method === "DELETE") {
+            } else {
                 if (!account.hasJoinedAGroup) {
                     throw new Error(`Account has not joined a ${provider} group yet`)
                 }
@@ -158,7 +156,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
             await appendLeaf(provider, name, identityCommitment)
 
             account.hasJoinedAGroup = true
-        } else if (req.method === "DELETE") {
+        } else {
             if (!account.hasJoinedAGroup) {
                 throw new Error(`The account has not joined a ${provider} group yet`)
             }
