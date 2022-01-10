@@ -1,8 +1,7 @@
 import { MerkleTreeRootBatch } from "@interrep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
-import removeDBFields from "src/utils/backend/removeDBFields"
+import { logger, removeDBFields } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getRootBatchController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -18,7 +17,7 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const rootBatch = await MerkleTreeRootBatch.findOne({
             rootHashes: { $elemMatch: { $eq: rootHash } }

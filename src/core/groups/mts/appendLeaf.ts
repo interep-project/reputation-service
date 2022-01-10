@@ -1,34 +1,40 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { PoapEvent } from "src/core/poap"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
 
+/**
+ * Appends a leaf on a tree.
+ * @param provider The provider of the group.
+ * @param name The name of the group.
+ * @param identityCommitment The leaf of the tree.
+ * @returns The new Merkle tree root.
+ */
 export default async function appendLeaf(
     provider: Provider,
-    name: ReputationLevel | PoapEvent | string,
+    name: GroupName,
     identityCommitment: string
 ): Promise<string> {
     if (!checkGroup(provider, name)) {
         throw new Error(`The group ${provider} ${name} does not exist`)
     }
 
-    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
-        throw new Error(`The identity commitment ${identityCommitment} already exist`)
-    }
-
     // Get the zero hashes.
     const zeroes = await MerkleTreeZero.find()
 
-    if (!zeroes || zeroes.length === 0) {
+    if (!zeroes || zeroes.length !== config.MERKLE_TREE_DEPTH) {
         throw new Error(`The zero hashes have not yet been created`)
+    }
+
+    if (await MerkleTreeNode.findByGroupAndHash({ provider, name }, identityCommitment)) {
+        throw new Error(`The identity commitment ${identityCommitment} already exist`)
     }
 
     // Get next available index at level 0.
     let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
+    /* istanbul ignore next */
     if (currentIndex >= 2 ** config.MERKLE_TREE_DEPTH) {
         throw new Error(`The tree is full`)
     }

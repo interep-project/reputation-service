@@ -79,11 +79,17 @@ yarn test
 
 ### Seeding
 
-To seed the database (optional) you can run:
+To seed the db you can run:
 
 ```bash
-yarn seed:twitterUsers
-yarn seed:zeroHashes
+yarn db:seed-twitter-users # optional
+yarn db:seed-zero-hashes # required
+```
+
+If you want to reset the db you can run:
+
+```bash
+yarn db:reset # it will insert the zero hashes
 ```
 
 ### Running InterRep (development)

@@ -3,10 +3,9 @@ import { utils } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { unlinkAccounts } from "src/core/badges"
-import { dbConnect } from "src/utils/backend/database"
-import getSigner from "src/utils/backend/getSigner"
-import logger from "src/utils/backend/logger"
-import capitalize from "src/utils/common/capitalize"
+import { getSigner, logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
+import { capitalize } from "src/utils/common"
 
 export default async function unlinkAccountsController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "PUT") {
@@ -42,7 +41,7 @@ export default async function unlinkAccountsController(req: NextApiRequest, res:
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const account = await OAuthAccount.findById(accountId)
 

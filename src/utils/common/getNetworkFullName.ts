@@ -1,3 +1,8 @@
+/**
+ * Returns the full name of a known Ethereum network.
+ * @param networkId The network id.
+ * @returns The network full name.
+ */
 export default function getNetworkFullName(networkId: number): string | undefined {
     return {
         1: "Ethereum Mainnet",

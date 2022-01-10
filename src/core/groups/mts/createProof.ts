@@ -1,12 +1,17 @@
 import { MerkleTreeNode } from "@interrep/db"
-import { ReputationLevel } from "@interrep/reputation"
 import { checkGroup } from "src/core/groups"
-import { PoapEvent } from "src/core/poap"
-import { Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 
+/**
+ * Returns the Merkle proof of a tree leaf.
+ * @param provider The provider of the group.
+ * @param name The name of the group.
+ * @param identityCommitment The leaf of the tree.
+ * @returns The Merkle proof.
+ */
 export default async function createProof(
     provider: Provider,
-    name: ReputationLevel | PoapEvent | string,
+    name: GroupName,
     identityCommitment: string
 ): Promise<any> {
     if (!checkGroup(provider, name)) {
@@ -74,18 +79,11 @@ export default async function createProof(
             }
         }
     ])
+    const proof = await proofQuery.exec()
 
-    return new Promise((resolve, reject) => {
-        proofQuery.exec((error, proof) => {
-            if (error) {
-                reject(error)
-            }
+    const root = proof.pop().hash
+    const siblingNodes = proof.map((n: any) => n.sibling)
+    const path = proof.map((n: any) => n.index)
 
-            const root = proof.pop().hash
-            const siblingNodes = proof.map((n) => n.sibling)
-            const path = proof.map((n) => n.index)
-
-            resolve({ siblingNodes, path, root })
-        })
-    })
+    return { root, siblingNodes, path }
 }

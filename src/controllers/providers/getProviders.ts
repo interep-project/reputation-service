@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { getProviders } from "src/core/groups"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { logger } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getProvidersController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -10,7 +10,7 @@ export default async function getProvidersController(req: NextApiRequest, res: N
     }
 
     try {
-        await dbConnect()
+        await connectDatabase()
 
         const providers = getProviders()
 

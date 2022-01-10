@@ -2,7 +2,7 @@ import { Token } from "@interrep/db"
 import { updateTokenStatus } from "src/core/badges"
 import { createTokenMock } from "src/mocks"
 import createNextMocks from "src/mocks/createNextMocks"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
 import { getTokensByAddressController, mintTokenController } from "."
 
 jest.mock("src/core/badges/updateTokenStatus", () => ({
@@ -17,16 +17,16 @@ jest.mock("src/core/badges/mintToken", () => ({
 
 describe("# controller/badges", () => {
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     describe("# getTokensByAddress", () => {
         beforeEach(async () => {
-            await clearDatabase()
+            await clearTestingDatabase()
         })
 
         it("Should return error 405 if the http method is not a GET", async () => {

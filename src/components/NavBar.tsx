@@ -1,9 +1,9 @@
 import {
     Button,
-    IconButton,
     ButtonGroup,
     Container,
     HStack,
+    IconButton,
     Text,
     Tooltip,
     useClipboard,
@@ -13,11 +13,11 @@ import { useSession } from "next-auth/client"
 import { useRouter } from "next/dist/client/router"
 import React, { useCallback, useContext } from "react"
 import { isBrowser } from "react-device-detect"
-import { FaSun, FaMoon } from "react-icons/fa"
+import { FaMoon, FaSun } from "react-icons/fa"
 import { currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
-import getNetworkFullName from "src/utils/common/getNetworkFullName"
-import shortenAddress from "src/utils/frontend/shortenAddress"
+import { getNetworkFullName } from "src/utils/common"
+import { shortenAddress } from "src/utils/frontend"
 
 export default function NavBar(): JSX.Element {
     const router = useRouter()

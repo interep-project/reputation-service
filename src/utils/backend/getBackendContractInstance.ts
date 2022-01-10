@@ -1,7 +1,8 @@
+/* istanbul ignore file */
 import { Contract } from "ethers"
 import { ContractName } from "src/config"
-import getContractInstance from "src/utils/common/getContractInstance"
-import getSigner from "src/utils/backend/getSigner"
+import { getSigner } from "src/utils/backend"
+import { getContractInstance } from "src/utils/common"
 
 export default async function getBackendContractInstance(
     contractName: ContractName,

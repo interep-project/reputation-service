@@ -1,37 +1,66 @@
-import * as encryption from "./encryptMessage"
-
-jest.spyOn(encryption, "encryptMessage")
+import { MerkleTree } from "@interrep/merkle-tree"
+import { createMerkleTree, defaultMerkleTreeRoot } from "."
+import { encryptMessage, encryptMessageWithSalt } from "./encryptMessage"
+import poseidon from "./poseidon"
+import sha256 from "./sha256"
 
 jest.mock("ethers", () => {
-    // Require the original module to not be mocked...
-    const originalModule = jest.requireActual("ethers")
+    const { ethers } = jest.requireActual("ethers")
 
     return {
-        __esModule: true, // Use it when dealing with esModules
-        ...originalModule,
+        __esModule: true,
         ethers: {
             utils: {
-                hexlify: originalModule.ethers.utils.hexlify,
+                hexlify: ethers.utils.hexlify,
                 randomBytes: jest.fn().mockReturnValue([63, 129, 117, 76, 129, 36, 152, 59, 179, 24, 0, 139])
             }
         }
     }
 })
 
-describe("encryptMessageWithSalt", () => {
-    const pubKey = "C5YMNdqE4kLgxQhJO1MfuQcHP5hjVSXzamzd/TxlR0U="
-    it("should return a string", () => {
-        const result = encryption.encryptMessageWithSalt(pubKey, "hello")
+describe("# utils/common/crypto", () => {
+    describe("# encryptMessage", () => {
+        const pubKey = "C5YMNdqE4kLgxQhJO1MfuQcHP5hjVSXzamzd/TxlR0U="
 
-        expect(typeof result).toBe("string")
+        it("Should encrypt a message correctly", () => {
+            const expectedValue = encryptMessage(pubKey, "Hello World")
+
+            expect(expectedValue).toContain("0x7b227665727")
+        })
+
+        it("Should encrypt a message with salt correctly", () => {
+            const expectedValue = encryptMessageWithSalt(pubKey, "Hello World")
+
+            expect(expectedValue).toContain("0x7b227665727")
+        })
     })
 
-    // TODO: TO FIX
-    // it("should encrypt after adding a salt", () => {
-    // expect(encryption.encryptMessage).toHaveBeenCalledWith(pubKey, {
-    //   message: "hello",
-    //   salt:
-    //     "0x5b36332c3132392c3131372c37362c3132392c33362c3135322c35392c3137392c32342c302c3133395d",
-    // });
-    // });
+    describe("# poseidon", () => {
+        it("Should hash two numbers correctly", () => {
+            const expectedValue = poseidon(1, 2)
+
+            expect(expectedValue).toContain("785320012077606")
+        })
+    })
+
+    describe("# sha256", () => {
+        it("Should hash a message correctly", () => {
+            const expectedValue = sha256("Hello World")
+
+            expect(expectedValue).toContain("a591a6d40bf420")
+        })
+    })
+
+    describe("# createMerkleTree", () => {
+        it("Should create a Merkle tree", () => {
+            const expectedValue = createMerkleTree()
+
+            expect(expectedValue).toBeInstanceOf(MerkleTree)
+            expect(expectedValue.root).toContain("19217088683336")
+        })
+
+        it("Should import the right default Merkle tree root", () => {
+            expect(defaultMerkleTreeRoot).toContain("19217088683336")
+        })
+    })
 })

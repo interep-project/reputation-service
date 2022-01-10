@@ -3,6 +3,12 @@ import ReputationBadge from "contract-artifacts/ReputationBadge.json"
 import { Contract } from "ethers"
 import { ContractName } from "src/config"
 
+/**
+ * Returns a contract instance.
+ * @param contractName The name of the contract.
+ * @param contractAddress The address of the contract.
+ * @returns The contract instance.
+ */
 export default function getContractInstance(contractName: ContractName, contractAddress: string): Contract {
     switch (contractName) {
         case ContractName.REPUTATION_BADGE:

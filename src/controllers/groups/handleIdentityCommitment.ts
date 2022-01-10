@@ -1,12 +1,9 @@
 import { MerkleTreeNode } from "@interrep/db"
-import Cors from "cors"
 import { NextApiRequest, NextApiResponse } from "next"
-import config from "src/config"
 import { checkGroup } from "src/core/groups"
-import { Provider, Web3Provider } from "src/types/groups"
-import apiMiddleware from "src/utils/backend/apiMiddleware"
-import { dbConnect } from "src/utils/backend/database"
-import logger from "src/utils/backend/logger"
+import { GroupName, Provider } from "src/types/groups"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
+import { connectDatabase } from "src/utils/backend/database"
 import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
 import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
 import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
@@ -18,9 +15,9 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         return
     }
 
-    const provider = req.query?.provider
-    const name = req.query?.name
-    const identityCommitment = req.query?.identityCommitment
+    const provider = req.query?.provider as Provider
+    const name = req.query?.name as GroupName
+    const identityCommitment = req.query?.identityCommitment as string
 
     if (
         !provider ||
@@ -34,14 +31,14 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         return
     }
 
-    if (!checkGroup(provider as Provider, name)) {
+    if (!checkGroup(provider, name)) {
         res.status(404).end("The group does not exist")
         return
     }
 
     if (req.method === "GET") {
         try {
-            await dbConnect()
+            await connectDatabase()
 
             const leaf = await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment)
 
@@ -56,17 +53,16 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
     }
 
     try {
-        await apiMiddleware(Cors({ origin: config.API_WHITELIST }))(req, res)
-    } catch (error) {
-        res.status(500).end()
+        await runAPIMiddleware(req, res, getCors())
+    } catch (error: any) {
+        res.status(401).send(error.message)
 
         logger.error(error)
-
         return
     }
 
     switch (provider) {
-        case Web3Provider.POAP:
+        case "poap":
             await handlePoapIdentityCommitmentController(req, res)
             break
         case "telegram":

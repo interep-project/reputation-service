@@ -1,11 +1,14 @@
 import { getReputationLevels, ReputationLevel } from "@interrep/reputation"
+import { getTelegramGroups, TelegramGroup } from "@interrep/telegram-bot"
 import { getPoapEvents, PoapEvent } from "src/core/poap"
-import { Provider, Web3Provider } from "src/types/groups"
+import { GroupName, Provider } from "src/types/groups"
 import { EmailDomain, getEmailDomains } from "../email"
 
-export default function checkGroup(provider: Provider, name: ReputationLevel | PoapEvent | string): boolean {
+export default function checkGroup(provider: Provider, name: GroupName): boolean {
     if (provider === "telegram") {
-        return true
+        const telegramGroups = getTelegramGroups()
+
+        return telegramGroups.indexOf(name as TelegramGroup) !== -1
     }
 
     if (provider === "email") {
@@ -14,7 +17,7 @@ export default function checkGroup(provider: Provider, name: ReputationLevel | P
         return emailDomains.indexOf(name as EmailDomain) !== -1
     }
 
-    if (provider === Web3Provider.POAP) {
+    if (provider === "poap") {
         const poapGroupNames = getPoapEvents()
 
         return poapGroupNames.indexOf(name as PoapEvent) !== -1

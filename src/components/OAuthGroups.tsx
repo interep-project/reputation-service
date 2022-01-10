@@ -6,7 +6,7 @@ import { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
-import capitalize from "src/utils/common/capitalize"
+import { capitalize } from "src/utils/common"
 
 export default function OAuthGroups(): JSX.Element {
     const [session] = useSession()

@@ -12,11 +12,8 @@ import { ContractName, currentNetwork } from "src/config"
 import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import createUserMessage from "src/core/badges/createUserMessage"
 import useInterRepAPI from "src/hooks/useInterRepAPI"
-import capitalize from "src/utils/common/capitalize"
-import delay from "src/utils/common/delay"
-import getContractAddress from "src/utils/common/getContractAddress"
-import getContractInstance from "src/utils/common/getContractInstance"
-import { ExplorerDataType, getExplorerLink } from "src/utils/frontend/getExplorerLink"
+import { capitalize, delay, getContractAddress, getContractInstance } from "src/utils/common"
+import { ExplorerDataType, getExplorerLink } from "src/utils/frontend"
 
 export default function Badges(): JSX.Element {
     const [session] = useSession()
@@ -291,7 +288,7 @@ export default function Badges(): JSX.Element {
                     <HStack mt="10px">
                         {_token && _token.status === "MINTED" && _token.transaction && (
                             <Link
-                                href={getExplorerLink(_token.transaction.hash, ExplorerDataType.TRANSACTION)}
+                                href={getExplorerLink(ExplorerDataType.TRANSACTION, _token.transaction.hash)}
                                 isExternal
                                 px="10px"
                             >

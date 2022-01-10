@@ -1,10 +1,9 @@
 import { OAuthAccountDocument, Token, TokenDocument } from "@interrep/db"
 import { ethers } from "ethers"
 import { ContractName, currentNetwork } from "src/config"
-import getSigner from "src/utils/backend/getSigner"
+import { getSigner } from "src/utils/backend"
 import { encryptMessageWithSalt } from "src/utils/common/crypto"
-import getContractAddress from "src/utils/common/getContractAddress"
-import stringToBigNumber from "src/utils/common/stringToBigNumber"
+import { getContractAddress } from "src/utils/common"
 
 /**
  * Links a Web2 account with a Web3 account (Ethereum) creating a token ready to be minted.
@@ -32,7 +31,7 @@ export default async function linkAccounts(
 
     // The token id will be used as ERC721 id onchain.
     const tokenIdHash = ethers.utils.id(token.id.toString())
-    token.tokenId = stringToBigNumber(tokenIdHash).toString()
+    token.tokenId = BigInt(tokenIdHash).toString()
 
     // The backend attestation message contains all the parameters needed to identify the user token and the two accounts (Web2/Web3).
     const attestationMessage = JSON.stringify([token.tokenId, userAddress, account.provider, account.providerAccountId])

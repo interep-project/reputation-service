@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Signer, Wallet } from "ethers"
 import { currentNetwork } from "src/config"
 import { NetworkData } from "src/types/network"

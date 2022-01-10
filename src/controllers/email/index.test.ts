@@ -1,8 +1,18 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import createNextMocks from "src/mocks/createNextMocks"
-import { clearDatabase, connectDatabase, dropDatabaseAndDisconnect } from "src/utils/backend/testDatabase"
+import {
+    clearTestingDatabase,
+    connectDatabase,
+    connectTestingDatabase,
+    disconnectTestingDatabase
+} from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 import { sendEmailController } from "."
+
+jest.mock("src/utils/backend/database/database", () => ({
+    __esModule: true,
+    connectDatabase: jest.fn()
+}))
 
 jest.mock("nodemailer", () => ({
     __esModule: true,
@@ -16,15 +26,15 @@ describe("# controllers/email", () => {
     const email = "test@outlook.com"
 
     beforeAll(async () => {
-        await connectDatabase()
+        await connectTestingDatabase()
     })
 
     afterAll(async () => {
-        await dropDatabaseAndDisconnect()
+        await disconnectTestingDatabase()
     })
 
     afterEach(async () => {
-        await clearDatabase()
+        await clearTestingDatabase()
     })
 
     describe("# sendEmail", () => {
@@ -50,7 +60,7 @@ describe("# controllers/email", () => {
             expect(res._getStatusCode()).toBe(400)
         })
 
-        it("Should return error 402 if the email is wrong or not supported", async () => {
+        it("Should return error 400 if the email is wrong or not supported", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
                 body: { email: "test@gmail.com" }
@@ -58,10 +68,25 @@ describe("# controllers/email", () => {
 
             await sendEmailController(req, res)
 
-            expect(res._getStatusCode()).toBe(402)
+            expect(res._getStatusCode()).toBe(400)
         })
 
-        it("Should return 200 and should create an email user in the db", async () => {
+        it("Should return error 500 if there is an unexpected error", async () => {
+            const { req, res } = createNextMocks({
+                method: "POST",
+                body: { email }
+            })
+
+            ;(connectDatabase as any).mockImplementationOnce(() => {
+                throw new Error("Error")
+            })
+
+            await sendEmailController(req, res)
+
+            expect(res._getStatusCode()).toBe(500)
+        })
+
+        it("Should create an email user in the db", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
                 body: { email }
