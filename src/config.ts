@@ -7,7 +7,6 @@ const defaultEnv = {
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
         /^https:\/\/kovan\.interrep\.link/,
-        /^https:\/\/ropsten\.interrep\.link/,
         /^https:\/\/interrep\.link/,
         /^https:\/\/auti\.sm/,
         /^https:\/\/www\.auti\.sm/
@@ -27,19 +26,15 @@ export enum ContractName {
 export enum SupportedChainId {
     LOCALHOST = 31337,
     KOVAN = 42,
-    ROPSTEN = 3,
     ARBITRUM = 42161
 }
 
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
-        [ContractName.GROUPS]: "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"
+        [ContractName.GROUPS]: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.GROUPS]: "0xc068f3F15f367a60eb2B7c0620961A15A3b36fA3"
-    },
-    [SupportedChainId.ROPSTEN]: {
-        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     },
     [SupportedChainId.ARBITRUM]: {
         [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
@@ -54,10 +49,6 @@ export const supportedNetworks: Record<string, NetworkData> = {
     kovan: {
         name: "kovan",
         chainId: SupportedChainId.KOVAN
-    },
-    ropsten: {
-        name: "ropsten",
-        chainId: SupportedChainId.ROPSTEN
     },
     arbitrum: {
         name: "arbitrum",
