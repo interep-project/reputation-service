@@ -1,36 +1,41 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
-import { Signer } from "ethers"
+import { useWeb3React } from "@web3-react/core"
+import { providers, Signer } from "ethers"
 import { useSession } from "next-auth/client"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Step from "src/components/Step"
-import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { capitalize } from "src/utils/common"
 
 export default function OAuthGroups(): JSX.Element {
     const [session] = useSession()
-    const { _signer } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { account, library } = useWeb3React<providers.Web3Provider>()
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
+    const [_signer, setSigner] = useState<Signer>()
     const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, leaveGroup, getGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
-            if (session && _currentStep === 0) {
-                const { provider, user } = session
-                const group = await getGroup(provider, user.reputation as ReputationLevel)
+            if (account && library) {
+                setSigner(library.getSigner(account))
 
-                if (group) {
-                    setGroupSize(group.size)
-                    setCurrentStep(1)
+                if (session && _currentStep === 0) {
+                    const { provider, user } = session
+                    const group = await getGroup(provider, user.reputation as ReputationLevel)
+
+                    if (group) {
+                        setGroupSize(group.size)
+                        setCurrentStep(1)
+                    }
                 }
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session])
+    }, [session, account, library])
 
     const step1 = useCallback(
         async (signer: Signer, provider: OAuthProvider, reputation: ReputationLevel) => {

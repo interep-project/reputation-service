@@ -11,28 +11,23 @@ import {
     useColorMode,
     VStack
 } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
+import { providers } from "ethers"
 import { useSession } from "next-auth/client"
 import { useRouter } from "next/router"
-import React, { useContext } from "react"
+import React from "react"
 import { FaInfoCircle } from "react-icons/fa"
 import EmailGroups from "src/components/EmailGroups"
 import OAuthGroups from "src/components/OAuthGroups"
-import PoapGroups from "src/components/PoapGroups"
 import TelegramGroups from "src/components/TelegramGroups"
-import { currentNetwork } from "src/config"
-import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { capitalize } from "src/utils/common"
 
 export default function Groups(): JSX.Element {
     const [session] = useSession()
     const { colorMode } = useColorMode()
-    const { _address, _networkId, _poapEvents } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { account } = useWeb3React<providers.Web3Provider>()
     const router = useRouter()
     const parameters = router.query.provider as string[]
-
-    function walletIsConnected(networkId?: number, address?: string): boolean {
-        return currentNetwork.chainId === networkId && !!address
-    }
 
     function isTelegramMagicLink(parameters: string[]): boolean {
         return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
@@ -45,9 +40,9 @@ export default function Groups(): JSX.Element {
     return (
         <>
             <Heading as="h2" size="xl">
-                Semaphore Groups
+                InterRep Groups
                 <Tooltip
-                    label="Semaphore groups will allow you to access services and DApps using InterRep."
+                    label="InterRep groups will allow you to access services and DApps using InterRep."
                     placement="right-start"
                 >
                     <span>
@@ -62,14 +57,11 @@ export default function Groups(): JSX.Element {
                 </Tooltip>
             </Heading>
 
-            {!walletIsConnected(_networkId, _address) ? (
+            {!account ? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                 </VStack>
-            ) : !session &&
-              _poapEvents.length === 0 &&
-              !isTelegramMagicLink(parameters) &&
-              !isEmailMagicLink(parameters) ? (
+            ) : !session && !isTelegramMagicLink(parameters) && !isEmailMagicLink(parameters) ? (
                 <VStack h="300px" align="center" justify="center">
                     <Text fontSize="lg">Please, sign in with one of our supported providers!</Text>
                 </VStack>
@@ -79,7 +71,6 @@ export default function Groups(): JSX.Element {
                         {isTelegramMagicLink(parameters) && <Tab mr="10px">Telegram</Tab>}
                         {isEmailMagicLink(parameters) && <Tab mr="10px">Email</Tab>}
                         {session && <Tab mr="10px">{capitalize(session.provider)}</Tab>}
-                        {_poapEvents.length !== 0 && <Tab>POAP</Tab>}
                     </TabList>
                     <TabPanels>
                         {isTelegramMagicLink(parameters) && (
@@ -95,11 +86,6 @@ export default function Groups(): JSX.Element {
                         {session && (
                             <TabPanel>
                                 <OAuthGroups />
-                            </TabPanel>
-                        )}
-                        {_poapEvents.length !== 0 && (
-                            <TabPanel>
-                                <PoapGroups />
                             </TabPanel>
                         )}
                     </TabPanels>

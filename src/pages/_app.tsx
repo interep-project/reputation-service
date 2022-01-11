@@ -1,5 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react"
 import "@fontsource/raleway/400.css"
+import { Web3ReactProvider } from "@web3-react/core"
+import { providers } from "ethers"
 import { Provider as NextAuthProvider } from "next-auth/client"
 import type { AppProps } from "next/app"
 import Head from "next/head"
@@ -7,12 +9,12 @@ import React from "react"
 import Footer from "src/components/Footer"
 import NavBar from "src/components/NavBar"
 import Page from "src/components/Page"
-import EthereumWalletContext from "src/context/EthereumWalletContext"
-import useEthereumWallet from "src/hooks/useEthreumWallet"
 import theme from "src/styles"
 
-export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-    const ethereumWallet = useEthereumWallet()
+export default function App({ Component, pageProps }: AppProps): JSX.Element {
+    function getLibrary(provider: any) {
+        return new providers.Web3Provider(provider)
+    }
 
     return (
         <>
@@ -21,7 +23,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
             </Head>
             <NextAuthProvider session={pageProps.session}>
-                <EthereumWalletContext.Provider value={ethereumWallet}>
+                <Web3ReactProvider getLibrary={(provider) => getLibrary(provider)}>
                     <ChakraProvider theme={theme}>
                         <NavBar />
                         <Page>
@@ -29,7 +31,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
                         </Page>
                         <Footer />
                     </ChakraProvider>
-                </EthereumWalletContext.Provider>
+                </Web3ReactProvider>
             </NextAuthProvider>
         </>
     )

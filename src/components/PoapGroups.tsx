@@ -1,19 +1,21 @@
 import { Text, VStack } from "@chakra-ui/react"
-import { Signer } from "ethers"
-import React, { useCallback, useContext, useState } from "react"
+import { useWeb3React } from "@web3-react/core"
+import { providers, Signer } from "ethers"
+import React, { useCallback, useEffect, useState } from "react"
 import Step from "src/components/Step"
-import EthereumWalletContext, { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { PoapEvent } from "src/core/poap"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
 export default function PoapGroups(): JSX.Element {
-    const { _signer, _poapEvents, _address } = useContext(EthereumWalletContext) as EthereumWalletContextType
+    const { account, library } = useWeb3React<providers.Web3Provider>()
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_group, setGroup] = useState<Group>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
     const [_hasJoined, setHasJoined] = useState<boolean>()
+    const [_poapEvents, setPoapEvents] = useState<string[]>()
+    const [_signer, setSigner] = useState<Signer>()
     const {
         signMessage,
         retrieveIdentityCommitment,
@@ -23,6 +25,15 @@ export default function PoapGroups(): JSX.Element {
         getGroup,
         _loading
     } = useGroups()
+
+    useEffect(() => {
+        ;(async () => {
+            if (account && library) {
+                setSigner(library.getSigner(account))
+                setPoapEvents(["devcon3"])
+            }
+        })()
+    }, [account, library])
 
     const step1 = useCallback(
         async (groupName: PoapEvent) => {
@@ -117,7 +128,7 @@ export default function PoapGroups(): JSX.Element {
                         actionFunction={() =>
                             step3(
                                 _signer as Signer,
-                                _address as string,
+                                account as string,
                                 _group as Group,
                                 _identityCommitment as string,
                                 _hasJoined

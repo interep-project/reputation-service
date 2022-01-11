@@ -4,16 +4,14 @@ import { Session } from "next-auth"
 import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
-import { FaAward, FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import { PoapEvent } from "src/core/poap"
+import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { capitalize } from "src/utils/common"
 
 type Properties = {
     session?: Session | null
-    poapEvents: PoapEvent[]
 }
 
-export default function SideBar({ session, poapEvents }: Properties): JSX.Element {
+export default function SideBar({ session }: Properties): JSX.Element {
     const { colorMode } = useColorMode()
 
     const getReputationColor = useCallback(
@@ -29,25 +27,6 @@ export default function SideBar({ session, poapEvents }: Properties): JSX.Elemen
 
     return (
         <VStack align="left" divider={<Divider />} py="15px" pr="30px" spacing="4">
-            {poapEvents.length > 0 && (
-                <VStack align="left" spacing="3">
-                    <Text fontWeight="extrabold" fontSize="xl">
-                        Web3
-                    </Text>
-                    <HStack spacing="2">
-                        <Icon boxSize="26px" as={FaAward} />
-                        <Text fontSize="md">POAP</Text>
-                    </HStack>
-                    <VStack align="left" spacing="1">
-                        <Text fontSize="md">Your events:</Text>
-                        {poapEvents.map((poapEvent) => (
-                            <Text pl="10px" key={poapEvent} fontSize="md">
-                                {capitalize(poapEvent)}
-                            </Text>
-                        ))}
-                    </VStack>
-                </VStack>
-            )}
             {session && (
                 <VStack align="left" spacing="3">
                     <Text fontWeight="extrabold" fontSize="xl">
