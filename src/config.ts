@@ -34,7 +34,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         [ContractName.GROUPS]: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
     },
     [SupportedChainId.KOVAN]: {
-        [ContractName.GROUPS]: "0xc068f3F15f367a60eb2B7c0620961A15A3b36fA3"
+        [ContractName.GROUPS]: "0x5Ec7d851a52A2a25CEc528F42a7ACA8EcF4667Cd"
     },
     [SupportedChainId.ARBITRUM]: {
         [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
