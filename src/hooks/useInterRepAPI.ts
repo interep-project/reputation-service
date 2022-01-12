@@ -9,7 +9,7 @@ import {
     sendEmail as _sendEmail
 } from "src/utils/frontend/api"
 
-type API = {
+type ReturnParameters = {
     addIdentityCommitment: typeof _addIdentityCommitment
     removeIdentityCommitment: typeof _removeIdentityCommitment
     hasIdentityCommitment: typeof _hasIdentityCommitment
@@ -22,7 +22,7 @@ type API = {
  * InterRep API hook to handle the http errors and show toast messages.
  * @returns InterRep API functions
  */
-export default function useInterRepAPI(): API {
+export default function useInterRepAPI(): ReturnParameters {
     const toast = useToast()
 
     const showErrorMessage = useCallback(

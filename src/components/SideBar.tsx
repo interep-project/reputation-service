@@ -1,7 +1,6 @@
-import { Button, Divider, HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
+import { HStack, Icon, Text, Tooltip, useColorMode, VStack } from "@chakra-ui/react"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { Session } from "next-auth"
-import { signOut } from "next-auth/client"
 import React, { useCallback } from "react"
 import { BiAward } from "react-icons/bi"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
@@ -26,12 +25,9 @@ export default function SideBar({ session }: Properties): JSX.Element {
     )
 
     return (
-        <VStack align="left" divider={<Divider />} py="15px" pr="30px" spacing="4">
+        <VStack align="left" py="15px" pr="30px">
             {session && (
                 <VStack align="left" spacing="3">
-                    <Text fontWeight="extrabold" fontSize="xl">
-                        Web2
-                    </Text>
                     <HStack spacing="2">
                         {session.provider === OAuthProvider.TWITTER ? (
                             <Icon boxSize="26px" as={FaTwitter} />
@@ -40,7 +36,9 @@ export default function SideBar({ session }: Properties): JSX.Element {
                         ) : (
                             <Icon boxSize="26px" as={FaRedditAlien} />
                         )}
-                        <Text fontSize="md">{capitalize(session.provider)}</Text>
+                        <Text fontWeight="extrabold" fontSize="xl">
+                            {capitalize(session.provider)}
+                        </Text>
                     </HStack>
                     <Text fontSize="md">Username: {session.user.username as string}</Text>
                     {session.user?.reputation && (
@@ -63,14 +61,6 @@ export default function SideBar({ session }: Properties): JSX.Element {
                         </HStack>
                     )}
                 </VStack>
-            )}
-
-            {session && (
-                <HStack>
-                    <Button onClick={() => signOut()} size="md" colorScheme="primary" variant="link">
-                        Sign out
-                    </Button>
-                </HStack>
             )}
         </VStack>
     )

@@ -13,9 +13,6 @@ const styles: Styles = {
             display: "flex",
             flexDirection: "column",
             alignItems: "center"
-        },
-        ".bn-onboard-custom": {
-            zIndex: 999
         }
     })
 }

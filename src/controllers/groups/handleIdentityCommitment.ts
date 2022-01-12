@@ -75,9 +75,11 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
             await handleOAuthIdentityCommitmentController(req, res)
     }
 
-    if (req.method === "POST") {
-        logger.info(`[${req.url}] The identity commitment has been added to the group`)
-    } else {
-        logger.info(`[${req.url}] The identity commitment has been deleted from the group`)
+    if (res.statusCode === 200 || res.statusCode === 201) {
+        if (req.method === "POST") {
+            logger.info(`[${req.url}] The identity commitment has been added to the group`)
+        } else {
+            logger.info(`[${req.url}] The identity commitment has been deleted from the group`)
+        }
     }
 }

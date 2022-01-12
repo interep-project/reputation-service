@@ -8,7 +8,6 @@ import Head from "next/head"
 import React from "react"
 import Footer from "src/components/Footer"
 import NavBar from "src/components/NavBar"
-import Page from "src/components/Page"
 import theme from "src/styles"
 
 export default function App({ Component, pageProps }: AppProps): JSX.Element {
@@ -26,9 +25,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
                 <Web3ReactProvider getLibrary={(provider) => getLibrary(provider)}>
                     <ChakraProvider theme={theme}>
                         <NavBar />
-                        <Page>
-                            <Component {...pageProps} />
-                        </Page>
+                        <Component {...pageProps} />
                         <Footer />
                     </ChakraProvider>
                 </Web3ReactProvider>

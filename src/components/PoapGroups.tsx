@@ -1,18 +1,20 @@
-import { Text, VStack } from "@chakra-ui/react"
+import { Spinner, Text, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { providers, Signer } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import Step from "src/components/Step"
 import { PoapEvent } from "src/core/poap"
 import useGroups from "src/hooks/useGroups"
+import usePoapEvents from "src/hooks/usePoapEvents"
 import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
 export default function PoapGroups(): JSX.Element {
     const { account, library } = useWeb3React<providers.Web3Provider>()
+    const { getPoapEvents } = usePoapEvents()
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_group, setGroup] = useState<Group>()
-    const [_currentStep, setCurrentStep] = useState<number>(1)
+    const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
     const [_poapEvents, setPoapEvents] = useState<string[]>()
     const [_signer, setSigner] = useState<Signer>()
@@ -30,10 +32,19 @@ export default function PoapGroups(): JSX.Element {
         ;(async () => {
             if (account && library) {
                 setSigner(library.getSigner(account))
-                setPoapEvents(["devcon3"])
+
+                if (_currentStep === 0) {
+                    const poapEvents = await getPoapEvents(account)
+
+                    if (poapEvents) {
+                        setPoapEvents(poapEvents)
+                    }
+
+                    setCurrentStep(1)
+                }
             }
         })()
-    }, [account, library])
+    }, [account, library, _currentStep, getPoapEvents])
 
     const step1 = useCallback(
         async (groupName: PoapEvent) => {
@@ -92,7 +103,15 @@ export default function PoapGroups(): JSX.Element {
         [joinGroup, leaveGroup, signMessage]
     )
 
-    return (
+    return _currentStep === 0 ? (
+        <VStack h="300px" align="center" justify="center">
+            <Spinner thickness="4px" speed="0.65s" size="xl" />
+        </VStack>
+    ) : _poapEvents && _poapEvents.length === 0 ? (
+        <VStack h="250px" align="center" justify="center">
+            <Text fontSize="lg">Sorry, you don&#39;t own any of the POAP tokens supported by InterRep!</Text>
+        </VStack>
+    ) : (
         <>
             {_group && (
                 <Text fontWeight="semibold">

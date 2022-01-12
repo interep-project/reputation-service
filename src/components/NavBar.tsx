@@ -1,27 +1,12 @@
-import {
-    Button,
-    ButtonGroup,
-    Container,
-    HStack,
-    IconButton,
-    Text,
-    Tooltip,
-    useClipboard,
-    useColorMode
-} from "@chakra-ui/react"
+import { Button, Container, HStack, IconButton, Text, Tooltip, useClipboard, useColorMode } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { providers } from "ethers"
-import { useSession } from "next-auth/client"
-import { useRouter } from "next/dist/client/router"
 import React, { useEffect } from "react"
 import { isBrowser } from "react-device-detect"
 import { FaMoon, FaSun } from "react-icons/fa"
 import { injectedConnector, shortenAddress } from "src/utils/frontend"
 
 export default function NavBar(): JSX.Element {
-    const router = useRouter()
-    const parameters = router.query.provider as string[]
-    const [session] = useSession()
     const { activate, account } = useWeb3React<providers.Web3Provider>()
     const { hasCopied, onCopy } = useClipboard(account as string)
     const { colorMode, toggleColorMode } = useColorMode()
@@ -34,14 +19,6 @@ export default function NavBar(): JSX.Element {
         })()
     }, [activate])
 
-    function isTelegramMagicLink(parameters: string[]): boolean {
-        return Array.isArray(parameters) && parameters.length === 3 && parameters[0] === "telegram"
-    }
-
-    function isEmailMagicLink(parameters: string[]): boolean {
-        return Array.isArray(parameters) && parameters.length === 4 && parameters[0] === "email"
-    }
-
     return (
         <Container
             zIndex="1"
@@ -53,28 +30,9 @@ export default function NavBar(): JSX.Element {
             maxW="container.xl"
         >
             <HStack justify="space-between">
-                <HStack>
-                    <Text fontSize="2xl" mr="16px">
-                        InterRep
-                    </Text>
-                    <ButtonGroup variant="nav" spacing="2">
-                        <Button onClick={() => router.push("/")} isActive={router.route === "/"}>
-                            Web2 Login
-                        </Button>
-                        <Button
-                            onClick={() => router.push("/groups")}
-                            isActive={router.route === "/groups/[[...provider]]"}
-                            isDisabled={
-                                !account ||
-                                (!(session && session.user.reputation && account) &&
-                                    !isTelegramMagicLink(parameters) &&
-                                    !isEmailMagicLink(parameters))
-                            }
-                        >
-                            Groups
-                        </Button>
-                    </ButtonGroup>
-                </HStack>
+                <Text fontSize="2xl" mr="16px">
+                    InterRep
+                </Text>
                 <HStack>
                     {isBrowser && account ? (
                         <Tooltip label="Copied!" isOpen={hasCopied}>

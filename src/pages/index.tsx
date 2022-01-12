@@ -1,22 +1,22 @@
-import { Button, Heading, VStack, Icon, Tooltip, useColorMode } from "@chakra-ui/react"
-import { FaGithub, FaRedditAlien, FaTwitter, FaInfoCircle } from "react-icons/fa"
+import { Button, Container, Heading, HStack, Icon, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { GetServerSideProps } from "next"
 import { signIn, useSession } from "next-auth/client"
+import { useRouter } from "next/router"
 import React from "react"
+import { FaAward, FaEnvelope, FaGithub, FaInfoCircle, FaRedditAlien, FaTwitter } from "react-icons/fa"
+import EmailInputModal from "src/components/EmailInputModal"
 
-import EmailInputButton from "src/components/EmailInput"
-
-export default function Signin(): JSX.Element {
+export default function Providers(): JSX.Element {
+    const router = useRouter()
     const [session] = useSession()
     const { colorMode } = useColorMode()
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
-        <>
+        <Container flex="1" mb="80px" mt="180px" px="80px" maxW="container.lg">
             <Heading as="h2" mb="30px" size="xl">
-                Web2 Login
-                <Tooltip
-                    label="Sign in with one of our supported providers to obtain your reputation."
-                    placement="right-start"
-                >
+                Providers
+                <Tooltip label="Select one of our supported providers to join a group." placement="right-start">
                     <span>
                         <Icon
                             boxSize="20px"
@@ -28,7 +28,7 @@ export default function Signin(): JSX.Element {
                     </span>
                 </Tooltip>
             </Heading>
-            <VStack spacing={4} align="left">
+            <HStack spacing={4} align="left">
                 <Button
                     onClick={() => signIn("twitter")}
                     leftIcon={<FaTwitter />}
@@ -57,8 +57,44 @@ export default function Signin(): JSX.Element {
                     Reddit
                 </Button>
 
-                <EmailInputButton session={session} />
-            </VStack>
-        </>
+                <Button
+                    onClick={onOpen}
+                    leftIcon={<FaEnvelope />}
+                    colorScheme="green"
+                    variant="semisolid"
+                    isDisabled={isOpen}
+                >
+                    Email
+                </Button>
+                <EmailInputModal isOpen={isOpen} onClose={onClose} />
+
+                <Button
+                    onClick={() => router.push("/groups/poap")}
+                    leftIcon={<FaAward />}
+                    colorScheme="purple"
+                    variant="semisolid"
+                    isDisabled={isOpen}
+                >
+                    POAP
+                </Button>
+            </HStack>
+        </Container>
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+    const authorized = !!req.cookies["__Secure-next-auth.session-token"] || !!req.cookies["next-auth.session-token"]
+
+    if (!authorized) {
+        return {
+            props: {}
+        }
+    }
+
+    return {
+        redirect: {
+            destination: "/groups",
+            permanent: false
+        }
+    }
 }
