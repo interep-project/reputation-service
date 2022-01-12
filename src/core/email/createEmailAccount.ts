@@ -8,11 +8,10 @@ export default async function createEmailAccount(email: string, emailDomains: Em
 
     for (let i = emailDomains.length - 1; i >= 0; i--) {
         const hashId = sha256(email + emailDomains[i])
-
-        let account = await EmailUser.findByHashId(hashId)
+        const account = await EmailUser.findByHashId(hashId)
 
         if (!account) {
-            account = await EmailUser.create({
+            await EmailUser.create({
                 hashId,
                 hasJoined: false,
                 verificationToken
