@@ -1,32 +1,28 @@
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
-import {
-    clearTestingDatabase,
-    connectDatabase,
-    connectTestingDatabase,
-    disconnectTestingDatabase
-} from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
+import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import getProvidersController from "./getProviders"
 import hasIdentityCommitmentController from "./hasIdentityCommitment"
 
-jest.mock("src/utils/backend/database/database", () => ({
+jest.mock("src/utils/backend/database", () => ({
     __esModule: true,
     connectDatabase: jest.fn()
 }))
 
 describe("# controllers/providers", () => {
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     afterEach(async () => {
-        await clearTestingDatabase()
+        await clearDatabase()
     })
 
     describe("# getProviders", () => {
@@ -45,7 +41,7 @@ describe("# controllers/providers", () => {
                 method: "GET"
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -107,7 +103,7 @@ describe("# controllers/providers", () => {
                 query: { provider: OAuthProvider.TWITTER, identityCommitment: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 

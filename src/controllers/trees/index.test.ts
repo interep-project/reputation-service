@@ -1,34 +1,30 @@
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
-import {
-    connectDatabase,
-    clearTestingDatabase,
-    connectTestingDatabase,
-    disconnectTestingDatabase
-} from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
+import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import getLeavesController from "./getLeaves"
 import hasLeafController from "./hasLeaf"
 import getRootBatchController from "./getRootBatch"
 import getRootBatchesController from "./getRootBatches"
 
-jest.mock("src/utils/backend/database/database", () => ({
+jest.mock("src/utils/backend/database", () => ({
     __esModule: true,
     connectDatabase: jest.fn()
 }))
 
 describe("# controllers/trees", () => {
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     afterEach(async () => {
-        await clearTestingDatabase()
+        await clearDatabase()
     })
 
     describe("# getLeaves", () => {
@@ -70,7 +66,7 @@ describe("# controllers/trees", () => {
                 query: { rootHash: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -154,7 +150,7 @@ describe("# controllers/trees", () => {
                 query: { rootHash: "111", leafHash: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -241,7 +237,7 @@ describe("# controllers/trees", () => {
                 query: { rootHash: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -292,7 +288,7 @@ describe("# controllers/trees", () => {
                 query: { rootHash: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 

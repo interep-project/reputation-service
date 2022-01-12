@@ -1,15 +1,15 @@
 import { OAuthAccount, OAuthAccountDocument } from "@interrep/db"
 import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
-import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import createOAuthAccount from "./createOAuthAccount"
 
 describe("# core/oauth", () => {
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     describe("# createOAuthAccount", () => {
@@ -29,7 +29,7 @@ describe("# core/oauth", () => {
         }
 
         afterEach(async () => {
-            await clearTestingDatabase()
+            await clearDatabase()
         })
 
         it("Should create a Twitter account if it does not already exist in the db", async () => {

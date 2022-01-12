@@ -3,17 +3,17 @@ import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
-import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import { checkGroup, getGroup, getGroups, getProviders } from "."
 
 describe("# core/groups", () => {
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await clearTestingDatabase()
-        await disconnectTestingDatabase()
+        await clearDatabase()
+        await disconnectDatabase()
     })
 
     describe("# checkGroup", () => {

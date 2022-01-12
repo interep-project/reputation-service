@@ -1,6 +1,6 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import config from "src/config"
-import { clearTestingDatabase, connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import { sha256 } from "src/utils/common/crypto"
 import getEmailDomainsByEmail from "./getEmailDomainsByEmail"
 import createEmailAccount from "./createEmailAccount"
@@ -19,15 +19,15 @@ describe("# core/email", () => {
     const expectedMagicLink = `${config.NEXTAUTH_URL}/groups/email/${verificationTokenTest}/test@outlook.edu/outlook+edu`
 
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     afterEach(async () => {
-        await clearTestingDatabase()
+        await clearDatabase()
     })
 
     describe("# getEmailDomainsByEmail", () => {

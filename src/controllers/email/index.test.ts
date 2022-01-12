@@ -1,15 +1,11 @@
 import { EmailUser, EmailUserDocument } from "@interrep/db"
 import createNextMocks from "src/mocks/createNextMocks"
-import {
-    clearTestingDatabase,
-    connectDatabase,
-    connectTestingDatabase,
-    disconnectTestingDatabase
-} from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
+import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 import { sendEmailController } from "."
 
-jest.mock("src/utils/backend/database/database", () => ({
+jest.mock("src/utils/backend/database", () => ({
     __esModule: true,
     connectDatabase: jest.fn()
 }))
@@ -26,15 +22,15 @@ describe("# controllers/email", () => {
     const email = "test@outlook.com"
 
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     afterEach(async () => {
-        await clearTestingDatabase()
+        await clearDatabase()
     })
 
     describe("# sendEmail", () => {
@@ -77,7 +73,7 @@ describe("# controllers/email", () => {
                 body: { email }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 

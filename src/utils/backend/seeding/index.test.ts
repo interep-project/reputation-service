@@ -1,15 +1,15 @@
 import { MerkleTreeZero } from "@interrep/db"
 import config from "src/config"
-import { connectTestingDatabase, disconnectTestingDatabase } from "src/utils/backend/database"
+import { connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import seedZeroHashes from "./seedZeroHashes"
 
 describe("# utils/backend/seeding", () => {
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     describe("# seedZeroHashes", () => {

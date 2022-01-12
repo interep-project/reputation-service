@@ -13,12 +13,8 @@ import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
 import { getTwitterUserByToken } from "src/services/twitter"
-import {
-    clearTestingDatabase,
-    connectDatabase,
-    connectTestingDatabase,
-    disconnectTestingDatabase
-} from "src/utils/backend/database"
+import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
+import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import getGroupController from "./getGroup"
 import getGroupsController from "./getGroups"
@@ -30,7 +26,7 @@ jest.mock("next-auth/client", () => ({
     getSession: jest.fn()
 }))
 
-jest.mock("src/utils/backend/database/database", () => ({
+jest.mock("src/utils/backend/database", () => ({
     __esModule: true,
     connectDatabase: jest.fn()
 }))
@@ -65,15 +61,15 @@ describe("# controllers/groups", () => {
     const name = ReputationLevel.GOLD
 
     beforeAll(async () => {
-        await connectTestingDatabase()
+        await connectDatabase()
     })
 
     afterAll(async () => {
-        await disconnectTestingDatabase()
+        await disconnectDatabase()
     })
 
     afterEach(async () => {
-        await clearTestingDatabase()
+        await clearDatabase()
     })
 
     describe("# getGroup", () => {
@@ -116,7 +112,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -158,7 +154,7 @@ describe("# controllers/groups", () => {
                 method: "GET"
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -231,7 +227,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name, identityCommitment: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -300,7 +296,7 @@ describe("# controllers/groups", () => {
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock())
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -366,7 +362,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name, identityCommitment: "111" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -470,7 +466,7 @@ describe("# controllers/groups", () => {
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock())
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -788,7 +784,7 @@ describe("# controllers/groups", () => {
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
@@ -937,7 +933,7 @@ describe("# controllers/groups", () => {
                 }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
             ;(getPoapEventsByAddress as any).mockImplementationOnce(() => ["devcon3"])
@@ -1021,7 +1017,7 @@ describe("# controllers/groups", () => {
                 body: { telegramUserId: "id" }
             })
 
-            ;(connectDatabase as any).mockImplementationOnce(() => {
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
