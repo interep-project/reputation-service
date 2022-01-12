@@ -7,7 +7,7 @@ import { Provider } from "src/types/groups"
 import { getBackendContractInstance } from "src/utils/backend"
 import { getContractAddress } from "src/utils/common"
 
-export default async function publishOffchainMerkleRoots(
+export default async function addOffchainRoots(
     providers: Provider[],
     names: (ReputationLevel | PoapEvent | string)[],
     roots: string[]
@@ -15,7 +15,7 @@ export default async function publishOffchainMerkleRoots(
     const contractAddress = getContractAddress(ContractName.GROUPS)
     const contractInstance = await getBackendContractInstance(ContractName.GROUPS, contractAddress)
 
-    const transaction = await contractInstance.publishOffchainMerkleRoots(
+    const transaction = await contractInstance.addOffchainRoots(
         providers.map(ethers.utils.formatBytes32String),
         names.map(ethers.utils.formatBytes32String),
         roots

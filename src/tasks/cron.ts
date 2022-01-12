@@ -1,7 +1,7 @@
 import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
 import schedule from "node-schedule"
 import config from "src/config"
-import { publishOffchainMerkleRoots, retrieveEvents } from "src/core/contracts/Groups"
+import { addOffchainRoots, retrieveEvents } from "src/core/contracts/Groups"
 import { Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
@@ -25,7 +25,7 @@ export async function run() {
                 const groupNames = merkleRoots.map((e) => e.group.name)
                 const rootHashes = merkleRoots.map((e) => e.hash)
 
-                const transaction = await publishOffchainMerkleRoots(groupProviders, groupNames, rootHashes)
+                const transaction = await addOffchainRoots(groupProviders, groupNames, rootHashes)
 
                 for (let i = 0; i < merkleRoots.length; i++) {
                     const rootBatch = (await MerkleTreeRootBatch.findOne({
