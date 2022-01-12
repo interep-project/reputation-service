@@ -1,9 +1,9 @@
-import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/database"
+import { dropDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 
 async function main() {
     await connectDatabase()
-    await clearDatabase()
+    await dropDatabase()
 
     await seedZeroHashes()
 

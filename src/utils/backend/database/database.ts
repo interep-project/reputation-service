@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { clear, connect, disconnect, getState } from "@interrep/db"
+import { connect, disconnect, drop, getState } from "@interrep/db"
 import config from "src/config"
 import { logger } from "src/utils/backend"
 
@@ -31,12 +31,12 @@ export async function disconnectDatabase() {
     logger.info("Mongo db has been disconnected")
 }
 
-export async function clearDatabase() {
+export async function dropDatabase() {
     if (getState() !== 1) {
         return
     }
 
-    await clear()
+    await drop()
 
     logger.info("Mongo db has been cleared")
 }

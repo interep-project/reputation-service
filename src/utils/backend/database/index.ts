@@ -1,4 +1,4 @@
-import { connectDatabase, clearDatabase, disconnectDatabase } from "./database"
+import { connectDatabase, dropDatabase, disconnectDatabase } from "./database"
 import {
     connectDatabase as connectTestingDatabase,
     disconnectDatabase as disconnectTestingDatabase,
@@ -7,7 +7,7 @@ import {
 
 export {
     connectDatabase,
-    clearDatabase,
+    dropDatabase,
     disconnectDatabase,
     connectTestingDatabase,
     disconnectTestingDatabase,
