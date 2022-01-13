@@ -53,7 +53,7 @@ Please, visit our [documentation website](https://docs.interrep.link) for more d
 
 This repository contains the frontend and backend code of the InterRep application.
 
-The backend code consists mainly of api, controllers and core functions. Next.js maps the application's [page](https://nextjs.org/docs/basic-features/pages) and [api routes](https://nextjs.org/docs/api-routes/introduction) to files in the `src/pages` directory. Each API is associated with a handler/controller in the `src/controllers` directory, which checks that the request parameters are correct. If the checks are passed and the request is not trivial, the core functions are used, otherwise the db methods are called directly.
+The backend code consists mainly of APIs, controllers and core functions. Next.js maps the application's [page](https://nextjs.org/docs/basic-features/pages) and [api routes](https://nextjs.org/docs/api-routes/introduction) to files in the `src/pages` directory. Each API is associated with a handler/controller in the `src/controllers` directory, which checks that the request parameters are correct. If these checks are passed and the request needs more complex logic, the core functions are used, otherwise the db methods are called directly.
 
 The frontend consists of the pages defined in the `src/pages` directory. These pages are React components that in turn use the shared components in the `components` directory. The style of the Web application is defined in the `src/styles` directory, while `src/context` and `src/hooks` contain React contexts and hooks respectively.
 
