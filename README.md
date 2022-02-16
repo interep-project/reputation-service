@@ -43,9 +43,7 @@
     </h4>
 </div>
 
-Please, visit our [documentation website](https://docs.interep.link) for more details.
-
-⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of Interep. They will soon be updated. You can find an updated version at [kovan.interep.link](https://kovan.interep.link) (staging env).
+Please, visit our [web app](https://kovan.interep.link) or our [documentation website](https://docs.interep.link) for more details.
 
 ---
 
