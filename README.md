@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/interep" target="_blank">
+    <a href="https://github.com/interep-project" target="_blank">
         <img src="https://img.shields.io/badge/project-Interep-blue.svg?style=flat-square">
     </a>
-    <a href="https://github.com/interep/reputation-service/actions/workflows/test.yaml">
-        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interep/reputation-service/test?label=test&logo=github">
+    <a href="https://github.com/interep-project/reputation-service/actions/workflows/test.yaml">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interep-project/reputation-service/test?label=test&logo=github">
     </a>
-    <a href="https://coveralls.io/github/interep/reputation-service">
-        <img alt="Coveralls" src="https://img.shields.io/coveralls/github/interep/reputation-service?style=flat-square&logo=coveralls">
+    <a href="https://coveralls.io/github/interep-project/reputation-service">
+        <img alt="Coveralls" src="https://img.shields.io/coveralls/github/interep-project/reputation-service?style=flat-square&logo=coveralls">
     </a>
     <a href="https://deepscan.io/dashboard#view=project&tid=16502&pid=19780&bid=519858">
         <img alt="DeepScan grade" src="https://deepscan.io/api/teams/16502/projects/19780/branches/519858/badge/grade.svg">
@@ -24,7 +24,7 @@
     <a href="https://prettier.io/" target="_blank">
         <img alt="Code style prettier" src="https://img.shields.io/badge/code%20style-prettier-f8bc45?style=flat-square&logo=prettier">
     </a>
-    <img alt="Repository top language" src="https://img.shields.io/github/languages/top/interep/reputation-service?style=flat-square">
+    <img alt="Repository top language" src="https://img.shields.io/github/languages/top/interep-project/reputation-service?style=flat-square">
 </p>
 
 <div align="center">
@@ -66,7 +66,7 @@ The code is usually organized in modules (e.g. `src/core/groups`), where each fu
 Clone this repository and install the dependencies:
 
 ```bash
-git clone https://github.com/interep/reputation-service.git
+git clone https://github.com/interep-project/reputation-service.git
 cd reputation-service
 yarn
 ```
@@ -110,7 +110,7 @@ To test all the features, you will need to deploy the Interep contracts in a loc
 1. Clone the `contracts` repository:
 
 ```bash
-git clone https://github.com/interep/contracts.git
+git clone https://github.com/interep-project/contracts.git
 cd contracts
 ```
 
