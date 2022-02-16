@@ -2029,10 +2029,10 @@
   resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
   integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
 
-"@interep/telegram-bot@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@interep/telegram-bot/-/telegram-bot-0.1.0.tgz#0e7e6bc3da5d49d782887421f90a08ffd230737c"
-  integrity sha512-c12I3PHT4y01nzckGNMS4pF0ZiiLQXZWlvkTEVHUs/L2HHuGZgkKjNvik4nxhP4+yQHUFhPfAGLq6mOIuzO8yQ==
+"@interep/telegram-bot@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@interep/telegram-bot/-/telegram-bot-0.2.0.tgz#639e276db36b16e6e5e56cd92492f588b01f1ba9"
+  integrity sha512-K3Pt4ZUqwW7g4ol36AqCUd/YjhYdDI91Eup968SjRgf2sa7Mk204/lnZB8zjugSwS2Iy+yZrwzO2bZ6k6Q/OOw==
   dependencies:
     "@interep/db" "^0.1.0"
     grammy "^1.3.4"
