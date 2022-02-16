@@ -22,10 +22,10 @@ export default function Footer(): JSX.Element {
                         <Link href="https://twitter.com/PrivacyScaling" isExternal>
                             <Icon boxSize="20px" as={FaTwitter} />
                         </Link>
-                        <Link href="https://t.me/interep" isExternal>
+                        <Link href="https://t.me/interrep" isExternal>
                             <Icon boxSize="20px" as={FaTelegram} />
                         </Link>
-                        <Link href="https://github.com/Interep" isExternal>
+                        <Link href="https://github.com/interep-project" isExternal>
                             <Icon boxSize="20px" as={FaGithub} />
                         </Link>
                     </HStack>
