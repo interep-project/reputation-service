@@ -1,4 +1,4 @@
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { poseidon } from "circomlibjs"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"

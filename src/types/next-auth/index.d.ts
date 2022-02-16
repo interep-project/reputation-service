@@ -1,6 +1,6 @@
 import { Session as NextAuthSession } from "next-auth"
 import { JWT as NextAuthJWT } from "next-auth/jwt"
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
+import { ReputationLevel, OAuthProvider } from "@interep/reputation"
 
 interface User extends Record<string, any> {
     id: string

@@ -1,5 +1,5 @@
-import { MerkleTree } from "@interrep/merkle-tree"
-import { createMerkleTree, defaultMerkleTreeRoot } from "."
+import { IncrementalMerkleTree } from "@zk-kit/incremental-merkle-tree"
+import { createIncrementalMerkleTree, defaultIncrementalMerkleTreeRoot } from "."
 import poseidon from "./poseidon"
 import sha256 from "./sha256"
 
@@ -22,14 +22,14 @@ describe("# utils/common/crypto", () => {
 
     describe("# createMerkleTree", () => {
         it("Should create a Merkle tree", () => {
-            const expectedValue = createMerkleTree()
+            const expectedValue = createIncrementalMerkleTree()
 
-            expect(expectedValue).toBeInstanceOf(MerkleTree)
+            expect(expectedValue).toBeInstanceOf(IncrementalMerkleTree)
             expect(expectedValue.root).toContain("19217088683336")
         })
 
         it("Should import the right default Merkle tree root", () => {
-            expect(defaultMerkleTreeRoot).toContain("19217088683336")
+            expect(defaultIncrementalMerkleTreeRoot).toContain("19217088683336")
         })
     })
 })

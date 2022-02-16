@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { ReputationLevel } from "@interrep/reputation"
+import { ReputationLevel } from "@interep/reputation"
 import { ContractReceipt, ethers } from "ethers"
 import { ContractName } from "src/config"
 import { PoapEvent } from "src/core/poap"

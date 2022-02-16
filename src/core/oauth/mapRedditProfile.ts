@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { RedditParameters } from "@interrep/reputation"
+import { RedditParameters } from "@interep/reputation"
 import { User } from "src/types/next-auth"
 
 export default async function mapRedditProfile({

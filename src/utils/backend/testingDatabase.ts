@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { clear, connect, disconnect, drop } from "@interrep/db"
+import { clear, connect, disconnect, drop } from "@interep/db"
 import { MongoMemoryServer } from "mongodb-memory-server"
 
 let mms: MongoMemoryServer

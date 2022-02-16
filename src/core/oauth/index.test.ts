@@ -1,5 +1,5 @@
-import { OAuthAccount, OAuthAccountDocument } from "@interrep/db"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { OAuthAccount, OAuthAccountDocument } from "@interep/db"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import createOAuthAccount from "./createOAuthAccount"
 

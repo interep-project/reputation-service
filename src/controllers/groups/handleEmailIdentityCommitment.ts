@@ -1,4 +1,4 @@
-import { EmailUser } from "@interrep/db"
+import { EmailUser } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { EmailDomain } from "src/core/email"
 import { appendLeaf, deleteLeaf } from "src/core/groups/mts"

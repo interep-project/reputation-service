@@ -1,19 +1,19 @@
 <p align="center">
     <h1 align="center">
-        InterRep reputation service
+        Interep reputation service
     </h1>
-    <p align="center">InterRep back-end and front-end.</p>
+    <p align="center">Interep back-end and front-end.</p>
 </p>
 
 <p align="center">
-    <a href="https://github.com/InterRep" target="_blank">
-        <img src="https://img.shields.io/badge/project-InterRep-blue.svg?style=flat-square">
+    <a href="https://github.com/interep" target="_blank">
+        <img src="https://img.shields.io/badge/project-Interep-blue.svg?style=flat-square">
     </a>
-    <a href="https://github.com/InterRep/reputation-service/actions/workflows/test.yaml">
-        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interrep/reputation-service/test?label=test&logo=github">
+    <a href="https://github.com/interep/reputation-service/actions/workflows/test.yaml">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/interep/reputation-service/test?label=test&logo=github">
     </a>
-    <a href="https://coveralls.io/github/InterRep/reputation-service">
-        <img alt="Coveralls" src="https://img.shields.io/coveralls/github/InterRep/reputation-service?style=flat-square&logo=coveralls">
+    <a href="https://coveralls.io/github/interep/reputation-service">
+        <img alt="Coveralls" src="https://img.shields.io/coveralls/github/interep/reputation-service?style=flat-square&logo=coveralls">
     </a>
     <a href="https://deepscan.io/dashboard#view=project&tid=16502&pid=19780&bid=519858">
         <img alt="DeepScan grade" src="https://deepscan.io/api/teams/16502/projects/19780/branches/519858/badge/grade.svg">
@@ -24,34 +24,34 @@
     <a href="https://prettier.io/" target="_blank">
         <img alt="Code style prettier" src="https://img.shields.io/badge/code%20style-prettier-f8bc45?style=flat-square&logo=prettier">
     </a>
-    <img alt="Repository top language" src="https://img.shields.io/github/languages/top/InterRep/reputation-service?style=flat-square">
+    <img alt="Repository top language" src="https://img.shields.io/github/languages/top/interep/reputation-service?style=flat-square">
 </p>
 
 <div align="center">
     <h4>
-        <a href="https://docs.interrep.link/contributing">
+        <a href="https://docs.interep.link/contributing">
             👥 Contributing
         </a>
         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-        <a href="https://docs.interrep.link/code-of-conduct">
+        <a href="https://docs.interep.link/code-of-conduct">
             🤝 Code of conduct
         </a>
         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-        <a href="https://t.me/interrep">
+        <a href="https://t.me/interep">
             🗣️ Chat &amp; Support
         </a>
     </h4>
 </div>
 
-Please, visit our [documentation website](https://docs.interrep.link) for more details.
+Please, visit our [documentation website](https://docs.interep.link) for more details.
 
-⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of interRep. They will soon be updated. You can find an updated version at [kovan.interrep.link](https://kovan.interrep.link) (staging env).
+⚠️ **Notice**: [interrep.link](https://interrep.link) and [ropsten.interrep.link](https://ropsten.interrep.link) still refer to the old MVP version of Interep. They will soon be updated. You can find an updated version at [kovan.interep.link](https://kovan.interep.link) (staging env).
 
 ---
 
 ## Code overview
 
-This repository contains the frontend and backend code of the InterRep application.
+This repository contains the frontend and backend code of the Interep application.
 
 The backend code consists mainly of APIs, controllers and core functions. Next.js maps the application's [page](https://nextjs.org/docs/basic-features/pages) and [api routes](https://nextjs.org/docs/api-routes/introduction) to files in the `src/pages` directory. Each API is associated with a handler/controller in the `src/controllers` directory, which checks that the request parameters are correct. If these checks are passed and the request needs more complex logic, the core functions are used, otherwise the db methods are called directly.
 
@@ -66,7 +66,7 @@ The code is usually organized in modules (e.g. `src/core/groups`), where each fu
 Clone this repository and install the dependencies:
 
 ```bash
-git clone https://github.com/InterRep/reputation-service.git
+git clone https://github.com/interep/reputation-service.git
 cd reputation-service
 yarn
 ```
@@ -97,7 +97,7 @@ If you want to reset the db you can run:
 yarn db:reset # it will insert the zero hashes
 ```
 
-### Running InterRep (development)
+### Running Interep (development)
 
 ```bash
 yarn dev
@@ -105,12 +105,12 @@ yarn dev
 
 The pages auto-update as you edit files.
 
-To test all the features, you will need to deploy the InterRep contracts in a local network. Here's how:
+To test all the features, you will need to deploy the Interep contracts in a local network. Here's how:
 
 1. Clone the `contracts` repository:
 
 ```bash
-git clone https://github.com/InterRep/contracts.git
+git clone https://github.com/interep/contracts.git
 cd contracts
 ```
 
@@ -126,7 +126,7 @@ yarn start
 yarn deploy:groups --network localhost
 ```
 
-### Running InterRep (production)
+### Running Interep (production)
 
 **NODE_ENV === 'production'**
 

@@ -1,4 +1,4 @@
-import { EmailUser } from "@interrep/db"
+import { EmailUser } from "@interep/db"
 import { sha256 } from "src/utils/common/crypto"
 import EmailDomain from "./emailDomain"
 import sendEmail from "./sendEmail"

@@ -1,4 +1,4 @@
-import { InterRepBot } from "@interrep/telegram-bot"
+import { InterepBot } from "@interep/telegram-bot"
 import { logger } from "src/utils/backend"
 
 export async function run() {
@@ -10,7 +10,7 @@ export async function run() {
     }
 
     try {
-        const bot = new InterRepBot(TELEGRAM_BOT_TOKEN, MONGO_URL, NEXTAUTH_URL)
+        const bot = new InterepBot(TELEGRAM_BOT_TOKEN, MONGO_URL, NEXTAUTH_URL)
 
         await bot.start()
     } catch (error) {

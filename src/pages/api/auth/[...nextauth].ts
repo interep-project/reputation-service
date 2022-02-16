@@ -1,5 +1,5 @@
-import { OAuthAccount } from "@interrep/db"
-import { getOAuthProviders, OAuthProvider } from "@interrep/reputation"
+import { OAuthAccount } from "@interep/db"
+import { getOAuthProviders, OAuthProvider } from "@interep/reputation"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"

@@ -1,4 +1,4 @@
-import { MerkleTreeNode } from "@interrep/db"
+import { MerkleTreeNode } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"

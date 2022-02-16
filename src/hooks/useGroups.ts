@@ -1,11 +1,11 @@
 import { useToast } from "@chakra-ui/react"
-import { OAuthProvider } from "@interrep/reputation"
-import createIdentity from "@interrep/identity"
+import { OAuthProvider } from "@interep/reputation"
+import createIdentity from "@interep/identity"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
 import { Group, Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
-import useInterRepAPI from "./useInterRepAPI"
+import useInterepAPI from "./useInterepAPI"
 
 type ReturnParameters = {
     hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
@@ -31,7 +31,7 @@ export default function useGroups(): ReturnParameters {
         hasIdentityCommitment: _hasIdentityCommitment,
         hasJoinedAGroup: _hasJoinedAGroup,
         getGroup: _getGroup
-    } = useInterRepAPI()
+    } = useInterepAPI()
     const toast = useToast()
 
     const hasJoinedAGroup = useCallback(async (): Promise<boolean | null> => {

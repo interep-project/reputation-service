@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { GithubParameters } from "@interrep/reputation"
+import { GithubParameters } from "@interep/reputation"
 import { User } from "src/types/next-auth"
 
 export default async function mapGithubProfile({

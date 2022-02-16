@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { TwitterParameters } from "@interrep/reputation"
+import { TwitterParameters } from "@interep/reputation"
 import { getBotometerScore } from "src/services/botometer"
 import { User } from "src/types/next-auth"
 

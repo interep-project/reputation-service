@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useState } from "react"
 import getEmailDomainsByEmail from "src/core/email/getEmailDomainsByEmail"
-import useInterRepAPI from "src/hooks/useInterRepAPI"
+import useInterepAPI from "src/hooks/useInterepAPI"
 
 type Parameters = {
     isOpen: boolean
@@ -22,7 +22,7 @@ type Parameters = {
 
 export default function EmailInputModal({ isOpen, onClose }: Parameters): JSX.Element {
     const toast = useToast()
-    const { sendEmail } = useInterRepAPI()
+    const { sendEmail } = useInterepAPI()
     const [_email, setEmail] = useState<string>("")
     const [_loading, setLoading] = useState<boolean>(false)
 

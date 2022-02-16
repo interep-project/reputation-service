@@ -31,7 +31,7 @@ export default function NavBar(): JSX.Element {
         >
             <HStack justify="space-between">
                 <Text fontSize="2xl" mr="16px">
-                    InterRep
+                    Interep
                 </Text>
                 <HStack>
                     {isBrowser && account ? (

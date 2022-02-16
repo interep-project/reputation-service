@@ -6,8 +6,8 @@ const defaultEnv = {
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
-        /^https:\/\/kovan\.interrep\.link/,
-        /^https:\/\/interrep\.link/,
+        /^https:\/\/kovan\.interep\.link/,
+        /^https:\/\/interep\.link/,
         /^https:\/\/auti\.sm/,
         /^https:\/\/www\.auti\.sm/
     ]

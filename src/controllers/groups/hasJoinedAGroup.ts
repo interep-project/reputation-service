@@ -1,4 +1,4 @@
-import { OAuthAccount } from "@interrep/db"
+import { OAuthAccount } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { logger } from "src/utils/backend"

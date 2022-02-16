@@ -1,10 +1,10 @@
-import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import config from "src/config"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
-import { createMerkleTree, poseidon } from "src/utils/common/crypto"
+import { createIncrementalMerkleTree, poseidon } from "src/utils/common/crypto"
 import { appendLeaf, deleteLeaf, createProof } from "."
 
 describe("# core/groups/mts", () => {
@@ -134,7 +134,7 @@ describe("# core/groups/mts", () => {
 
             const expectedValue = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
-            const tree = createMerkleTree()
+            const tree = createIncrementalMerkleTree()
 
             tree.insert(idCommitments[0])
             tree.insert(idCommitments[1])
@@ -173,7 +173,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should delete 5 leaves correctly", async () => {
-            const tree = createMerkleTree()
+            const tree = createIncrementalMerkleTree()
 
             await seedZeroHashes()
 
@@ -232,7 +232,7 @@ describe("# core/groups/mts", () => {
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes()
 
-            const tree = createMerkleTree()
+            const tree = createIncrementalMerkleTree()
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {
@@ -242,11 +242,11 @@ describe("# core/groups/mts", () => {
                 tree.insert(BigInt(idCommitments[i]))
             }
 
-            const { path, siblingNodes } = tree.createProof(5)
+            const { pathIndices, siblings } = tree.createProof(5)
             const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(expectedValue.path).toStrictEqual(path)
-            expect(expectedValue.siblingNodes).toStrictEqual(siblingNodes.map(String))
+            expect(expectedValue.path).toStrictEqual(pathIndices)
+            expect(expectedValue.siblingNodes).toStrictEqual(siblings.map(String))
         })
     })
 })

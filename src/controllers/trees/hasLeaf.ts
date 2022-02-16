@@ -1,4 +1,4 @@
-import { MerkleTreeNode } from "@interrep/db"
+import { MerkleTreeNode } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
 import { logger } from "src/utils/backend"

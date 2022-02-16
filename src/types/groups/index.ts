@@ -1,5 +1,5 @@
-import { ReputationLevel, OAuthProvider } from "@interrep/reputation"
-import { TelegramGroup } from "@interrep/telegram-bot"
+import { ReputationLevel, OAuthProvider } from "@interep/reputation"
+import { TelegramGroup } from "@interep/telegram-bot"
 import { EmailDomain } from "src/core/email"
 import { PoapEvent } from "src/core/poap"
 

@@ -19,10 +19,10 @@ type ReturnParameters = {
 }
 
 /**
- * InterRep API hook to handle the http errors and show toast messages.
- * @returns InterRep API functions
+ * Interep API hook to handle the http errors and show toast messages.
+ * @returns Interep API functions
  */
-export default function useInterRepAPI(): ReturnParameters {
+export default function useInterepAPI(): ReturnParameters {
     const toast = useToast()
 
     const showErrorMessage = useCallback(

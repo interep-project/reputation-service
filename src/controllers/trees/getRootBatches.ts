@@ -1,4 +1,4 @@
-import { MerkleTreeRootBatch } from "@interrep/db"
+import { MerkleTreeRootBatch } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { logger, removeDBFields } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"

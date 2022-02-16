@@ -1,4 +1,4 @@
-import { EmailUser, EmailUserDocument } from "@interrep/db"
+import { EmailUser, EmailUserDocument } from "@interep/db"
 import config from "src/config"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import { sha256 } from "src/utils/common/crypto"

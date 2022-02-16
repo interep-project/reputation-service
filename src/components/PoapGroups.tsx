@@ -109,7 +109,7 @@ export default function PoapGroups(): JSX.Element {
         </VStack>
     ) : _poapEvents && _poapEvents.length === 0 ? (
         <VStack h="250px" align="center" justify="center">
-            <Text fontSize="lg">Sorry, you don&#39;t own any of the POAP tokens supported by InterRep!</Text>
+            <Text fontSize="lg">Sorry, you don&#39;t own any of the POAP tokens supported by Interep!</Text>
         </VStack>
     ) : (
         <>

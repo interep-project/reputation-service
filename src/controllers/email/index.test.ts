@@ -1,4 +1,4 @@
-import { EmailUser, EmailUserDocument } from "@interrep/db"
+import { EmailUser, EmailUserDocument } from "@interep/db"
 import createNextMocks from "src/mocks/createNextMocks"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import { connectDatabase as _connectDatabase } from "src/utils/backend/database"

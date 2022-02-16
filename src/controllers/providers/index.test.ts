@@ -1,4 +1,4 @@
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { appendLeaf } from "src/core/groups/mts"
 import createNextMocks from "src/mocks/createNextMocks"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"

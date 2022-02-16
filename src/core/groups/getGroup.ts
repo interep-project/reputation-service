@@ -1,7 +1,7 @@
-import { MerkleTreeNode } from "@interrep/db"
+import { MerkleTreeNode } from "@interep/db"
 import config from "src/config"
 import { Group, GroupName, Provider } from "src/types/groups"
-import { defaultMerkleTreeRoot } from "src/utils/common/crypto"
+import { defaultIncrementalMerkleTreeRoot } from "src/utils/common/crypto"
 import checkGroup from "./checkGroup"
 
 export default async function getGroup(provider: Provider, name: GroupName): Promise<Group> {
@@ -14,7 +14,7 @@ export default async function getGroup(provider: Provider, name: GroupName): Pro
     return {
         provider,
         name,
-        rootHash: root ? root.hash : defaultMerkleTreeRoot.toString(),
+        rootHash: root ? root.hash : defaultIncrementalMerkleTreeRoot.toString(),
         size: await MerkleTreeNode.getNumberOfActiveLeaves({ name, provider })
     }
 }

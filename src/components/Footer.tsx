@@ -9,10 +9,10 @@ export default function Footer(): JSX.Element {
         <Box bg={colorMode === "light" ? "gray.200" : "background.800"} w="100%">
             <Container my="15px" px="80px" maxW="container.xl">
                 <HStack justify="space-between">
-                    <Text>Copyright © 2021 InterRep</Text>
+                    <Text>Copyright © 2021 Interep</Text>
 
                     <HStack spacing={4}>
-                        <Link fontWeight="bold" href="https://docs.interrep.link" isExternal>
+                        <Link fontWeight="bold" href="https://docs.interep.link" isExternal>
                             Docs
                         </Link>
                         <Text>|</Text>
@@ -22,10 +22,10 @@ export default function Footer(): JSX.Element {
                         <Link href="https://twitter.com/PrivacyScaling" isExternal>
                             <Icon boxSize="20px" as={FaTwitter} />
                         </Link>
-                        <Link href="https://t.me/interrep" isExternal>
+                        <Link href="https://t.me/interep" isExternal>
                             <Icon boxSize="20px" as={FaTelegram} />
                         </Link>
-                        <Link href="https://github.com/InterRep" isExternal>
+                        <Link href="https://github.com/Interep" isExternal>
                             <Icon boxSize="20px" as={FaGithub} />
                         </Link>
                     </HStack>

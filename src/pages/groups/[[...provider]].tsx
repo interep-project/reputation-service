@@ -66,9 +66,9 @@ export default function Groups(): JSX.Element {
                 <HStack flex="1" pb="4" borderBottomWidth="2px" spacing="4">
                     <IconButton onClick={() => back()} aria-label="Back" icon={<IoMdArrowRoundBack />} />
                     <Heading as="h2" size="xl">
-                        InterRep Groups
+                        Interep Groups
                         <Tooltip
-                            label="InterRep groups will allow you to access services and DApps using InterRep."
+                            label="Interep groups will allow you to access services and DApps using Interep."
                             placement="right-start"
                         >
                             <span>

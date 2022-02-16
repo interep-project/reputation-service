@@ -1,5 +1,5 @@
-import { OAuthAccountData, OAuthAccountDocument } from "@interrep/db"
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { OAuthAccountData, OAuthAccountDocument } from "@interep/db"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 
 export default function createOAuthAccountMock(override?: Partial<OAuthAccountDocument>): OAuthAccountData {
     return {

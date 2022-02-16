@@ -1,4 +1,4 @@
-import { getOAuthProviders } from "@interrep/reputation"
+import { getOAuthProviders } from "@interep/reputation"
 import { Provider } from "src/types/groups"
 
 export default function getProviders(): Provider[] {

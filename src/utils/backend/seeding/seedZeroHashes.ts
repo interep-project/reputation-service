@@ -1,4 +1,4 @@
-import { MerkleTreeZero } from "@interrep/db"
+import { MerkleTreeZero } from "@interep/db"
 import config from "src/config"
 import { logger } from "src/utils/backend"
 import { poseidon } from "src/utils/common/crypto"

@@ -1,4 +1,4 @@
-import { MerkleTreeZero } from "@interrep/db"
+import { MerkleTreeZero } from "@interep/db"
 import config from "src/config"
 import { connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import seedZeroHashes from "./seedZeroHashes"

@@ -1,4 +1,4 @@
-import { OAuthProvider, ReputationLevel } from "@interrep/reputation"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { Session } from "next-auth"
 
 export default function createSessionMock(override?: any): Session {

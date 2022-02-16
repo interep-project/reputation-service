@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interep/db"
 import config from "src/config"
 import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"

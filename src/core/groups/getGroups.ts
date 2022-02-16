@@ -1,5 +1,5 @@
-import { getReputationLevels } from "@interrep/reputation"
-import { getTelegramGroups } from "@interrep/telegram-bot"
+import { getReputationLevels } from "@interep/reputation"
+import { getTelegramGroups } from "@interep/telegram-bot"
 import { getPoapEvents } from "src/core/poap"
 import { Group, Provider } from "src/types/groups"
 import { getProviders } from "."

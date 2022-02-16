@@ -1,4 +1,4 @@
-import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interrep/db"
+import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
 import schedule from "node-schedule"
 import config from "src/config"
 import { addOffchainRoots, retrieveEvents } from "src/core/contracts/Groups"

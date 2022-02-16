@@ -4,9 +4,9 @@ import {
     RedditParameters,
     TwitterParameters,
     OAuthProvider
-} from "@interrep/reputation"
+} from "@interep/reputation"
 import { Account } from "next-auth"
-import { OAuthAccount } from "@interrep/db"
+import { OAuthAccount } from "@interep/db"
 import { User } from "src/types/next-auth"
 import { connectDatabase } from "src/utils/backend/database"
 

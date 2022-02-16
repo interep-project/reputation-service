@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { connect, disconnect, drop, getState } from "@interrep/db"
+import { connect, disconnect, drop, getState } from "@interep/db"
 import config from "src/config"
 import { logger } from "src/utils/backend"
 
