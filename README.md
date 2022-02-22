@@ -103,26 +103,7 @@ yarn dev
 
 The pages auto-update as you edit files.
 
-To test all the features, you will need to deploy the Interep contracts in a local network. Here's how:
-
-1. Clone the `contracts` repository:
-
-```bash
-git clone https://github.com/interep-project/contracts.git
-cd contracts
-```
-
-2. Start a local network in one terminal:
-
-```bash
-yarn start
-```
-
-3. In another terminal, deploy the `Groups.sol` contract:
-
-```bash
-yarn deploy:groups --network localhost
-```
+To test all the features, you will need to deploy the Interep contracts in a [local network](https://github.com/interep-project/contracts/tree/main#preparing-a-local-network).
 
 ### Running Interep (production)
 
