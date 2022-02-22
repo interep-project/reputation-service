@@ -43,7 +43,7 @@ describe("# core/groups", () => {
             expect(expectedValue).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                rootHash: "19217088683336594659449020493828377907203207941212636669271704950158751593251",
+                rootHash: "15019797232609675441998260052101280400536945603062888308240081994073687793470",
                 size: 0
             })
         })
@@ -62,7 +62,7 @@ describe("# core/groups", () => {
             expect(expectedGroup).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                rootHash: "7823274241651847725886395043906089812509000229670073074851496209925190006195",
+                rootHash: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
                 size: 10
             })
         })
@@ -75,7 +75,7 @@ describe("# core/groups", () => {
             expect(expectedGroups).toContainEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                rootHash: "7823274241651847725886395043906089812509000229670073074851496209925190006195",
+                rootHash: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
                 size: 10
             })
         })

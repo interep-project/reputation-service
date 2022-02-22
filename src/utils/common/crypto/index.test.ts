@@ -25,11 +25,11 @@ describe("# utils/common/crypto", () => {
             const expectedValue = createIncrementalMerkleTree()
 
             expect(expectedValue).toBeInstanceOf(IncrementalMerkleTree)
-            expect(expectedValue.root).toContain("19217088683336")
+            expect(expectedValue.root).toContain("15019797232609")
         })
 
         it("Should import the right default Merkle tree root", () => {
-            expect(defaultIncrementalMerkleTreeRoot).toContain("19217088683336")
+            expect(defaultIncrementalMerkleTreeRoot).toContain("15019797232609")
         })
     })
 })
