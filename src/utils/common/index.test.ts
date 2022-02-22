@@ -29,7 +29,7 @@ describe("# utils/common", () => {
 
     describe("# getContractAddress", () => {
         it("Should return a Groups contract address", async () => {
-            const expectedValue = getContractAddress(ContractName.GROUPS)
+            const expectedValue = getContractAddress(ContractName.INTEREP)
 
             expect(expectedValue).toContain("0x")
         })
@@ -49,7 +49,7 @@ describe("# utils/common", () => {
         })
 
         it("Should return a Groups contract instance", async () => {
-            const expectedValue = getContractInstance(ContractName.GROUPS, ethers.constants.AddressZero)
+            const expectedValue = getContractInstance(ContractName.INTEREP, ethers.constants.AddressZero)
 
             expect(expectedValue).toBeInstanceOf(Contract)
         })

@@ -6,8 +6,8 @@ import { contractAddresses, ContractName, currentNetwork } from "src/config"
  * @returns The address of the contract.
  */
 export default function getContractAddress(contractName: ContractName): string {
-    if (contractName === ContractName.GROUPS) {
-        return contractAddresses[currentNetwork.chainId][ContractName.GROUPS]
+    if (contractName === ContractName.INTEREP) {
+        return contractAddresses[currentNetwork.chainId][ContractName.INTEREP]
     }
 
     throw new Error(`You must specify a valid contract name`)

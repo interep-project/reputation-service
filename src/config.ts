@@ -2,7 +2,7 @@ import getNextConfig from "next/config"
 import { NetworkData } from "./types/network"
 
 const defaultEnv = {
-    MERKLE_TREE_DEPTH: 16, // 2^16 = 65536
+    MERKLE_TREE_DEPTH: 20, // 2^20 = 1048576
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
@@ -20,7 +20,7 @@ export enum Environment {
 }
 
 export enum ContractName {
-    GROUPS = "Groups"
+    INTEREP = "Interep"
 }
 
 export enum SupportedChainId {
@@ -31,13 +31,13 @@ export enum SupportedChainId {
 
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
-        [ContractName.GROUPS]: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+        [ContractName.INTEREP]: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
     },
     [SupportedChainId.KOVAN]: {
-        [ContractName.GROUPS]: "0x8c29e0b77e32f704F03eeCE01c041192A5EB6c77"
+        [ContractName.INTEREP]: "0x8c29e0b77e32f704F03eeCE01c041192A5EB6c77"
     },
     [SupportedChainId.ARBITRUM]: {
-        [ContractName.GROUPS]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
+        [ContractName.INTEREP]: "0xa2A7f256B4Ea653eef95965D09bbdBb4b4526419"
     }
 }
 

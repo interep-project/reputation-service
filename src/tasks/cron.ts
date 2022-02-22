@@ -1,18 +1,18 @@
 import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
 import schedule from "node-schedule"
 import config from "src/config"
-import { addOffchainRoots, retrieveEvents } from "src/core/contracts/Groups"
-import { Provider } from "src/types/groups"
+import { addOffchainGroups, retrieveEvents } from "src/core/contracts/Interep"
+import { GroupName, Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export async function run() {
     await connectDatabase()
 
-    schedule.scheduleJob({ hour: 12, tz: "Europe/Rome" }, async () => {
+    schedule.scheduleJob({ second: 0, tz: "Europe/Rome" }, async () => {
         try {
-            // Get all the 'OffchainMerkleRoot' onchain events.
-            const events = await retrieveEvents("OffchainMerkleRoot")
+            const events = await retrieveEvents("OffchainGroupAdded")
+
             // Get all the new db root nodes not yet published onchain.
             const merkleRoots = await MerkleTreeNode.find({
                 level: config.MERKLE_TREE_DEPTH,
@@ -22,10 +22,10 @@ export async function run() {
             // If there are new db root hashes, publish them.
             if (merkleRoots && merkleRoots.length > 0) {
                 const groupProviders = merkleRoots.map((e) => e.group.provider) as Provider[]
-                const groupNames = merkleRoots.map((e) => e.group.name)
+                const groupNames = merkleRoots.map((e) => e.group.name) as GroupName[]
                 const rootHashes = merkleRoots.map((e) => e.hash)
 
-                const transaction = await addOffchainRoots(groupProviders, groupNames, rootHashes)
+                const transaction = await addOffchainGroups(groupProviders, groupNames, rootHashes)
 
                 for (let i = 0; i < merkleRoots.length; i++) {
                     const rootBatch = (await MerkleTreeRootBatch.findOne({

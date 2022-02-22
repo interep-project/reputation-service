@@ -1,4 +1,4 @@
-import Groups from "contract-artifacts/Groups.json"
+import Interep from "contract-artifacts/Interep.json"
 import { Contract } from "ethers"
 import { ContractName } from "src/config"
 
@@ -10,8 +10,8 @@ import { ContractName } from "src/config"
  */
 export default function getContractInstance(contractName: ContractName, contractAddress: string): Contract {
     switch (contractName) {
-        case ContractName.GROUPS:
-            return new Contract(contractAddress, Groups.abi)
+        case ContractName.INTEREP:
+            return new Contract(contractAddress, Interep.abi)
         default:
             throw new TypeError(`${contractName} contract does not exist`)
     }
