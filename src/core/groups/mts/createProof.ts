@@ -82,8 +82,8 @@ export default async function createProof(
     const proof = await proofQuery.exec()
 
     const root = proof.pop().hash
-    const siblingNodes = proof.map((n: any) => n.sibling)
-    const path = proof.map((n: any) => n.index)
+    const siblings = proof.map((n: any) => n.sibling)
+    const pathIndices = proof.map((n: any) => n.index)
 
-    return { root, siblingNodes, path }
+    return { leaf: identityCommitment, root, siblings, pathIndices }
 }

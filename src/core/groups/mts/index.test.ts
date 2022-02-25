@@ -225,8 +225,8 @@ describe("# core/groups/mts", () => {
 
             const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(expectedValue.siblingNodes).toHaveLength(config.MERKLE_TREE_DEPTH)
-            expect(expectedValue.path).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue.siblings).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue.pathIndices).toHaveLength(config.MERKLE_TREE_DEPTH)
         })
 
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
@@ -245,8 +245,8 @@ describe("# core/groups/mts", () => {
             const { pathIndices, siblings } = tree.createProof(5)
             const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(expectedValue.path).toStrictEqual(pathIndices)
-            expect(expectedValue.siblingNodes).toStrictEqual(siblings.map(String))
+            expect(expectedValue.siblings).toStrictEqual(siblings.map(String))
+            expect(expectedValue.pathIndices).toStrictEqual(pathIndices)
         })
     })
 })
