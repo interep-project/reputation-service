@@ -6,7 +6,7 @@ import { GroupName, Provider } from "src/types/groups"
 import { getBackendContractInstance } from "src/utils/backend"
 import { getContractAddress } from "src/utils/common"
 
-export default async function addOffchainGroups(
+export default async function updateOffchainGroups(
     providers: Provider[],
     names: GroupName[],
     roots: string[]
@@ -25,7 +25,7 @@ export default async function addOffchainGroups(
         })
     }
 
-    const transaction = await contractInstance.addOffchainGroups(groupIds, groups)
+    const transaction = await contractInstance.updateOffchainGroups(groupIds, groups)
 
     return transaction.wait(1)
 }
