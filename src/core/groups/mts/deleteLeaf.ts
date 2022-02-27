@@ -80,7 +80,7 @@ export default async function deleteLeaf(
         })
     }
 
-    rootBatch.rootHashes.push(node.hash)
+    rootBatch.roots.push(node.hash)
 
     await rootBatch.save()
 

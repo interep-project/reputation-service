@@ -9,9 +9,9 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
         return
     }
 
-    const rootHash = req.query?.rootHash
+    const root = req.query?.root
 
-    if (!rootHash || typeof rootHash !== "string") {
+    if (!root || typeof root !== "string") {
         res.status(400).end()
         return
     }
@@ -20,7 +20,7 @@ export default async function getRootBatchController(req: NextApiRequest, res: N
         await connectDatabase()
 
         const rootBatch = await MerkleTreeRootBatch.findOne({
-            rootHashes: { $elemMatch: { $eq: rootHash } }
+            roots: { $elemMatch: { $eq: root } }
         })
 
         if (!rootBatch) {

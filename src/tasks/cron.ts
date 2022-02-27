@@ -23,9 +23,9 @@ export async function run() {
             if (merkleRoots && merkleRoots.length > 0) {
                 const groupProviders = merkleRoots.map((e) => e.group.provider) as Provider[]
                 const groupNames = merkleRoots.map((e) => e.group.name) as GroupName[]
-                const rootHashes = merkleRoots.map((e) => e.hash)
+                const roots = merkleRoots.map((e) => e.hash)
 
-                const transaction = await updateOffchainGroups(groupProviders, groupNames, rootHashes)
+                const transaction = await updateOffchainGroups(groupProviders, groupNames, roots)
 
                 for (let i = 0; i < merkleRoots.length; i++) {
                     const rootBatch = (await MerkleTreeRootBatch.findOne({

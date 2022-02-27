@@ -118,7 +118,7 @@ export default async function appendLeaf(
         })
     }
 
-    rootBatch.rootHashes.push(node.hash)
+    rootBatch.roots.push(node.hash)
 
     await rootBatch.save()
 

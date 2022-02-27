@@ -2017,6 +2017,14 @@
     "@interep/reputation" "^0.1.0"
     mongoose "^5.12.1"
 
+"@interep/db@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@interep/db/-/db-0.2.0.tgz#ec1bdb37c5eb7f6badeaf902c5beab03a55332ca"
+  integrity sha512-UngZ82p9lf7KVQg9mSp2vrQ9DZeotsa19LQNfVAni6kR2+8vNZD4TrotWY2cvCIb1/KDXShg98xnGhTLFr0fdQ==
+  dependencies:
+    "@interep/reputation" "^0.1.0"
+    mongoose "^5.12.1"
+
 "@interep/identity@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@interep/identity/-/identity-0.1.1.tgz#06254fe4baf4f2ed5b7ee299869a8486774d4021"

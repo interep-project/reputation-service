@@ -9,13 +9,13 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
         return
     }
 
-    const rootHash = req.query?.rootHash
+    const root = req.query?.root
     const limit = req.query?.limit
     const offset = req.query?.offset
 
     if (
-        !rootHash ||
-        typeof rootHash !== "string" ||
+        !root ||
+        typeof root !== "string" ||
         (limit && (typeof limit !== "string" || Number.isNaN(limit))) ||
         (offset && (typeof offset !== "string" || Number.isNaN(offset)))
     ) {
@@ -26,14 +26,14 @@ export default async function getLeavesController(req: NextApiRequest, res: Next
     try {
         await connectDatabase()
 
-        const root = await MerkleTreeNode.findOne({ hash: rootHash })
+        const rootNode = await MerkleTreeNode.findOne({ hash: root })
 
-        if (!root) {
+        if (!rootNode) {
             res.status(404).end("The root does not exist")
             return
         }
 
-        const leaves = await MerkleTreeNode.find({ group: root.group, level: 0 })
+        const leaves = await MerkleTreeNode.find({ group: rootNode.group, level: 0 })
             .sort({ $natural: -1 })
             .skip(Number(offset || 0))
             .limit(Number(limit || 0))

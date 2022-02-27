@@ -52,7 +52,7 @@ describe("# controllers/trees", () => {
         it("Should return error 404 if the root hash does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111" }
+                query: { root: "111" }
             })
 
             await getLeavesController(req, res)
@@ -63,7 +63,7 @@ describe("# controllers/trees", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111" }
+                query: { root: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
@@ -77,10 +77,10 @@ describe("# controllers/trees", () => {
 
         it("Should return the leaves of an existing tree", async () => {
             await seedZeroHashes()
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash }
+                query: { root }
             })
 
             await getLeavesController(req, res)
@@ -95,10 +95,10 @@ describe("# controllers/trees", () => {
             await seedZeroHashes()
             await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "222")
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "333")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "333")
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash, limit: "1", offset: "1" }
+                query: { root, limit: "1", offset: "1" }
             })
 
             await getLeavesController(req, res)
@@ -136,7 +136,7 @@ describe("# controllers/trees", () => {
         it("Should return error 404 if the root hash does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111", leafHash: "111" }
+                query: { root: "111", leaf: "111" }
             })
 
             await hasLeafController(req, res)
@@ -147,7 +147,7 @@ describe("# controllers/trees", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111", leafHash: "111" }
+                query: { root: "111", leaf: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
@@ -161,12 +161,12 @@ describe("# controllers/trees", () => {
 
         it("Should return false if a leaf does not exist", async () => {
             await seedZeroHashes()
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
-                    rootHash,
-                    leafHash: "222"
+                    root,
+                    leaf: "222"
                 }
             })
 
@@ -180,12 +180,12 @@ describe("# controllers/trees", () => {
 
         it("Should return true if a leaf exists", async () => {
             await seedZeroHashes()
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
-                    rootHash,
-                    leafHash: "111"
+                    root,
+                    leaf: "111"
                 }
             })
 
@@ -223,7 +223,7 @@ describe("# controllers/trees", () => {
         it("Should return error 404 if the root batch does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111" }
+                query: { root: "111" }
             })
 
             await getRootBatchController(req, res)
@@ -234,7 +234,7 @@ describe("# controllers/trees", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111" }
+                query: { root: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
@@ -248,11 +248,11 @@ describe("# controllers/trees", () => {
 
         it("Should return a root batch if it exists", async () => {
             await seedZeroHashes()
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
-                    rootHash
+                    root
                 }
             })
 
@@ -266,7 +266,7 @@ describe("# controllers/trees", () => {
                     name: ReputationLevel.GOLD,
                     provider: OAuthProvider.TWITTER
                 },
-                rootHashes: [rootHash]
+                roots: [root]
             })
         })
     })
@@ -285,7 +285,7 @@ describe("# controllers/trees", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { rootHash: "111" }
+                query: { root: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
@@ -299,7 +299,7 @@ describe("# controllers/trees", () => {
 
         it("Should return a list of root batches", async () => {
             await seedZeroHashes()
-            const rootHash = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
+            const root = await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
             const { req, res } = createNextMocks({
                 method: "GET"
             })
@@ -314,7 +314,7 @@ describe("# controllers/trees", () => {
                     name: ReputationLevel.GOLD,
                     provider: OAuthProvider.TWITTER
                 },
-                rootHashes: [rootHash]
+                roots: [root]
             })
         })
     })

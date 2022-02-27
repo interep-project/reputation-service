@@ -35,7 +35,7 @@
         "@emotion/react": "^11",
         "@emotion/styled": "^11",
         "@fontsource/raleway": "^4.5.0",
-        "@interep/db": "^0.1.0",
+        "@interep/db": "^0.2.0",
         "@interep/identity": "^0.1.1",
         "@interep/reputation": "^0.1.0",
         "@interep/telegram-bot": "^0.2.0",
