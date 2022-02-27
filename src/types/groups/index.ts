@@ -9,8 +9,9 @@ export type GroupName = ReputationLevel | PoapEvent | TelegramGroup | EmailDomai
 export type Group = {
     provider: Provider
     name: GroupName
-    rootHash: string
+    root: string
     size: number
+    numberOfLeaves: number
 }
 
 export type Groups = Group[]
