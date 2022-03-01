@@ -1,5 +1,6 @@
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { poseidon } from "circomlibjs"
+import config from "src/config"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
@@ -43,6 +44,7 @@ describe("# core/groups", () => {
             expect(expectedValue).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
+                depth: config.MERKLE_TREE_DEPTH,
                 root: "15019797232609675441998260052101280400536945603062888308240081994073687793470",
                 numberOfLeaves: 0,
                 size: 0
@@ -63,6 +65,7 @@ describe("# core/groups", () => {
             expect(expectedGroup).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
+                depth: config.MERKLE_TREE_DEPTH,
                 root: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
                 numberOfLeaves: 10,
                 size: 10
@@ -77,6 +80,7 @@ describe("# core/groups", () => {
             expect(expectedGroups).toContainEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
+                depth: config.MERKLE_TREE_DEPTH,
                 root: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
                 numberOfLeaves: 10,
                 size: 10
