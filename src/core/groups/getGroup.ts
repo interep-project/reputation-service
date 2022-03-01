@@ -14,6 +14,7 @@ export default async function getGroup(provider: Provider, name: GroupName): Pro
     return {
         provider,
         name,
+        depth: config.MERKLE_TREE_DEPTH,
         root: root ? root.hash : defaultIncrementalMerkleTreeRoot.toString(),
         size: await MerkleTreeNode.getNumberOfActiveLeaves({ name, provider }),
         numberOfLeaves: await MerkleTreeNode.getNumberOfNodes({ name, provider }, 0)

@@ -9,6 +9,7 @@ export type GroupName = ReputationLevel | PoapEvent | TelegramGroup | EmailDomai
 export type Group = {
     provider: Provider
     name: GroupName
+    depth: number
     root: string
     size: number
     numberOfLeaves: number
