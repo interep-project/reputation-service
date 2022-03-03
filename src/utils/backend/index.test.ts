@@ -41,7 +41,7 @@ describe("# utils/backend", () => {
 
             const fun = () => runAPIMiddleware(req, res, getCors())
 
-            await expect(fun).rejects.toThrow("not authorized")
+            await expect(fun).rejects.toThrow("CORS blocked")
         })
     })
 })

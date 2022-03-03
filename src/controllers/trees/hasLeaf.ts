@@ -1,7 +1,7 @@
 import { MerkleTreeNode } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import config from "src/config"
-import { logger } from "src/utils/backend"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function hasLeafController(req: NextApiRequest, res: NextApiResponse) {
@@ -19,6 +19,8 @@ export default async function hasLeafController(req: NextApiRequest, res: NextAp
     }
 
     try {
+        await runAPIMiddleware(req, res, getCors({ origin: "*" }))
+
         await connectDatabase()
 
         const rootNode = await MerkleTreeNode.findOne({ hash: root })

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { getProviders } from "src/core/groups"
-import { logger } from "src/utils/backend"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getProvidersController(req: NextApiRequest, res: NextApiResponse) {
@@ -10,6 +10,8 @@ export default async function getProvidersController(req: NextApiRequest, res: N
     }
 
     try {
+        await runAPIMiddleware(req, res, getCors({ origin: "*" }))
+
         await connectDatabase()
 
         const providers = getProviders()

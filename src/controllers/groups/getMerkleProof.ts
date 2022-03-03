@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup } from "src/core/groups"
 import { createProof } from "src/core/groups/mts"
 import { GroupName, Provider } from "src/types/groups"
-import { logger } from "src/utils/backend"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getMerkleProofController(req: NextApiRequest, res: NextApiResponse) {
@@ -34,6 +34,8 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
     }
 
     try {
+        await runAPIMiddleware(req, res, getCors({ origin: "*" }))
+
         await connectDatabase()
 
         if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment))) {

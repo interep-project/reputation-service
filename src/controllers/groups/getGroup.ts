@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup, getGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
-import { logger } from "src/utils/backend"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function getGroupController(req: NextApiRequest, res: NextApiResponse) {
@@ -24,6 +24,8 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
     }
 
     try {
+        await runAPIMiddleware(req, res, getCors({ origin: "*" }))
+
         await connectDatabase()
 
         const group = await getGroup(provider, name)

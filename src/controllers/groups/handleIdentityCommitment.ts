@@ -55,7 +55,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
     try {
         await runAPIMiddleware(req, res, getCors())
     } catch (error: any) {
-        res.status(401).send(error.message)
+        res.status(401).end()
 
         logger.error(error)
         return

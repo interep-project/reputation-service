@@ -1,7 +1,7 @@
 import { OAuthAccount } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { logger } from "src/utils/backend"
+import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
 export default async function hasJoinedAGroupController(req: NextApiRequest, res: NextApiResponse) {
@@ -18,6 +18,8 @@ export default async function hasJoinedAGroupController(req: NextApiRequest, res
     }
 
     try {
+        await runAPIMiddleware(req, res, getCors({ origin: "*" }))
+
         await connectDatabase()
 
         const account = await OAuthAccount.findById(session.accountId)

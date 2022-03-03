@@ -10,7 +10,7 @@ export default function getCors(
             if (!origin || config.API_WHITELIST.some((domain) => domain.test(origin))) {
                 callback(null, config.API_WHITELIST)
             } else {
-                callback(new Error("Sorry, you are not authorized to use this API"))
+                callback(new Error(`CORS blocked request from '${origin}'`))
             }
         },
         ...options
