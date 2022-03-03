@@ -17,24 +17,23 @@ import {
     useColorMode,
     VStack
 } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
-import { providers } from "ethers"
 import { signOut, useSession } from "next-auth/client"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useContext } from "react"
 import { FaInfoCircle } from "react-icons/fa"
 import { IoMdArrowRoundBack } from "react-icons/io"
 import EmailGroups from "src/components/EmailGroups"
 import OAuthGroups from "src/components/OAuthGroups"
 import PoapGroups from "src/components/PoapGroups"
 import TelegramGroups from "src/components/TelegramGroups"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 import { capitalize } from "src/utils/common"
 
 export default function Groups(): JSX.Element {
     const router = useRouter()
     const [session] = useSession()
     const { colorMode } = useColorMode()
-    const { account } = useWeb3React<providers.Web3Provider>()
+    const { _account } = useContext(EthereumWalletContext)
     const [_loading, setLoading] = useBoolean()
     const parameters = router.query.provider as string[]
 
@@ -90,7 +89,7 @@ export default function Groups(): JSX.Element {
                             <VStack h="300px" align="center" justify="center">
                                 <Spinner thickness="4px" speed="0.65s" size="xl" />
                             </VStack>
-                        ) : !account ? (
+                        ) : !_account ? (
                             <VStack h="300px" align="center" justify="center">
                                 <Text fontSize="lg">Please, connect your wallet correctly!</Text>
                             </VStack>

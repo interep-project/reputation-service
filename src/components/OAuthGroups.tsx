@@ -1,28 +1,25 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
-import { useWeb3React } from "@web3-react/core"
-import { providers, Signer } from "ethers"
+import { Signer } from "ethers"
 import { useSession } from "next-auth/client"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { capitalize } from "src/utils/common"
 
 export default function OAuthGroups(): JSX.Element {
     const [session] = useSession()
-    const { account, library } = useWeb3React<providers.Web3Provider>()
+    const { _signer } = useContext(EthereumWalletContext)
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const [_signer, setSigner] = useState<Signer>()
     const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, leaveGroup, getGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
-            if (account && library) {
-                setSigner(library.getSigner(account))
-
+            if (_signer) {
                 if (session && _currentStep === 0) {
                     const { provider, user } = session
                     const group = await getGroup(provider, user.reputation as ReputationLevel)
@@ -35,7 +32,7 @@ export default function OAuthGroups(): JSX.Element {
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session, account, library])
+    }, [session, _signer])
 
     const step1 = useCallback(
         async (signer: Signer, provider: OAuthProvider, reputation: ReputationLevel) => {

@@ -1,23 +1,14 @@
 import { Button, Container, HStack, IconButton, Text, Tooltip, useClipboard, useColorMode } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
-import { providers } from "ethers"
-import React, { useEffect } from "react"
+import React, { useContext } from "react"
 import { isBrowser } from "react-device-detect"
 import { FaMoon, FaSun } from "react-icons/fa"
-import { injectedConnector, shortenAddress } from "src/utils/frontend"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
+import { shortenAddress } from "src/utils/frontend"
 
 export default function NavBar(): JSX.Element {
-    const { activate, account } = useWeb3React<providers.Web3Provider>()
-    const { hasCopied, onCopy } = useClipboard(account as string)
+    const { _account, connect } = useContext(EthereumWalletContext)
+    const { hasCopied, onCopy } = useClipboard(_account || "")
     const { colorMode, toggleColorMode } = useColorMode()
-
-    useEffect(() => {
-        ;(async () => {
-            if (await injectedConnector.isAuthorized()) {
-                await activate(injectedConnector)
-            }
-        })()
-    }, [activate])
 
     return (
         <Container
@@ -34,12 +25,12 @@ export default function NavBar(): JSX.Element {
                     Interep
                 </Text>
                 <HStack>
-                    {isBrowser && account ? (
+                    {isBrowser && _account ? (
                         <Tooltip label="Copied!" isOpen={hasCopied}>
-                            <Button onClick={onCopy}>{shortenAddress(account)}</Button>
+                            <Button onClick={onCopy}>{shortenAddress(_account)}</Button>
                         </Tooltip>
                     ) : (
-                        <Button onClick={() => activate(injectedConnector)}>Connect Your Wallet</Button>
+                        <Button onClick={() => connect()}>Connect Your Wallet</Button>
                     )}
                     <IconButton
                         onClick={toggleColorMode}

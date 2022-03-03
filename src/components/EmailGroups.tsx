@@ -1,8 +1,8 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
-import { providers, Signer } from "ethers"
-import React, { useCallback, useEffect, useState } from "react"
+import { Signer } from "ethers"
+import React, { useCallback, useContext, useState } from "react"
 import Step from "src/components/Step"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
 
@@ -13,24 +13,15 @@ type Properties = {
 }
 
 export default function EmailGroups({ userId, userToken, groupId }: Properties): JSX.Element {
-    const { account, library } = useWeb3React<providers.Web3Provider>()
+    const { _signer } = useContext(EthereumWalletContext)
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(1)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const [_signer, setSigner] = useState<Signer>()
     const [_group, setGroup] = useState<Group>()
 
     const group_list = groupId.split("+")
 
     const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
-
-    useEffect(() => {
-        ;(async () => {
-            if (account && library) {
-                setSigner(library.getSigner(account))
-            }
-        })()
-    }, [account, library])
 
     const step1 = useCallback(
         async (groupName: string) => {

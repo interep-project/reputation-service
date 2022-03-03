@@ -1,8 +1,8 @@
 import { Spinner, Text, VStack } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
-import { providers, Signer } from "ethers"
-import React, { useCallback, useEffect, useState } from "react"
+import { Signer } from "ethers"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import Step from "src/components/Step"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 
 type Properties = {
@@ -11,19 +11,16 @@ type Properties = {
 }
 
 export default function TelegramGroups({ userId, groupId }: Properties): JSX.Element {
-    const { account, library } = useWeb3React<providers.Web3Provider>()
+    const { _signer } = useContext(EthereumWalletContext)
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const [_signer, setSigner] = useState<Signer>()
     const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
-            if (account && library) {
-                setSigner(library.getSigner(account))
-
+            if (_signer) {
                 if (_currentStep === 0) {
                     const group = await getGroup("telegram", groupId)
 
@@ -35,7 +32,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [account, library])
+    }, [_signer])
 
     const step1 = useCallback(
         async (signer: Signer, groupId: string) => {
