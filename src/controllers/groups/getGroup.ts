@@ -22,7 +22,7 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
         typeof provider !== "string" ||
         !name ||
         typeof name !== "string" ||
-        (members && (typeof members !== "string" || members !== "true")) ||
+        (members && typeof members !== "string") ||
         (limit && (typeof limit !== "string" || Number.isNaN(limit))) ||
         (offset && (typeof offset !== "string" || Number.isNaN(offset)))
     ) {
