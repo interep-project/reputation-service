@@ -11,10 +11,10 @@ import { GroupName } from "src/types/groups"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
-export default async function handleOAuthIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handleOAuthMemberController(req: NextApiRequest, res: NextApiResponse) {
     const provider = req.query?.provider as OAuthProvider
     const name = req.query?.name as GroupName
-    const identityCommitment = req.query?.identityCommitment as string
+    const member = req.query?.member as string
 
     const token = req.headers.authorization
 
@@ -87,7 +87,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     throw new Error(`Account already joined a ${provider} group`)
                 }
 
-                await appendLeaf(provider, name, identityCommitment)
+                await appendLeaf(provider, name, member)
 
                 account.hasJoinedAGroup = true
             } else {
@@ -95,7 +95,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                     throw new Error(`Account has not joined a ${provider} group yet`)
                 }
 
-                await deleteLeaf(provider, name, identityCommitment)
+                await deleteLeaf(provider, name, member)
 
                 account.hasJoinedAGroup = false
             }
@@ -153,7 +153,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 throw new Error(`The account already joined a ${provider} group`)
             }
 
-            await appendLeaf(provider, name, identityCommitment)
+            await appendLeaf(provider, name, member)
 
             account.hasJoinedAGroup = true
         } else {
@@ -161,7 +161,7 @@ export default async function handleOAuthIdentityCommitmentController(req: NextA
                 throw new Error(`The account has not joined a ${provider} group yet`)
             }
 
-            await deleteLeaf(provider, name, identityCommitment)
+            await deleteLeaf(provider, name, member)
 
             account.hasJoinedAGroup = false
         }

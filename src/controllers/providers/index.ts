@@ -1,4 +1,4 @@
-import hasIdentityCommitmentController from "./hasIdentityCommitment"
+import hasMemberController from "./hasMember"
 import getProvidersController from "./getProviders"
 
-export { hasIdentityCommitmentController, getProvidersController }
+export { hasMemberController, getProvidersController }

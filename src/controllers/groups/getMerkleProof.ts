@@ -14,15 +14,15 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
 
     const provider = req.query?.provider as Provider
     const name = req.query?.name as GroupName
-    const identityCommitment = req.query?.identityCommitment
+    const member = req.query?.member
 
     if (
         !provider ||
         typeof provider !== "string" ||
         !name ||
         typeof name !== "string" ||
-        !identityCommitment ||
-        typeof identityCommitment !== "string"
+        !member ||
+        typeof member !== "string"
     ) {
         res.status(400).end()
         return
@@ -38,12 +38,12 @@ export default async function getMerkleProofController(req: NextApiRequest, res:
 
         await connectDatabase()
 
-        if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment))) {
+        if (!(await MerkleTreeNode.findByGroupAndHash({ name, provider }, member))) {
             res.status(404).send("The identity commitment does not exist")
             return
         }
 
-        const proof = await createProof(provider, name, identityCommitment)
+        const proof = await createProof(provider, name, member)
 
         res.status(200).send({ data: proof })
     } catch (error) {

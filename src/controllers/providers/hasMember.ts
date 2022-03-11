@@ -5,16 +5,16 @@ import { Provider } from "src/types/groups"
 import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
-export default async function hasIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function hasMemberController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
         res.status(405).end()
         return
     }
 
     const provider = req.query?.provider as Provider
-    const identityCommitment = req.query?.identityCommitment as string
+    const member = req.query?.member as string
 
-    if (!provider || typeof provider !== "string" || !identityCommitment || typeof identityCommitment !== "string") {
+    if (!provider || typeof provider !== "string" || !member || typeof member !== "string") {
         res.status(400).end()
         return
     }
@@ -31,7 +31,7 @@ export default async function hasIdentityCommitmentController(req: NextApiReques
 
         await connectDatabase()
 
-        const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider, identityCommitment)
+        const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider, member)
 
         res.status(200).send({ data: !!leaf && leaf.level === 0 })
     } catch (error) {

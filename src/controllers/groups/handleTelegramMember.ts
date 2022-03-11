@@ -6,9 +6,9 @@ import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 
-export default async function handleTelegramIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handleTelegramMemberController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name as TelegramGroup
-    const identityCommitment = req.query?.identityCommitment as string
+    const member = req.query?.member as string
     const { telegramUserId } = JSON.parse(req.body)
 
     if (!telegramUserId) {
@@ -32,7 +32,7 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
                 throw new Error(`Telegram user already joined this group`)
             }
 
-            await appendLeaf("telegram", name, identityCommitment)
+            await appendLeaf("telegram", name, member)
 
             telegramUser.hasJoined = true
         } else {
@@ -40,7 +40,7 @@ export default async function handleTelegramIdentityCommitmentController(req: Ne
                 throw new Error(`Telegram user has not joined this group yet`)
             }
 
-            await deleteLeaf("telegram", name, identityCommitment)
+            await deleteLeaf("telegram", name, member)
 
             telegramUser.hasJoined = false
         }

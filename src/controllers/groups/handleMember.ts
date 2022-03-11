@@ -4,12 +4,12 @@ import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
 import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
-import handleEmailIdentityCommitmentController from "./handleEmailIdentityCommitment"
-import handleOAuthIdentityCommitmentController from "./handleOAuthIdentityCommitment"
-import handlePoapIdentityCommitmentController from "./handlePoapIdentityCommitment"
-import handleTelegramIdentityCommitmentController from "./handleTelegramIdentityCommitment"
+import handleEmailMemberController from "./handleEmailMember"
+import handleOAuthMemberController from "./handleOAuthMember"
+import handlePoapMemberController from "./handlePoapMember"
+import handleTelegramMemberController from "./handleTelegramMember"
 
-export default async function handleIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handleMemberController(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST" && req.method !== "DELETE" && req.method !== "GET") {
         res.status(405).end()
         return
@@ -17,15 +17,15 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
 
     const provider = req.query?.provider as Provider
     const name = req.query?.name as GroupName
-    const identityCommitment = req.query?.identityCommitment as string
+    const member = req.query?.member as string
 
     if (
         !provider ||
         typeof provider !== "string" ||
         !name ||
         typeof name !== "string" ||
-        !identityCommitment ||
-        typeof identityCommitment !== "string"
+        !member ||
+        typeof member !== "string"
     ) {
         res.status(400).end()
         return
@@ -40,7 +40,7 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
         try {
             await connectDatabase()
 
-            const leaf = await MerkleTreeNode.findByGroupAndHash({ name, provider }, identityCommitment)
+            const leaf = await MerkleTreeNode.findByGroupAndHash({ name, provider }, member)
 
             res.status(200).send({ data: !!leaf && leaf.level === 0 })
         } catch (error) {
@@ -63,23 +63,23 @@ export default async function handleIdentityCommitmentController(req: NextApiReq
 
     switch (provider) {
         case "poap":
-            await handlePoapIdentityCommitmentController(req, res)
+            await handlePoapMemberController(req, res)
             break
         case "telegram":
-            await handleTelegramIdentityCommitmentController(req, res)
+            await handleTelegramMemberController(req, res)
             break
         case "email":
-            await handleEmailIdentityCommitmentController(req, res)
+            await handleEmailMemberController(req, res)
             break
         default:
-            await handleOAuthIdentityCommitmentController(req, res)
+            await handleOAuthMemberController(req, res)
     }
 
     if (res.statusCode === 200 || res.statusCode === 201) {
         if (req.method === "POST") {
-            logger.info(`[${req.url}] The identity commitment has been added to the group`)
+            logger.info(`[${req.url}] A new member has been added to the group`)
         } else {
-            logger.info(`[${req.url}] The identity commitment has been deleted from the group`)
+            logger.info(`[${req.url}] A new member has been deleted from the group`)
         }
     }
 }

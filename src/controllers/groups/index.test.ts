@@ -19,7 +19,7 @@ import { seedZeroHashes } from "src/utils/backend/seeding"
 import getGroupController from "./getGroup"
 import getGroupsController from "./getGroups"
 import getMerkleProofController from "./getMerkleProof"
-import handleIdentityCommitmentController from "./handleIdentityCommitment"
+import handleMemberController from "./handleMember"
 import hasJoinedAGroupController from "./hasJoinedAGroup"
 
 jest.mock("next-auth/client", () => ({
@@ -136,6 +136,46 @@ describe("# controllers/groups", () => {
             expect(data.name).toBe(name)
             expect(data.size).toBe(0)
         })
+
+        it("Should return a group with its members", async () => {
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name, members: "true" }
+            })
+
+            await getGroupController(req, res)
+
+            const { data } = res._getData()
+
+            expect(res._getStatusCode()).toBe(200)
+            expect(data.provider).toBe(provider)
+            expect(data.name).toBe(name)
+            expect(data.members).toHaveLength(0)
+            expect(data.size).toBe(0)
+        })
+
+        it("Should return group members with limit and offset", async () => {
+            await seedZeroHashes()
+            await appendLeaf(provider, name, "111")
+            await appendLeaf(provider, name, "222")
+            await appendLeaf(provider, name, "333")
+
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name, members: "true", limit: "1", offset: "1" }
+            })
+
+            await getGroupController(req, res)
+
+            const { data } = res._getData()
+
+            expect(res._getStatusCode()).toBe(200)
+            expect(data.provider).toBe(provider)
+            expect(data.name).toBe(name)
+            expect(data.members).toHaveLength(1)
+            expect(data.members).toContain("222")
+            expect(data.size).toBe(3)
+        })
     })
 
     describe("# getGroups", () => {
@@ -202,7 +242,7 @@ describe("# controllers/groups", () => {
         it("Should return error 404 if the group does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name: "pinco", identityCommitment: "1" }
+                query: { provider, name: "pinco", member: "1" }
             })
 
             await getMerkleProofController(req, res)
@@ -210,10 +250,10 @@ describe("# controllers/groups", () => {
             expect(res._getStatusCode()).toBe(404)
         })
 
-        it("Should return error 404 if the identity commitment does not exist", async () => {
+        it("Should return error 404 if a member does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment: "1" }
+                query: { provider, name, member: "1" }
             })
 
             await getMerkleProofController(req, res)
@@ -224,7 +264,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment: "111" }
+                query: { provider, name, member: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
@@ -239,13 +279,13 @@ describe("# controllers/groups", () => {
         it("Should return a Merkle proof", async () => {
             await seedZeroHashes()
 
-            const identityCommitment = "1"
+            const member = "1"
 
-            await appendLeaf(provider, name, identityCommitment)
+            await appendLeaf(provider, name, member)
 
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment }
+                query: { provider, name, member }
             })
 
             await getMerkleProofController(req, res)
@@ -323,13 +363,13 @@ describe("# controllers/groups", () => {
         })
     })
 
-    describe("# handleIdentityCommitment", () => {
+    describe("# handleMember", () => {
         it("Should return error 405 if the http method is neither a GET, nor a POST, nor a DELETE", async () => {
             const { req, res } = createNextMocks({
                 method: "PUT"
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(405)
         })
@@ -340,7 +380,7 @@ describe("# controllers/groups", () => {
                 query: { provider, name }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -348,10 +388,10 @@ describe("# controllers/groups", () => {
         it("Should return error 404 if the group does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name: "a", identityCommitment: "111" }
+                query: { provider, name: "a", member: "111" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
@@ -359,28 +399,28 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment: "111" }
+                query: { provider, name, member: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should return false if a identity commitment does not exist", async () => {
+        it("Should return false if a member does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment: "111" }
+                query: { provider, name, member: "111" }
             })
 
             await seedZeroHashes()
             await appendLeaf(provider, name, "222")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             const { data } = res._getData()
 
@@ -391,13 +431,13 @@ describe("# controllers/groups", () => {
         it("Should return true if a leaf exists", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, identityCommitment: "111" }
+                query: { provider, name, member: "111" }
             })
 
             await seedZeroHashes()
             await appendLeaf(provider, name, "111")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             const { data } = res._getData()
 
@@ -408,26 +448,26 @@ describe("# controllers/groups", () => {
         it("Should return error 401 if the origin domain is not whitelisted", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 headers: {
                     origin: "https://example.com"
                 }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(401)
         })
     })
 
-    describe("# handleOAuthIdentityCommitment", () => {
+    describe("# handleOAuthMember", () => {
         it("Should return error 400 if the body parameters are wrong", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" }
+                query: { provider, name, member: "111" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -435,11 +475,11 @@ describe("# controllers/groups", () => {
         it("Should return error 401 if there is no authorized session", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: "6087dabb0b3af8703a581bef" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(401)
         })
@@ -447,13 +487,13 @@ describe("# controllers/groups", () => {
         it("Should return error 403 if session account does not match the body account", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: "6087dabb0b3af8703a581bed" }
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock())
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(403)
         })
@@ -461,7 +501,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: "6087dabb0b3af8703a581bef" }
             })
 
@@ -470,7 +510,7 @@ describe("# controllers/groups", () => {
                 throw new Error("Error")
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
@@ -478,13 +518,13 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there the account does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: "6087dabb0b3af8703a581bef" }
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock())
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
@@ -493,13 +533,13 @@ describe("# controllers/groups", () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ provider: OAuthProvider.GITHUB }))
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
@@ -508,69 +548,69 @@ describe("# controllers/groups", () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ reputation: ReputationLevel.BRONZE }))
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
             await OAuthAccount.create(createOAuthAccountMock({ reputation: ReputationLevel.BRONZE }))
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should return error 500 if the identity commitment already exists", async () => {
+        it("Should return error 500 if a member already exists", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should add an identity commitment", async () => {
+        it("Should add a member", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock())
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
             await seedZeroHashes()
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should return error 500 if the identity commitment does not exist", async () => {
+        it("Should return error 500 if a member does not exist", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock())
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should delete an identity commitment", async () => {
+        it("Should delete a member", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 body: { accountId: account.id }
             })
 
@@ -578,16 +618,16 @@ describe("# controllers/groups", () => {
             await appendLeaf(provider, name, "111")
             ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should return error 500 if the identity commitment already exists (OAuth token)", async () => {
+        it("Should return error 500 if a member already exists (OAuth token)", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -603,15 +643,15 @@ describe("# controllers/groups", () => {
                 display_scores: { universal: { overall: 2 } }
             }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should add a Twitter identity commitment (OAuth token)", async () => {
+        it("Should add a Twitter member (OAuth token)", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -629,15 +669,15 @@ describe("# controllers/groups", () => {
 
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should return error 500 if the identity commitment does not exist yet (OAuth token)", async () => {
+        it("Should return error 500 if a member does not exist yet (OAuth token)", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -653,16 +693,16 @@ describe("# controllers/groups", () => {
                 display_scores: { universal: { overall: 2 } }
             }))
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should delete a Twitter identity commitment (OAuth token)", async () => {
+        it("Should delete a Twitter member (OAuth token)", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider, name, identityCommitment: "111" },
+                query: { provider, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -681,15 +721,15 @@ describe("# controllers/groups", () => {
             await seedZeroHashes()
             await appendLeaf(provider, name, "111")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should add a Github identity commitment (OAuth token)", async () => {
+        it("Should add a Github member (OAuth token)", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: OAuthProvider.GITHUB, name, identityCommitment: "111" },
+                query: { provider: OAuthProvider.GITHUB, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -704,15 +744,15 @@ describe("# controllers/groups", () => {
 
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should add a Reddit identity commitment (OAuth token)", async () => {
+        it("Should add a Reddit member (OAuth token)", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: OAuthProvider.REDDIT, name, identityCommitment: "111" },
+                query: { provider: OAuthProvider.REDDIT, name, member: "111" },
                 headers: {
                     authorization: "token"
                 }
@@ -728,21 +768,21 @@ describe("# controllers/groups", () => {
 
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
     })
 
-    describe("# handleEmailIdentityCommitment", () => {
+    describe("# handleEmailMember", () => {
         it("Should return error 400 if the body parameters are wrong", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: "hotmail", identityCommitment: "111" },
+                query: { provider: "email", name: "hotmail", member: "111" },
                 body: { emailUserId: "id" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -750,11 +790,11 @@ describe("# controllers/groups", () => {
         it("Should return error 404 if the email account does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: "hotmail", identityCommitment: "111" },
+                query: { provider: "email", name: "hotmail", member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
@@ -762,7 +802,7 @@ describe("# controllers/groups", () => {
         it("Should return error 401 if the user does not have the right token", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: "hotmail", identityCommitment: "111" },
+                query: { provider: "email", name: "hotmail", member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token1" }
             })
 
@@ -772,7 +812,7 @@ describe("# controllers/groups", () => {
                 verificationToken: "token"
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(401)
         })
@@ -780,7 +820,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: "hotmail", identityCommitment: "111" },
+                query: { provider: "email", name: "hotmail", member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
@@ -794,15 +834,15 @@ describe("# controllers/groups", () => {
                 verificationToken: "token"
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should return error 500 if the identity commitment already exists", async () => {
+        it("Should return error 500 if a member already exists", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, identityCommitment: "111" },
+                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
@@ -812,15 +852,15 @@ describe("# controllers/groups", () => {
                 verificationToken: "token"
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should add an identity commitment", async () => {
+        it("Should add a member", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, identityCommitment: "111" },
+                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
@@ -831,7 +871,7 @@ describe("# controllers/groups", () => {
             })
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
@@ -839,7 +879,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if the email user does not have joined the group", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, identityCommitment: "111" },
+                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
@@ -849,15 +889,15 @@ describe("# controllers/groups", () => {
                 verificationToken: "token"
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should delete an identity commitment", async () => {
+        it("Should delete a member", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, identityCommitment: "111" },
+                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
                 body: { emailUserId: "id", emailUserToken: "token" }
             })
 
@@ -869,21 +909,21 @@ describe("# controllers/groups", () => {
             await seedZeroHashes()
             await appendLeaf("email", EmailDomain.HOTMAIL, "111")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
     })
 
-    describe("# handlePoapIdentityCommitment", () => {
+    describe("# handlePoapMember", () => {
         it("Should return error 400 if the body parameters are wrong", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: { userSignature: "signature" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -891,7 +931,7 @@ describe("# controllers/groups", () => {
         it("Should return error 403 if the signature is not valid", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: {
                     userSignature:
                         "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961d",
@@ -899,7 +939,7 @@ describe("# controllers/groups", () => {
                 }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(403)
         })
@@ -907,7 +947,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if the POAP user does not have any supported event token", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: {
                     userSignature:
                         "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961c",
@@ -917,7 +957,7 @@ describe("# controllers/groups", () => {
 
             ;(getPoapEventsByAddress as any).mockImplementationOnce(() => [])
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
@@ -925,7 +965,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: {
                     userSignature:
                         "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961c",
@@ -938,15 +978,15 @@ describe("# controllers/groups", () => {
             })
             ;(getPoapEventsByAddress as any).mockImplementationOnce(() => ["devcon3"])
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should add an identity commitment", async () => {
+        it("Should add a member", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: {
                     userSignature:
                         "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961c",
@@ -958,15 +998,15 @@ describe("# controllers/groups", () => {
 
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should delete an identity commitment", async () => {
+        it("Should delete a member", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, identityCommitment: "111" },
+                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
                 body: {
                     userSignature:
                         "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961c",
@@ -979,21 +1019,21 @@ describe("# controllers/groups", () => {
             await seedZeroHashes()
             await appendLeaf("poap", PoapEvent.DEVCON_3, "111")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
     })
 
-    describe("# handleTelegramIdentityCommitment", () => {
+    describe("# handleTelegramMember", () => {
         it("Should return error 400 if the body parameters are wrong", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -1001,11 +1041,11 @@ describe("# controllers/groups", () => {
         it("Should return error 404 if the telegram user does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(404)
         })
@@ -1013,7 +1053,7 @@ describe("# controllers/groups", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
@@ -1021,15 +1061,15 @@ describe("# controllers/groups", () => {
                 throw new Error("Error")
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should return error 500 if the identity commitment already exists", async () => {
+        it("Should return error 500 if a member already exists", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
@@ -1038,15 +1078,15 @@ describe("# controllers/groups", () => {
                 hasJoined: true
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should add an identity commitment", async () => {
+        it("Should add a member", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
@@ -1056,15 +1096,15 @@ describe("# controllers/groups", () => {
             })
             await seedZeroHashes()
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should return error 500 if the identity commitment does not exist", async () => {
+        it("Should return error 500 if a member does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
@@ -1073,15 +1113,15 @@ describe("# controllers/groups", () => {
                 hasJoined: false
             })
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should delete an identity commitment", async () => {
+        it("Should delete a member", async () => {
             const { req, res } = createNextMocks({
                 method: "DELETE",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, identityCommitment: "111" },
+                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
                 body: { telegramUserId: "id" }
             })
 
@@ -1093,7 +1133,7 @@ describe("# controllers/groups", () => {
             await seedZeroHashes()
             await appendLeaf("telegram", TelegramGroup.INTERREP, "111")
 
-            await handleIdentityCommitmentController(req, res)
+            await handleMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(201)
         })

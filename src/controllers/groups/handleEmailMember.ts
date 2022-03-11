@@ -6,9 +6,9 @@ import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
 
-export default async function handleEmailIdentityCommitmentController(req: NextApiRequest, res: NextApiResponse) {
+export default async function handleEmailMemberController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name as EmailDomain
-    const identityCommitment = req.query?.identityCommitment as string
+    const member = req.query?.member as string
     const { emailUserId, emailUserToken } = JSON.parse(req.body)
 
     if (!emailUserId || !emailUserToken) {
@@ -38,7 +38,7 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
                 throw new Error(`Email user already joined this group`)
             }
 
-            await appendLeaf("email", name, identityCommitment)
+            await appendLeaf("email", name, member)
 
             emailUser.hasJoined = true
         } else {
@@ -46,7 +46,7 @@ export default async function handleEmailIdentityCommitmentController(req: NextA
                 throw new Error(`Email user has not joined this group yet`)
             }
 
-            await deleteLeaf("email", name, identityCommitment)
+            await deleteLeaf("email", name, member)
 
             emailUser.hasJoined = false
         }

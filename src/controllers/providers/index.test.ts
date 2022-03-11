@@ -5,7 +5,7 @@ import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/ba
 import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import getProvidersController from "./getProviders"
-import hasIdentityCommitmentController from "./hasIdentityCommitment"
+import hasMemberController from "./hasMember"
 
 jest.mock("src/utils/backend/database", () => ({
     __esModule: true,
@@ -64,13 +64,13 @@ describe("# controllers/providers", () => {
         })
     })
 
-    describe("# hasIdentityCommitment", () => {
+    describe("# hasMember", () => {
         it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
                 method: "POST"
             })
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(405)
         })
@@ -81,7 +81,7 @@ describe("# controllers/providers", () => {
                 query: {}
             })
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -89,10 +89,10 @@ describe("# controllers/providers", () => {
         it("Should return error 400 if the provider does not exist", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider: "a", identityCommitment: "111" }
+                query: { provider: "a", member: "111" }
             })
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
         })
@@ -100,30 +100,30 @@ describe("# controllers/providers", () => {
         it("Should return error 500 if there is an unexpected error", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider: OAuthProvider.TWITTER, identityCommitment: "111" }
+                query: { provider: OAuthProvider.TWITTER, member: "111" }
             })
 
             ;(_connectDatabase as any).mockImplementationOnce(() => {
                 throw new Error("Error")
             })
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             expect(res._getStatusCode()).toBe(500)
         })
 
-        it("Should return false if the identity commitment does not exist in any provider group", async () => {
+        it("Should return false if a member does not exist in any provider group", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
                     provider: OAuthProvider.TWITTER,
-                    identityCommitment: "111"
+                    member: "111"
                 }
             })
 
             await seedZeroHashes()
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             const { data } = res._getData()
 
@@ -131,19 +131,19 @@ describe("# controllers/providers", () => {
             expect(data).toBeFalsy()
         })
 
-        it("Should return true if a provider group has the identity commitment", async () => {
+        it("Should return true if a provider group has a member", async () => {
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: {
                     provider: OAuthProvider.TWITTER,
-                    identityCommitment: "111"
+                    member: "111"
                 }
             })
 
             await seedZeroHashes()
             await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, "111")
 
-            await hasIdentityCommitmentController(req, res)
+            await hasMemberController(req, res)
 
             const { data } = res._getData()
 

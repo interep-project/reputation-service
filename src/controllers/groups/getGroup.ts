@@ -17,8 +17,6 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
     const limit = req.query?.limit
     const offset = req.query?.offset
 
-    console.log(typeof members)
-
     if (
         !provider ||
         typeof provider !== "string" ||
