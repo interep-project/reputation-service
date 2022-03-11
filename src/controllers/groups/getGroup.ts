@@ -42,7 +42,7 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
 
         const group = (await getGroup(provider, name)) as any
 
-        if (members) {
+        if (members === "true") {
             const leaves = await MerkleTreeNode.find({ group: { provider, name }, level: 0 })
                 .sort({ $natural: -1 })
                 .skip(Number(offset || 0))
