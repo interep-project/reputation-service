@@ -34,7 +34,7 @@
         "@chakra-ui/react": "^1.6.8",
         "@emotion/react": "^11",
         "@emotion/styled": "^11",
-        "@fontsource/raleway": "^4.5.0",
+        "@fontsource/inter": "^4.5.5",
         "@interep/db": "^0.2.0",
         "@interep/identity": "^0.1.1",
         "@interep/reputation": "^0.1.0",

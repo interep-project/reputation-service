@@ -1957,6 +1957,11 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
+"@fontsource/inter@^4.5.5":
+  version "4.5.5"
+  resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-4.5.5.tgz#d4e52e8a0c84b93abae46efd4c43bd7a7f23907f"
+  integrity sha512-mWnePEroLfaJQWmynipzOVcH6JwT8Jta3+yLsC5Pm/snHBXnOiAOnjBqYjKnvXwJ4eUPt2AaAhyrtwCgWQRGOg==
+
 "@fontsource/raleway@^4.5.0":
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/@fontsource/raleway/-/raleway-4.5.0.tgz#d5c464abe655d2e2cb134c503db455b7af6c03a6"

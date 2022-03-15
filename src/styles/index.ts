@@ -7,8 +7,8 @@ import theme from "./theme"
 const config = {
     ...theme,
     fonts: {
-        heading: "Raleway",
-        body: "Raleway"
+        heading: "Inter, sans-serif",
+        body: "Inter, sans-serif"
     },
     colors,
     styles,

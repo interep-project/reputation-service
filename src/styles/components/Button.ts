@@ -1,12 +1,12 @@
 import { SystemStyleObject } from "@chakra-ui/react"
-import { mode, StyleFunctionProps, transparentize } from "@chakra-ui/theme-tools"
+import { mode, StyleFunctionProps } from "@chakra-ui/theme-tools"
 
 const Button = {
     baseStyle: {
         _focus: {
             boxShadow: "none"
         },
-        borderRadius: "2xl"
+        borderRadius: "4px"
     },
     defaultProps: {
         size: "lg"
@@ -26,30 +26,7 @@ const Button = {
             _hover: {
                 textDecoration: "none"
             }
-        }),
-        semisolid: (props: StyleFunctionProps): SystemStyleObject => {
-            const { colorScheme: c, theme } = props
-
-            const darkBg = transparentize(`${c}.200`, 0.05)(theme)
-            const darkHoverBg = transparentize(`${c}.200`, 0.12)(theme)
-            const darkActiveBg = transparentize(`${c}.200`, 0.24)(theme)
-
-            const bg = mode(`${c}.50`, darkBg)(props)
-
-            return {
-                color: mode(`${c}.600`, `${c}.200`)(props),
-                bg,
-                _hover: {
-                    bg: darkHoverBg,
-                    _disabled: {
-                        bg
-                    }
-                },
-                _active: {
-                    bg: mode(`${c}.100`, darkActiveBg)(props)
-                }
-            }
-        }
+        })
     }
 }
 

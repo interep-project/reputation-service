@@ -1,83 +1,94 @@
-import { Button, Container, Heading, HStack, Icon, Tooltip, useColorMode, useDisclosure } from "@chakra-ui/react"
+import { Container, Heading, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
 import { GetServerSideProps } from "next"
-import { signIn, useSession } from "next-auth/client"
-import { useRouter } from "next/router"
-import React from "react"
-import { FaAward, FaEnvelope, FaGithub, FaInfoCircle, FaRedditAlien, FaTwitter } from "react-icons/fa"
-import EmailInputModal from "src/components/EmailInputModal"
+import { signIn } from "next-auth/client"
+import React, { useContext } from "react"
+import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
+import GroupBox from "src/components/GroupBox"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 
 export default function Providers(): JSX.Element {
-    const router = useRouter()
-    const [session] = useSession()
-    const { colorMode } = useColorMode()
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { _account } = useContext(EthereumWalletContext)
 
     return (
-        <Container flex="1" mb="80px" mt="180px" px="80px" maxW="container.lg">
+        <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
             <Heading as="h2" mb="30px" size="xl">
-                Providers
-                <Tooltip label="Select one of our supported providers to join a group." placement="right-start">
-                    <span>
-                        <Icon
-                            boxSize="20px"
-                            ml="10px"
-                            mb="5px"
-                            color={colorMode === "light" ? "gray.500" : "background.200"}
-                            as={FaInfoCircle}
-                        />
-                    </span>
-                </Tooltip>
+                Anonymously join groups using your credentials from social networks.
             </Heading>
-            <HStack spacing={4} align="left">
-                <Button
-                    onClick={() => signIn("twitter")}
-                    leftIcon={<FaTwitter />}
-                    colorScheme="twitter"
-                    variant="semisolid"
-                    isDisabled={!!session}
-                >
-                    Twitter
-                </Button>
-                <Button
-                    onClick={() => signIn("github")}
-                    leftIcon={<FaGithub />}
-                    colorScheme="github"
-                    variant="semisolid"
-                    isDisabled={!!session}
-                >
-                    Github
-                </Button>
-                <Button
-                    onClick={() => signIn("reddit")}
-                    leftIcon={<FaRedditAlien />}
-                    colorScheme="reddit"
-                    variant="semisolid"
-                    isDisabled={!!session}
-                >
-                    Reddit
-                </Button>
 
-                <Button
-                    onClick={onOpen}
-                    leftIcon={<FaEnvelope />}
-                    colorScheme="green"
-                    variant="semisolid"
-                    isDisabled={isOpen}
-                >
-                    Email
-                </Button>
-                <EmailInputModal isOpen={isOpen} onClose={onClose} />
+            <Text color="background.400" mb="30px" fontSize="lg">
+                To join Social network groups you will need to authorize each provider individuallly to share your
+                credentials with Interep. Groups can be left at any time.
+            </Text>
 
-                <Button
-                    onClick={() => router.push("/groups/poap")}
-                    leftIcon={<FaAward />}
-                    colorScheme="purple"
-                    variant="semisolid"
-                    isDisabled={isOpen}
-                >
-                    POAP
-                </Button>
-            </HStack>
+            <Tabs colorScheme="gray">
+                <TabList>
+                    <Tab fontSize="lg">Social Network</Tab>
+                    <Tab fontSize="lg">POAP</Tab>
+                </TabList>
+
+                <TabPanels>
+                    <TabPanel>
+                        <Text mb="30px">To join a social network group, first authorize the provider.</Text>
+
+                        <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                            <GroupBox
+                                title="Twitter"
+                                icon={<FaTwitter />}
+                                content={
+                                    <>
+                                        <Text bg="background.600" py="2" px="4">
+                                            Group members
+                                        </Text>
+                                        <Text bg="background.700" py="2" px="4">
+                                            526
+                                        </Text>
+                                    </>
+                                }
+                                actionText="Authorize"
+                                actionFunction={() => signIn("twitter")}
+                                disabled={!_account}
+                            />
+                            <GroupBox
+                                title="Github"
+                                icon={<FaGithub />}
+                                content={
+                                    <>
+                                        <Text bg="background.600" py="2" px="4">
+                                            Group members
+                                        </Text>
+                                        <Text bg="background.700" py="2" px="4">
+                                            102
+                                        </Text>
+                                    </>
+                                }
+                                actionText="Authorize"
+                                actionFunction={() => signIn("github")}
+                                disabled={!_account}
+                            />
+                            <GroupBox
+                                title="Reddit"
+                                icon={<FaRedditAlien />}
+                                content={
+                                    <>
+                                        <Text bg="background.600" py="2" px="4">
+                                            Group members
+                                        </Text>
+                                        <Text bg="background.700" py="2" px="4">
+                                            78
+                                        </Text>
+                                    </>
+                                }
+                                actionText="Authorize"
+                                actionFunction={() => signIn("reddit")}
+                                disabled={!_account}
+                            />
+                        </SimpleGrid>
+                    </TabPanel>
+                    <TabPanel>
+                        <p>TODO</p>
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
         </Container>
     )
 }
