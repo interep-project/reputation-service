@@ -5,7 +5,7 @@ import { Provider } from "src/types/groups"
 import sendRequest from "./sendRequest"
 
 export function sendEmail({ email }: { email: string }) {
-    return sendRequest(`/api/email/send`, {
+    return sendRequest(`/api/v1/email/send`, {
         email
     })
 }
@@ -17,11 +17,11 @@ export function getGroup({
     provider: Provider
     groupName: ReputationLevel | PoapEvent | string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${groupName}`)
+    return sendRequest(`/api/v1/groups/${provider}/${groupName}`)
 }
 
 export async function hasJoinedAGroup(): Promise<boolean | null> {
-    return sendRequest(`/api/groups/has-joined`)
+    return sendRequest(`/api/v1/groups/has-joined`)
 }
 
 export function hasIdentityCommitment({
@@ -33,7 +33,7 @@ export function hasIdentityCommitment({
     groupName: ReputationLevel | PoapEvent | string
     identityCommitment: string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`)
+    return sendRequest(`/api/v1/groups/${provider}/${groupName}/${identityCommitment}`)
 }
 
 export function addIdentityCommitment({
@@ -57,7 +57,7 @@ export function addIdentityCommitment({
     emailUserId?: string
     emailUserToken?: string
 }): Promise<any | null> {
-    return sendRequest(`/api/groups/${provider}/${groupName}/${identityCommitment}`, {
+    return sendRequest(`/api/v1/groups/${provider}/${groupName}/${identityCommitment}`, {
         accountId,
         userAddress,
         userSignature,
@@ -89,7 +89,7 @@ export function removeIdentityCommitment({
     emailUserToken?: string
 }): Promise<any | null> {
     return sendRequest(
-        `/api/groups/${provider}/${groupName}/${identityCommitment}`,
+        `/api/v1/groups/${provider}/${groupName}/${identityCommitment}`,
         {
             accountId,
             userAddress,
