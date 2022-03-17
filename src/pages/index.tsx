@@ -4,6 +4,7 @@ import { signIn } from "next-auth/client"
 import React, { useContext } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import GroupBox from "src/components/GroupBox"
+import GroupBoxOAuthContent from "src/components/GroupBoxOAuthContent"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 
 export default function Providers(): JSX.Element {
@@ -35,14 +36,7 @@ export default function Providers(): JSX.Element {
                                 title="Twitter"
                                 icon={<FaTwitter />}
                                 content={
-                                    <>
-                                        <Text bg="background.600" py="2" px="4">
-                                            Group members
-                                        </Text>
-                                        <Text bg="background.700" py="2" px="4">
-                                            526
-                                        </Text>
-                                    </>
+                                    <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
                                 actionFunction={() => signIn("twitter")}
@@ -52,14 +46,7 @@ export default function Providers(): JSX.Element {
                                 title="Github"
                                 icon={<FaGithub />}
                                 content={
-                                    <>
-                                        <Text bg="background.600" py="2" px="4">
-                                            Group members
-                                        </Text>
-                                        <Text bg="background.700" py="2" px="4">
-                                            102
-                                        </Text>
-                                    </>
+                                    <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
                                 actionFunction={() => signIn("github")}
@@ -69,14 +56,7 @@ export default function Providers(): JSX.Element {
                                 title="Reddit"
                                 icon={<FaRedditAlien />}
                                 content={
-                                    <>
-                                        <Text bg="background.600" py="2" px="4">
-                                            Group members
-                                        </Text>
-                                        <Text bg="background.700" py="2" px="4">
-                                            78
-                                        </Text>
-                                    </>
+                                    <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
                                 actionFunction={() => signIn("reddit")}
