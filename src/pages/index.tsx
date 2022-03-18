@@ -1,14 +1,41 @@
-import { Container, Heading, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
+import {
+    Button,
+    Container,
+    Heading,
+    SimpleGrid,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs,
+    Text,
+    useDisclosure
+} from "@chakra-ui/react"
+import { OAuthProvider } from "@interep/reputation"
 import { GetServerSideProps } from "next"
-import { signIn } from "next-auth/client"
-import React, { useContext } from "react"
+import { signIn as _signIn } from "next-auth/client"
+import React, { useContext, useState } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
+import AlertDialog from "src/components/AlertDialog"
 import GroupBox from "src/components/GroupBox"
 import GroupBoxOAuthContent from "src/components/GroupBoxOAuthContent"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
+import { capitalize } from "src/utils/common"
 
 export default function Providers(): JSX.Element {
+    const { isOpen, onOpen, onClose } = useDisclosure()
     const { _account } = useContext(EthereumWalletContext)
+    const [_oAuthProvider, setOAuthProvider] = useState<string>("")
+
+    function selectOAuthProvider(oAuthProvider: OAuthProvider) {
+        setOAuthProvider(oAuthProvider)
+        onOpen()
+    }
+
+    function signIn() {
+        _signIn(_oAuthProvider)
+        onClose()
+    }
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
@@ -39,7 +66,7 @@ export default function Providers(): JSX.Element {
                                     <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
-                                actionFunction={() => signIn("twitter")}
+                                actionFunction={() => selectOAuthProvider(OAuthProvider.TWITTER)}
                                 disabled={!_account}
                             />
                             <GroupBox
@@ -49,7 +76,7 @@ export default function Providers(): JSX.Element {
                                     <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
-                                actionFunction={() => signIn("github")}
+                                actionFunction={() => selectOAuthProvider(OAuthProvider.GITHUB)}
                                 disabled={!_account}
                             />
                             <GroupBox
@@ -59,7 +86,7 @@ export default function Providers(): JSX.Element {
                                     <GroupBoxOAuthContent goldMembers={113} silverMembers={523} bronzeMembers={23} />
                                 }
                                 actionText="Authorize"
-                                actionFunction={() => signIn("reddit")}
+                                actionFunction={() => selectOAuthProvider(OAuthProvider.REDDIT)}
                                 disabled={!_account}
                             />
                         </SimpleGrid>
@@ -69,6 +96,19 @@ export default function Providers(): JSX.Element {
                     </TabPanel>
                 </TabPanels>
             </Tabs>
+            <AlertDialog
+                title="Authorize Interep to connect?"
+                message={`Interep wants to connect with the last ${capitalize(
+                    _oAuthProvider
+                )} account you logged into. Approving this message will open a new window.`}
+                isOpen={isOpen}
+                onClose={onClose}
+                actions={
+                    <Button isFullWidth onClick={() => signIn()}>
+                        Approve
+                    </Button>
+                }
+            />
         </Container>
     )
 }
