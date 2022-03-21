@@ -22,8 +22,10 @@ export default function NavBar(): JSX.Element {
             <HStack justify="space-between" align="center">
                 <Image src="./logo.svg" alt="Interep logo" h={10} />
                 {isBrowser && _account ? (
-                    <Tooltip label="Copied!" isOpen={hasCopied}>
-                        <Button onClick={onCopy}>{shortenAddress(_account)}</Button>
+                    <Tooltip label={hasCopied ? "Copied!" : "Copy"} closeOnClick={false} hasArrow>
+                        <Button onClick={onCopy} onMouseDown={(e) => e.preventDefault()} autoFocus={false}>
+                            {shortenAddress(_account)}
+                        </Button>
                     </Tooltip>
                 ) : (
                     <Button colorScheme="primary" onClick={() => connect()}>

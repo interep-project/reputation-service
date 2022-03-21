@@ -104,7 +104,7 @@ export default function Providers(): JSX.Element {
                 isOpen={isOpen}
                 onClose={onClose}
                 actions={
-                    <Button isFullWidth onClick={() => signIn()}>
+                    <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
                         Approve
                     </Button>
                 }
