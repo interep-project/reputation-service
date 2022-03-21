@@ -10,6 +10,7 @@ import useInterepAPI from "./useInterepAPI"
 type ReturnParameters = {
     hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
+    getGroups: () => Promise<Group[] | null>
     signMessage: (signer: Signer, message: string) => Promise<string | null>
     retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
     hasIdentityCommitment: (
@@ -28,7 +29,8 @@ export default function useGroups(): ReturnParameters {
         addIdentityCommitment,
         hasIdentityCommitment: _hasIdentityCommitment,
         hasJoinedAGroup: _hasJoinedAGroup,
-        getGroup: _getGroup
+        getGroup: _getGroup,
+        getGroups: _getGroups
     } = useInterepAPI()
     const toast = useToast()
 
@@ -65,6 +67,20 @@ export default function useGroups(): ReturnParameters {
         },
         [_getGroup]
     )
+
+    const getGroups = useCallback(async (): Promise<Group[] | null> => {
+        setLoading(true)
+
+        const groups = await _getGroups()
+
+        if (groups === null) {
+            setLoading(false)
+            return null
+        }
+
+        setLoading(false)
+        return groups
+    }, [_getGroups])
 
     const signMessage = useCallback(
         async (signer: Signer, message: string): Promise<string | null> => {
@@ -168,6 +184,7 @@ export default function useGroups(): ReturnParameters {
     return {
         hasJoinedAGroup,
         getGroup,
+        getGroups,
         signMessage,
         retrieveIdentityCommitment,
         hasIdentityCommitment,
