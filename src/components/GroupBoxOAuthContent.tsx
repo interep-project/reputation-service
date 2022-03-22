@@ -3,12 +3,16 @@ import { MdLens } from "react-icons/md"
 import React from "react"
 
 type Properties = {
-    goldMembers: number
-    silverMembers: number
-    bronzeMembers: number
+    goldGroupSize: number
+    silverGroupSize: number
+    bronzeGroupSize: number
 }
 
-export default function GroupBoxOAuthContent({ goldMembers, silverMembers, bronzeMembers }: Properties): JSX.Element {
+export default function GroupBoxOAuthContent({
+    goldGroupSize,
+    silverGroupSize,
+    bronzeGroupSize
+}: Properties): JSX.Element {
     return (
         <Box bg="background.600" borderRadius="4">
             <Text py="2" px="4">
@@ -21,7 +25,7 @@ export default function GroupBoxOAuthContent({ goldMembers, silverMembers, bronz
                             <ListIcon as={MdLens} color="gold.400" />
                             Gold
                         </Box>
-                        <Text>{goldMembers}</Text>
+                        <Text>{goldGroupSize}</Text>
                     </HStack>
                 </ListItem>
                 <Divider />
@@ -31,7 +35,7 @@ export default function GroupBoxOAuthContent({ goldMembers, silverMembers, bronz
                             <ListIcon as={MdLens} color="silver" />
                             Silver
                         </Box>
-                        <Text>{silverMembers}</Text>
+                        <Text>{silverGroupSize}</Text>
                     </HStack>
                 </ListItem>
                 <Divider />
@@ -41,7 +45,7 @@ export default function GroupBoxOAuthContent({ goldMembers, silverMembers, bronz
                             <ListIcon as={MdLens} color="bronze.400" />
                             Bronze
                         </Box>
-                        <Text>{bronzeMembers}</Text>
+                        <Text>{bronzeGroupSize}</Text>
                     </HStack>
                 </ListItem>
             </List>
