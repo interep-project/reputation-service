@@ -4,8 +4,8 @@ import { mode, StyleFunctionProps } from "@chakra-ui/theme-tools"
 const Modal = {
     baseStyle: (props: StyleFunctionProps): SystemStyleObject => ({
         dialog: {
-            bg: mode("white", "background.700")(props),
-            borderRadius: "2xl"
+            bg: mode("white", "background.800")(props),
+            borderRadius: "4px"
         }
     })
 }
