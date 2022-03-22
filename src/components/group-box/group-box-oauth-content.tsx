@@ -2,17 +2,17 @@ import { Box, Text, List, ListItem, ListIcon, HStack, Divider } from "@chakra-ui
 import { MdLens } from "react-icons/md"
 import React from "react"
 
-type Properties = {
+export type GroupBoxOAuthContentProps = {
     goldGroupSize: number
     silverGroupSize: number
     bronzeGroupSize: number
 }
 
-export default function GroupBoxOAuthContent({
+export function GroupBoxOAuthContent({
     goldGroupSize,
     silverGroupSize,
     bronzeGroupSize
-}: Properties): JSX.Element {
+}: GroupBoxOAuthContentProps): JSX.Element {
     return (
         <Box bg="background.600" borderRadius="4">
             <Text py="2" px="4">

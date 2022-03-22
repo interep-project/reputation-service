@@ -1,7 +1,7 @@
 import { Box, Button, Heading, HStack } from "@chakra-ui/react"
 import React from "react"
 
-type Properties = {
+export type GroupBoxProps = {
     title: string
     icon: any
     content: any
@@ -10,14 +10,14 @@ type Properties = {
     disabled?: boolean
 }
 
-export default function GroupBox({
+export function GroupBox({
     title,
     icon,
     content,
     actionText,
     actionFunction,
     disabled = false
-}: Properties): JSX.Element {
+}: GroupBoxProps): JSX.Element {
     return (
         <Box bg="background.800" p="5" borderRadius="4px">
             <HStack pb="5" spacing="4">
