@@ -27,16 +27,19 @@ import { capitalize } from "src/utils/common"
 
 const oAuthProviders: Record<OAuthProvider, any> = {
     twitter: {
+        provider: OAuthProvider.TWITTER,
         title: "Twitter",
         icon: <FaTwitter />,
         groupSizes: {}
     },
     github: {
+        provider: OAuthProvider.GITHUB,
         title: "Github",
         icon: <FaGithub />,
         groupSizes: {}
     },
     reddit: {
+        provider: OAuthProvider.REDDIT,
         title: "Reddit",
         icon: <FaRedditAlien />,
         groupSizes: {}
