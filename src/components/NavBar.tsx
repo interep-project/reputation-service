@@ -25,10 +25,10 @@ export default function NavBar(): JSX.Element {
                 <Image src="./logo.svg" alt="Interep logo" h={10} />
 
                 <HStack spacing="6">
-                    <Button onclick={() => router.push("/")} variant="link">
+                    <Button onClick={() => router.push("/")} variant="link">
                         Social Network
                     </Button>
-                    <Button onclick={() => router.push("/poap")} variant="link">
+                    <Button onClick={() => router.push("/poap")} variant="link">
                         POAP
                     </Button>
 
