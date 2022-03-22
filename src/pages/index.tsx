@@ -9,6 +9,7 @@ import {
     InputLeftElement,
     Select,
     SimpleGrid,
+    Skeleton,
     Text,
     useDisclosure
 } from "@chakra-ui/react"
@@ -19,8 +20,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { GoSearch } from "react-icons/go"
 import AlertDialog from "src/components/AlertDialog"
-import GroupBox from "src/components/GroupBox"
-import GroupBoxOAuthContent from "src/components/GroupBoxOAuthContent"
+import { GroupBox, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { capitalize } from "src/utils/common"
@@ -88,7 +88,7 @@ export default function OAuthProviders(): JSX.Element {
                     return oAuthProviderB.title.localeCompare(oAuthProviderA.title)
                 case "1":
                 default:
-                    return getTotalGroupSizes(oAuthProviderA) - getTotalGroupSizes(oAuthProviderB)
+                    return getTotalGroupSizes(oAuthProviderB) - getTotalGroupSizes(oAuthProviderA)
             }
         },
         [_sortingValue]
@@ -141,7 +141,7 @@ export default function OAuthProviders(): JSX.Element {
                 </Select>
             </HStack>
 
-            {_oAuthProviders && (
+            {_oAuthProviders ? (
                 <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
                     {_oAuthProviders
                         .sort(sort)
@@ -165,6 +165,17 @@ export default function OAuthProviders(): JSX.Element {
                                 disabled={!_account}
                             />
                         ))}
+                </SimpleGrid>
+            ) : (
+                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                    {Object.values(oAuthProviders).map(() => (
+                        <Skeleton
+                            startColor="background.800"
+                            endColor="background.700"
+                            borderRadius="4px"
+                            height="318px"
+                        />
+                    ))}
                 </SimpleGrid>
             )}
 
