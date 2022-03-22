@@ -27,19 +27,16 @@ import { capitalize } from "src/utils/common"
 
 const oAuthProviders: Record<OAuthProvider, any> = {
     twitter: {
-        provider: OAuthProvider.TWITTER,
         title: "Twitter",
         icon: <FaTwitter />,
         groupSizes: {}
     },
     github: {
-        provider: OAuthProvider.GITHUB,
         title: "Github",
         icon: <FaGithub />,
         groupSizes: {}
     },
     reddit: {
-        provider: OAuthProvider.REDDIT,
         title: "Reddit",
         icon: <FaRedditAlien />,
         groupSizes: {}
@@ -79,7 +76,7 @@ export default function OAuthProviders(): JSX.Element {
         return sizes.reduce((t, c) => t + c, 0)
     }
 
-    const sort = useCallback(
+    const sortCb = useCallback(
         (oAuthProviderA: any, oAuthProviderB: any) => {
             switch (_sortingValue) {
                 case "2":
@@ -92,6 +89,15 @@ export default function OAuthProviders(): JSX.Element {
             }
         },
         [_sortingValue]
+    )
+
+    const filterCb = useCallback(
+        (oAuthProvider: any) => {
+            const name = oAuthProvider.title.toLowerCase()
+
+            return !_searchValue || name.includes(_searchValue.toLowerCase())
+        },
+        [_searchValue]
     )
 
     function selectOAuthProvider(oAuthProvider: OAuthProvider) {
@@ -144,32 +150,31 @@ export default function OAuthProviders(): JSX.Element {
             {_oAuthProviders ? (
                 <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
                     {_oAuthProviders
-                        .sort(sort)
-                        .filter(
-                            (group) => !_searchValue || group.title.toLowerCase().includes(_searchValue.toLowerCase())
-                        )
-                        .map((group, i) => (
+                        .sort(sortCb)
+                        .filter(filterCb)
+                        .map((p, i) => (
                             <GroupBox
                                 key={i.toString()}
-                                title={group.title}
-                                icon={group.icon}
+                                title={p.title}
+                                icon={p.icon}
                                 content={
                                     <GroupBoxOAuthContent
-                                        goldGroupSize={group.groupSizes.gold}
-                                        silverGroupSize={group.groupSizes.silver}
-                                        bronzeGroupSize={group.groupSizes.bronze}
+                                        goldGroupSize={p.groupSizes.gold}
+                                        silverGroupSize={p.groupSizes.silver}
+                                        bronzeGroupSize={p.groupSizes.bronze}
                                     />
                                 }
                                 actionText="Authorize"
-                                actionFunction={() => selectOAuthProvider(group.provider)}
+                                actionFunction={() => selectOAuthProvider(p.provider)}
                                 disabled={!_account}
                             />
                         ))}
                 </SimpleGrid>
             ) : (
                 <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                    {Object.values(oAuthProviders).map(() => (
+                    {Object.values(oAuthProviders).map((_p, i) => (
                         <Skeleton
+                            key={i.toString()}
                             startColor="background.800"
                             endColor="background.700"
                             borderRadius="4px"
