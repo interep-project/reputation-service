@@ -119,12 +119,12 @@ export default function OAuthProviders(): JSX.Element {
                 Authenticate anonymously on-chain using off-chain reputation.
             </Heading>
 
-            <Text color="background.400" fontSize="md">
+            <Text color="background.400" fontSize="md" mb="30px">
                 To join Social network groups you will need to authorize each provider individually to share your
                 credentials with Interep. Groups can be left at any time.
             </Text>
 
-            <Divider my="30px" />
+            <Divider />
 
             <HStack justify="space-between" my="30px">
                 <InputGroup maxWidth="250px">
@@ -215,7 +215,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
     return {
         redirect: {
-            destination: "/groups",
+            destination: "/oauth",
             permanent: false
         }
     }
