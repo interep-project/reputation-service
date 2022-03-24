@@ -3,7 +3,7 @@ import React from "react"
 
 export type GroupBoxProps = {
     title: string
-    icon: any
+    icon?: any
     content: any
     actionText: string
     actionFunction: (par?: any) => void
