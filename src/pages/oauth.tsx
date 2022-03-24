@@ -18,20 +18,19 @@ import {
 import { GetServerSideProps } from "next"
 import { signOut, useSession } from "next-auth/client"
 import { useRouter } from "next/router"
-import React from "react"
+import React, { useContext } from "react"
 import { IoMdArrowRoundBack } from "react-icons/io"
 import { MdLens } from "react-icons/md"
+import EthereumWalletContext from "src/context/EthereumWalletContext"
 import { capitalize } from "src/utils/common"
 
 export default function OAuthProvider(): JSX.Element {
     const router = useRouter()
     const [session] = useSession()
+    const { _account } = useContext(EthereumWalletContext)
 
     async function back() {
-        if (session) {
-            await signOut({ redirect: false })
-        }
-
+        await signOut({ redirect: false })
         await router.push("/")
     }
 
@@ -70,7 +69,7 @@ export default function OAuthProvider(): JSX.Element {
                             consectetur adipisci elit, sed do eiusmod tempor incidunt ut labore et dolore magna aliqua.
                         </Text>
 
-                        <Button colorScheme="background" size="md" minWidth="250px">
+                        <Button colorScheme="background" size="md" minWidth="250px" disabled={!_account}>
                             Generate Semaphore ID
                         </Button>
                     </HStack>
