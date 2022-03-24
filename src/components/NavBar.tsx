@@ -1,7 +1,18 @@
-import { Box, Button, Container, HStack, Image, Tooltip, useClipboard } from "@chakra-ui/react"
+import {
+    Box,
+    Button,
+    Container,
+    HStack,
+    IconButton,
+    Image,
+    Tooltip,
+    useClipboard,
+    useColorMode
+} from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { isBrowser } from "react-device-detect"
+import { FaMoon, FaSun } from "react-icons/fa"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import { shortenAddress } from "src/utils/frontend"
 
@@ -9,18 +20,10 @@ export default function NavBar(): JSX.Element {
     const router = useRouter()
     const { _account, connect } = useContext(EthereumWalletContext)
     const { hasCopied, onCopy } = useClipboard(_account || "")
-    // const { colorMode, toggleColorMode } = useColorMode()
+    const { colorMode, toggleColorMode } = useColorMode()
 
     return (
-        <Container
-            zIndex="1"
-            // bg={colorMode === "light" ? "white" : "background.700"}
-            position="fixed"
-            pt="30px"
-            pb="20px"
-            px="80px"
-            maxW="container.xl"
-        >
+        <Container zIndex="1" position="fixed" pt="30px" pb="20px" px="80px" maxW="container.xl">
             <HStack justify="space-between">
                 <Image src="./logo.svg" alt="Interep logo" h={10} />
 
@@ -45,15 +48,13 @@ export default function NavBar(): JSX.Element {
                             </Button>
                         )}
                     </Box>
-                </HStack>
 
-                {/*
                     <IconButton
                         onClick={toggleColorMode}
                         aria-label="Change theme"
                         icon={colorMode === "dark" ? <FaMoon /> : <FaSun />}
                     />
-                    */}
+                </HStack>
             </HStack>
         </Container>
     )
