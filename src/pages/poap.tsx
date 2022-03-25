@@ -9,7 +9,8 @@ import {
     Select,
     SimpleGrid,
     Skeleton,
-    Text
+    Text,
+    VStack
 } from "@chakra-ui/react"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { GoSearch } from "react-icons/go"
@@ -71,12 +72,12 @@ export default function PoapProvider(): JSX.Element {
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
             <Heading as="h2" size="xl" mb="10px">
-                Authenticate anonymously on-chain using off-chain reputation.
+                Anonymous on-chain authentication
             </Heading>
 
             <Text color="background.400" fontSize="md" mb="30px">
-                To join Social network groups you will need to authorize each provider individually to share your
-                credentials with Interep. Groups can be left at any time.
+                If your connected wallet contains POAPs they will appear below. Generate a semaphore ID to get started
+                anonymously joining POAP groups.
             </Text>
 
             <Divider />
@@ -106,21 +107,33 @@ export default function PoapProvider(): JSX.Element {
             </HStack>
 
             {_poapGroups ? (
-                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                    {_poapGroups
-                        .sort(sortCb)
-                        .filter(filterCb)
-                        .map((group, i) => (
-                            <GroupBox
-                                key={i.toString()}
-                                title={capitalize(group.name)}
-                                content={<GroupBoxPoapContent groupSize={group.size} />}
-                                actionText="Join"
-                                actionFunction={() => console.log("Join")}
-                                disabled={!_account}
-                            />
-                        ))}
-                </SimpleGrid>
+                _poapGroups.length > 0 ? (
+                    <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                        {_poapGroups
+                            .sort(sortCb)
+                            .filter(filterCb)
+                            .map((group, i) => (
+                                <GroupBox
+                                    key={i.toString()}
+                                    title={capitalize(group.name)}
+                                    content={<GroupBoxPoapContent groupSize={group.size} />}
+                                    actionText="Join"
+                                    actionFunction={() => console.log("Join")}
+                                    disabled={!_account}
+                                />
+                            ))}
+                    </SimpleGrid>
+                ) : (
+                    <VStack justify="center" pt="80px">
+                        <Heading as="h3" size="lg" mb="10px">
+                            Nothing to see here
+                        </Heading>
+
+                        <Text color="background.400" fontSize="md" mb="30px">
+                            The connected wallet does not contain any POAPs.
+                        </Text>
+                    </VStack>
+                )
             ) : (
                 <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
                     {[0, 1, 2].map((i) => (
