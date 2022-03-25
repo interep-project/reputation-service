@@ -13,12 +13,7 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
     const provider = req.query?.provider as Provider
     const name = req.query?.name as GroupName
 
-    if (
-        !provider ||
-        typeof provider !== "string" ||
-        !name ||
-        typeof name !== "string"
-    ) {
+    if (!provider || typeof provider !== "string" || !name || typeof name !== "string") {
         res.status(400).end()
         return
     }

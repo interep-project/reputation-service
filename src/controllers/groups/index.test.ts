@@ -138,11 +138,9 @@ describe("# controllers/groups", () => {
             expect(data.name).toBe(name)
             expect(data.size).toBe(0)
         })
-
     })
 
     describe("# getGroupMembers", () => {
-
         it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
@@ -152,11 +150,9 @@ describe("# controllers/groups", () => {
             await getGroupMembersController(req, res)
 
             expect(res._getStatusCode()).toBe(405)
-
         })
 
         it("Should return error 400 if the query parameters are wrong", async () => {
-
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: { provider, name: 1 }
@@ -165,7 +161,7 @@ describe("# controllers/groups", () => {
             await getGroupMembersController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
-        });
+        })
 
         it("Should return error 404 if the group does not exist", async () => {
             const { req, res } = createNextMocks({
@@ -184,9 +180,9 @@ describe("# controllers/groups", () => {
                 query: { provider, name }
             })
 
-                ; (_connectDatabase as any).mockImplementationOnce(() => {
-                    throw new Error("Error")
-                })
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
+                throw new Error("Error")
+            })
 
             await getGroupMembersController(req, res)
 
