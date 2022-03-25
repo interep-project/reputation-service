@@ -29,7 +29,7 @@ export function GroupBox({
 
             {content}
 
-            <Button onClick={actionFunction} colorScheme="background" mt="6" size="md" disabled={disabled} isFullWidth>
+            <Button onClick={actionFunction} colorScheme="background" mt="6" size="sm" disabled={disabled} isFullWidth>
                 {actionText}
             </Button>
         </Box>
