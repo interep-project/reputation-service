@@ -46,7 +46,7 @@ const oAuthProviders: Record<OAuthProvider, any> = {
     }
 }
 
-export default function OAuthProviders(): JSX.Element {
+export default function OAuthProvidersPage(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { _account } = useContext(EthereumWalletContext)
     const [_oAuthProvider, setOAuthProvider] = useState<string>("")

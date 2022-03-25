@@ -21,7 +21,7 @@ import usePoapEvents from "src/hooks/usePoapEvents"
 import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
-export default function PoapProvider(): JSX.Element {
+export default function PoapProviderPage(): JSX.Element {
     const { _account } = useContext(EthereumWalletContext)
     const { getPoapEvents } = usePoapEvents()
     const [_poapGroups, setPoapGroups] = useState<Group[]>()
