@@ -18,19 +18,17 @@ const Button = {
             if (c === "primary") {
                 const bg = `${c}.500`
                 const color = "white"
-                const hoverBg = `${c}.600`
-                const activeBg = `${c}.700`
 
                 return {
                     bg,
                     color,
                     _hover: {
-                        bg: hoverBg,
+                        bg: `${c}.600`,
                         _disabled: {
                             bg
                         }
                     },
-                    _active: activeBg
+                    _active: `${c}.700`
                 }
             }
 
