@@ -1962,11 +1962,6 @@
   resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-4.5.5.tgz#d4e52e8a0c84b93abae46efd4c43bd7a7f23907f"
   integrity sha512-mWnePEroLfaJQWmynipzOVcH6JwT8Jta3+yLsC5Pm/snHBXnOiAOnjBqYjKnvXwJ4eUPt2AaAhyrtwCgWQRGOg==
 
-"@fontsource/raleway@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@fontsource/raleway/-/raleway-4.5.0.tgz#d5c464abe655d2e2cb134c503db455b7af6c03a6"
-  integrity sha512-Rzj90wbZQnNzazqzoiu5HzMEMdqMJLUVFOo699sinTXrZRm1aB5iX2HTiK2VlPnH4M6u8yYnJ7CebOyamfWlqw==
-
 "@grammyjs/types@^2.2.6":
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/@grammyjs/types/-/types-2.2.6.tgz#0d19249a63e483ab0a0a014d5979e028c5444d29"
@@ -2033,6 +2028,11 @@
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
   integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
+
+"@interep/reputation@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.2.1.tgz#d1167e9e7fb8b8b6fce4305176dcc1a02c1c301d"
+  integrity sha512-8qPQncQggCoOiqjNx16pLKJ3ssBeDXtA1wyCHLK682QlWcrtHSJMTEUjTP2HwpEjVmj2fjOs8LMi1JZ6LU2OCQ==
 
 "@interep/telegram-bot@^0.2.0":
   version "0.2.0"
