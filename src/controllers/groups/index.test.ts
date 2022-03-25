@@ -17,6 +17,7 @@ import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/ba
 import { connectDatabase as _connectDatabase } from "src/utils/backend/database"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import getGroupController from "./getGroup"
+import getGroupMembersController from "./getGroupMembers"
 import getGroupsController from "./getGroups"
 import getMerkleProofController from "./getMerkleProof"
 import handleMemberController from "./handleMember"
@@ -136,25 +137,72 @@ describe("# controllers/groups", () => {
             expect(data.name).toBe(name)
             expect(data.size).toBe(0)
         })
+    })
 
-        it("Should return a group with its members", async () => {
+    describe("# getGroupMembers", () => {
+        it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
-                method: "GET",
-                query: { provider, name, members: "true" }
+                method: "POST",
+                query: { provider, name }
             })
 
-            await getGroupController(req, res)
+            await getGroupMembersController(req, res)
+
+            expect(res._getStatusCode()).toBe(405)
+        })
+
+        it("Should return error 400 if the query parameters are wrong", async () => {
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name: 1 }
+            })
+
+            await getGroupMembersController(req, res)
+
+            expect(res._getStatusCode()).toBe(400)
+        })
+
+        it("Should return error 404 if the group does not exist", async () => {
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name: "a" }
+            })
+
+            await getGroupMembersController(req, res)
+
+            expect(res._getStatusCode()).toBe(404)
+        })
+
+        it("Should return error 500 if there is an unexpected error", async () => {
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name }
+            })
+
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
+                throw new Error("Error")
+            })
+
+            await getGroupMembersController(req, res)
+
+            expect(res._getStatusCode()).toBe(500)
+        })
+
+        it("Should return the group members", async () => {
+            const { req, res } = createNextMocks({
+                method: "GET",
+                query: { provider, name }
+            })
+
+            await getGroupMembersController(req, res)
 
             const { data } = res._getData()
 
             expect(res._getStatusCode()).toBe(200)
-            expect(data.provider).toBe(provider)
-            expect(data.name).toBe(name)
-            expect(data.members).toHaveLength(0)
-            expect(data.size).toBe(0)
+            expect(data).toHaveLength(0)
         })
 
-        it("Should return group members with limit and offset", async () => {
+        it("Should return the group members with limit and offset", async () => {
             await seedZeroHashes()
             await appendLeaf(provider, name, "111")
             await appendLeaf(provider, name, "222")
@@ -162,19 +210,16 @@ describe("# controllers/groups", () => {
 
             const { req, res } = createNextMocks({
                 method: "GET",
-                query: { provider, name, members: "true", limit: "1", offset: "1" }
+                query: { provider, name, limit: "1", offset: "1" }
             })
 
-            await getGroupController(req, res)
+            await getGroupMembersController(req, res)
 
             const { data } = res._getData()
 
             expect(res._getStatusCode()).toBe(200)
-            expect(data.provider).toBe(provider)
-            expect(data.name).toBe(name)
-            expect(data.members).toHaveLength(1)
-            expect(data.members).toContain("222")
-            expect(data.size).toBe(3)
+            expect(data).toHaveLength(1)
+            expect(data).toContain("222")
         })
     })
 

@@ -1,4 +1,3 @@
-import { MerkleTreeNode } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { checkGroup, getGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
@@ -13,19 +12,8 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
 
     const provider = req.query?.provider as Provider
     const name = req.query?.name as GroupName
-    const members = req.query?.members
-    const limit = req.query?.limit
-    const offset = req.query?.offset
 
-    if (
-        !provider ||
-        typeof provider !== "string" ||
-        !name ||
-        typeof name !== "string" ||
-        (members && typeof members !== "string") ||
-        (limit && (typeof limit !== "string" || Number.isNaN(limit))) ||
-        (offset && (typeof offset !== "string" || Number.isNaN(offset)))
-    ) {
+    if (!provider || typeof provider !== "string" || !name || typeof name !== "string") {
         res.status(400).end()
         return
     }
@@ -41,15 +29,6 @@ export default async function getGroupController(req: NextApiRequest, res: NextA
         await connectDatabase()
 
         const group = (await getGroup(provider, name)) as any
-
-        if (members === "true") {
-            const leaves = await MerkleTreeNode.find({ group: { provider, name }, level: 0 })
-                .sort({ $natural: -1 })
-                .skip(Number(offset || 0))
-                .limit(Number(limit || 0))
-
-            group.members = leaves.map((leave) => leave.hash).reverse()
-        }
 
         res.status(200).send({ data: group })
     } catch (error) {
