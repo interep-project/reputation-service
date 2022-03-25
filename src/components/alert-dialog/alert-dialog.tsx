@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useRef } from "react"
 
-type Properties = {
+export type AlertDialogProps = {
     title: string
     message: string
     onClose: () => void
@@ -17,7 +17,7 @@ type Properties = {
     actions: JSX.Element
 }
 
-export default function AlertDialog({ title, message, onClose, isOpen, actions }: Properties): JSX.Element {
+export function AlertDialog({ title, message, onClose, isOpen, actions }: AlertDialogProps): JSX.Element {
     const cancelRef = useRef() as any
 
     return (
