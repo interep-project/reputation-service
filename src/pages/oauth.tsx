@@ -15,7 +15,7 @@ import {
     Tr,
     VStack
 } from "@chakra-ui/react"
-import { ReputationLevel } from "@interep/reputation"
+import { getReputationCriteria, ReputationCriteria, ReputationLevel, ReputationRule } from "@interep/reputation"
 import { GetServerSideProps } from "next"
 import { signOut, useSession } from "next-auth/client"
 import { useRouter } from "next/router"
@@ -34,6 +34,7 @@ export default function OAuthProviderPage(): JSX.Element {
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_oAuthGroups, setOAuthGroups] = useState<Group[]>()
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
+    const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
     const [_hasJoined, setHasJoined] = useState<boolean>()
     const {
         retrieveIdentityCommitment,
@@ -56,6 +57,8 @@ export default function OAuthProviderPage(): JSX.Element {
                     setOAuthGroups(oAuthGroups)
                     setGroupSize(userGroup.size)
                 }
+
+                setReputationCriteria(getReputationCriteria(session.provider))
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,6 +67,28 @@ export default function OAuthProviderPage(): JSX.Element {
     async function back() {
         await signOut({ redirect: false })
         await router.push("/")
+    }
+
+    function mapReputationRule(rule: ReputationRule): string {
+        if (rule.value !== null && typeof rule.value === "object") {
+            if (rule.value.max !== undefined) {
+                return `<= ${rule.value.max}`
+            }
+
+            if (rule.value.min !== undefined) {
+                return `>= ${rule.value.min}`
+            }
+        }
+
+        if (typeof rule.value === "number") {
+            return rule.value.toString()
+        }
+
+        if (typeof rule.value === "boolean") {
+            return rule.value ? "Yes" : "No"
+        }
+
+        return ""
     }
 
     const step1 = useCallback(async () => {
@@ -204,32 +229,26 @@ export default function OAuthProviderPage(): JSX.Element {
                                 Qualifications
                             </Heading>
                             <Divider />
-                            <Table variant="unstyled">
-                                <Thead>
-                                    <Tr>
-                                        <Th isNumeric>Followers</Th>
-                                        <Th isNumeric>Likes</Th>
-                                        <Th>Plan</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    <Tr>
-                                        <Td isNumeric>{">"} 1k</Td>
-                                        <Td isNumeric>{">"} 3k</Td>
-                                        <Td>Yes</Td>
-                                    </Tr>
-                                    <Tr>
-                                        <Td isNumeric>500 - 1k</Td>
-                                        <Td isNumeric>{">"} 1k</Td>
-                                        <Td>No</Td>
-                                    </Tr>
-                                    <Tr>
-                                        <Td isNumeric>100 - 499</Td>
-                                        <Td isNumeric>{">"} 500</Td>
-                                        <Td>No</Td>
-                                    </Tr>
-                                </Tbody>
-                            </Table>
+                            {_reputationCriteria && (
+                                <Table variant="unstyled">
+                                    <Thead>
+                                        <Tr>
+                                            {_reputationCriteria.parameters.map((parameter, i) => (
+                                                <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
+                                            ))}
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {_reputationCriteria.reputationLevels.map((reputation) => (
+                                            <Tr key={reputation.name}>
+                                                {reputation.rules.map((rule, i) => (
+                                                    <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
+                                                ))}
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            )}
                         </VStack>
                     </HStack>
                 </VStack>
