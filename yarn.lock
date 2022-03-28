@@ -2029,10 +2029,10 @@
   resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
   integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
 
-"@interep/reputation@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.2.1.tgz#d1167e9e7fb8b8b6fce4305176dcc1a02c1c301d"
-  integrity sha512-8qPQncQggCoOiqjNx16pLKJ3ssBeDXtA1wyCHLK682QlWcrtHSJMTEUjTP2HwpEjVmj2fjOs8LMi1JZ6LU2OCQ==
+"@interep/reputation@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.2.2.tgz#45a6341f61da6f032d5205950f836cde3b1b223a"
+  integrity sha512-69b3OTeLz12ZdQY5rsimZqmPxBkd1q3zHy6LOB9t3XbufygSSJeC/0RSF9+2t9ZUS81pKkP4ziMlMSqiV9YNmw==
 
 "@interep/telegram-bot@^0.2.0":
   version "0.2.0"
