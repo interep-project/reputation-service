@@ -25,7 +25,7 @@ import { MdLens } from "react-icons/md"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
-import { capitalize } from "src/utils/common"
+import { capitalize, formatNumber } from "src/utils/common"
 
 export default function OAuthProviderPage(): JSX.Element {
     const router = useRouter()
@@ -71,17 +71,17 @@ export default function OAuthProviderPage(): JSX.Element {
 
     function mapReputationRule(rule: ReputationRule): string {
         if (rule.value !== null && typeof rule.value === "object") {
-            if (rule.value.max !== undefined) {
-                return `<= ${rule.value.max}`
+            if (rule.value["<"] !== undefined) {
+                return `< ${formatNumber(rule.value["<"])}`
             }
 
-            if (rule.value.min !== undefined) {
-                return `>= ${rule.value.min}`
+            if (rule.value[">"] !== undefined) {
+                return `> ${formatNumber(rule.value[">"])}`
             }
         }
 
         if (typeof rule.value === "number") {
-            return rule.value.toString()
+            return formatNumber(rule.value)
         }
 
         if (typeof rule.value === "boolean") {
@@ -157,8 +157,8 @@ export default function OAuthProviderPage(): JSX.Element {
                         </HStack>
 
                         <HStack>
-                            <MdLens color="gold" />
-                            <Text fontWeight="bold">Gold Group</Text>
+                            <MdLens color={session.user.reputation as string} />
+                            <Text fontWeight="bold">{capitalize(session.user.reputation as string)} Group</Text>
                         </HStack>
                     </HStack>
 
