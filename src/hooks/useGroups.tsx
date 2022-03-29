@@ -1,8 +1,10 @@
 import { useToast } from "@chakra-ui/react"
-import { OAuthProvider } from "@interep/reputation"
 import createIdentity from "@interep/identity"
+import { OAuthProvider } from "@interep/reputation"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
+import { Toast } from "src/components/toast"
+import config from "src/config"
 import { Group, Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 import useInterepAPI from "./useInterepAPI"
@@ -171,10 +173,21 @@ export default function useGroups(): ReturnParameters {
             }
 
             setLoading(false)
+
+            const date = new Date()
+            const duration = ((date.getMinutes() % config.CRON_INTERVAL) + 20) * 1000
+
             toast({
-                description: `You joined the ${capitalize(provider)} group correctly.`,
-                variant: "subtle",
-                isClosable: true
+                duration,
+                render: () => (
+                    <Toast
+                        status="success"
+                        duration={duration}
+                        description={`You joined the ${capitalize(
+                            provider
+                        )} group correctly. You will be able to use this group in ~${duration / 1000} seconds.`}
+                    />
+                )
             })
             return true
         },
