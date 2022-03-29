@@ -51,7 +51,7 @@ export default NextAuth({
                 await createOAuthAccount(user, account)
 
                 return true
-            } catch (error) {
+            } catch (error: any) {
                 if (error.message === "Parameters do not meet any reputation criteria") {
                     return "/error?error=insufficient-reputation"
                 }
