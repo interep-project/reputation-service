@@ -12,9 +12,9 @@ export default async function hasMemberController(req: NextApiRequest, res: Next
     }
 
     const provider = req.query?.provider as Provider
-    const member = req.query?.member as string
+    const identityCommitment = req.query?.member as string
 
-    if (!provider || typeof provider !== "string" || !member || typeof member !== "string") {
+    if (!provider || typeof provider !== "string" || !identityCommitment || typeof identityCommitment !== "string") {
         res.status(400).end()
         return
     }
@@ -31,7 +31,7 @@ export default async function hasMemberController(req: NextApiRequest, res: Next
 
         await connectDatabase()
 
-        const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider, member)
+        const leaf = await MerkleTreeNode.findByGroupProviderAndHash(provider, identityCommitment)
 
         res.status(200).send({ data: !!leaf && leaf.level === 0 })
     } catch (error) {

@@ -8,7 +8,7 @@ import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleEmailMemberController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name as EmailDomain
-    const member = req.query?.member as string
+    const identityCommitment = req.query?.member as string
     const { emailUserId, emailUserToken } = JSON.parse(req.body)
 
     if (!emailUserId || !emailUserToken) {
@@ -38,7 +38,7 @@ export default async function handleEmailMemberController(req: NextApiRequest, r
                 throw new Error(`Email user already joined this group`)
             }
 
-            await appendLeaf("email", name, member)
+            await appendLeaf("email", name, identityCommitment)
 
             emailUser.hasJoined = true
         } else {
@@ -46,7 +46,7 @@ export default async function handleEmailMemberController(req: NextApiRequest, r
                 throw new Error(`Email user has not joined this group yet`)
             }
 
-            await deleteLeaf("email", name, member)
+            await deleteLeaf("email", name, identityCommitment)
 
             emailUser.hasJoined = false
         }

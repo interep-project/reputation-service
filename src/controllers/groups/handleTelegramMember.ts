@@ -8,7 +8,7 @@ import { sha256 } from "src/utils/common/crypto"
 
 export default async function handleTelegramMemberController(req: NextApiRequest, res: NextApiResponse) {
     const name = req.query?.name as TelegramGroup
-    const member = req.query?.member as string
+    const identityCommitment = req.query?.member as string
     const { telegramUserId } = JSON.parse(req.body)
 
     if (!telegramUserId) {
@@ -32,7 +32,7 @@ export default async function handleTelegramMemberController(req: NextApiRequest
                 throw new Error(`Telegram user already joined this group`)
             }
 
-            await appendLeaf("telegram", name, member)
+            await appendLeaf("telegram", name, identityCommitment)
 
             telegramUser.hasJoined = true
         } else {
@@ -40,7 +40,7 @@ export default async function handleTelegramMemberController(req: NextApiRequest
                 throw new Error(`Telegram user has not joined this group yet`)
             }
 
-            await deleteLeaf("telegram", name, member)
+            await deleteLeaf("telegram", name, identityCommitment)
 
             telegramUser.hasJoined = false
         }
