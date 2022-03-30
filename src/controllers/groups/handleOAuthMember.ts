@@ -2,7 +2,7 @@ import { OAuthAccount } from "@interep/db"
 import { calculateReputation, OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
-import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
+import { appendLeaf } from "src/core/groups/mts"
 import { getBotometerScore } from "src/services/botometer"
 import { getGithubUserByToken } from "src/services/github"
 import { getRedditUserByToken } from "src/services/reddit"
@@ -82,23 +82,13 @@ export default async function handleOAuthMemberController(req: NextApiRequest, r
                 })
             }
 
-            if (req.method === "POST") {
-                if (account.hasJoinedAGroup) {
-                    throw new Error(`Account already joined a ${provider} group`)
-                }
-
-                await appendLeaf(provider, name, identityCommitment)
-
-                account.hasJoinedAGroup = true
-            } else {
-                if (!account.hasJoinedAGroup) {
-                    throw new Error(`Account has not joined a ${provider} group yet`)
-                }
-
-                await deleteLeaf(provider, name, identityCommitment)
-
-                account.hasJoinedAGroup = false
+            if (account.hasJoinedAGroup) {
+                throw new Error(`Account already joined a ${provider} group`)
             }
+
+            await appendLeaf(provider, name, identityCommitment)
+
+            account.hasJoinedAGroup = true
 
             await account.save()
 
@@ -148,23 +138,13 @@ export default async function handleOAuthMemberController(req: NextApiRequest, r
             throw new Error("The account reputation does not match")
         }
 
-        if (req.method === "POST") {
-            if (account.hasJoinedAGroup) {
-                throw new Error(`The account already joined a ${provider} group`)
-            }
-
-            await appendLeaf(provider, name, identityCommitment)
-
-            account.hasJoinedAGroup = true
-        } else {
-            if (!account.hasJoinedAGroup) {
-                throw new Error(`The account has not joined a ${provider} group yet`)
-            }
-
-            await deleteLeaf(provider, name, identityCommitment)
-
-            account.hasJoinedAGroup = false
+        if (account.hasJoinedAGroup) {
+            throw new Error(`The account already joined a ${provider} group`)
         }
+
+        await appendLeaf(provider, name, identityCommitment)
+
+        account.hasJoinedAGroup = true
 
         await account.save()
 

@@ -19,7 +19,6 @@ type ReturnParameters = {
         join?: boolean
     ) => Promise<boolean | null>
     joinGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
-    leaveGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     _loading: boolean
 }
 
@@ -27,7 +26,6 @@ export default function useGroups(): ReturnParameters {
     const [_loading, setLoading] = useState<boolean>(false)
     const {
         addIdentityCommitment,
-        removeIdentityCommitment,
         hasIdentityCommitment: _hasIdentityCommitment,
         hasJoinedAGroup: _hasJoinedAGroup,
         getGroup: _getGroup
@@ -167,33 +165,6 @@ export default function useGroups(): ReturnParameters {
         [toast, addIdentityCommitment]
     )
 
-    const leaveGroup = useCallback(
-        async (identityCommitment: string, provider: Provider, groupName: string, body: any): Promise<true | null> => {
-            setLoading(true)
-
-            const response = await removeIdentityCommitment({
-                provider,
-                groupName,
-                identityCommitment,
-                ...body
-            })
-
-            if (response === null) {
-                setLoading(false)
-                return null
-            }
-
-            setLoading(false)
-            toast({
-                description: `You left the ${capitalize(provider)} group correctly.`,
-                variant: "subtle",
-                isClosable: true
-            })
-            return true
-        },
-        [toast, removeIdentityCommitment]
-    )
-
     return {
         hasJoinedAGroup,
         getGroup,
@@ -201,7 +172,6 @@ export default function useGroups(): ReturnParameters {
         retrieveIdentityCommitment,
         hasIdentityCommitment,
         joinGroup,
-        leaveGroup,
         _loading
     }
 }

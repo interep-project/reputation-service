@@ -22,7 +22,6 @@ export default function PoapGroups(): JSX.Element {
         retrieveIdentityCommitment,
         hasIdentityCommitment,
         joinGroup,
-        leaveGroup,
         getGroup,
         _loading
     } = useGroups()
@@ -75,29 +74,23 @@ export default function PoapGroups(): JSX.Element {
     )
 
     const step3 = useCallback(
-        async (signer: Signer, userAddress: string, group: Group, identityCommitment: string, hasJoined: boolean) => {
+        async (signer: Signer, userAddress: string, group: Group, identityCommitment: string) => {
             const userSignature = await signMessage(signer, identityCommitment)
 
             if (userSignature) {
-                if (!hasJoined) {
-                    if (
-                        await joinGroup(identityCommitment, "poap", group.name, {
-                            userAddress,
-                            userSignature
-                        })
-                    ) {
-                        setCurrentStep(1)
-                        setHasJoined(undefined)
-                        setGroup(undefined)
-                    }
-                } else if (await leaveGroup(identityCommitment, "poap", group.name, { userAddress, userSignature })) {
+                if (
+                    await joinGroup(identityCommitment, "poap", group.name, {
+                        userAddress,
+                        userSignature
+                    })
+                ) {
                     setCurrentStep(1)
                     setHasJoined(undefined)
                     setGroup(undefined)
                 }
             }
         },
-        [joinGroup, leaveGroup, signMessage]
+        [joinGroup, signMessage]
     )
 
     return _currentStep === 0 ? (
@@ -112,7 +105,7 @@ export default function PoapGroups(): JSX.Element {
         <>
             {_group && (
                 <Text fontWeight="semibold">
-                    The {_group.name} POAP group has {_group.size} members. Follow the steps below to join/leave it.
+                    The {_group.name} POAP group has {_group.size} members. Follow the steps below to join it.
                 </Text>
             )}
 
@@ -139,19 +132,13 @@ export default function PoapGroups(): JSX.Element {
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 3"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our POAP Semaphore group.`}
-                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
+                        message={_hasJoined ? "You already joined this group." : "Join our POAP Semaphore group."}
+                        actionText="Join Group"
                         actionFunction={() =>
-                            step3(
-                                _signer as Signer,
-                                _account as string,
-                                _group as Group,
-                                _identityCommitment as string,
-                                _hasJoined
-                            )
+                            step3(_signer as Signer, _account as string, _group as Group, _identityCommitment as string)
                         }
                         loading={_currentStep === 3 && _loading}
-                        disabled={_currentStep !== 3}
+                        disabled={_hasJoined || _currentStep !== 3}
                     />
                 )}
             </VStack>

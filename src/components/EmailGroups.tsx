@@ -21,7 +21,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
 
     const group_list = groupId.split("+")
 
-    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, _loading } = useGroups()
 
     const step1 = useCallback(
         async (groupName: string) => {
@@ -55,20 +55,9 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
     )
 
     const step3 = useCallback(
-        async (identityCommitment: string, group: Group, userId: string, userToken: string, hasJoined: boolean) => {
-            if (!hasJoined) {
-                if (
-                    await joinGroup(identityCommitment, "email", group.name, {
-                        emailUserId: userId,
-                        emailUserToken: userToken
-                    })
-                ) {
-                    setCurrentStep(1)
-                    setHasJoined(undefined)
-                    setGroup(undefined)
-                }
-            } else if (
-                await leaveGroup(identityCommitment, "email", group.name, {
+        async (identityCommitment: string, group: Group, userId: string, userToken: string) => {
+            if (
+                await joinGroup(identityCommitment, "email", group.name, {
                     emailUserId: userId,
                     emailUserToken: userToken
                 })
@@ -78,7 +67,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
                 setGroup(undefined)
             }
         },
-        [joinGroup, leaveGroup]
+        [joinGroup]
     )
 
     return _loading && _currentStep === 0 ? (
@@ -89,7 +78,7 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
         <>
             {_group && (
                 <Text fontWeight="semibold">
-                    The {_group.name} Email group has {_group.size} members. Follow the steps below to join/leave it.
+                    The {_group.name} Email group has {_group.size} members. Follow the steps below to join it.
                 </Text>
             )}
 
@@ -116,13 +105,11 @@ export default function EmailGroups({ userId, userToken, groupId }: Properties):
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 3"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our Email Semaphore group.`}
-                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
-                        actionFunction={() =>
-                            step3(_identityCommitment as string, _group as Group, userId, userToken, _hasJoined)
-                        }
+                        message={_hasJoined ? "You already joined this group." : "Join our Email Semaphore group."}
+                        actionText="Join Group"
+                        actionFunction={() => step3(_identityCommitment as string, _group as Group, userId, userToken)}
                         loading={_currentStep === 3 && _loading}
-                        disabled={_currentStep !== 3}
+                        disabled={_hasJoined || _currentStep !== 3}
                     />
                 )}
             </VStack>

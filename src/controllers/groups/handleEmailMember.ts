@@ -1,7 +1,7 @@
 import { EmailUser } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
 import { EmailDomain } from "src/core/email"
-import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
+import { appendLeaf } from "src/core/groups/mts"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
@@ -33,23 +33,13 @@ export default async function handleEmailMemberController(req: NextApiRequest, r
             return
         }
 
-        if (req.method === "POST") {
-            if (emailUser.hasJoined) {
-                throw new Error(`Email user already joined this group`)
-            }
-
-            await appendLeaf("email", name, identityCommitment)
-
-            emailUser.hasJoined = true
-        } else {
-            if (!emailUser.hasJoined) {
-                throw new Error(`Email user has not joined this group yet`)
-            }
-
-            await deleteLeaf("email", name, identityCommitment)
-
-            emailUser.hasJoined = false
+        if (emailUser.hasJoined) {
+            throw new Error(`Email user already joined this group`)
         }
+
+        await appendLeaf("email", name, identityCommitment)
+
+        emailUser.hasJoined = true
 
         await emailUser.save()
 

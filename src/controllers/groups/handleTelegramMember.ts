@@ -1,7 +1,7 @@
 import { TelegramUser } from "@interep/db"
 import { TelegramGroup } from "@interep/telegram-bot"
 import { NextApiRequest, NextApiResponse } from "next"
-import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
+import { appendLeaf } from "src/core/groups/mts"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 import { sha256 } from "src/utils/common/crypto"
@@ -27,23 +27,13 @@ export default async function handleTelegramMemberController(req: NextApiRequest
             return
         }
 
-        if (req.method === "POST") {
-            if (telegramUser.hasJoined) {
-                throw new Error(`Telegram user already joined this group`)
-            }
-
-            await appendLeaf("telegram", name, identityCommitment)
-
-            telegramUser.hasJoined = true
-        } else {
-            if (!telegramUser.hasJoined) {
-                throw new Error(`Telegram user has not joined this group yet`)
-            }
-
-            await deleteLeaf("telegram", name, identityCommitment)
-
-            telegramUser.hasJoined = false
+        if (telegramUser.hasJoined) {
+            throw new Error(`Telegram user already joined this group`)
         }
+
+        await appendLeaf("telegram", name, identityCommitment)
+
+        telegramUser.hasJoined = true
 
         await telegramUser.save()
 

@@ -2,7 +2,6 @@ import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import {
     addIdentityCommitment as _addIdentityCommitment,
-    removeIdentityCommitment as _removeIdentityCommitment,
     hasJoinedAGroup as _hasJoinedAGroup,
     hasIdentityCommitment as _hasIdentityCommitment,
     getGroup as _getGroup,
@@ -11,7 +10,6 @@ import {
 
 type ReturnParameters = {
     addIdentityCommitment: typeof _addIdentityCommitment
-    removeIdentityCommitment: typeof _removeIdentityCommitment
     hasIdentityCommitment: typeof _hasIdentityCommitment
     getGroup: typeof _getGroup
     hasJoinedAGroup: typeof _hasJoinedAGroup
@@ -59,7 +57,6 @@ export default function useInterepAPI(): ReturnParameters {
 
     return {
         addIdentityCommitment: (parameters) => handleApiFunction(_addIdentityCommitment, parameters),
-        removeIdentityCommitment: (parameters) => handleApiFunction(_removeIdentityCommitment, parameters),
         hasIdentityCommitment: (parameters) => handleApiFunction(_hasIdentityCommitment, parameters),
         getGroup: (parameters) => handleApiFunction(_getGroup, parameters),
         hasJoinedAGroup: () => handleApiFunction(_hasJoinedAGroup),

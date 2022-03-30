@@ -1,4 +1,4 @@
-import { getGroupRemovedMembersController } from 'src/controllers/groups';
+import { getGroupRemovedMembersController } from "src/controllers/groups"
 import { EmailUser, OAuthAccount, TelegramUser } from "@interep/db"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { TelegramGroup } from "@interep/telegram-bot"
@@ -221,11 +221,9 @@ describe("# controllers/groups", () => {
             expect(data).toHaveLength(1)
             expect(data).toContain("222")
         })
-
     })
 
     describe("# getGroupRemovedMembers", () => {
-
         it("Should return error 405 if the http method is not a GET", async () => {
             const { req, res } = createNextMocks({
                 method: "POST",
@@ -235,11 +233,9 @@ describe("# controllers/groups", () => {
             await getGroupRemovedMembersController(req, res)
 
             expect(res._getStatusCode()).toBe(405)
-
         })
 
         it("Should return error 400 if the query parameters are wrong", async () => {
-
             const { req, res } = createNextMocks({
                 method: "GET",
                 query: { provider, name: 1 }
@@ -248,7 +244,7 @@ describe("# controllers/groups", () => {
             await getGroupRemovedMembersController(req, res)
 
             expect(res._getStatusCode()).toBe(400)
-        });
+        })
 
         it("Should return error 404 if the group does not exist", async () => {
             const { req, res } = createNextMocks({
@@ -267,9 +263,9 @@ describe("# controllers/groups", () => {
                 query: { provider, name }
             })
 
-                ; (_connectDatabase as any).mockImplementationOnce(() => {
-                    throw new Error("Error")
-                })
+            ;(_connectDatabase as any).mockImplementationOnce(() => {
+                throw new Error("Error")
+            })
 
             await getGroupRemovedMembersController(req, res)
 
@@ -295,7 +291,7 @@ describe("# controllers/groups", () => {
             const { data } = res._getData()
             expect(res._getStatusCode()).toBe(200)
             expect(data).toHaveLength(1)
-            expect(data[0]).toEqual(3);
+            expect(data[0]).toEqual(3)
         })
 
         it("Should return the removed group members with limit and offset", async () => {
@@ -322,7 +318,6 @@ describe("# controllers/groups", () => {
             expect(data[0]).toEqual(1)
             expect(data[1]).toEqual(3)
         })
-
     })
 
     describe("# getGroups", () => {
@@ -511,7 +506,7 @@ describe("# controllers/groups", () => {
     })
 
     describe("# handleMember", () => {
-        it("Should return error 405 if the http method is neither a GET, nor a POST, nor a DELETE", async () => {
+        it("Should return error 405 if the http method is neither a GET, nor a POST", async () => {
             const { req, res } = createNextMocks({
                 method: "PUT"
             })
@@ -738,38 +733,6 @@ describe("# controllers/groups", () => {
             expect(res._getStatusCode()).toBe(201)
         })
 
-        it("Should return error 500 if a member does not exist", async () => {
-            const account = await OAuthAccount.create(createOAuthAccountMock())
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider, name, member: "111" },
-                body: { accountId: account.id }
-            })
-
-            ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(500)
-        })
-
-        it("Should delete a member", async () => {
-            const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider, name, member: "111" },
-                body: { accountId: account.id }
-            })
-
-            await seedZeroHashes()
-            await appendLeaf(provider, name, "111")
-            ;(getSession as any).mockImplementationOnce(() => createSessionMock({ accountId: account.id }))
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(201)
-        })
-
         it("Should return error 500 if a member already exists (OAuth token)", async () => {
             const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
             const { req, res } = createNextMocks({
@@ -815,58 +778,6 @@ describe("# controllers/groups", () => {
             }))
 
             await seedZeroHashes()
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(201)
-        })
-
-        it("Should return error 500 if a member does not exist yet (OAuth token)", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider, name, member: "111" },
-                headers: {
-                    authorization: "token"
-                }
-            })
-
-            ;(getTwitterUserByToken as any).mockImplementationOnce(() => ({
-                id_str: "id",
-                screen_name: "jack",
-                followers_count: 100,
-                verified: true
-            }))
-            ;(getBotometerScore as any).mockImplementationOnce(() => ({
-                display_scores: { universal: { overall: 2 } }
-            }))
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(500)
-        })
-
-        it("Should delete a Twitter member (OAuth token)", async () => {
-            const account = await OAuthAccount.create(createOAuthAccountMock({ hasJoinedAGroup: true }))
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider, name, member: "111" },
-                headers: {
-                    authorization: "token"
-                }
-            })
-
-            ;(getTwitterUserByToken as any).mockImplementationOnce(() => ({
-                id_str: account.providerAccountId,
-                screen_name: "jack",
-                followers_count: 100,
-                verified: true
-            }))
-            ;(getBotometerScore as any).mockImplementationOnce(() => ({
-                display_scores: { universal: { overall: 2 } }
-            }))
-
-            await seedZeroHashes()
-            await appendLeaf(provider, name, "111")
 
             await handleMemberController(req, res)
 
@@ -1022,44 +933,6 @@ describe("# controllers/groups", () => {
 
             expect(res._getStatusCode()).toBe(201)
         })
-
-        it("Should return error 500 if the email user does not have joined the group", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
-                body: { emailUserId: "id", emailUserToken: "token" }
-            })
-
-            await EmailUser.create({
-                hashId: "035780b2481863f9cb735ec10e57c812936fdc18bfb8a059310841663bf58a10",
-                hasJoined: false,
-                verificationToken: "token"
-            })
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(500)
-        })
-
-        it("Should delete a member", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider: "email", name: EmailDomain.HOTMAIL, member: "111" },
-                body: { emailUserId: "id", emailUserToken: "token" }
-            })
-
-            await EmailUser.create({
-                hashId: "035780b2481863f9cb735ec10e57c812936fdc18bfb8a059310841663bf58a10",
-                hasJoined: true,
-                verificationToken: "token"
-            })
-            await seedZeroHashes()
-            await appendLeaf("email", EmailDomain.HOTMAIL, "111")
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(201)
-        })
     })
 
     describe("# handlePoapMember", () => {
@@ -1149,27 +1022,6 @@ describe("# controllers/groups", () => {
 
             expect(res._getStatusCode()).toBe(201)
         })
-
-        it("Should delete a member", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider: "poap", name: PoapEvent.DEVCON_3, member: "111" },
-                body: {
-                    userSignature:
-                        "0xf575804b73ae8d8dc5a1e0ee07d810db1fe0971029d1b652a835c9007a444ec82c3c773f6aa84330954a444da0a9365bc19e280ecbd0eb5feac90bd9015432961c",
-                    userAddress: "0xb94c5535d1230AB683570De9afbe53F2C40830E8"
-                }
-            })
-
-            ;(getPoapEventsByAddress as any).mockImplementationOnce(() => ["devcon3"])
-
-            await seedZeroHashes()
-            await appendLeaf("poap", PoapEvent.DEVCON_3, "111")
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(201)
-        })
     })
 
     describe("# handleTelegramMember", () => {
@@ -1242,43 +1094,6 @@ describe("# controllers/groups", () => {
                 hasJoined: false
             })
             await seedZeroHashes()
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(201)
-        })
-
-        it("Should return error 500 if a member does not exist", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
-                body: { telegramUserId: "id" }
-            })
-
-            await TelegramUser.create({
-                hashId: "f9dfbff8d282f6e65b09042010e1b80053e4121b17cd3e6eda0bb2b989ccdc19",
-                hasJoined: false
-            })
-
-            await handleMemberController(req, res)
-
-            expect(res._getStatusCode()).toBe(500)
-        })
-
-        it("Should delete a member", async () => {
-            const { req, res } = createNextMocks({
-                method: "DELETE",
-                query: { provider: "telegram", name: TelegramGroup.INTERREP, member: "111" },
-                body: { telegramUserId: "id" }
-            })
-
-            await TelegramUser.create({
-                hashId: "f9dfbff8d282f6e65b09042010e1b80053e4121b17cd3e6eda0bb2b989ccdc19",
-                hasJoined: true
-            })
-
-            await seedZeroHashes()
-            await appendLeaf("telegram", TelegramGroup.INTERREP, "111")
 
             await handleMemberController(req, res)
 

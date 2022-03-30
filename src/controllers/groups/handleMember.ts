@@ -10,7 +10,7 @@ import handlePoapMemberController from "./handlePoapMember"
 import handleTelegramMemberController from "./handleTelegramMember"
 
 export default async function handleMemberController(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "POST" && req.method !== "DELETE" && req.method !== "GET") {
+    if (req.method !== "POST" && req.method !== "GET") {
         res.status(405).end()
         return
     }
@@ -76,10 +76,6 @@ export default async function handleMemberController(req: NextApiRequest, res: N
     }
 
     if (res.statusCode === 200 || res.statusCode === 201) {
-        if (req.method === "POST") {
-            logger.info(`[${req.url}] A new member has been added to the group`)
-        } else {
-            logger.info(`[${req.url}] A new member has been deleted from the group`)
-        }
+        logger.info(`[${req.url}] A new member has been added to the group`)
     }
 }

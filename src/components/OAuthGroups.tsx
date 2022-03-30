@@ -15,7 +15,7 @@ export default function OAuthGroups(): JSX.Element {
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, leaveGroup, getGroup, _loading } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, getGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -54,24 +54,13 @@ export default function OAuthGroups(): JSX.Element {
     )
 
     const step2 = useCallback(
-        async (
-            provider: OAuthProvider,
-            reputation: ReputationLevel,
-            identityCommitment: string,
-            accountId: string,
-            hasJoined: boolean
-        ) => {
-            if (!hasJoined) {
-                if (await joinGroup(identityCommitment, provider, reputation, { accountId })) {
-                    setHasJoined(true)
-                    setGroupSize((v) => v + 1)
-                }
-            } else if (await leaveGroup(identityCommitment, provider, reputation, { accountId })) {
-                setHasJoined(false)
-                setGroupSize((v) => v - 1)
+        async (provider: OAuthProvider, reputation: ReputationLevel, identityCommitment: string, accountId: string) => {
+            if (await joinGroup(identityCommitment, provider, reputation, { accountId })) {
+                setHasJoined(true)
+                setGroupSize((v) => v + 1)
             }
         },
-        [joinGroup, leaveGroup]
+        [joinGroup]
     )
 
     return !session || (_loading && _currentStep === 0) ? (
@@ -82,7 +71,7 @@ export default function OAuthGroups(): JSX.Element {
         <>
             <Text fontWeight="semibold">
                 The {session.user.reputation} {capitalize(session.provider as string)} group has {_groupSize} members.
-                Follow the steps below to join/leave it.
+                Follow the steps below to join it.
             </Text>
 
             <VStack mt="20px" spacing={4} align="left">
@@ -99,21 +88,22 @@ export default function OAuthGroups(): JSX.Element {
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 2"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our ${capitalize(
-                            session.provider as string
-                        )} Semaphore group.`}
-                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
+                        message={
+                            _hasJoined
+                                ? "You already joined this group."
+                                : `Join our ${capitalize(session.provider as string)} Semaphore group.`
+                        }
+                        actionText="Join Group"
                         actionFunction={() =>
                             step2(
                                 session.provider,
                                 session.user.reputation as ReputationLevel,
                                 _identityCommitment as string,
-                                session.accountId as string,
-                                _hasJoined
+                                session.accountId as string
                             )
                         }
                         loading={_currentStep === 2 && _loading}
-                        disabled={_currentStep !== 2}
+                        disabled={_hasJoined || _currentStep !== 2}
                     />
                 )}
             </VStack>

@@ -16,7 +16,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     const [_currentStep, setCurrentStep] = useState<number>(0)
     const [_groupSize, setGroupSize] = useState<number>(0)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, leaveGroup, _loading } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, getGroup, joinGroup, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -54,18 +54,13 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     )
 
     const step2 = useCallback(
-        async (identityCommitment: string, groupId: string, userId: string, hasJoined: boolean) => {
-            if (!hasJoined) {
-                if (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
-                    setHasJoined(true)
-                    setGroupSize((v) => v + 1)
-                }
-            } else if (await leaveGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
-                setHasJoined(false)
-                setGroupSize((v) => v - 1)
+        async (identityCommitment: string, groupId: string, userId: string) => {
+            if (await joinGroup(identityCommitment, "telegram", groupId, { telegramUserId: userId })) {
+                setHasJoined(true)
+                setGroupSize((v) => v + 1)
             }
         },
-        [joinGroup, leaveGroup]
+        [joinGroup]
     )
 
     return _loading && _currentStep === 0 ? (
@@ -75,7 +70,7 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
     ) : (
         <>
             <Text fontWeight="semibold">
-                This Telegram group has {_groupSize} members. Follow the steps below to join/leave it.
+                This Telegram group has {_groupSize} members. Follow the steps below to join it.
             </Text>
 
             <VStack mt="20px" spacing={4} align="left">
@@ -90,11 +85,11 @@ export default function TelegramGroups({ userId, groupId }: Properties): JSX.Ele
                 {_hasJoined !== undefined && (
                     <Step
                         title="Step 2"
-                        message={`${!_hasJoined ? "Join" : "Leave"} our Telegram Semaphore group.`}
-                        actionText={`${!_hasJoined ? "Join" : "Leave"} Group`}
-                        actionFunction={() => step2(_identityCommitment as string, groupId, userId, _hasJoined)}
+                        message={_hasJoined ? "You already joined this group." : "Join our Telegram Semaphore group."}
+                        actionText="Join Group"
+                        actionFunction={() => step2(_identityCommitment as string, groupId, userId)}
                         loading={_currentStep === 2 && _loading}
-                        disabled={_currentStep !== 2}
+                        disabled={_hasJoined || _currentStep !== 2}
                     />
                 )}
             </VStack>

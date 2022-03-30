@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { NextApiRequest, NextApiResponse } from "next"
-import { appendLeaf, deleteLeaf } from "src/core/groups/mts"
+import { appendLeaf } from "src/core/groups/mts"
 import { getPoapEventsByAddress, PoapEvent } from "src/core/poap"
 import { logger } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
@@ -29,11 +29,7 @@ export default async function handlePoapMemberController(req: NextApiRequest, re
 
         await connectDatabase()
 
-        if (req.method === "POST") {
-            await appendLeaf("poap", name, identityCommitment)
-        } else {
-            await deleteLeaf("poap", name, identityCommitment)
-        }
+        await appendLeaf("poap", name, identityCommitment)
 
         res.status(201).send({ data: true })
     } catch (error) {

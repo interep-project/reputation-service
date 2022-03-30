@@ -66,38 +66,3 @@ export function addIdentityCommitment({
         emailUserToken
     })
 }
-
-export function removeIdentityCommitment({
-    provider,
-    groupName,
-    identityCommitment,
-    accountId,
-    userAddress,
-    userSignature,
-    telegramUserId,
-    emailUserId,
-    emailUserToken
-}: {
-    provider: Provider
-    groupName: ReputationLevel | PoapEvent | string
-    identityCommitment: string
-    accountId?: string
-    userAddress?: string
-    userSignature?: string
-    telegramUserId?: string
-    emailUserId?: string
-    emailUserToken?: string
-}): Promise<any | null> {
-    return sendRequest(
-        `/api/v1/groups/${provider}/${groupName}/${identityCommitment}`,
-        {
-            accountId,
-            userAddress,
-            userSignature,
-            telegramUserId,
-            emailUserId,
-            emailUserToken
-        },
-        "DELETE"
-    )
-}
