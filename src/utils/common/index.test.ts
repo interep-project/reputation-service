@@ -34,6 +34,12 @@ describe("# utils/common", () => {
 
             expect(expectedValue).toBe("123.4k")
         })
+
+        it("Should return 0", () => {
+            const expectedValue = formatNumber(0.3, 3)
+
+            expect(expectedValue).toBe("0")
+        })
     })
 
     describe("# delay", () => {
