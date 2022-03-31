@@ -36,14 +36,7 @@ export default function OAuthProviderPage(): JSX.Element {
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const {
-        retrieveIdentityCommitment,
-        hasIdentityCommitment,
-        joinGroup,
-        leaveGroup,
-        getGroups,
-        _loading
-    } = useGroups()
+    const { retrieveIdentityCommitment, hasIdentityCommitment, joinGroup, getGroups, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -115,25 +108,16 @@ export default function OAuthProviderPage(): JSX.Element {
 
     const step2 = useCallback(async () => {
         if (session && _identityCommitment) {
-            if (!_hasJoined) {
-                if (
-                    await joinGroup(_identityCommitment, session.provider, session.user.reputation as ReputationLevel, {
-                        accountId: session.accountId
-                    })
-                ) {
-                    setHasJoined(true)
-                    setGroupSize((v) => v + 1)
-                }
-            } else if (
-                await leaveGroup(_identityCommitment, session.provider, session.user.reputation as ReputationLevel, {
+            if (
+                await joinGroup(_identityCommitment, session.provider, session.user.reputation as ReputationLevel, {
                     accountId: session.accountId
                 })
             ) {
-                setHasJoined(false)
-                setGroupSize((v) => v - 1)
+                setHasJoined(true)
+                setGroupSize((v) => v + 1)
             }
         }
-    }, [session, _identityCommitment, _hasJoined, joinGroup, leaveGroup])
+    }, [session, _identityCommitment, joinGroup])
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
@@ -175,13 +159,9 @@ export default function OAuthProviderPage(): JSX.Element {
                             colorScheme="background"
                             size="md"
                             minWidth="250px"
-                            disabled={!_account}
+                            disabled={!_account || _hasJoined}
                         >
-                            {_identityCommitment
-                                ? _hasJoined
-                                    ? "Leave Group"
-                                    : "Join Group"
-                                : "Generate Semaphore ID"}
+                            {_identityCommitment ? "Join Group" : "Generate Semaphore ID"}
                         </Button>
                     </HStack>
 
