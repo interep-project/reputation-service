@@ -28,8 +28,8 @@ export default function useInterepAPI(): ReturnParameters {
     const showErrorMessage = useCallback(
         (message: string) => {
             toast({
+                position: "bottom-right",
                 description: message,
-                variant: "subtle",
                 status: "error"
             })
         },

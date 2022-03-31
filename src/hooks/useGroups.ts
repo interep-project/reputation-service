@@ -1,19 +1,17 @@
-import { useToast } from "@chakra-ui/react"
 import createIdentity from "@interep/identity"
 import { OAuthProvider } from "@interep/reputation"
 import { Signer } from "ethers"
 import { useCallback, useState } from "react"
-import { Toast } from "src/components/toast"
 import config from "src/config"
 import { Group, Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 import useInterepAPI from "./useInterepAPI"
+import useToast from "./useToast"
 
 type ReturnParameters = {
     hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
     getGroups: () => Promise<Group[] | null>
-    signMessage: (signer: Signer, message: string) => Promise<string | null>
     retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
     hasIdentityCommitment: (
         identityCommitment: string,
@@ -84,31 +82,6 @@ export default function useGroups(): ReturnParameters {
         return groups
     }, [_getGroups])
 
-    const signMessage = useCallback(
-        async (signer: Signer, message: string): Promise<string | null> => {
-            try {
-                setLoading(true)
-
-                const signedMessage = await signer.signMessage(message)
-
-                setLoading(false)
-                return signedMessage
-            } catch (error) {
-                console.error(error)
-
-                toast({
-                    description: "Your signature is needed to create the identity commitment.",
-                    variant: "subtle",
-                    isClosable: true
-                })
-
-                setLoading(false)
-                return null
-            }
-        },
-        [toast]
-    )
-
     const retrieveIdentityCommitment = useCallback(
         async (signer: Signer, provider: Provider): Promise<string | null> => {
             try {
@@ -117,15 +90,19 @@ export default function useGroups(): ReturnParameters {
                 const identity = await createIdentity((message) => signer.signMessage(message), capitalize(provider))
                 const identityCommitment = identity.genIdentityCommitment()
 
+                toast({
+                    description: `You have successfully created your semaphore ID for ${capitalize(provider)}.`,
+                    status: "success"
+                })
+
                 setLoading(false)
                 return identityCommitment.toString()
             } catch (error) {
                 console.error(error)
 
                 toast({
-                    description: "Your signature is needed to create the identity commitment.",
-                    variant: "subtle",
-                    isClosable: true
+                    description: "Your signature is needed to create your Semaphore ID.",
+                    status: "warning"
                 })
 
                 setLoading(false)
@@ -174,21 +151,23 @@ export default function useGroups(): ReturnParameters {
 
             setLoading(false)
 
+            toast({
+                description: `You joined the ${capitalize(provider)} group correctly.`,
+                status: "success"
+            })
+
             const date = new Date()
-            const duration = ((date.getMinutes() % config.CRON_INTERVAL) + 20) * 1000
+            // Seconds before the next hour.
+            const remainingSeconds = (60 - date.getMinutes()) * 60 + (60 - date.getSeconds())
+            const duration = ((remainingSeconds % (config.CRON_INTERVAL * 60)) + 20) * 1000
 
             toast({
-                duration,
-                render: () => (
-                    <Toast
-                        status="success"
-                        duration={duration}
-                        description={`You joined the ${capitalize(
-                            provider
-                        )} group correctly. You will be able to use this group in ~${duration / 1000} seconds.`}
-                    />
-                )
+                description: `You will be able to use this group in ~${duration / 1000} seconds.`,
+                status: "info",
+                progress: true,
+                duration
             })
+
             return true
         },
         [toast, addIdentityCommitment]
@@ -198,7 +177,6 @@ export default function useGroups(): ReturnParameters {
         hasJoinedAGroup,
         getGroup,
         getGroups,
-        signMessage,
         retrieveIdentityCommitment,
         hasIdentityCommitment,
         joinGroup,
