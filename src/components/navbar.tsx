@@ -37,9 +37,11 @@ export default function NavBar(): JSX.Element {
             case "/poap":
                 setProvider("poap")
                 break
-            case "/oauth":
+            case "/":
                 if (session) {
                     setProvider(session.provider)
+                } else {
+                    setProvider(undefined)
                 }
                 break
             default:
@@ -88,7 +90,7 @@ export default function NavBar(): JSX.Element {
                                                 : undefined
                                         }
                                         onMouseDown={(e) => e.preventDefault()}
-                                        disabled={router.route === "/"}
+                                        disabled={router.route === "/" && !session}
                                     />
                                 </Tooltip>
 

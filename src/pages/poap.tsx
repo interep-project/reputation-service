@@ -1,4 +1,5 @@
 import {
+    Box,
     Container,
     Divider,
     Heading,
@@ -70,19 +71,24 @@ export default function PoapProviderPage(): JSX.Element {
     )
 
     return (
-        <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
-            <Heading as="h2" size="xl" mb="10px">
-                Anonymous on-chain authentication
-            </Heading>
+        <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
+            <HStack mb="6" spacing="6">
+                <VStack align="left">
+                    <Heading as="h3" size="lg" mb="2">
+                        Anonymous on-chain authentication
+                    </Heading>
 
-            <Text color="background.400" fontSize="md" mb="30px">
-                If your connected wallet contains POAPs they will appear below. Generate a semaphore ID to get started
-                anonymously joining POAP groups.
-            </Text>
+                    <Text color="background.400" fontSize="md">
+                        If your connected wallet contains POAPs they will appear below. Generate a semaphore ID to get
+                        started anonymously joining POAP groups.
+                    </Text>
+                </VStack>
+                <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
+            </HStack>
 
             <Divider />
 
-            <HStack justify="space-between" my="30px">
+            <HStack justify="space-between" my="6">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />

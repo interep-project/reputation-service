@@ -1,9 +1,11 @@
 import {
+    Box,
     Button,
     Container,
     Divider,
     Heading,
     HStack,
+    IconButton,
     Input,
     InputGroup,
     InputLeftElement,
@@ -11,14 +13,15 @@ import {
     SimpleGrid,
     Skeleton,
     Text,
-    useDisclosure
+    useDisclosure,
+    VStack
 } from "@chakra-ui/react"
-import { OAuthProvider } from "@interep/reputation"
-import { GetServerSideProps } from "next"
-import { signIn as _signIn } from "next-auth/client"
+import { OAuthProvider, ReputationLevel } from "@interep/reputation"
+import { signIn as _signIn, signOut, useSession } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { GoSearch } from "react-icons/go"
+import { MdArrowBack } from "react-icons/md"
 import { AlertDialog } from "src/components/alert-dialog"
 import { GroupBox, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
@@ -48,13 +51,14 @@ const oAuthProviders: Record<OAuthProvider, any> = {
 
 export default function OAuthProvidersPage(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { _account } = useContext(EthereumWalletContext)
+    const [session] = useSession()
+    const { _account, _identityCommitment } = useContext(EthereumWalletContext)
+    const [_hasJoined, setHasJoined] = useState<boolean>()
     const [_oAuthProvider, setOAuthProvider] = useState<string>("")
     const [_oAuthProviders, setOAuthProviders] = useState<any[]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
-
-    const { getGroups } = useGroups()
+    const { hasIdentityCommitment, joinGroup, getGroups, _loading } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -72,6 +76,25 @@ export default function OAuthProvidersPage(): JSX.Element {
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        ;(async () => {
+            if (session && _identityCommitment) {
+                const hasJoined = await hasIdentityCommitment(
+                    _identityCommitment,
+                    session.provider,
+                    session.user.reputation as ReputationLevel
+                )
+
+                if (hasJoined === null) {
+                    return
+                }
+
+                setHasJoined(hasJoined)
+            }
+        })()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session, _identityCommitment])
 
     function getTotalGroupSizes(provider: any): number {
         const sizes = Object.values(provider.groupSizes) as number[]
@@ -108,25 +131,57 @@ export default function OAuthProvidersPage(): JSX.Element {
         onOpen()
     }
 
+    const join = useCallback(async () => {
+        if (session && _identityCommitment) {
+            if (
+                await joinGroup(_identityCommitment, session.provider, session.user.reputation as ReputationLevel, {
+                    accountId: session.accountId
+                })
+            ) {
+                setHasJoined(true)
+            }
+        }
+    }, [session, _identityCommitment, joinGroup])
+
     const signIn = useCallback(() => {
         _signIn(_oAuthProvider)
         onClose()
     }, [_oAuthProvider, onClose])
 
-    return (
-        <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.lg">
-            <Heading as="h2" size="xl" mb="10px">
-                Authenticate anonymously on-chain using off-chain reputation.
-            </Heading>
+    function back() {
+        signOut({ redirect: false })
+    }
 
-            <Text color="background.400" fontSize="md" mb="30px">
-                To join Social network groups you will need to authorize each provider individually to share your
-                credentials with Interep. Groups can be left at any time.
-            </Text>
+    return (
+        <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
+            {session && (
+                <>
+                    <HStack spacing="0" mb="4">
+                        <IconButton onClick={() => back()} aria-label="Back" variant="link" icon={<MdArrowBack />} />
+                        <Text fontWeight="bold">Back</Text>
+                    </HStack>
+
+                    <Divider />
+                </>
+            )}
+
+            <HStack mb="6" mt={session ? 6 : 0} spacing="6">
+                <VStack align="left">
+                    <Heading as="h3" size="lg" mb="2">
+                        Authenticate anonymously on-chain using off-chain reputation
+                    </Heading>
+
+                    <Text color="background.400" fontSize="md">
+                        To join Social network groups you will need to authorize each provider individually to share
+                        your credentials with Interep. Groups can be left at any time.
+                    </Text>
+                </VStack>
+                <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
+            </HStack>
 
             <Divider />
 
-            <HStack justify="space-between" my="30px">
+            <HStack justify="space-between" my="6">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />
@@ -168,9 +223,14 @@ export default function OAuthProvidersPage(): JSX.Element {
                                         bronzeGroupSize={p.groupSizes.bronze}
                                     />
                                 }
-                                actionText="Authorize"
-                                actionFunction={() => selectOAuthProvider(p.provider)}
-                                disabled={!_account}
+                                actionText={session && session.provider === p.provider ? "Join" : "Authorize"}
+                                actionFunction={() => (session ? join() : selectOAuthProvider(p.provider))}
+                                disabled={
+                                    !_account ||
+                                    (!!session &&
+                                        (!_identityCommitment || _hasJoined || session.provider !== p.provider))
+                                }
+                                loading={!!session && session.provider === p.provider && _loading}
                             />
                         ))}
                 </SimpleGrid>
@@ -203,21 +263,4 @@ export default function OAuthProvidersPage(): JSX.Element {
             />
         </Container>
     )
-}
-
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-    const authorized = !!req.cookies["__Secure-next-auth.session-token"] || !!req.cookies["next-auth.session-token"]
-
-    if (!authorized) {
-        return {
-            props: {}
-        }
-    }
-
-    return {
-        redirect: {
-            destination: "/oauth",
-            permanent: false
-        }
-    }
 }

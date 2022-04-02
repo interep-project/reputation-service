@@ -8,6 +8,7 @@ export type GroupBoxProps = {
     content: any
     actionText: string
     actionFunction: (par?: any) => void
+    loading?: boolean
     disabled?: boolean
 }
 
@@ -17,6 +18,7 @@ export function GroupBox({
     content,
     actionText,
     actionFunction,
+    loading = false,
     disabled = false
 }: GroupBoxProps): JSX.Element {
     return (
@@ -30,7 +32,15 @@ export function GroupBox({
 
             {content}
 
-            <Button onClick={actionFunction} colorScheme="background" mt="6" size="sm" disabled={disabled} isFullWidth>
+            <Button
+                onClick={actionFunction}
+                colorScheme="background"
+                mt="6"
+                size="sm"
+                disabled={disabled}
+                isLoading={loading}
+                isFullWidth
+            >
                 {actionText}
             </Button>
         </Box>

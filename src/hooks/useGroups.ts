@@ -1,6 +1,4 @@
-import createIdentity from "@interep/identity"
 import { OAuthProvider } from "@interep/reputation"
-import { Signer } from "ethers"
 import { useCallback, useState } from "react"
 import config from "src/config"
 import { Group, Provider } from "src/types/groups"
@@ -12,12 +10,10 @@ type ReturnParameters = {
     hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
     getGroups: () => Promise<Group[] | null>
-    retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
     hasIdentityCommitment: (
         identityCommitment: string,
         provider: Provider,
-        groupName: string,
-        join?: boolean
+        groupName: string
     ) => Promise<boolean | null>
     joinGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     _loading: boolean
@@ -45,6 +41,7 @@ export default function useGroups(): ReturnParameters {
         }
 
         setLoading(false)
+
         return hasJoinedAGroup
     }, [_hasJoinedAGroup])
 
@@ -82,36 +79,6 @@ export default function useGroups(): ReturnParameters {
         return groups
     }, [_getGroups])
 
-    const retrieveIdentityCommitment = useCallback(
-        async (signer: Signer, provider: Provider): Promise<string | null> => {
-            try {
-                setLoading(true)
-
-                const identity = await createIdentity((message) => signer.signMessage(message), capitalize(provider))
-                const identityCommitment = identity.genIdentityCommitment()
-
-                toast({
-                    description: `You have successfully created your semaphore ID for ${capitalize(provider)}.`,
-                    status: "success"
-                })
-
-                setLoading(false)
-                return identityCommitment.toString()
-            } catch (error) {
-                console.error(error)
-
-                toast({
-                    description: "Your signature is needed to create your Semaphore ID.",
-                    status: "warning"
-                })
-
-                setLoading(false)
-                return null
-            }
-        },
-        [toast]
-    )
-
     const hasIdentityCommitment = useCallback(
         async (identityCommitment: string, provider: Provider, groupName: string): Promise<boolean | null> => {
             setLoading(true)
@@ -128,6 +95,7 @@ export default function useGroups(): ReturnParameters {
             }
 
             setLoading(false)
+
             return hasJoined
         },
         [_hasIdentityCommitment]
@@ -177,7 +145,6 @@ export default function useGroups(): ReturnParameters {
         hasJoinedAGroup,
         getGroup,
         getGroups,
-        retrieveIdentityCommitment,
         hasIdentityCommitment,
         joinGroup,
         _loading
