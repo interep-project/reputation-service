@@ -1,54 +1,63 @@
-import { Box, Text, List, ListItem, ListIcon, HStack, Divider } from "@chakra-ui/react"
-import { MdLens } from "react-icons/md"
+import { Box, HStack, ListIcon, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import React from "react"
+import { IconType } from "react-icons"
 
 export type GroupBoxOAuthContentProps = {
     goldGroupSize: number
     silverGroupSize: number
     bronzeGroupSize: number
+    icon: IconType
 }
 
 export function GroupBoxOAuthContent({
     goldGroupSize,
     silverGroupSize,
-    bronzeGroupSize
+    bronzeGroupSize,
+    icon
 }: GroupBoxOAuthContentProps): JSX.Element {
     return (
-        <Box bg="background.600" borderRadius="4">
-            <Text py="2" px="4">
-                Group members
-            </Text>
-            <List py="3" px="4" bg="background.700" spacing="2" borderBottomRadius="4">
-                <ListItem>
-                    <HStack justify="space-between">
-                        <Box>
-                            <ListIcon as={MdLens} color="gold.400" />
-                            Gold
-                        </Box>
-                        <Text>{goldGroupSize}</Text>
-                    </HStack>
-                </ListItem>
-                <Divider />
-                <ListItem>
-                    <HStack justify="space-between">
-                        <Box>
-                            <ListIcon as={MdLens} color="silver" />
-                            Silver
-                        </Box>
-                        <Text>{silverGroupSize}</Text>
-                    </HStack>
-                </ListItem>
-                <Divider />
-                <ListItem>
-                    <HStack justify="space-between">
-                        <Box>
-                            <ListIcon as={MdLens} color="bronze.400" />
-                            Bronze
-                        </Box>
-                        <Text>{bronzeGroupSize}</Text>
-                    </HStack>
-                </ListItem>
-            </List>
+        <Box>
+            <Table bg="background.700" variant="unstyled" size="md" borderRadius="4">
+                <Thead>
+                    <Tr>
+                        <Th bg="background.600" borderTopLeftRadius="4px">
+                            Groups
+                        </Th>
+                        <Th bg="background.600" borderTopRightRadius="4px">
+                            Members
+                        </Th>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    <Tr>
+                        <Td py="3">
+                            <HStack>
+                                <ListIcon as={icon} color="gold.400" />
+                                <Text>Gold</Text>
+                            </HStack>
+                        </Td>
+                        <Td py="3">{goldGroupSize}</Td>
+                    </Tr>
+                    <Tr borderTopWidth="1px">
+                        <Td py="3">
+                            <HStack>
+                                <ListIcon as={icon} color="silver" />
+                                <Text>Silver</Text>
+                            </HStack>
+                        </Td>
+                        <Td py="3">{silverGroupSize}</Td>
+                    </Tr>
+                    <Tr borderTopWidth="1px">
+                        <Td py="3">
+                            <HStack>
+                                <ListIcon as={icon} color="bronze.400" />
+                                <Text>Bronze</Text>
+                            </HStack>
+                        </Td>
+                        <Td py="3">{bronzeGroupSize}</Td>
+                    </Tr>
+                </Tbody>
+            </Table>
         </Box>
     )
 }

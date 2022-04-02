@@ -1,9 +1,10 @@
-import { Box, Button, Heading, HStack } from "@chakra-ui/react"
+import { Box, Button, Heading, HStack, Icon } from "@chakra-ui/react"
 import React from "react"
+import { IconType } from "react-icons"
 
 export type GroupBoxProps = {
     title: string
-    icon?: any
+    icon?: IconType
     content: any
     actionText: string
     actionFunction: (par?: any) => void
@@ -21,7 +22,7 @@ export function GroupBox({
     return (
         <Box bg="background.800" p="5" borderRadius="4px">
             <HStack pb="5" spacing="4">
-                {icon}
+                {icon && <Icon as={icon} />}
                 <Heading as="h4" size="md">
                     {title}
                 </Heading>

@@ -29,19 +29,19 @@ const oAuthProviders: Record<OAuthProvider, any> = {
     twitter: {
         provider: OAuthProvider.TWITTER,
         title: "Twitter",
-        icon: <FaTwitter />,
+        icon: FaTwitter,
         groupSizes: {}
     },
     github: {
         provider: OAuthProvider.GITHUB,
         title: "Github",
-        icon: <FaGithub />,
+        icon: FaGithub,
         groupSizes: {}
     },
     reddit: {
         provider: OAuthProvider.REDDIT,
         title: "Reddit",
-        icon: <FaRedditAlien />,
+        icon: FaRedditAlien,
         groupSizes: {}
     }
 }
@@ -162,6 +162,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                                 icon={p.icon}
                                 content={
                                     <GroupBoxOAuthContent
+                                        icon={p.icon}
                                         goldGroupSize={p.groupSizes.gold}
                                         silverGroupSize={p.groupSizes.silver}
                                         bronzeGroupSize={p.groupSizes.bronze}
