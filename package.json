@@ -31,7 +31,7 @@
         ".next/cache/"
     ],
     "dependencies": {
-        "@chakra-ui/react": "^1.6.8",
+        "@chakra-ui/react": "^1.8.6",
         "@emotion/react": "^11",
         "@emotion/styled": "^11",
         "@fontsource/inter": "^4.5.5",
@@ -46,6 +46,7 @@
         "@types/nodemailer": "^6.4.4",
         "@zk-kit/incremental-merkle-tree": "^0.4.2",
         "botometer": "^1.0.12",
+        "chakra-ui-steps": "^1.7.2",
         "circomlibjs": "^0.0.8",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
