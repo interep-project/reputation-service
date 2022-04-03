@@ -17,6 +17,7 @@ import {
     VStack
 } from "@chakra-ui/react"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
+import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { signIn as _signIn, signOut, useSession } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
@@ -52,6 +53,9 @@ const oAuthProviders: Record<OAuthProvider, any> = {
 export default function OAuthProvidersPage(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [session] = useSession()
+    const { activeStep, setStep } = useSteps({
+        initialStep: 0
+    })
     const { _account, _identityCommitment } = useContext(EthereumWalletContext)
     const [_hasJoined, setHasJoined] = useState<boolean>()
     const [_oAuthProvider, setOAuthProvider] = useState<string>("")
@@ -76,6 +80,20 @@ export default function OAuthProvidersPage(): JSX.Element {
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!_account) {
+            setStep(0)
+        } else if (!session) {
+            setStep(1)
+        } else if (!_identityCommitment) {
+            setStep(2)
+        } else if (!_hasJoined) {
+            setStep(3)
+        } else {
+            setStep(4)
+        }
+    }, [_account, session, _identityCommitment, _hasJoined, setStep])
 
     useEffect(() => {
         ;(async () => {
@@ -179,7 +197,12 @@ export default function OAuthProvidersPage(): JSX.Element {
                 <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
             </HStack>
 
-            <Divider />
+            <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
+                <Step label="Connect wallet" />
+                <Step label="Authorize provider" />
+                <Step label="Generate Semaphore ID" />
+                <Step label="Join social network group" />
+            </Steps>
 
             <HStack justify="space-between" my="6">
                 <InputGroup maxWidth="250px">

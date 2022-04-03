@@ -1,7 +1,6 @@
 import {
     Box,
     Container,
-    Divider,
     Heading,
     HStack,
     Input,
@@ -13,6 +12,7 @@ import {
     Text,
     VStack
 } from "@chakra-ui/react"
+import { Step, Steps, useSteps } from "chakra-ui-steps"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { GoSearch } from "react-icons/go"
 import { GroupBox, GroupBoxPoapContent } from "src/components/group-box"
@@ -23,13 +23,26 @@ import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
 export default function PoapProviderPage(): JSX.Element {
-    const { _account } = useContext(EthereumWalletContext)
+    const { _account, _identityCommitment } = useContext(EthereumWalletContext)
+    const { activeStep, setStep } = useSteps({
+        initialStep: 0
+    })
     const { getPoapEvents } = usePoapEvents()
     const [_poapGroups, setPoapGroups] = useState<Group[]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
 
     const { getGroups } = useGroups()
+
+    useEffect(() => {
+        if (!_account) {
+            setStep(0)
+        } else if (!_identityCommitment) {
+            setStep(1)
+        } else {
+            setStep(2)
+        }
+    }, [_account, _identityCommitment, setStep])
 
     useEffect(() => {
         ;(async () => {
@@ -86,7 +99,11 @@ export default function PoapProviderPage(): JSX.Element {
                 <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
             </HStack>
 
-            <Divider />
+            <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
+                <Step label="Connect wallet" />
+                <Step label="Generate Semaphore ID" />
+                <Step label="Join POAP groups" />
+            </Steps>
 
             <HStack justify="space-between" my="6">
                 <InputGroup maxWidth="250px">

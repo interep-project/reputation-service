@@ -1,4 +1,4 @@
-import { Box, HStack, ListIcon, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { Box, HStack, Icon, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import React from "react"
 import { IconType } from "react-icons"
 
@@ -32,7 +32,7 @@ export function GroupBoxOAuthContent({
                     <Tr>
                         <Td py="3">
                             <HStack>
-                                <ListIcon as={icon} color="gold.400" />
+                                <Icon as={icon} color="gold.400" />
                                 <Text>Gold</Text>
                             </HStack>
                         </Td>
@@ -41,7 +41,7 @@ export function GroupBoxOAuthContent({
                     <Tr borderTopWidth="1px">
                         <Td py="3">
                             <HStack>
-                                <ListIcon as={icon} color="silver" />
+                                <Icon as={icon} color="silver" />
                                 <Text>Silver</Text>
                             </HStack>
                         </Td>
@@ -50,7 +50,7 @@ export function GroupBoxOAuthContent({
                     <Tr borderTopWidth="1px">
                         <Td py="3">
                             <HStack>
-                                <ListIcon as={icon} color="bronze.400" />
+                                <Icon as={icon} color="bronze.400" />
                                 <Text>Bronze</Text>
                             </HStack>
                         </Td>
