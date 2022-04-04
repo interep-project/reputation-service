@@ -50,7 +50,7 @@ export default function NavBar(): JSX.Element {
     }, [router, session])
 
     return (
-        <Container zIndex="1" position="fixed" pt="30px" pb="20px" px="80px" maxW="container.xl">
+        <Container zIndex="1" background="#121212" position="fixed" pt="30px" pb="20px" px="80px" maxW="container.xl">
             <HStack justify="space-between">
                 <Image src="./logo.svg" alt="Interep logo" h={10} />
 
@@ -90,7 +90,7 @@ export default function NavBar(): JSX.Element {
                                                 : undefined
                                         }
                                         onMouseDown={(e) => e.preventDefault()}
-                                        disabled={router.route === "/" && !session}
+                                        disabled={!_provider}
                                     />
                                 </Tooltip>
 
