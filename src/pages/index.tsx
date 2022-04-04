@@ -5,6 +5,7 @@ import {
     Divider,
     Heading,
     HStack,
+    Icon,
     IconButton,
     Input,
     InputGroup,
@@ -12,11 +13,23 @@ import {
     Select,
     SimpleGrid,
     Skeleton,
+    Table,
+    Tbody,
+    Td,
     Text,
+    Th,
+    Thead,
+    Tr,
     useDisclosure,
     VStack
 } from "@chakra-ui/react"
-import { OAuthProvider, ReputationLevel } from "@interep/reputation"
+import {
+    getReputationCriteria,
+    OAuthProvider,
+    ReputationCriteria,
+    ReputationLevel,
+    ReputationRule
+} from "@interep/reputation"
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { signIn as _signIn, signOut, useSession } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
@@ -27,7 +40,7 @@ import { AlertDialog } from "src/components/alert-dialog"
 import { GroupBox, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
-import { capitalize } from "src/utils/common"
+import { capitalize, formatNumber } from "src/utils/common"
 
 const oAuthProviders: Record<OAuthProvider, any> = {
     twitter: {
@@ -62,7 +75,8 @@ export default function OAuthProvidersPage(): JSX.Element {
     const [_oAuthProviders, setOAuthProviders] = useState<any[]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
-    const { hasIdentityCommitment, joinGroup, getGroups, _loading } = useGroups()
+    const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
+    const { hasIdentityCommitment, joinGroup, getGroups } = useGroups()
 
     useEffect(() => {
         ;(async () => {
@@ -109,6 +123,10 @@ export default function OAuthProvidersPage(): JSX.Element {
                 }
 
                 setHasJoined(hasJoined)
+
+                const reputationCriteria = getReputationCriteria(session.provider)
+
+                setReputationCriteria(reputationCriteria)
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,6 +165,28 @@ export default function OAuthProvidersPage(): JSX.Element {
     function selectOAuthProvider(oAuthProvider: OAuthProvider) {
         setOAuthProvider(oAuthProvider)
         onOpen()
+    }
+
+    function mapReputationRule(rule: ReputationRule): string {
+        if (rule.value !== null && typeof rule.value === "object") {
+            if (rule.value["<"] !== undefined) {
+                return `< ${formatNumber(rule.value["<"])}`
+            }
+
+            if (rule.value[">"] !== undefined) {
+                return `> ${formatNumber(rule.value[">"])}`
+            }
+        }
+
+        if (typeof rule.value === "number") {
+            return formatNumber(rule.value)
+        }
+
+        if (typeof rule.value === "boolean") {
+            return rule.value ? "Yes" : "No"
+        }
+
+        return ""
     }
 
     const join = useCallback(async () => {
@@ -204,71 +244,167 @@ export default function OAuthProvidersPage(): JSX.Element {
                 <Step label="Join social network group" />
             </Steps>
 
-            <HStack justify="space-between" my="6">
-                <InputGroup maxWidth="250px">
-                    <InputLeftElement pointerEvents="none">
-                        <GoSearch color="gray" />
-                    </InputLeftElement>
-                    <Input
-                        colorScheme="primary"
-                        placeholder="Search"
-                        value={_searchValue}
-                        onChange={(event) => setSearchValue(event.target.value)}
-                    />
-                </InputGroup>
-
-                <Select
-                    value={_sortingValue}
-                    onChange={(event) => setSortingValue(event.target.value)}
-                    maxWidth="250px"
-                >
-                    <option value="1">Most members</option>
-                    <option value="2">A-Z</option>
-                    <option value="3">Z-A</option>
-                </Select>
-            </HStack>
-
-            {_oAuthProviders ? (
-                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                    {_oAuthProviders
-                        .sort(sortCb)
-                        .filter(filterCb)
-                        .map((p, i) => (
-                            <GroupBox
-                                key={i.toString()}
-                                title={p.title}
-                                icon={p.icon}
-                                content={
-                                    <GroupBoxOAuthContent
-                                        icon={p.icon}
-                                        goldGroupSize={p.groupSizes.gold}
-                                        silverGroupSize={p.groupSizes.silver}
-                                        bronzeGroupSize={p.groupSizes.bronze}
-                                    />
-                                }
-                                actionText={session && session.provider === p.provider ? "Join" : "Authorize"}
-                                actionFunction={() => (session ? join() : selectOAuthProvider(p.provider))}
-                                disabled={
-                                    !_account ||
-                                    (!!session &&
-                                        (!_identityCommitment || _hasJoined || session.provider !== p.provider))
-                                }
-                                loading={!!session && session.provider === p.provider && _loading}
+            {session ? (
+                <HStack spacing="4" align="start" my="6">
+                    <Box bg="background.800" p="5" borderRadius="4px" maxWidth="250px">
+                        <HStack pb="5" spacing="4">
+                            <Icon
+                                as={oAuthProviders[session.provider].icon}
+                                color={session.user.reputation as string}
                             />
-                        ))}
-                </SimpleGrid>
+                            <Heading as="h4" size="md">
+                                {oAuthProviders[session.provider].title} {capitalize(session.user.reputation as string)}
+                            </Heading>
+                        </HStack>
+
+                        {_hasJoined && <Text mb="5">You have already joined this group.</Text>}
+
+                        <Button
+                            onClick={() => join()}
+                            colorScheme="background"
+                            size="sm"
+                            disabled={!_identityCommitment || _hasJoined}
+                            isFullWidth
+                        >
+                            Join
+                        </Button>
+                    </Box>
+
+                    <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
+                        <Heading as="h4" size="md" pl="6" py="2">
+                            Groups
+                        </Heading>
+                        <Divider />
+                        <Table variant="unstyled">
+                            <Thead>
+                                <Tr>
+                                    <Th>Name</Th>
+                                    <Th isNumeric>Members</Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                <Tr>
+                                    <Td>
+                                        <HStack>
+                                            <Icon as={oAuthProviders[session.provider].icon} color="gold" />
+                                            <Text>Gold</Text>
+                                        </HStack>
+                                    </Td>
+                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.gold}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>
+                                        <HStack>
+                                            <Icon as={oAuthProviders[session.provider].icon} color="silver" />
+                                            <Text>Silver</Text>
+                                        </HStack>
+                                    </Td>
+                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.silver}</Td>
+                                </Tr>
+                                <Tr>
+                                    <Td>
+                                        <HStack>
+                                            <Icon as={oAuthProviders[session.provider].icon} color="bronze" />
+                                            <Text>Bronze</Text>
+                                        </HStack>
+                                    </Td>
+                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.bronze}</Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </VStack>
+
+                    <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
+                        <Heading as="h4" size="md" pl="6" py="2">
+                            Qualifications
+                        </Heading>
+                        <Divider />
+                        {_reputationCriteria && (
+                            <Table variant="unstyled">
+                                <Thead>
+                                    <Tr>
+                                        {_reputationCriteria.parameters.map((parameter, i) => (
+                                            <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
+                                        ))}
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {_reputationCriteria.reputationLevels.map((reputation) => (
+                                        <Tr key={reputation.name}>
+                                            {reputation.rules.map((rule, i) => (
+                                                <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
+                                            ))}
+                                        </Tr>
+                                    ))}
+                                </Tbody>
+                            </Table>
+                        )}
+                    </VStack>
+                </HStack>
             ) : (
-                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                    {Object.values(oAuthProviders).map((_p, i) => (
-                        <Skeleton
-                            key={i.toString()}
-                            startColor="background.800"
-                            endColor="background.700"
-                            borderRadius="4px"
-                            height="318px"
-                        />
-                    ))}
-                </SimpleGrid>
+                <>
+                    <HStack justify="space-between" my="6">
+                        <InputGroup maxWidth="250px">
+                            <InputLeftElement pointerEvents="none">
+                                <GoSearch color="gray" />
+                            </InputLeftElement>
+                            <Input
+                                colorScheme="primary"
+                                placeholder="Search"
+                                value={_searchValue}
+                                onChange={(event) => setSearchValue(event.target.value)}
+                            />
+                        </InputGroup>
+
+                        <Select
+                            value={_sortingValue}
+                            onChange={(event) => setSortingValue(event.target.value)}
+                            maxWidth="250px"
+                        >
+                            <option value="1">Most members</option>
+                            <option value="2">A-Z</option>
+                            <option value="3">Z-A</option>
+                        </Select>
+                    </HStack>
+
+                    {_oAuthProviders ? (
+                        <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                            {_oAuthProviders
+                                .sort(sortCb)
+                                .filter(filterCb)
+                                .map((p, i) => (
+                                    <GroupBox
+                                        key={i.toString()}
+                                        title={p.title}
+                                        icon={p.icon}
+                                        content={
+                                            <GroupBoxOAuthContent
+                                                icon={p.icon}
+                                                goldGroupSize={p.groupSizes.gold}
+                                                silverGroupSize={p.groupSizes.silver}
+                                                bronzeGroupSize={p.groupSizes.bronze}
+                                            />
+                                        }
+                                        actionText="Authorize"
+                                        actionFunction={() => selectOAuthProvider(p.provider)}
+                                        disabled={!_account}
+                                    />
+                                ))}
+                        </SimpleGrid>
+                    ) : (
+                        <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                            {Object.values(oAuthProviders).map((_p, i) => (
+                                <Skeleton
+                                    key={i.toString()}
+                                    startColor="background.800"
+                                    endColor="background.700"
+                                    borderRadius="4px"
+                                    height="318px"
+                                />
+                            ))}
+                        </SimpleGrid>
+                    )}
+                </>
             )}
 
             <AlertDialog
