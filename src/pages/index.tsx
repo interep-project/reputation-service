@@ -7,15 +7,27 @@ import {
     Input,
     InputGroup,
     InputLeftElement,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
     Select,
     SimpleGrid,
     Skeleton,
     Spinner,
+    Table,
+    Tbody,
+    Td,
     Text,
+    Th,
+    Thead,
+    Tr,
     useDisclosure,
     VStack
 } from "@chakra-ui/react"
-import { OAuthProvider } from "@interep/reputation"
+import { getReputationCriteria, OAuthProvider, ReputationCriteria } from "@interep/reputation"
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { GetServerSideProps } from "next"
 import { signIn as _signIn } from "next-auth/client"
@@ -29,7 +41,7 @@ import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
 import { capitalize } from "src/utils/common"
-import { groupBy } from "src/utils/frontend"
+import { groupBy, mapReputationRule } from "src/utils/frontend"
 
 const oAuthIcons: Record<string, IconType> = {
     twitter: FaTwitter,
@@ -38,12 +50,14 @@ const oAuthIcons: Record<string, IconType> = {
 }
 
 export default function OAuthProvidersPage(): JSX.Element {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure()
+    const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure()
     const { activeStep, setStep } = useSteps({
         initialStep: 0
     })
     const { _account } = useContext(EthereumWalletContext)
     const [_oAuthProvider, setOAuthProvider] = useState<string>()
+    const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
     const [_oAuthProviders, setOAuthProviders] = useState<[string, Group[]][]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
@@ -98,17 +112,26 @@ export default function OAuthProvidersPage(): JSX.Element {
         [_searchValue]
     )
 
-    function selectOAuthProvider(oAuthProvider: string) {
+    function openModal(oAuthProvider: OAuthProvider) {
+        const reputationCriteria = getReputationCriteria(oAuthProvider)
+
+        setReputationCriteria(reputationCriteria)
+
+        onModalOpen()
+    }
+
+    function openAlert(oAuthProvider: OAuthProvider) {
         setOAuthProvider(oAuthProvider)
-        onOpen()
+
+        onAlertOpen()
     }
 
     const signIn = useCallback(() => {
         if (_oAuthProvider) {
             _signIn(_oAuthProvider)
-            onClose()
+            onAlertClose()
         }
-    }, [_oAuthProvider, onClose])
+    }, [_oAuthProvider, onAlertClose])
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
@@ -170,9 +193,16 @@ export default function OAuthProvidersPage(): JSX.Element {
                                 .filter(filterCb)
                                 .map((p, i) => (
                                     <GroupBox key={i.toString()}>
-                                        <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
+                                        <GroupBoxHeader
+                                            title={capitalize(p[0])}
+                                            icon={oAuthIcons[p[0]]}
+                                            onInfoClick={() => openModal(p[0] as OAuthProvider)}
+                                        />
                                         <GroupBoxOAuthContent icon={oAuthIcons[p[0]]} groups={p[1]} />
-                                        <GroupBoxButton onClick={() => selectOAuthProvider(p[0])} disabled={!_account}>
+                                        <GroupBoxButton
+                                            onClick={() => openAlert(p[0] as OAuthProvider)}
+                                            disabled={!_account}
+                                        >
                                             Authorize
                                         </GroupBoxButton>
                                     </GroupBox>
@@ -198,14 +228,49 @@ export default function OAuthProvidersPage(): JSX.Element {
                             message={`Interep wants to connect with the last ${capitalize(
                                 _oAuthProvider
                             )} account you logged into. Approving this message will open a new window.`}
-                            isOpen={isOpen}
-                            onClose={onClose}
+                            isOpen={isAlertOpen}
+                            onClose={onAlertClose}
                             actions={
                                 <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
                                     Approve
                                 </Button>
                             }
                         />
+                    )}
+
+                    {_reputationCriteria && (
+                        <Modal isOpen={isModalOpen} onClose={onModalClose} size="3xl" isCentered>
+                            <ModalOverlay />
+
+                            <ModalContent>
+                                <ModalHeader>{capitalize(_reputationCriteria.provider)} qualifications</ModalHeader>
+                                <ModalCloseButton />
+                                <ModalBody pb="6">
+                                    <Table variant="simple" colorScheme="background">
+                                        <Thead>
+                                            <Tr>
+                                                <Th>Group</Th>
+                                                {_reputationCriteria.parameters.map((parameter, i) => (
+                                                    <Th key={i.toString()}>
+                                                        {parameter.name.replace(/([A-Z])/g, " $1")}
+                                                    </Th>
+                                                ))}
+                                            </Tr>
+                                        </Thead>
+                                        <Tbody>
+                                            {_reputationCriteria.reputationLevels.map((reputation, i) => (
+                                                <Tr key={i.toString()}>
+                                                    <Td fontWeight="bold">{capitalize(reputation.name)}</Td>
+                                                    {reputation.rules.map((rule, i) => (
+                                                        <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
+                                                    ))}
+                                                </Tr>
+                                            ))}
+                                        </Tbody>
+                                    </Table>
+                                </ModalBody>
+                            </ModalContent>
+                        </Modal>
                     )}
                 </>
             )}

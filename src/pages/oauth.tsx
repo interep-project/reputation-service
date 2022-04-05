@@ -15,7 +15,7 @@ import {
     Tr,
     VStack
 } from "@chakra-ui/react"
-import { getReputationCriteria, ReputationCriteria, ReputationLevel, ReputationRule } from "@interep/reputation"
+import { getReputationCriteria, ReputationCriteria, ReputationLevel } from "@interep/reputation"
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { GetServerSideProps } from "next"
 import { signOut, useSession } from "next-auth/client"
@@ -28,7 +28,8 @@ import { GroupBox, GroupBoxButton, GroupBoxContent, GroupBoxHeader } from "src/c
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
-import { capitalize, formatNumber } from "src/utils/common"
+import { capitalize } from "src/utils/common"
+import { mapReputationRule } from "src/utils/frontend"
 
 const oAuthIcons: Record<string, IconType> = {
     twitter: FaTwitter,
@@ -90,28 +91,6 @@ export default function OAuthGroupPage(): JSX.Element {
             setStep(4)
         }
     }, [_account, session, _identityCommitment, _hasJoined, setStep])
-
-    function mapReputationRule(rule: ReputationRule): string {
-        if (rule.value !== null && typeof rule.value === "object") {
-            if (rule.value["<"] !== undefined) {
-                return `< ${formatNumber(rule.value["<"])}`
-            }
-
-            if (rule.value[">"] !== undefined) {
-                return `> ${formatNumber(rule.value[">"])}`
-            }
-        }
-
-        if (typeof rule.value === "number") {
-            return formatNumber(rule.value)
-        }
-
-        if (typeof rule.value === "boolean") {
-            return rule.value ? "Yes" : "No"
-        }
-
-        return ""
-    }
 
     const join = useCallback(async () => {
         if (session && _identityCommitment && _group) {
