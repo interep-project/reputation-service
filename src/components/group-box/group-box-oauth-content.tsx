@@ -24,16 +24,16 @@ export function GroupBoxOAuthContent({ groups, icon }: GroupBoxOAuthContentProps
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {groups.map((group) => (
-                        <Tr>
+                    {groups.map((g, i) => (
+                        <Tr key={i.toString()}>
                             <Td py="3">
                                 <HStack>
-                                    <Icon as={icon} color={group.name} />
-                                    <Text>{capitalize(group.name)}</Text>
+                                    <Icon as={icon} color={g.name} />
+                                    <Text>{capitalize(g.name)}</Text>
                                 </HStack>
                             </Td>
                             <Td py="3">
-                                {group.size} / ~{formatNumber(2 ** group.depth)}
+                                {g.size} / ~{formatNumber(2 ** g.depth)}
                             </Td>
                         </Tr>
                     ))}

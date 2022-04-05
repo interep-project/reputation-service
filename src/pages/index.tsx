@@ -2,47 +2,33 @@ import {
     Box,
     Button,
     Container,
-    Divider,
     Heading,
     HStack,
-    Icon,
-    IconButton,
     Input,
     InputGroup,
     InputLeftElement,
     Select,
     SimpleGrid,
     Skeleton,
-    Table,
-    Tbody,
-    Td,
+    Spinner,
     Text,
-    Th,
-    Thead,
-    Tr,
     useDisclosure,
     VStack
 } from "@chakra-ui/react"
-import {
-    getReputationCriteria,
-    OAuthProvider,
-    ReputationCriteria,
-    ReputationLevel,
-    ReputationRule
-} from "@interep/reputation"
+import { OAuthProvider } from "@interep/reputation"
 import { Step, Steps, useSteps } from "chakra-ui-steps"
-import { signIn as _signIn, signOut, useSession } from "next-auth/client"
+import { GetServerSideProps } from "next"
+import { signIn as _signIn } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { GoSearch } from "react-icons/go"
-import { MdArrowBack } from "react-icons/md"
 import { AlertDialog } from "src/components/alert-dialog"
-import { GroupBox, GroupBoxButton, GroupBoxOAuthContent, GroupBoxHeader } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
-import { capitalize, formatNumber } from "src/utils/common"
+import { capitalize } from "src/utils/common"
 import { groupBy } from "src/utils/frontend"
 
 const oAuthIcons: Record<string, IconType> = {
@@ -53,74 +39,34 @@ const oAuthIcons: Record<string, IconType> = {
 
 export default function OAuthProvidersPage(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [session] = useSession()
     const { activeStep, setStep } = useSteps({
         initialStep: 0
     })
-    const { _account, _identityCommitment } = useContext(EthereumWalletContext)
-    const [_hasJoined, setHasJoined] = useState<boolean>()
-    const [_oAuthProvider, setOAuthProvider] = useState<[string, Group[]]>()
+    const { _account } = useContext(EthereumWalletContext)
+    const [_oAuthProvider, setOAuthProvider] = useState<string>()
     const [_oAuthProviders, setOAuthProviders] = useState<[string, Group[]][]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
-    const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
-    const { hasIdentityCommitment, joinGroup, getGroups } = useGroups()
+    const { getGroups } = useGroups()
 
     useEffect(() => {
         ;(async () => {
-            if (!session && !_oAuthProviders) {
-                const groups = await getGroups()
+            const groups = await getGroups()
 
-                if (groups) {
-                    setOAuthProviders(groupBy(groups, "provider", Object.values(OAuthProvider)))
-                }
+            if (groups) {
+                setOAuthProviders(groupBy(groups, "provider", Object.values(OAuthProvider)))
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session, _oAuthProviders])
+    }, [])
 
     useEffect(() => {
         if (!_account) {
             setStep(0)
-        } else if (!session) {
-            setStep(1)
-        } else if (!_identityCommitment) {
-            setStep(2)
-        } else if (!_hasJoined) {
-            setStep(3)
         } else {
-            setStep(4)
+            setStep(1)
         }
-    }, [_account, session, _identityCommitment, _hasJoined, setStep])
-
-    useEffect(() => {
-        ;(async () => {
-            if (session && _identityCommitment) {
-                const hasJoined = await hasIdentityCommitment(
-                    _identityCommitment,
-                    session.provider,
-                    session.user.reputation as ReputationLevel
-                )
-
-                if (hasJoined === null) {
-                    return
-                }
-
-                setHasJoined(hasJoined)
-
-                const reputationCriteria = getReputationCriteria(session.provider)
-
-                setReputationCriteria(reputationCriteria)
-
-                const groups = await getGroups()
-
-                if (groups) {
-                    setOAuthProvider(groupBy(groups, "provider", [session.provider])[0])
-                }
-            }
-        })()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [session, _identityCommitment])
+    }, [_account, setStep])
 
     function getTotalGroupSizes(provider: any): number {
         const groups: Group[] = provider[1]
@@ -152,70 +98,21 @@ export default function OAuthProvidersPage(): JSX.Element {
         [_searchValue]
     )
 
-    function selectOAuthProvider(oAuthProvider: [string, Group[]]) {
+    function selectOAuthProvider(oAuthProvider: string) {
         setOAuthProvider(oAuthProvider)
         onOpen()
     }
 
-    function mapReputationRule(rule: ReputationRule): string {
-        if (rule.value !== null && typeof rule.value === "object") {
-            if (rule.value["<"] !== undefined) {
-                return `< ${formatNumber(rule.value["<"])}`
-            }
-
-            if (rule.value[">"] !== undefined) {
-                return `> ${formatNumber(rule.value[">"])}`
-            }
-        }
-
-        if (typeof rule.value === "number") {
-            return formatNumber(rule.value)
-        }
-
-        if (typeof rule.value === "boolean") {
-            return rule.value ? "Yes" : "No"
-        }
-
-        return ""
-    }
-
-    const join = useCallback(async () => {
-        if (session && _identityCommitment) {
-            if (
-                await joinGroup(_identityCommitment, session.provider, session.user.reputation as ReputationLevel, {
-                    accountId: session.accountId
-                })
-            ) {
-                setHasJoined(true)
-            }
-        }
-    }, [session, _identityCommitment, joinGroup])
-
     const signIn = useCallback(() => {
         if (_oAuthProvider) {
-            _signIn(_oAuthProvider[0])
+            _signIn(_oAuthProvider)
             onClose()
         }
     }, [_oAuthProvider, onClose])
 
-    function back() {
-        signOut({ redirect: false })
-    }
-
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            {session && (
-                <>
-                    <HStack spacing="0" mb="4">
-                        <IconButton onClick={() => back()} aria-label="Back" variant="link" icon={<MdArrowBack />} />
-                        <Text fontWeight="bold">Back</Text>
-                    </HStack>
-
-                    <Divider />
-                </>
-            )}
-
-            <HStack mb="6" mt={session ? 6 : 0} spacing="6">
+            <HStack mb="6" spacing="6">
                 <VStack align="left">
                     <Heading as="h3" size="lg" mb="2">
                         Authenticate anonymously on-chain using off-chain reputation
@@ -236,86 +133,10 @@ export default function OAuthProvidersPage(): JSX.Element {
                 <Step label="Join social network group" />
             </Steps>
 
-            {session ? (
-                <HStack spacing="4" align="start" my="6">
-                    <Box bg="background.800" p="5" borderRadius="4px" maxWidth="250px">
-                        <HStack pb="5" spacing="4">
-                            <Icon as={oAuthIcons[session.provider]} color={session.user.reputation as string} />
-                            <Heading as="h4" size="md">
-                                {capitalize(session.provider)} {capitalize(session.user.reputation as string)}
-                            </Heading>
-                        </HStack>
-
-                        {_hasJoined && <Text mb="5">You have already joined this group.</Text>}
-
-                        <Button
-                            onClick={() => join()}
-                            colorScheme="background"
-                            size="sm"
-                            disabled={!_identityCommitment || _hasJoined}
-                            isFullWidth
-                        >
-                            Join
-                        </Button>
-                    </Box>
-
-                    {_oAuthProvider && (
-                        <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
-                            <Heading as="h4" size="md" pl="6" py="2">
-                                Groups
-                            </Heading>
-                            <Divider />
-                            <Table variant="unstyled">
-                                <Thead>
-                                    <Tr>
-                                        <Th>Name</Th>
-                                        <Th isNumeric>Members</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {_oAuthProvider[1].map((group) => (
-                                        <Tr>
-                                            <Td>
-                                                <HStack>
-                                                    <Icon as={oAuthIcons[session.provider]} color={group.name} />
-                                                    <Text>{capitalize(group.name)}</Text>
-                                                </HStack>
-                                            </Td>
-                                            <Td isNumeric>{group.size}</Td>
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        </VStack>
-                    )}
-
-                    <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
-                        <Heading as="h4" size="md" pl="6" py="2">
-                            Qualifications
-                        </Heading>
-                        <Divider />
-                        {_reputationCriteria && (
-                            <Table variant="unstyled">
-                                <Thead>
-                                    <Tr>
-                                        {_reputationCriteria.parameters.map((parameter, i) => (
-                                            <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
-                                        ))}
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {_reputationCriteria.reputationLevels.map((reputation) => (
-                                        <Tr key={reputation.name}>
-                                            {reputation.rules.map((rule, i) => (
-                                                <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
-                                            ))}
-                                        </Tr>
-                                    ))}
-                                </Tbody>
-                            </Table>
-                        )}
-                    </VStack>
-                </HStack>
+            {!_oAuthProviders ? (
+                <VStack h="300px" align="center" justify="center">
+                    <Spinner thickness="4px" speed="0.65s" size="xl" />
+                </VStack>
             ) : (
                 <>
                     <HStack justify="space-between" my="6">
@@ -351,7 +172,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                                     <GroupBox key={i.toString()}>
                                         <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
                                         <GroupBoxOAuthContent icon={oAuthIcons[p[0]]} groups={p[1]} />
-                                        <GroupBoxButton onClick={() => selectOAuthProvider(p)} disabled={!_account}>
+                                        <GroupBoxButton onClick={() => selectOAuthProvider(p[0])} disabled={!_account}>
                                             Authorize
                                         </GroupBoxButton>
                                     </GroupBox>
@@ -370,24 +191,41 @@ export default function OAuthProvidersPage(): JSX.Element {
                             ))}
                         </SimpleGrid>
                     )}
-                </>
-            )}
 
-            {_oAuthProvider && (
-                <AlertDialog
-                    title="Authorize Interep to connect?"
-                    message={`Interep wants to connect with the last ${capitalize(
-                        _oAuthProvider[0]
-                    )} account you logged into. Approving this message will open a new window.`}
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    actions={
-                        <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
-                            Approve
-                        </Button>
-                    }
-                />
+                    {_oAuthProvider && (
+                        <AlertDialog
+                            title="Authorize Interep to connect?"
+                            message={`Interep wants to connect with the last ${capitalize(
+                                _oAuthProvider
+                            )} account you logged into. Approving this message will open a new window.`}
+                            isOpen={isOpen}
+                            onClose={onClose}
+                            actions={
+                                <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
+                                    Approve
+                                </Button>
+                            }
+                        />
+                    )}
+                </>
             )}
         </Container>
     )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+    const authorized = !!req.cookies["__Secure-next-auth.session-token"] || !!req.cookies["next-auth.session-token"]
+
+    if (!authorized) {
+        return {
+            props: {}
+        }
+    }
+
+    return {
+        redirect: {
+            destination: "/oauth",
+            permanent: false
+        }
+    }
 }

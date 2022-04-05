@@ -1,5 +1,5 @@
 export * from "./group-box"
 export * from "./group-box-header"
 export * from "./group-box-button"
+export * from "./group-box-content"
 export * from "./group-box-oauth-content"
-export * from "./group-box-poap-content"

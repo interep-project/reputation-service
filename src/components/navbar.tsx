@@ -37,7 +37,7 @@ export default function NavBar(): JSX.Element {
             case "/poap":
                 setProvider("poap")
                 break
-            case "/":
+            case "/oauth":
                 if (session) {
                     setProvider(session.provider)
                 } else {

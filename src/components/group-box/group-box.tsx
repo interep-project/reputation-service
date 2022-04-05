@@ -7,7 +7,7 @@ export type GroupBoxProps = {
 
 export function GroupBox({ children }: GroupBoxProps): JSX.Element {
     return (
-        <Box bg="background.800" p="5" borderRadius="4px">
+        <Box bg="background.800" p="5" borderRadius="4px" minWidth="250px">
             {children}
         </Box>
     )
