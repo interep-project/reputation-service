@@ -15,7 +15,7 @@ import {
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { GoSearch } from "react-icons/go"
-import { GroupBox, GroupBoxPoapContent } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxPoapContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import usePoapEvents from "src/hooks/usePoapEvents"
@@ -136,14 +136,13 @@ export default function PoapProviderPage(): JSX.Element {
                             .sort(sortCb)
                             .filter(filterCb)
                             .map((group, i) => (
-                                <GroupBox
-                                    key={i.toString()}
-                                    title={capitalize(group.name)}
-                                    content={<GroupBoxPoapContent groupSize={group.size} />}
-                                    actionText="Join"
-                                    actionFunction={() => console.log("Join")}
-                                    disabled={!_account}
-                                />
+                                <GroupBox key={i.toString()}>
+                                    <GroupBoxHeader title={capitalize(group.name)} />
+                                    <GroupBoxPoapContent groupSize={group.size} />
+                                    <GroupBoxButton onClick={() => console.log("Join")} disabled={!_account}>
+                                        Join
+                                    </GroupBoxButton>
+                                </GroupBox>
                             ))}
                     </SimpleGrid>
                 ) : (

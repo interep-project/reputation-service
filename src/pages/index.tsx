@@ -33,34 +33,22 @@ import {
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { signIn as _signIn, signOut, useSession } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
+import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { GoSearch } from "react-icons/go"
 import { MdArrowBack } from "react-icons/md"
 import { AlertDialog } from "src/components/alert-dialog"
-import { GroupBox, GroupBoxOAuthContent } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxOAuthContent, GroupBoxHeader } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
+import { Group } from "src/types/groups"
 import { capitalize, formatNumber } from "src/utils/common"
+import { groupBy } from "src/utils/frontend"
 
-const oAuthProviders: Record<OAuthProvider, any> = {
-    twitter: {
-        provider: OAuthProvider.TWITTER,
-        title: "Twitter",
-        icon: FaTwitter,
-        groupSizes: {}
-    },
-    github: {
-        provider: OAuthProvider.GITHUB,
-        title: "Github",
-        icon: FaGithub,
-        groupSizes: {}
-    },
-    reddit: {
-        provider: OAuthProvider.REDDIT,
-        title: "Reddit",
-        icon: FaRedditAlien,
-        groupSizes: {}
-    }
+const oAuthIcons: Record<string, IconType> = {
+    twitter: FaTwitter,
+    github: FaGithub,
+    reddit: FaRedditAlien
 }
 
 export default function OAuthProvidersPage(): JSX.Element {
@@ -71,8 +59,8 @@ export default function OAuthProvidersPage(): JSX.Element {
     })
     const { _account, _identityCommitment } = useContext(EthereumWalletContext)
     const [_hasJoined, setHasJoined] = useState<boolean>()
-    const [_oAuthProvider, setOAuthProvider] = useState<string>("")
-    const [_oAuthProviders, setOAuthProviders] = useState<any[]>()
+    const [_oAuthProvider, setOAuthProvider] = useState<[string, Group[]]>()
+    const [_oAuthProviders, setOAuthProviders] = useState<[string, Group[]][]>()
     const [_searchValue, setSearchValue] = useState<string>("")
     const [_sortingValue, setSortingValue] = useState<string>("1")
     const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
@@ -80,20 +68,16 @@ export default function OAuthProvidersPage(): JSX.Element {
 
     useEffect(() => {
         ;(async () => {
-            const groups = await getGroups()
+            if (!session && !_oAuthProviders) {
+                const groups = await getGroups()
 
-            if (groups) {
-                for (const group of groups) {
-                    if (group.provider in oAuthProviders) {
-                        oAuthProviders[group.provider as OAuthProvider].groupSizes[group.name] = group.size
-                    }
+                if (groups) {
+                    setOAuthProviders(groupBy(groups, "provider", Object.values(OAuthProvider)))
                 }
-
-                setOAuthProviders(Object.values(oAuthProviders))
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [session, _oAuthProviders])
 
     useEffect(() => {
         if (!_account) {
@@ -127,24 +111,30 @@ export default function OAuthProvidersPage(): JSX.Element {
                 const reputationCriteria = getReputationCriteria(session.provider)
 
                 setReputationCriteria(reputationCriteria)
+
+                const groups = await getGroups()
+
+                if (groups) {
+                    setOAuthProvider(groupBy(groups, "provider", [session.provider])[0])
+                }
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, _identityCommitment])
 
     function getTotalGroupSizes(provider: any): number {
-        const sizes = Object.values(provider.groupSizes) as number[]
+        const groups: Group[] = provider[1]
 
-        return sizes.reduce((t, c) => t + c, 0)
+        return groups.reduce((t, c) => t + c.size, 0)
     }
 
     const sortCb = useCallback(
         (oAuthProviderA: any, oAuthProviderB: any) => {
             switch (_sortingValue) {
                 case "2":
-                    return oAuthProviderA.title.localeCompare(oAuthProviderB.title)
+                    return oAuthProviderA[0].localeCompare(oAuthProviderB.title)
                 case "3":
-                    return oAuthProviderB.title.localeCompare(oAuthProviderA.title)
+                    return oAuthProviderA[0].localeCompare(oAuthProviderA.title)
                 case "1":
                 default:
                     return getTotalGroupSizes(oAuthProviderB) - getTotalGroupSizes(oAuthProviderA)
@@ -155,14 +145,14 @@ export default function OAuthProvidersPage(): JSX.Element {
 
     const filterCb = useCallback(
         (oAuthProvider: any) => {
-            const name = oAuthProvider.title.toLowerCase()
+            const name = oAuthProvider[0]
 
             return !_searchValue || name.includes(_searchValue.toLowerCase())
         },
         [_searchValue]
     )
 
-    function selectOAuthProvider(oAuthProvider: OAuthProvider) {
+    function selectOAuthProvider(oAuthProvider: [string, Group[]]) {
         setOAuthProvider(oAuthProvider)
         onOpen()
     }
@@ -202,8 +192,10 @@ export default function OAuthProvidersPage(): JSX.Element {
     }, [session, _identityCommitment, joinGroup])
 
     const signIn = useCallback(() => {
-        _signIn(_oAuthProvider)
-        onClose()
+        if (_oAuthProvider) {
+            _signIn(_oAuthProvider[0])
+            onClose()
+        }
     }, [_oAuthProvider, onClose])
 
     function back() {
@@ -248,12 +240,9 @@ export default function OAuthProvidersPage(): JSX.Element {
                 <HStack spacing="4" align="start" my="6">
                     <Box bg="background.800" p="5" borderRadius="4px" maxWidth="250px">
                         <HStack pb="5" spacing="4">
-                            <Icon
-                                as={oAuthProviders[session.provider].icon}
-                                color={session.user.reputation as string}
-                            />
+                            <Icon as={oAuthIcons[session.provider]} color={session.user.reputation as string} />
                             <Heading as="h4" size="md">
-                                {oAuthProviders[session.provider].title} {capitalize(session.user.reputation as string)}
+                                {capitalize(session.provider)} {capitalize(session.user.reputation as string)}
                             </Heading>
                         </HStack>
 
@@ -270,49 +259,35 @@ export default function OAuthProvidersPage(): JSX.Element {
                         </Button>
                     </Box>
 
-                    <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
-                        <Heading as="h4" size="md" pl="6" py="2">
-                            Groups
-                        </Heading>
-                        <Divider />
-                        <Table variant="unstyled">
-                            <Thead>
-                                <Tr>
-                                    <Th>Name</Th>
-                                    <Th isNumeric>Members</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                <Tr>
-                                    <Td>
-                                        <HStack>
-                                            <Icon as={oAuthProviders[session.provider].icon} color="gold" />
-                                            <Text>Gold</Text>
-                                        </HStack>
-                                    </Td>
-                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.gold}</Td>
-                                </Tr>
-                                <Tr>
-                                    <Td>
-                                        <HStack>
-                                            <Icon as={oAuthProviders[session.provider].icon} color="silver" />
-                                            <Text>Silver</Text>
-                                        </HStack>
-                                    </Td>
-                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.silver}</Td>
-                                </Tr>
-                                <Tr>
-                                    <Td>
-                                        <HStack>
-                                            <Icon as={oAuthProviders[session.provider].icon} color="bronze" />
-                                            <Text>Bronze</Text>
-                                        </HStack>
-                                    </Td>
-                                    <Td isNumeric>{oAuthProviders[session.provider].groupSizes.bronze}</Td>
-                                </Tr>
-                            </Tbody>
-                        </Table>
-                    </VStack>
+                    {_oAuthProvider && (
+                        <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
+                            <Heading as="h4" size="md" pl="6" py="2">
+                                Groups
+                            </Heading>
+                            <Divider />
+                            <Table variant="unstyled">
+                                <Thead>
+                                    <Tr>
+                                        <Th>Name</Th>
+                                        <Th isNumeric>Members</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {_oAuthProvider[1].map((group) => (
+                                        <Tr>
+                                            <Td>
+                                                <HStack>
+                                                    <Icon as={oAuthIcons[session.provider]} color={group.name} />
+                                                    <Text>{capitalize(group.name)}</Text>
+                                                </HStack>
+                                            </Td>
+                                            <Td isNumeric>{group.size}</Td>
+                                        </Tr>
+                                    ))}
+                                </Tbody>
+                            </Table>
+                        </VStack>
+                    )}
 
                     <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
                         <Heading as="h4" size="md" pl="6" py="2">
@@ -373,27 +348,18 @@ export default function OAuthProvidersPage(): JSX.Element {
                                 .sort(sortCb)
                                 .filter(filterCb)
                                 .map((p, i) => (
-                                    <GroupBox
-                                        key={i.toString()}
-                                        title={p.title}
-                                        icon={p.icon}
-                                        content={
-                                            <GroupBoxOAuthContent
-                                                icon={p.icon}
-                                                goldGroupSize={p.groupSizes.gold}
-                                                silverGroupSize={p.groupSizes.silver}
-                                                bronzeGroupSize={p.groupSizes.bronze}
-                                            />
-                                        }
-                                        actionText="Authorize"
-                                        actionFunction={() => selectOAuthProvider(p.provider)}
-                                        disabled={!_account}
-                                    />
+                                    <GroupBox key={i.toString()}>
+                                        <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
+                                        <GroupBoxOAuthContent icon={oAuthIcons[p[0]]} groups={p[1]} />
+                                        <GroupBoxButton onClick={() => selectOAuthProvider(p)} disabled={!_account}>
+                                            Authorize
+                                        </GroupBoxButton>
+                                    </GroupBox>
                                 ))}
                         </SimpleGrid>
                     ) : (
                         <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                            {Object.values(oAuthProviders).map((_p, i) => (
+                            {Object.values(oAuthIcons).map((_p, i) => (
                                 <Skeleton
                                     key={i.toString()}
                                     startColor="background.800"
@@ -407,19 +373,21 @@ export default function OAuthProvidersPage(): JSX.Element {
                 </>
             )}
 
-            <AlertDialog
-                title="Authorize Interep to connect?"
-                message={`Interep wants to connect with the last ${capitalize(
-                    _oAuthProvider
-                )} account you logged into. Approving this message will open a new window.`}
-                isOpen={isOpen}
-                onClose={onClose}
-                actions={
-                    <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
-                        Approve
-                    </Button>
-                }
-            />
+            {_oAuthProvider && (
+                <AlertDialog
+                    title="Authorize Interep to connect?"
+                    message={`Interep wants to connect with the last ${capitalize(
+                        _oAuthProvider[0]
+                    )} account you logged into. Approving this message will open a new window.`}
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    actions={
+                        <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
+                            Approve
+                        </Button>
+                    }
+                />
+            )}
         </Container>
     )
 }
