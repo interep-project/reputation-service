@@ -1,5 +1,6 @@
 import shortenAddress from "./shortenAddress"
 import getExplorerLink, { ExplorerDataType } from "./getExplorerLink"
+import { groupBy } from "."
 
 describe("# utils/frontend", () => {
     describe("# shortenAddress", () => {
@@ -35,6 +36,18 @@ describe("# utils/frontend", () => {
             const expectedValue = getExplorerLink(ExplorerDataType.ADDRESS, address)
 
             expect(expectedValue).toContain(`etherscan.io/address/${address}`)
+        })
+    })
+
+    describe("# groupBy", () => {
+        it("Should group an array correctly", () => {
+            const array = [{ x: "a" }, { x: "b" }, { x: "a" }]
+
+            const expectedValue = groupBy(array, "x", ["a"])
+
+            expect(expectedValue).toHaveLength(1)
+            expect(expectedValue[0][0]).toBe("a")
+            expect(expectedValue[0][1]).toHaveLength(2)
         })
     })
 })
