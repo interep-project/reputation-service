@@ -24,7 +24,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { MdArrowBack } from "react-icons/md"
-import { GroupBox, GroupBoxButton, GroupBoxContent, GroupBoxHeader } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
@@ -147,12 +147,8 @@ export default function OAuthGroupPage(): JSX.Element {
             ) : (
                 <HStack spacing="4" align="start" my="6">
                     <GroupBox>
-                        <GroupBoxHeader
-                            icon={oAuthIcons[session.provider]}
-                            iconColor={_group.name}
-                            title={`${capitalize(session.provider)} ${capitalize(session.user.reputation as string)}`}
-                        />
-                        <GroupBoxContent group={_group} />
+                        <GroupBoxHeader icon={oAuthIcons[session.provider]} title={capitalize(session.provider)} />
+                        <GroupBoxOAuthContent groups={[_group]} icon={oAuthIcons[session.provider]} />
                         <GroupBoxButton onClick={() => join()} disabled={!_identityCommitment || _hasJoined}>
                             Join
                         </GroupBoxButton>

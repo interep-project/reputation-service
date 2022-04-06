@@ -10,7 +10,7 @@ export function GroupBoxContent({ group }: GroupBoxContentProps): JSX.Element {
     return (
         <Box bg="background.600" borderRadius="4">
             <Text py="2" px="4">
-                Group members
+                Members
             </Text>
             <Text py="3" px="4" bg="background.700" borderBottomRadius="4">
                 {group.size}

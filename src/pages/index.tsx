@@ -193,12 +193,12 @@ export default function OAuthProvidersPage(): JSX.Element {
                                 .filter(filterCb)
                                 .map((p, i) => (
                                     <GroupBox key={i.toString()}>
-                                        <GroupBoxHeader
-                                            title={capitalize(p[0])}
-                                            icon={oAuthIcons[p[0]]}
+                                        <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
+                                        <GroupBoxOAuthContent
                                             onInfoClick={() => openModal(p[0] as OAuthProvider)}
+                                            icon={oAuthIcons[p[0]]}
+                                            groups={p[1]}
                                         />
-                                        <GroupBoxOAuthContent icon={oAuthIcons[p[0]]} groups={p[1]} />
                                         <GroupBoxButton
                                             onClick={() => openAlert(p[0] as OAuthProvider)}
                                             disabled={!_account}
@@ -243,7 +243,9 @@ export default function OAuthProvidersPage(): JSX.Element {
                             <ModalOverlay />
 
                             <ModalContent>
-                                <ModalHeader>{capitalize(_reputationCriteria.provider)} qualifications</ModalHeader>
+                                <ModalHeader>
+                                    {capitalize(_reputationCriteria.provider)} group qualifications
+                                </ModalHeader>
                                 <ModalCloseButton />
                                 <ModalBody pb="6">
                                     <Table variant="simple" colorScheme="background">
