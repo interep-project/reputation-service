@@ -183,7 +183,7 @@ export default function PoapProviderPage(): JSX.Element {
                                         alertTitle="Confirm join"
                                         alertMessage="You will not be able to leave this group after you have joined."
                                         onClick={() => join(group)}
-                                        disabled={!_identityCommitment || group.joined}
+                                        disabled={!_identityCommitment || !!group.joined}
                                     >
                                         Join
                                     </GroupBoxButton>
