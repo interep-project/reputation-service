@@ -79,16 +79,14 @@ export default function OAuthGroupPage(): JSX.Element {
     }, [session, _identityCommitment])
 
     useEffect(() => {
-        if (!_account) {
+        if (!session) {
             setStep(0)
-        } else if (!session) {
-            setStep(1)
         } else if (!_identityCommitment) {
-            setStep(2)
+            setStep(1)
         } else if (!_hasJoined) {
-            setStep(3)
+            setStep(2)
         } else {
-            setStep(4)
+            setStep(3)
         }
     }, [_account, session, _identityCommitment, _hasJoined, setStep])
 
@@ -127,14 +125,13 @@ export default function OAuthGroupPage(): JSX.Element {
 
                     <Text color="background.400" fontSize="md">
                         To join Social network groups you will need to authorize each provider individually to share
-                        your credentials with Interep. Groups can be left at any time.
+                        your credentials with Interep.
                     </Text>
                 </VStack>
                 <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
             </HStack>
 
             <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
-                <Step label="Connect wallet" />
                 <Step label="Authorize provider" />
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join social network group" />
@@ -144,12 +141,25 @@ export default function OAuthGroupPage(): JSX.Element {
                 <VStack h="300px" align="center" justify="center">
                     <Spinner thickness="4px" speed="0.65s" size="xl" />
                 </VStack>
+            ) : !_account ? (
+                <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
+                    You need to connect your wallet!
+                </Text>
+            ) : !_identityCommitment ? (
+                <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
+                    You need to generate your Semaphore ID!
+                </Text>
             ) : (
                 <HStack spacing="4" align="start" my="6">
                     <GroupBox>
                         <GroupBoxHeader icon={oAuthIcons[session.provider]} title={capitalize(session.provider)} />
                         <GroupBoxOAuthContent groups={[_group]} icon={oAuthIcons[session.provider]} />
-                        <GroupBoxButton onClick={() => join()} disabled={!_identityCommitment || _hasJoined}>
+                        <GroupBoxButton
+                            alertTitle="Confirm join"
+                            alertMessage="You will not be able to leave this group after you have joined."
+                            onClick={() => join()}
+                            disabled={!_identityCommitment || _hasJoined}
+                        >
                             Join
                         </GroupBoxButton>
                     </GroupBox>

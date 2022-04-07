@@ -1,6 +1,5 @@
 import {
     Box,
-    Button,
     Container,
     Heading,
     HStack,
@@ -16,7 +15,6 @@ import {
     Select,
     SimpleGrid,
     Skeleton,
-    Spinner,
     Table,
     Tbody,
     Td,
@@ -28,14 +26,13 @@ import {
     VStack
 } from "@chakra-ui/react"
 import { getReputationCriteria, OAuthProvider, ReputationCriteria } from "@interep/reputation"
-import { Step, Steps, useSteps } from "chakra-ui-steps"
+import { Step, Steps } from "chakra-ui-steps"
 import { GetServerSideProps } from "next"
 import { signIn as _signIn } from "next-auth/client"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { GoSearch } from "react-icons/go"
-import { AlertDialog } from "src/components/alert-dialog"
 import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxOAuthContent } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
@@ -50,17 +47,12 @@ const oAuthIcons: Record<string, IconType> = {
 }
 
 export default function OAuthProvidersPage(): JSX.Element {
-    const { isOpen: isAlertOpen, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure()
     const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure()
-    const { activeStep, setStep } = useSteps({
-        initialStep: 0
-    })
     const { _account } = useContext(EthereumWalletContext)
-    const [_oAuthProvider, setOAuthProvider] = useState<string>()
     const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
     const [_oAuthProviders, setOAuthProviders] = useState<[string, Group[]][]>()
     const [_searchValue, setSearchValue] = useState<string>("")
-    const [_sortingValue, setSortingValue] = useState<string>("1")
+    const [_sortingValue, setSortingValue] = useState<string>("2")
     const { getGroups } = useGroups()
 
     useEffect(() => {
@@ -73,14 +65,6 @@ export default function OAuthProvidersPage(): JSX.Element {
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    useEffect(() => {
-        if (!_account) {
-            setStep(0)
-        } else {
-            setStep(1)
-        }
-    }, [_account, setStep])
 
     function getTotalGroupSizes(provider: any): number {
         const groups: Group[] = provider[1]
@@ -120,19 +104,6 @@ export default function OAuthProvidersPage(): JSX.Element {
         onModalOpen()
     }
 
-    function openAlert(oAuthProvider: OAuthProvider) {
-        setOAuthProvider(oAuthProvider)
-
-        onAlertOpen()
-    }
-
-    const signIn = useCallback(() => {
-        if (_oAuthProvider) {
-            _signIn(_oAuthProvider)
-            onAlertClose()
-        }
-    }, [_oAuthProvider, onAlertClose])
-
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
             <HStack mb="6" spacing="6">
@@ -143,138 +114,113 @@ export default function OAuthProvidersPage(): JSX.Element {
 
                     <Text color="background.400" fontSize="md">
                         To join Social network groups you will need to authorize each provider individually to share
-                        your credentials with Interep. Groups can be left at any time.
+                        your credentials with Interep.
                     </Text>
                 </VStack>
                 <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
             </HStack>
 
-            <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
-                <Step label="Connect wallet" />
+            <Steps activeStep={0} colorScheme="background" size="sm" py="4">
                 <Step label="Authorize provider" />
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join social network group" />
             </Steps>
 
-            {!_oAuthProviders ? (
-                <VStack h="300px" align="center" justify="center">
-                    <Spinner thickness="4px" speed="0.65s" size="xl" />
-                </VStack>
-            ) : (
-                <>
-                    <HStack justify="space-between" my="6">
-                        <InputGroup maxWidth="250px">
-                            <InputLeftElement pointerEvents="none">
-                                <GoSearch color="gray" />
-                            </InputLeftElement>
-                            <Input
-                                colorScheme="primary"
-                                placeholder="Search"
-                                value={_searchValue}
-                                onChange={(event) => setSearchValue(event.target.value)}
-                            />
-                        </InputGroup>
+            <HStack justify="space-between" mt="6" mb="10">
+                <InputGroup maxWidth="250px">
+                    <InputLeftElement pointerEvents="none">
+                        <GoSearch color="gray" />
+                    </InputLeftElement>
+                    <Input
+                        colorScheme="primary"
+                        placeholder="Search"
+                        value={_searchValue}
+                        onChange={(event) => setSearchValue(event.target.value)}
+                    />
+                </InputGroup>
 
-                        <Select
-                            value={_sortingValue}
-                            onChange={(event) => setSortingValue(event.target.value)}
-                            maxWidth="250px"
-                        >
-                            <option value="1">Most members</option>
-                            <option value="2">A-Z</option>
-                            <option value="3">Z-A</option>
-                        </Select>
-                    </HStack>
+                <Select
+                    value={_sortingValue}
+                    onChange={(event) => setSortingValue(event.target.value)}
+                    maxWidth="250px"
+                >
+                    <option value="1">Most members</option>
+                    <option value="2">A-Z</option>
+                    <option value="3">Z-A</option>
+                </Select>
+            </HStack>
 
-                    {_oAuthProviders ? (
-                        <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                            {_oAuthProviders
-                                .sort(sortCb)
-                                .filter(filterCb)
-                                .map((p, i) => (
-                                    <GroupBox key={i.toString()}>
-                                        <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
-                                        <GroupBoxOAuthContent
-                                            onInfoClick={() => openModal(p[0] as OAuthProvider)}
-                                            icon={oAuthIcons[p[0]]}
-                                            groups={p[1]}
-                                        />
-                                        <GroupBoxButton
-                                            onClick={() => openAlert(p[0] as OAuthProvider)}
-                                            disabled={!_account}
-                                        >
-                                            Authorize
-                                        </GroupBoxButton>
-                                    </GroupBox>
-                                ))}
-                        </SimpleGrid>
-                    ) : (
-                        <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
-                            {Object.values(oAuthIcons).map((_p, i) => (
-                                <Skeleton
-                                    key={i.toString()}
-                                    startColor="background.800"
-                                    endColor="background.700"
-                                    borderRadius="4px"
-                                    height="318px"
+            {_oAuthProviders ? (
+                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                    {_oAuthProviders
+                        .sort(sortCb)
+                        .filter(filterCb)
+                        .map((p, i) => (
+                            <GroupBox key={i.toString()}>
+                                <GroupBoxHeader title={capitalize(p[0])} icon={oAuthIcons[p[0]]} />
+                                <GroupBoxOAuthContent
+                                    onInfoClick={() => openModal(p[0] as OAuthProvider)}
+                                    icon={oAuthIcons[p[0]]}
+                                    groups={p[1]}
                                 />
-                            ))}
-                        </SimpleGrid>
-                    )}
-
-                    {_oAuthProvider && (
-                        <AlertDialog
-                            title="Authorize Interep to connect?"
-                            message={`Interep wants to connect with the last ${capitalize(
-                                _oAuthProvider
-                            )} account you logged into. Approving this message will open a new window.`}
-                            isOpen={isAlertOpen}
-                            onClose={onAlertClose}
-                            actions={
-                                <Button colorScheme="primary" isFullWidth onClick={() => signIn()}>
-                                    Approve
-                                </Button>
-                            }
+                                <GroupBoxButton
+                                    alertTitle="Confirm authorization"
+                                    alertMessage={`Interep wants to connect with the last ${capitalize(
+                                        p[0]
+                                    )} account you logged into. Approving this message will open a new window.`}
+                                    onClick={() => _signIn(p[0])}
+                                    disabled={!_account}
+                                >
+                                    Authorize
+                                </GroupBoxButton>
+                            </GroupBox>
+                        ))}
+                </SimpleGrid>
+            ) : (
+                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                    {Object.values(oAuthIcons).map((_p, i) => (
+                        <Skeleton
+                            key={i.toString()}
+                            startColor="background.800"
+                            endColor="background.700"
+                            borderRadius="4px"
+                            height="318px"
                         />
-                    )}
+                    ))}
+                </SimpleGrid>
+            )}
 
-                    {_reputationCriteria && (
-                        <Modal isOpen={isModalOpen} onClose={onModalClose} size="3xl" isCentered>
-                            <ModalOverlay />
+            {_reputationCriteria && (
+                <Modal isOpen={isModalOpen} onClose={onModalClose} size="3xl" isCentered>
+                    <ModalOverlay />
 
-                            <ModalContent>
-                                <ModalHeader>
-                                    {capitalize(_reputationCriteria.provider)} group qualifications
-                                </ModalHeader>
-                                <ModalCloseButton />
-                                <ModalBody pb="6">
-                                    <Table variant="simple" colorScheme="background">
-                                        <Thead>
-                                            <Tr>
-                                                <Th>Group</Th>
-                                                {_reputationCriteria.parameters.map((parameter, i) => (
-                                                    <Th key={i.toString()}>
-                                                        {parameter.name.replace(/([A-Z])/g, " $1")}
-                                                    </Th>
-                                                ))}
-                                            </Tr>
-                                        </Thead>
-                                        <Tbody>
-                                            {_reputationCriteria.reputationLevels.map((reputation, i) => (
-                                                <Tr key={i.toString()}>
-                                                    <Td fontWeight="bold">{capitalize(reputation.name)}</Td>
-                                                    {reputation.rules.map((rule, i) => (
-                                                        <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
-                                                    ))}
-                                                </Tr>
+                    <ModalContent>
+                        <ModalHeader>{capitalize(_reputationCriteria.provider)} group qualifications</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb="6">
+                            <Table variant="simple" colorScheme="background">
+                                <Thead>
+                                    <Tr>
+                                        <Th>Group</Th>
+                                        {_reputationCriteria.parameters.map((parameter, i) => (
+                                            <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
+                                        ))}
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {_reputationCriteria.reputationLevels.map((reputation, i) => (
+                                        <Tr key={i.toString()}>
+                                            <Td fontWeight="bold">{capitalize(reputation.name)}</Td>
+                                            {reputation.rules.map((rule, i) => (
+                                                <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
                                             ))}
-                                        </Tbody>
-                                    </Table>
-                                </ModalBody>
-                            </ModalContent>
-                        </Modal>
-                    )}
-                </>
+                                        </Tr>
+                                    ))}
+                                </Tbody>
+                            </Table>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
             )}
         </Container>
     )
