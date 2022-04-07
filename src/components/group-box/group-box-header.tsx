@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Icon, Tooltip } from "@chakra-ui/react"
+import { Heading, HStack, Icon, Text, Tooltip } from "@chakra-ui/react"
 import React from "react"
 import { IconType } from "react-icons"
 import { FaCheck } from "react-icons/fa"
@@ -21,9 +21,10 @@ export function GroupBoxHeader({ title, icon, joined }: GroupBoxHeaderProps): JS
             </HStack>
             {joined && (
                 <Tooltip label="You are a member of this group">
-                    <Box>
+                    <HStack>
                         <FaCheck color="green" />
-                    </Box>
+                        <Text color="green.400">Joined</Text>
+                    </HStack>
                 </Tooltip>
             )}
         </HStack>

@@ -23,7 +23,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
 import { MdArrowBack } from "react-icons/md"
-import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxOAuthContent } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxContent, GroupBoxHeader } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import { Group } from "src/types/groups"
@@ -160,11 +160,11 @@ export default function OAuthGroupPage(): JSX.Element {
                 <HStack spacing="4" align="start" my="6">
                     <GroupBox>
                         <GroupBoxHeader
-                            title={capitalize(session.provider)}
+                            title={capitalize(_group.name)}
                             icon={oAuthIcons[session.provider]}
                             joined={_hasJoined}
                         />
-                        <GroupBoxOAuthContent groups={[_group]} icon={oAuthIcons[session.provider]} />
+                        <GroupBoxContent group={_group} />
                         <GroupBoxButton
                             alertTitle="Confirm join"
                             alertMessage="You will not be able to leave this group after you have joined."
