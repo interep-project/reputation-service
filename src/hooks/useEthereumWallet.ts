@@ -27,8 +27,10 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                 const accounts = await _ethereumProvider.request({ method: "eth_accounts" })
                 const ethersProvider = new providers.Web3Provider(_ethereumProvider)
 
-                setAccount(getAddress(accounts[0]))
-                setSigner(ethersProvider.getSigner())
+                if (accounts[0]) {
+                    setAccount(getAddress(accounts[0]))
+                    setSigner(ethersProvider.getSigner())
+                }
 
                 _ethereumProvider.on("accountsChanged", (newAccounts: string[]) => {
                     if (newAccounts.length !== 0) {
