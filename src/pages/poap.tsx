@@ -176,14 +176,14 @@ export default function PoapProviderPage(): JSX.Element {
                             .filter(filterCb)
                             .map((group, i) => (
                                 <GroupBox key={i.toString()}>
-                                    <GroupBoxHeader title={capitalize(group.name)} />
+                                    <GroupBoxHeader title={capitalize(group.name)} joined={!!group.joined} />
                                     <GroupBoxContent group={group} />
 
                                     <GroupBoxButton
                                         alertTitle="Confirm join"
                                         alertMessage="You will not be able to leave this group after you have joined."
                                         onClick={() => join(group)}
-                                        disabled={!_identityCommitment || !!group.joined}
+                                        disabled={!_identityCommitment || group.joined}
                                     >
                                         Join
                                     </GroupBoxButton>

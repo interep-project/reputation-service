@@ -3,7 +3,7 @@ import React from "react"
 import { IconType } from "react-icons"
 import { GoInfo } from "react-icons/go"
 import { Group } from "src/types/groups"
-import { capitalize, formatNumber } from "src/utils/common"
+import { capitalize } from "src/utils/common"
 
 export type GroupBoxOAuthContentProps = {
     groups: Group[]
@@ -45,9 +45,7 @@ export function GroupBoxOAuthContent({ groups, icon, onInfoClick }: GroupBoxOAut
                                     <Text>{capitalize(g.name)}</Text>
                                 </HStack>
                             </Td>
-                            <Td py="3">
-                                {g.size} / ~{formatNumber(2 ** g.depth)}
-                            </Td>
+                            <Td py="3">{g.size}</Td>
                         </Tr>
                     ))}
                 </Tbody>

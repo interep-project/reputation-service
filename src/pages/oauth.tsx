@@ -152,7 +152,11 @@ export default function OAuthGroupPage(): JSX.Element {
             ) : (
                 <HStack spacing="4" align="start" my="6">
                     <GroupBox>
-                        <GroupBoxHeader icon={oAuthIcons[session.provider]} title={capitalize(session.provider)} />
+                        <GroupBoxHeader
+                            title={capitalize(session.provider)}
+                            icon={oAuthIcons[session.provider]}
+                            joined={_hasJoined}
+                        />
                         <GroupBoxOAuthContent groups={[_group]} icon={oAuthIcons[session.provider]} />
                         <GroupBoxButton
                             alertTitle="Confirm join"
@@ -181,19 +185,19 @@ export default function OAuthGroupPage(): JSX.Element {
                                 </Thead>
                                 <Tbody>
                                     {_reputationCriteria.reputationLevels
-                                        .filter((r) => r.name === _group.name)
-                                        .map((r, i) => (
+                                        .filter((reputation) => reputation.name === _group.name)
+                                        .map((reputation, i) => (
                                             <Tr key={i.toString()}>
-                                                <Td>{capitalize(r.name)} group</Td>
-                                                {r.rules.map((rule, i) => (
+                                                <Td>{capitalize(reputation.name)} group</Td>
+                                                {reputation.rules.map((rule, i) => (
                                                     <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
                                                 ))}
                                             </Tr>
                                         ))}
                                     <Tr>
                                         <Td>{session.user.name}</Td>
-                                        {_reputationCriteria.parameters.map((p, i) => (
-                                            <Td key={i.toString()}>{session.user[p.name] as any}</Td>
+                                        {_reputationCriteria.parameters.map((parameter, i) => (
+                                            <Td key={i.toString()}>{session.user[parameter.name] as any}</Td>
                                         ))}
                                     </Tr>
                                 </Tbody>
