@@ -21,7 +21,7 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
             </Head>
             <NextAuthProvider session={pageProps.session}>
                 <ChakraProvider theme={theme}>
-                    <ColorModeProvider options={{ initialColorMode: "dark" }}>
+                    <ColorModeProvider options={{ initialColorMode: "dark", useSystemColorMode: false }}>
                         <NavBar />
                         <Component {...pageProps} />
                         <Footer />

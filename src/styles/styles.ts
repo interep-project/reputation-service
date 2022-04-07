@@ -1,10 +1,10 @@
 import { SystemStyleObject } from "@chakra-ui/react"
-import { mode, Styles, StyleFunctionProps } from "@chakra-ui/theme-tools"
+import { Styles } from "@chakra-ui/theme-tools"
 
 const styles: Styles = {
-    global: (props: StyleFunctionProps): SystemStyleObject => ({
+    global: (): SystemStyleObject => ({
         body: {
-            bg: mode("white", "background.900")(props)
+            bg: "background.900"
         },
         "body, #__next": {
             minHeight: "100vh"
