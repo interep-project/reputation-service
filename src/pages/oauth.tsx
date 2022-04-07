@@ -108,6 +108,14 @@ export default function OAuthGroupPage(): JSX.Element {
         await router.push("/")
     }
 
+    function mapUserParameter(parameter: any): string {
+        if (typeof parameter === "boolean") {
+            return parameter === true ? "Yes" : "No"
+        }
+
+        return parameter.toString()
+    }
+
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
             <HStack spacing="0" mb="4">
@@ -168,13 +176,13 @@ export default function OAuthGroupPage(): JSX.Element {
                         </GroupBoxButton>
                     </GroupBox>
 
-                    <VStack flex="1" align="left" bg="background.800" p="3" borderRadius="4px">
-                        <Heading as="h4" size="md" pl="6" py="2">
-                            Qualifications
+                    <VStack flex="1" align="left" bg="background.800" p="5" borderRadius="4px">
+                        <Heading as="h4" size="md" pb="3">
+                            How you qualify
                         </Heading>
-                        <Divider />
+
                         {_reputationCriteria && (
-                            <Table variant="unstyled">
+                            <Table variant="grid" colorScheme="background">
                                 <Thead>
                                     <Tr>
                                         <Th />
@@ -195,9 +203,9 @@ export default function OAuthGroupPage(): JSX.Element {
                                             </Tr>
                                         ))}
                                     <Tr>
-                                        <Td>{session.user.name}</Td>
+                                        <Td>{session.user.username as string}</Td>
                                         {_reputationCriteria.parameters.map((parameter, i) => (
-                                            <Td key={i.toString()}>{session.user[parameter.name] as any}</Td>
+                                            <Td key={i.toString()}>{mapUserParameter(session.user[parameter.name])}</Td>
                                         ))}
                                     </Tr>
                                 </Tbody>

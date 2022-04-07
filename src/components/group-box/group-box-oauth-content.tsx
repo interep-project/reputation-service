@@ -14,10 +14,10 @@ export type GroupBoxOAuthContentProps = {
 export function GroupBoxOAuthContent({ groups, icon, onInfoClick }: GroupBoxOAuthContentProps): JSX.Element {
     return (
         <Box>
-            <Table bg="background.700" variant="unstyled" borderRadius="4">
+            <Table variant="grid" colorScheme="background">
                 <Thead>
                     <Tr>
-                        <Th position="relative" bg="background.600" borderTopLeftRadius="4px">
+                        <Th>
                             <HStack spacing="0">
                                 <Text>Groups</Text>
                                 {onInfoClick && (
@@ -31,21 +31,19 @@ export function GroupBoxOAuthContent({ groups, icon, onInfoClick }: GroupBoxOAut
                             </HStack>
                         </Th>
 
-                        <Th bg="background.600" borderTopRightRadius="4px">
-                            Members
-                        </Th>
+                        <Th>Members</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {groups.map((g, i) => (
+                    {groups.map((group, i) => (
                         <Tr key={i.toString()}>
                             <Td py="3">
-                                <HStack>
-                                    <Icon as={icon} color={g.name} />
-                                    <Text>{capitalize(g.name)}</Text>
+                                <HStack spacing="4">
+                                    <Icon as={icon} color={`${group.name}.400`} />
+                                    <Text>{capitalize(group.name)}</Text>
                                 </HStack>
                             </Td>
-                            <Td py="3">{g.size}</Td>
+                            <Td py="3">{group.size}</Td>
                         </Tr>
                     ))}
                 </Tbody>

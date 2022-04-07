@@ -3,6 +3,7 @@ import {
     Container,
     Heading,
     HStack,
+    Icon,
     Input,
     InputGroup,
     InputLeftElement,
@@ -198,7 +199,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                         <ModalHeader>{capitalize(_reputationCriteria.provider)} group qualifications</ModalHeader>
                         <ModalCloseButton />
                         <ModalBody pb="6">
-                            <Table variant="simple" colorScheme="background">
+                            <Table variant="grid" colorScheme="background">
                                 <Thead>
                                     <Tr>
                                         <Th>Group</Th>
@@ -210,7 +211,15 @@ export default function OAuthProvidersPage(): JSX.Element {
                                 <Tbody>
                                     {_reputationCriteria.reputationLevels.map((reputation, i) => (
                                         <Tr key={i.toString()}>
-                                            <Td fontWeight="bold">{capitalize(reputation.name)}</Td>
+                                            <Td>
+                                                <HStack spacing="4">
+                                                    <Icon
+                                                        as={oAuthIcons[_reputationCriteria.provider]}
+                                                        color={`${reputation.name}.400`}
+                                                    />
+                                                    <Text>{capitalize(reputation.name)}</Text>
+                                                </HStack>
+                                            </Td>
                                             {reputation.rules.map((rule, i) => (
                                                 <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
                                             ))}

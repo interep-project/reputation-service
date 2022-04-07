@@ -58,7 +58,8 @@ export function GroupBoxButton({
                     <AlertDialogBody>{alertMessage}</AlertDialogBody>
                     <AlertDialogFooter>
                         <Button
-                            colorScheme="primary"
+                            colorScheme="background"
+                            size="md"
                             isFullWidth
                             onClick={() => {
                                 onClose()
