@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react"
+import { ChakraProvider, ColorModeProvider } from "@chakra-ui/react"
 import "@fontsource/inter/400.css"
 import { Provider as NextAuthProvider } from "next-auth/client"
 import type { AppProps } from "next/app"
@@ -21,9 +21,11 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
             </Head>
             <NextAuthProvider session={pageProps.session}>
                 <ChakraProvider theme={theme}>
-                    <NavBar />
-                    <Component {...pageProps} />
-                    <Footer />
+                    <ColorModeProvider options={{ initialColorMode: "dark" }}>
+                        <NavBar />
+                        <Component {...pageProps} />
+                        <Footer />
+                    </ColorModeProvider>
                 </ChakraProvider>
             </NextAuthProvider>
         </EthereumWalletContext.Provider>

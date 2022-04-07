@@ -1,7 +1,5 @@
-import { ColorModeScript } from "@chakra-ui/react"
 import Document, { DocumentContext, DocumentInitialProps, Head, Html, Main, NextScript } from "next/document"
 import React from "react"
-import theme from "src/styles/theme"
 import { CSP } from "src/types/csp"
 
 // const cspHashOf = (text: string): string => {
@@ -53,7 +51,6 @@ export default class MyDocument extends Document {
                     <meta httpEquiv="Content-Security-Policy" content={csp} />
                 </Head>
                 <body>
-                    <ColorModeScript initialColorMode={theme.initialColorMode} />
                     <Main />
                     <NextScript />
                 </body>
