@@ -52,11 +52,11 @@ export default NextAuth({
 
                 return true
             } catch (error: any) {
+                logger.error(error)
+
                 if (error.message === "Parameters do not meet any reputation criteria") {
                     return "/error?error=insufficient-reputation"
                 }
-
-                logger.error(error)
 
                 return false
             }
