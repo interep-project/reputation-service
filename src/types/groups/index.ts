@@ -15,4 +15,9 @@ export type Group = {
     numberOfLeaves: number
 }
 
+// Group with additional parameters used in the UI.
+export type UserGroup = Group & {
+    joined: boolean | null // True if the user has already joined the group.
+}
+
 export type Groups = Group[]
