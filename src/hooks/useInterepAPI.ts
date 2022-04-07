@@ -43,7 +43,7 @@ export default function useInterepAPI(): ReturnParameters {
             if (typeof response === "number") {
                 switch (response) {
                     case 403:
-                        showErrorMessage("Sorry, it seems you do not have the right permissions.")
+                        showErrorMessage("Sorry, you do not have the right permissions.")
                         break
                     default:
                         showErrorMessage("Sorry, there was an unexpected error.")
