@@ -1,4 +1,3 @@
-import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import {
     addIdentityCommitment as _addIdentityCommitment,
@@ -8,6 +7,7 @@ import {
     getGroups as _getGroups,
     sendEmail as _sendEmail
 } from "src/utils/frontend/api"
+import useToast from "./useToast"
 
 type ReturnParameters = {
     addIdentityCommitment: typeof _addIdentityCommitment
@@ -28,7 +28,6 @@ export default function useInterepAPI(): ReturnParameters {
     const showErrorMessage = useCallback(
         (message: string) => {
             toast({
-                position: "bottom-right",
                 description: message,
                 status: "error"
             })
