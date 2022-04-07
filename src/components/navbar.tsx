@@ -55,10 +55,18 @@ export default function NavBar(): JSX.Element {
                 <Image src="./logo.svg" alt="Interep logo" h={10} />
 
                 <HStack spacing="6">
-                    <Button onClick={() => router.push("/")} variant="link">
+                    <Button
+                        onClick={() => router.push("/")}
+                        variant="link"
+                        color={router.route === "/" || router.route === "/oauth" ? "inherit" : "gray"}
+                    >
                         Social Network
                     </Button>
-                    <Button onClick={() => router.push("/poap")} variant="link">
+                    <Button
+                        onClick={() => router.push("/poap")}
+                        variant="link"
+                        color={router.route === "/poap" ? "inherit" : "gray"}
+                    >
                         POAP
                     </Button>
 
