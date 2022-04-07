@@ -19,7 +19,6 @@ import { getReputationCriteria, ReputationCriteria, ReputationLevel } from "@int
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { GetServerSideProps } from "next"
 import { signOut, useSession } from "next-auth/client"
-import { useRouter } from "next/router"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { IconType } from "react-icons"
 import { FaGithub, FaRedditAlien, FaTwitter } from "react-icons/fa"
@@ -38,7 +37,6 @@ const oAuthIcons: Record<string, IconType> = {
 }
 
 export default function OAuthGroupPage(): JSX.Element {
-    const router = useRouter()
     const [session] = useSession()
     const { activeStep, setStep } = useSteps({
         initialStep: 0
@@ -47,16 +45,22 @@ export default function OAuthGroupPage(): JSX.Element {
     const [_hasJoined, setHasJoined] = useState<boolean>()
     const [_group, setGroup] = useState<Group>()
     const [_reputationCriteria, setReputationCriteria] = useState<ReputationCriteria>()
-    const { hasIdentityCommitment, joinGroup, getGroup } = useGroups()
+    const { hasIdentityCommitment, joinGroup, getGroup, hasJoinedAGroup } = useGroups()
 
     useEffect(() => {
         ;(async () => {
             if (session && _identityCommitment) {
-                const hasJoined = await hasIdentityCommitment(
+                let hasJoined = await hasIdentityCommitment(
                     _identityCommitment,
                     session.provider,
                     session.user.reputation as ReputationLevel
                 )
+
+                if (hasJoined === null) {
+                    return
+                }
+
+                hasJoined = hasJoined || (await hasJoinedAGroup(session.provider))
 
                 if (hasJoined === null) {
                     return
@@ -103,11 +107,6 @@ export default function OAuthGroupPage(): JSX.Element {
         }
     }, [session, _identityCommitment, _group, joinGroup])
 
-    async function back() {
-        await signOut({ redirect: false })
-        await router.push("/")
-    }
-
     function mapUserParameter(parameter: any): string {
         if (typeof parameter === "boolean") {
             return parameter === true ? "Yes" : "No"
@@ -119,7 +118,7 @@ export default function OAuthGroupPage(): JSX.Element {
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
             <HStack spacing="0" mb="4">
-                <IconButton onClick={() => back()} aria-label="Back" variant="link" icon={<MdArrowBack />} />
+                <IconButton onClick={() => signOut()} aria-label="Back" variant="link" icon={<MdArrowBack />} />
                 <Text fontWeight="bold">Back</Text>
             </HStack>
 
@@ -145,11 +144,7 @@ export default function OAuthGroupPage(): JSX.Element {
                 <Step label="Join social network group" />
             </Steps>
 
-            {!session || !_group ? (
-                <VStack h="300px" align="center" justify="center">
-                    <Spinner thickness="4px" speed="0.65s" size="xl" />
-                </VStack>
-            ) : !_account ? (
+            {!_account ? (
                 <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
                     You need to connect your wallet!
                 </Text>
@@ -157,6 +152,10 @@ export default function OAuthGroupPage(): JSX.Element {
                 <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
                     You need to generate your Semaphore ID!
                 </Text>
+            ) : !session || !_group ? (
+                <VStack h="300px" align="center" justify="center">
+                    <Spinner thickness="4px" speed="0.65s" size="xl" />
+                </VStack>
             ) : (
                 <HStack spacing="4" align="start" my="6">
                     <GroupBox>
