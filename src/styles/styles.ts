@@ -4,7 +4,7 @@ import { mode, Styles, StyleFunctionProps } from "@chakra-ui/theme-tools"
 const styles: Styles = {
     global: (props: StyleFunctionProps): SystemStyleObject => ({
         body: {
-            bg: mode("white", "#121212")(props)
+            bg: mode("white", "background.900")(props)
         },
         "body, #__next": {
             minHeight: "100vh"

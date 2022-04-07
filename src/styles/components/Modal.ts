@@ -1,10 +1,9 @@
 import { SystemStyleObject } from "@chakra-ui/react"
-import { mode, StyleFunctionProps } from "@chakra-ui/theme-tools"
 
 const Modal = {
-    baseStyle: (props: StyleFunctionProps): SystemStyleObject => ({
+    baseStyle: (): SystemStyleObject => ({
         dialog: {
-            bg: mode("white", "background.800")(props),
+            bg: "background.800",
             borderRadius: "4px"
         }
     })
