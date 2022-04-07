@@ -8,6 +8,7 @@ export type EthereumWalletContextType = {
     _signer?: Signer
     connect: () => Promise<void>
     generateIdentityCommitment: (provider: Provider) => Promise<void>
+    signMessage: (message: string) => Promise<string | null>
     retrieveIdentityCommitment: (provider: Provider) => Promise<void>
     setIdentityCommitment: (identityCommitment: string | undefined) => void
 }
@@ -15,6 +16,7 @@ export type EthereumWalletContextType = {
 export default React.createContext<EthereumWalletContextType>({
     connect: () => Promise.resolve(),
     generateIdentityCommitment: () => Promise.resolve(),
+    signMessage: () => Promise.resolve(null),
     retrieveIdentityCommitment: () => Promise.resolve(),
     setIdentityCommitment: () => null
 })

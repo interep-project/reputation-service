@@ -1,6 +1,7 @@
 import createIdentity from "@interep/identity"
 import detectEthereumProvider from "@metamask/detect-provider"
 import { providers, Signer, utils } from "ethers"
+import { getAddress } from "ethers/lib/utils"
 import { useCallback, useEffect, useState } from "react"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { Provider } from "src/types/groups"
@@ -26,12 +27,12 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                 const accounts = await _ethereumProvider.request({ method: "eth_accounts" })
                 const ethersProvider = new providers.Web3Provider(_ethereumProvider)
 
-                setAccount(accounts[0])
+                setAccount(getAddress(accounts[0]))
                 setSigner(ethersProvider.getSigner())
 
                 _ethereumProvider.on("accountsChanged", (newAccounts: string[]) => {
                     if (newAccounts.length !== 0) {
-                        setAccount(newAccounts[0])
+                        setAccount(getAddress(newAccounts[0]))
                         setSigner(ethersProvider.getSigner())
                     } else {
                         setAccount(undefined)
@@ -68,6 +69,25 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         [_signer, _account]
     )
 
+    const signMessage = useCallback(
+        async (message: string): Promise<string | null> => {
+            if (!_signer) {
+                console.error("You cannot sign any message without a connected wallet")
+
+                return null
+            }
+
+            try {
+                return await _signer.signMessage(message)
+            } catch (error) {
+                console.error(error)
+
+                return null
+            }
+        },
+        [_signer]
+    )
+
     const retrieveIdentityCommitment = useCallback(
         async (provider: Provider) => {
             if (!_account) {
@@ -88,6 +108,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         _identityCommitment,
         _signer,
         generateIdentityCommitment,
+        signMessage,
         retrieveIdentityCommitment,
         setIdentityCommitment,
         connect
