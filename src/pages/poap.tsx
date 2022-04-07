@@ -3,6 +3,7 @@ import {
     Container,
     Heading,
     HStack,
+    Image,
     Input,
     InputGroup,
     InputLeftElement,
@@ -15,45 +16,43 @@ import {
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { GoSearch } from "react-icons/go"
-import { GroupBox, GroupBoxButton, GroupBoxHeader, GroupBoxContent } from "src/components/group-box"
+import { GroupBox, GroupBoxButton, GroupBoxContent, GroupBoxHeader } from "src/components/group-box"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useGroups from "src/hooks/useGroups"
 import usePoapEvents from "src/hooks/usePoapEvents"
-import { Group } from "src/types/groups"
+import { UserGroup } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 
 export default function PoapProviderPage(): JSX.Element {
-    const { _account, _identityCommitment } = useContext(EthereumWalletContext)
+    const { _account, _identityCommitment, signMessage } = useContext(EthereumWalletContext)
     const { activeStep, setStep } = useSteps({
         initialStep: 0
     })
     const { getPoapEvents } = usePoapEvents()
-    const [_poapGroups, setPoapGroups] = useState<Group[]>()
+    const [_poapGroups, setPoapGroups] = useState<UserGroup[]>()
     const [_searchValue, setSearchValue] = useState<string>("")
-    const [_sortingValue, setSortingValue] = useState<string>("1")
-
-    const { getGroups } = useGroups()
-
-    useEffect(() => {
-        if (!_account) {
-            setStep(0)
-        } else if (!_identityCommitment) {
-            setStep(1)
-        } else {
-            setStep(2)
-        }
-    }, [_account, _identityCommitment, setStep])
+    const [_sortingValue, setSortingValue] = useState<string>("2")
+    const { getGroups, joinGroup, hasIdentityCommitment } = useGroups()
 
     useEffect(() => {
         ;(async () => {
-            if (_account) {
+            if (_account && _identityCommitment) {
                 const poapEvents = await getPoapEvents(_account)
 
                 if (poapEvents) {
                     const groups = await getGroups()
 
                     if (groups) {
-                        const poapGroups = groups.filter((g) => poapEvents.includes(g.name))
+                        const poapGroups = []
+
+                        for (const group of groups) {
+                            if (poapEvents.includes(group.name)) {
+                                poapGroups.push({
+                                    ...group,
+                                    joined: await hasIdentityCommitment(_identityCommitment, "poap", group.name)
+                                })
+                            }
+                        }
 
                         setPoapGroups(poapGroups)
                     }
@@ -61,26 +60,57 @@ export default function PoapProviderPage(): JSX.Element {
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_account])
+    }, [_account, _identityCommitment])
+
+    useEffect(() => {
+        if (!_identityCommitment) {
+            setStep(0)
+        } else {
+            setStep(1)
+        }
+    }, [_account, _identityCommitment, setStep])
 
     const sortCb = useCallback(
-        (poapGroupA: Group, poapGroupB: Group) => {
+        (groupA: UserGroup, groupB: UserGroup) => {
             switch (_sortingValue) {
                 case "2":
-                    return poapGroupA.name.localeCompare(poapGroupB.name)
+                    return groupA.name.localeCompare(groupB.name)
                 case "3":
-                    return poapGroupB.name.localeCompare(poapGroupA.name)
+                    return groupB.name.localeCompare(groupA.name)
                 case "1":
                 default:
-                    return poapGroupA.size - poapGroupB.size
+                    return groupB.size - groupA.size
             }
         },
         [_sortingValue]
     )
 
     const filterCb = useCallback(
-        (poapGroup: Group) => !_searchValue || poapGroup.name.includes(_searchValue.toLowerCase()),
+        (group: UserGroup) => !_searchValue || group.name.includes(_searchValue.toLowerCase()),
         [_searchValue]
+    )
+
+    const join = useCallback(
+        async (group: UserGroup) => {
+            if (_account && _identityCommitment) {
+                const userSignature = await signMessage(_identityCommitment)
+
+                if (userSignature) {
+                    if (
+                        await joinGroup(_identityCommitment, "poap", group.name, {
+                            userAddress: _account,
+                            userSignature
+                        })
+                    ) {
+                        group.size += 1
+                        group.joined = true
+
+                        setPoapGroups(_poapGroups?.slice())
+                    }
+                }
+            }
+        },
+        [_identityCommitment, _account, signMessage, joinGroup, _poapGroups]
     )
 
     return (
@@ -92,20 +122,21 @@ export default function PoapProviderPage(): JSX.Element {
                     </Heading>
 
                     <Text color="background.400" fontSize="md">
-                        If your connected wallet contains POAPs they will appear below. Generate a semaphore ID to get
-                        started anonymously joining POAP groups.
+                        If your connected wallet contains POAP tokens they will appear below. Generate a semaphore ID to
+                        get started anonymously joining POAP groups.
                     </Text>
                 </VStack>
-                <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
+                <Box h="180" w="650px">
+                    <Image src="./poap-heading.png" alt="POAP" />
+                </Box>
             </HStack>
 
             <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
-                <Step label="Connect wallet" />
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join POAP groups" />
             </Steps>
 
-            <HStack justify="space-between" my="6">
+            <HStack justify="space-between" mt="6" mb="10">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />
@@ -129,7 +160,15 @@ export default function PoapProviderPage(): JSX.Element {
                 </Select>
             </HStack>
 
-            {_poapGroups ? (
+            {!_account ? (
+                <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
+                    You need to connect your wallet!
+                </Text>
+            ) : !_identityCommitment ? (
+                <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
+                    You need to generate your Semaphore ID!
+                </Text>
+            ) : _poapGroups ? (
                 _poapGroups.length > 0 ? (
                     <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
                         {_poapGroups
@@ -139,22 +178,22 @@ export default function PoapProviderPage(): JSX.Element {
                                 <GroupBox key={i.toString()}>
                                     <GroupBoxHeader title={capitalize(group.name)} />
                                     <GroupBoxContent group={group} />
-                                    <GroupBoxButton onClick={() => console.log("Join")} disabled={!_account}>
+
+                                    <GroupBoxButton
+                                        alertTitle="Confirm join"
+                                        alertMessage="You will not be able to leave this group after you have joined."
+                                        onClick={() => join(group)}
+                                        disabled={!_identityCommitment || !!group.joined}
+                                    >
                                         Join
                                     </GroupBoxButton>
                                 </GroupBox>
                             ))}
                     </SimpleGrid>
                 ) : (
-                    <VStack justify="center" pt="80px">
-                        <Heading as="h3" size="lg" mb="10px">
-                            Nothing to see here
-                        </Heading>
-
-                        <Text color="background.400" fontSize="md" mb="30px">
-                            The connected wallet does not contain any POAPs.
-                        </Text>
-                    </VStack>
+                    <Text textAlign="center" color="background.400" fontSize="lg" pt="80px">
+                        The connected wallet does not contain any POAP tokens.
+                    </Text>
                 )
             ) : (
                 <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
@@ -164,7 +203,7 @@ export default function PoapProviderPage(): JSX.Element {
                             startColor="background.800"
                             endColor="background.700"
                             borderRadius="4px"
-                            height="318px"
+                            height="228px"
                         />
                     ))}
                 </SimpleGrid>
