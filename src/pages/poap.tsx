@@ -115,18 +115,18 @@ export default function PoapProviderPage(): JSX.Element {
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            <HStack mb="6" spacing="6">
+            <HStack mb="6" spacing="10">
                 <VStack align="left">
                     <Heading as="h3" size="lg" mb="2">
-                        Anonymous on-chain authentication
+                        Anonymously prove you where there
                     </Heading>
 
                     <Text color="background.400" fontSize="md">
                         If your connected wallet contains POAP tokens they will appear below. Generate a semaphore ID to
-                        get started anonymously joining POAP groups.
+                        get started joining POAP groups.
                     </Text>
                 </VStack>
-                <Box h="180" w="650px">
+                <Box w="600px">
                     <Image src="./poap-heading.png" alt="POAP" />
                 </Box>
             </HStack>

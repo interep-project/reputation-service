@@ -2,6 +2,7 @@ import {
     Box,
     Container,
     Heading,
+    Image,
     HStack,
     Icon,
     Input,
@@ -107,10 +108,10 @@ export default function OAuthProvidersPage(): JSX.Element {
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            <HStack mb="6" spacing="6">
+            <HStack mb="6" spacing="10">
                 <VStack align="left">
                     <Heading as="h3" size="lg" mb="2">
-                        Authenticate anonymously on-chain using off-chain reputation
+                        Anonymously use your social reputation on-chain
                     </Heading>
 
                     <Text color="background.400" fontSize="md">
@@ -118,7 +119,9 @@ export default function OAuthProvidersPage(): JSX.Element {
                         your credentials with Interep.
                     </Text>
                 </VStack>
-                <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
+                <Box w="700px">
+                    <Image src="./oauth-heading.png" alt="POAP" />
+                </Box>
             </HStack>
 
             <Steps activeStep={0} colorScheme="background" size="sm" py="4">

@@ -5,6 +5,7 @@ import {
     Heading,
     HStack,
     IconButton,
+    Image,
     Spinner,
     Table,
     Tbody,
@@ -124,18 +125,20 @@ export default function OAuthGroupPage(): JSX.Element {
 
             <Divider />
 
-            <HStack my="6" spacing="6">
+            <HStack my="6" spacing="10">
                 <VStack align="left">
                     <Heading as="h3" size="lg" mb="2">
-                        Authenticate anonymously on-chain using off-chain reputation
+                        Anonymously use your social reputation on-chain
                     </Heading>
 
                     <Text color="background.400" fontSize="md">
-                        To join Social network groups you will need to authorize each provider individually to share
-                        your credentials with Interep.
+                        Check which reputation parameters you meet and generate a semaphore ID to get started joining
+                        social groups.
                     </Text>
                 </VStack>
-                <Box bg="background.800" borderRadius="4px" h="180" w="700px" />
+                <Box w="700px">
+                    <Image src="./oauth-heading.png" alt="POAP" />
+                </Box>
             </HStack>
 
             <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
