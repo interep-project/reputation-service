@@ -23,7 +23,7 @@ export function GroupBoxHeader({ title, icon, joined }: GroupBoxHeaderProps): JS
                 <Tooltip label="You are a member of this group">
                     <HStack>
                         <FaCheck color="green" />
-                        <Text color="green.400">Joined</Text>
+                        <Text color="green">Joined</Text>
                     </HStack>
                 </Tooltip>
             )}
