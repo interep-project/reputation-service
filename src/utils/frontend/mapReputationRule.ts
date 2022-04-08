@@ -20,5 +20,5 @@ export default function mapReputationRule(rule: ReputationRule): string {
         return rule.value ? "Yes" : "No"
     }
 
-    return "/"
+    return "N/A"
 }
