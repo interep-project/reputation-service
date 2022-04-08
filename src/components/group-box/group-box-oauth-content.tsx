@@ -1,4 +1,4 @@
-import { Box, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import React from "react"
 import { IconType } from "react-icons"
 import { GoInfo } from "react-icons/go"
@@ -13,41 +13,39 @@ export type GroupBoxOAuthContentProps = {
 
 export function GroupBoxOAuthContent({ groups, icon, onInfoClick }: GroupBoxOAuthContentProps): JSX.Element {
     return (
-        <Box>
-            <Table variant="grid" colorScheme="background">
-                <Thead>
-                    <Tr>
-                        <Th>
-                            <HStack spacing="0">
-                                <Text>Groups</Text>
-                                {onInfoClick && (
-                                    <IconButton
-                                        onClick={onInfoClick}
-                                        aria-label="More info"
-                                        icon={<GoInfo />}
-                                        variant="link"
-                                    />
-                                )}
-                            </HStack>
-                        </Th>
+        <Table variant="grid" colorScheme="background">
+            <Thead>
+                <Tr>
+                    <Th>
+                        <HStack spacing="0">
+                            <Text>Groups</Text>
+                            {onInfoClick && (
+                                <IconButton
+                                    onClick={onInfoClick}
+                                    aria-label="More info"
+                                    icon={<GoInfo />}
+                                    variant="link"
+                                />
+                            )}
+                        </HStack>
+                    </Th>
 
-                        <Th>Members</Th>
+                    <Th>Members</Th>
+                </Tr>
+            </Thead>
+            <Tbody>
+                {groups.map((group, i) => (
+                    <Tr key={i.toString()}>
+                        <Td py="3">
+                            <HStack spacing="4">
+                                <Icon as={icon} color={`${group.name}.400`} />
+                                <Text>{capitalize(group.name)}</Text>
+                            </HStack>
+                        </Td>
+                        <Td py="3">{group.size}</Td>
                     </Tr>
-                </Thead>
-                <Tbody>
-                    {groups.map((group, i) => (
-                        <Tr key={i.toString()}>
-                            <Td py="3">
-                                <HStack spacing="4">
-                                    <Icon as={icon} color={`${group.name}.400`} />
-                                    <Text>{capitalize(group.name)}</Text>
-                                </HStack>
-                            </Td>
-                            <Td py="3">{group.size}</Td>
-                        </Tr>
-                    ))}
-                </Tbody>
-            </Table>
-        </Box>
+                ))}
+            </Tbody>
+        </Table>
     )
 }

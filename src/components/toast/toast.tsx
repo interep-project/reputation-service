@@ -30,6 +30,7 @@ export function Toast({ status = "info", description, duration = 5000, progress 
                 colorScheme={status === "info" ? "gray" : undefined}
                 variant="solid"
                 borderTopRadius="4px"
+                borderBottomRadius={progress ? 0 : "4px"}
             >
                 <AlertIcon />
                 {description}
