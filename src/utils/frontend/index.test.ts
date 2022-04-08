@@ -89,8 +89,8 @@ describe("# utils/frontend", () => {
             const expectedValue1 = mapReputationRule(rule1 as any)
             const expectedValue2 = mapReputationRule(rule2 as any)
 
-            expect(expectedValue1).toBe("")
-            expect(expectedValue2).toBe("")
+            expect(expectedValue1).toBe("N/A")
+            expect(expectedValue2).toBe("N/A")
         })
     })
 })
