@@ -2,6 +2,7 @@ import getNextConfig from "next/config"
 import { NetworkData } from "./types/network"
 
 const defaultEnv = {
+    CRON_INTERVAL: 1, // Minutes.
     MERKLE_TREE_DEPTH: 20, // 2^20 = 1048576
     API_WHITELIST: [
         /^http:\/\/localhost/,
@@ -100,6 +101,7 @@ export default {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
+    CRON_INTERVAL: defaultEnv.CRON_INTERVAL,
     MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
     API_WHITELIST: defaultEnv.API_WHITELIST
 }

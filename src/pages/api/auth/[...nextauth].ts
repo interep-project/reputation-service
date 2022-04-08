@@ -1,5 +1,5 @@
 import { OAuthAccount } from "@interep/db"
-import { getOAuthProviders, OAuthProvider } from "@interep/reputation"
+import { getOAuthProviders, OAuthProvider, ReputationLevel } from "@interep/reputation"
 import NextAuth, { Account, Session } from "next-auth"
 import { JWT } from "next-auth/jwt"
 import Providers from "next-auth/providers"
@@ -51,8 +51,12 @@ export default NextAuth({
                 await createOAuthAccount(user, account)
 
                 return true
-            } catch (error) {
+            } catch (error: any) {
                 logger.error(error)
+
+                if (error.message === "Parameters do not meet any reputation criteria") {
+                    return "/error?error=insufficient-reputation"
+                }
 
                 return false
             }
@@ -71,7 +75,7 @@ export default NextAuth({
                 if (account) {
                     token.accountId = account.id
                     token.provider = nextAuthAccount.provider as OAuthProvider
-                    user.reputation = account.reputation
+                    user.reputation = account.reputation as ReputationLevel
                     token.user = user
                 }
 

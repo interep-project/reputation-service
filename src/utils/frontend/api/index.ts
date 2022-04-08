@@ -20,6 +20,10 @@ export function getGroup({
     return sendRequest(`/api/v1/groups/${provider}/${groupName}`)
 }
 
+export function getGroups(): Promise<any | null> {
+    return sendRequest(`/api/v1/groups`)
+}
+
 export async function hasJoinedAGroup(): Promise<boolean | null> {
     return sendRequest(`/api/v1/groups/has-joined`)
 }

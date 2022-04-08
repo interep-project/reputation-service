@@ -9,7 +9,7 @@ import { connectDatabase } from "src/utils/backend/database"
 export async function run() {
     await connectDatabase()
 
-    schedule.scheduleJob({ second: 0, tz: "Europe/Rome" }, async () => {
+    schedule.scheduleJob(`*/${config.CRON_INTERVAL} * * * *`, { tz: "Europe/Rome" }, async () => {
         try {
             const events = await retrieveEvents("OffchainGroupUpdated")
 

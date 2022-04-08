@@ -1,22 +1,19 @@
-import { useToast } from "@chakra-ui/react"
 import { OAuthProvider } from "@interep/reputation"
-import createIdentity from "@interep/identity"
-import { Signer } from "ethers"
 import { useCallback, useState } from "react"
+import config from "src/config"
 import { Group, Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
 import useInterepAPI from "./useInterepAPI"
+import useToast from "./useToast"
 
 type ReturnParameters = {
     hasJoinedAGroup: (provider: OAuthProvider) => Promise<boolean | null>
     getGroup: (provider: Provider, groupName: string) => Promise<Group | null>
-    signMessage: (signer: Signer, message: string) => Promise<string | null>
-    retrieveIdentityCommitment: (signer: Signer, provider: Provider) => Promise<string | null>
+    getGroups: () => Promise<Group[] | null>
     hasIdentityCommitment: (
         identityCommitment: string,
         provider: Provider,
-        groupName: string,
-        join?: boolean
+        groupName: string
     ) => Promise<boolean | null>
     joinGroup: (identityCommitment: string, provider: Provider, groupName: string, body: any) => Promise<true | null>
     _loading: boolean
@@ -28,7 +25,8 @@ export default function useGroups(): ReturnParameters {
         addIdentityCommitment,
         hasIdentityCommitment: _hasIdentityCommitment,
         hasJoinedAGroup: _hasJoinedAGroup,
-        getGroup: _getGroup
+        getGroup: _getGroup,
+        getGroups: _getGroups
     } = useInterepAPI()
     const toast = useToast()
 
@@ -43,6 +41,7 @@ export default function useGroups(): ReturnParameters {
         }
 
         setLoading(false)
+
         return hasJoinedAGroup
     }, [_hasJoinedAGroup])
 
@@ -66,56 +65,19 @@ export default function useGroups(): ReturnParameters {
         [_getGroup]
     )
 
-    const signMessage = useCallback(
-        async (signer: Signer, message: string): Promise<string | null> => {
-            try {
-                setLoading(true)
+    const getGroups = useCallback(async (): Promise<Group[] | null> => {
+        setLoading(true)
 
-                const signedMessage = await signer.signMessage(message)
+        const groups = await _getGroups()
 
-                setLoading(false)
-                return signedMessage
-            } catch (error) {
-                console.error(error)
+        if (groups === null) {
+            setLoading(false)
+            return null
+        }
 
-                toast({
-                    description: "Your signature is needed to create the identity commitment.",
-                    variant: "subtle",
-                    isClosable: true
-                })
-
-                setLoading(false)
-                return null
-            }
-        },
-        [toast]
-    )
-
-    const retrieveIdentityCommitment = useCallback(
-        async (signer: Signer, provider: Provider): Promise<string | null> => {
-            try {
-                setLoading(true)
-
-                const identity = await createIdentity((message) => signer.signMessage(message), capitalize(provider))
-                const identityCommitment = identity.genIdentityCommitment()
-
-                setLoading(false)
-                return identityCommitment.toString()
-            } catch (error) {
-                console.error(error)
-
-                toast({
-                    description: "Your signature is needed to create the identity commitment.",
-                    variant: "subtle",
-                    isClosable: true
-                })
-
-                setLoading(false)
-                return null
-            }
-        },
-        [toast]
-    )
+        setLoading(false)
+        return groups
+    }, [_getGroups])
 
     const hasIdentityCommitment = useCallback(
         async (identityCommitment: string, provider: Provider, groupName: string): Promise<boolean | null> => {
@@ -133,6 +95,7 @@ export default function useGroups(): ReturnParameters {
             }
 
             setLoading(false)
+
             return hasJoined
         },
         [_hasIdentityCommitment]
@@ -155,11 +118,24 @@ export default function useGroups(): ReturnParameters {
             }
 
             setLoading(false)
+
             toast({
                 description: `You joined the ${capitalize(provider)} group correctly.`,
-                variant: "subtle",
-                isClosable: true
+                status: "success"
             })
+
+            const date = new Date()
+            // Seconds before the next hour.
+            const remainingSeconds = (60 - date.getMinutes()) * 60 + (60 - date.getSeconds())
+            const duration = ((remainingSeconds % (config.CRON_INTERVAL * 60)) + 20) * 1000
+
+            toast({
+                description: `You will be able to use this group in ~${duration / 1000} seconds.`,
+                status: "info",
+                progress: true,
+                duration
+            })
+
             return true
         },
         [toast, addIdentityCommitment]
@@ -168,8 +144,7 @@ export default function useGroups(): ReturnParameters {
     return {
         hasJoinedAGroup,
         getGroup,
-        signMessage,
-        retrieveIdentityCommitment,
+        getGroups,
         hasIdentityCommitment,
         joinGroup,
         _loading

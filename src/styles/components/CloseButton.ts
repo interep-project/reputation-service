@@ -3,10 +3,10 @@ const CloseButton = {
         _focus: {
             boxShadow: "none"
         },
-        borderRadius: "xl"
+        borderRadius: "4px"
     },
     defaultProps: {
-        size: "lg"
+        size: "md"
     }
 }
 

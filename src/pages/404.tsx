@@ -1,15 +1,13 @@
-import { Heading, VStack, Icon } from "@chakra-ui/react"
-import { FaSadTear } from "react-icons/fa"
+import { Container, Heading, Icon } from "@chakra-ui/react"
 import React from "react"
+import { FaSadTear } from "react-icons/fa"
 
-export default function NotFound(): JSX.Element {
+export default function NotFoundPage(): JSX.Element {
     return (
-        <>
-            <VStack h="200px" align="center" justify="center">
-                <Heading as="h2" size="xl">
-                    404 Not Found <Icon boxSize="35px" as={FaSadTear} />
-                </Heading>
-            </VStack>
-        </>
+        <Container flex="1" mb="80px" mt="300px" px="80px" maxW="container.lg">
+            <Heading textAlign="center" as="h2" size="xl">
+                404 Not Found <Icon boxSize="35px" as={FaSadTear} />
+            </Heading>
+        </Container>
     )
 }

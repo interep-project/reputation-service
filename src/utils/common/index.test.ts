@@ -2,6 +2,7 @@ import { Contract, ethers } from "ethers"
 import { ContractName } from "src/config"
 import { getNetworkFullName } from "."
 import capitalize from "./capitalize"
+import formatNumber from "./formatNumber"
 import delay from "./delay"
 import getContractAddress from "./getContractAddress"
 import getContractInstance from "./getContractInstance"
@@ -18,6 +19,26 @@ describe("# utils/common", () => {
             const expectedValue = capitalize("hello world")
 
             expect(expectedValue).toBe("Hello World")
+        })
+    })
+
+    describe("# formatNumber", () => {
+        it("Should format a number", () => {
+            const expectedValue = formatNumber(1234)
+
+            expect(expectedValue).toBe("1.2k")
+        })
+
+        it("Should format a bigger number with 3 digits", () => {
+            const expectedValue = formatNumber(123400, 3)
+
+            expect(expectedValue).toBe("123.4k")
+        })
+
+        it("Should return 0", () => {
+            const expectedValue = formatNumber(0.3, 3)
+
+            expect(expectedValue).toBe("0")
         })
     })
 

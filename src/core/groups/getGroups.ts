@@ -26,7 +26,7 @@ export default async function getGroups(provider?: Provider): Promise<Group[]> {
             return Promise.all(emailDomains.map((emailDomain) => getGroup(provider, emailDomain)))
         }
 
-        const reputationLevels = getReputationLevels(provider)
+        const reputationLevels = getReputationLevels()
 
         return Promise.all(reputationLevels.map((reputation) => getGroup(provider, reputation)))
     }

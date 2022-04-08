@@ -1,17 +1,19 @@
-import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import {
     addIdentityCommitment as _addIdentityCommitment,
     hasJoinedAGroup as _hasJoinedAGroup,
     hasIdentityCommitment as _hasIdentityCommitment,
     getGroup as _getGroup,
+    getGroups as _getGroups,
     sendEmail as _sendEmail
 } from "src/utils/frontend/api"
+import useToast from "./useToast"
 
 type ReturnParameters = {
     addIdentityCommitment: typeof _addIdentityCommitment
     hasIdentityCommitment: typeof _hasIdentityCommitment
     getGroup: typeof _getGroup
+    getGroups: typeof _getGroups
     hasJoinedAGroup: typeof _hasJoinedAGroup
     sendEmail: typeof _sendEmail
 }
@@ -27,7 +29,6 @@ export default function useInterepAPI(): ReturnParameters {
         (message: string) => {
             toast({
                 description: message,
-                variant: "subtle",
                 status: "error"
             })
         },
@@ -41,7 +42,7 @@ export default function useInterepAPI(): ReturnParameters {
             if (typeof response === "number") {
                 switch (response) {
                     case 403:
-                        showErrorMessage("Sorry, it seems you do not have the right permissions.")
+                        showErrorMessage("Sorry, you do not have the right permissions.")
                         break
                     default:
                         showErrorMessage("Sorry, there was an unexpected error.")
@@ -59,6 +60,7 @@ export default function useInterepAPI(): ReturnParameters {
         addIdentityCommitment: (parameters) => handleApiFunction(_addIdentityCommitment, parameters),
         hasIdentityCommitment: (parameters) => handleApiFunction(_hasIdentityCommitment, parameters),
         getGroup: (parameters) => handleApiFunction(_getGroup, parameters),
+        getGroups: () => handleApiFunction(_getGroups),
         hasJoinedAGroup: () => handleApiFunction(_hasJoinedAGroup),
         sendEmail: (parameters) => handleApiFunction(_sendEmail, parameters)
     }

@@ -23,7 +23,7 @@ export default function checkGroup(provider: Provider, name: GroupName): boolean
         return poapGroupNames.indexOf(name as PoapEvent) !== -1
     }
 
-    const reputationLevels = getReputationLevels(provider)
+    const reputationLevels = getReputationLevels()
 
     return reputationLevels.indexOf(name as ReputationLevel) !== -1
 }
