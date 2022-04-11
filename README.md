@@ -37,7 +37,7 @@
             🤝 Code of conduct
         </a>
         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-        <a href="https://t.me/interrep">
+        <a href="https://discord.gg/Tp9He7qws4">
             🗣️ Chat &amp; Support
         </a>
     </h4>
