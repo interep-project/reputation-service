@@ -35,6 +35,9 @@ const Steps = {
                 _highlighted: {
                     borderColor: activeColor
                 }
+            },
+            label: {
+                color: "whiteAlpha.900"
             }
         }
     }
