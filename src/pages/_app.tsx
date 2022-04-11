@@ -10,11 +10,21 @@ import EthereumWalletContext from "src/context/EthereumWalletContext"
 import useEthereumWallet from "src/hooks/useEthereumWallet"
 import theme from "src/styles"
 
-export default function App({ Component, pageProps }: AppProps): JSX.Element {
+function Page({ Component, pageProps }: any) {
     const ethereumWallet = useEthereumWallet()
 
     return (
         <EthereumWalletContext.Provider value={ethereumWallet}>
+            <NavBar />
+            <Component {...pageProps} />
+            <Footer />
+        </EthereumWalletContext.Provider>
+    )
+}
+
+export default function App({ Component, pageProps }: AppProps): JSX.Element {
+    return (
+        <>
             <Head>
                 <title>Interep</title>
                 <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
@@ -23,12 +33,10 @@ export default function App({ Component, pageProps }: AppProps): JSX.Element {
             <NextAuthProvider session={pageProps.session}>
                 <ChakraProvider theme={theme}>
                     <ColorModeProvider options={{ initialColorMode: "dark", useSystemColorMode: false }}>
-                        <NavBar />
-                        <Component {...pageProps} />
-                        <Footer />
+                        <Page Component={Component} pageProps={pageProps} />
                     </ColorModeProvider>
                 </ChakraProvider>
             </NextAuthProvider>
-        </EthereumWalletContext.Provider>
+        </>
     )
 }

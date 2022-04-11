@@ -6,12 +6,14 @@ import { useCallback, useEffect, useState } from "react"
 import { EthereumWalletContextType } from "src/context/EthereumWalletContext"
 import { Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
+import useToast from "./useToast"
 
 export default function useEthereumWallet(): EthereumWalletContextType {
     const [_ethereumProvider, setEthereumProvider] = useState<any>()
     const [_account, setAccount] = useState<string>()
     const [_identityCommitment, setIdentityCommitment] = useState<string>()
     const [_signer, setSigner] = useState<Signer>()
+    const toast = useToast()
 
     useEffect(() => {
         ;(async function IIFE() {
@@ -20,8 +22,6 @@ export default function useEthereumWallet(): EthereumWalletContextType {
 
                 if (ethereumProvider) {
                     setEthereumProvider(ethereumProvider)
-                } else {
-                    console.error("Please install Metamask!")
                 }
             } else {
                 const accounts = await _ethereumProvider.request({ method: "eth_accounts" })
@@ -45,9 +45,18 @@ export default function useEthereumWallet(): EthereumWalletContextType {
         })()
     }, [_ethereumProvider])
 
-    const connect = useCallback(async () => _ethereumProvider.request({ method: "eth_requestAccounts" }), [
-        _ethereumProvider
-    ])
+    const connect = useCallback(async () => {
+        if (!_ethereumProvider) {
+            toast({
+                description: "You need to install Metamask!",
+                status: "error"
+            })
+
+            return
+        }
+
+        await _ethereumProvider.request({ method: "eth_requestAccounts" })
+    }, [toast, _ethereumProvider])
 
     const generateIdentityCommitment = useCallback(
         async (provider: Provider) => {
@@ -66,9 +75,14 @@ export default function useEthereumWallet(): EthereumWalletContextType {
                 setIdentityCommitment(identityCommitment)
             } catch (error) {
                 console.error(error)
+
+                toast({
+                    description: "You need a Semaphore ID to join groups!",
+                    status: "error"
+                })
             }
         },
-        [_signer, _account]
+        [toast, _signer, _account]
     )
 
     const signMessage = useCallback(
