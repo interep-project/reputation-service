@@ -7,10 +7,12 @@ const defaultEnv = {
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
+        /^https:\/\/vercel\.app/,
         /^https:\/\/kovan\.interep\.link/,
         /^https:\/\/interep\.link/,
         /^https:\/\/auti\.sm/,
-        /^https:\/\/www\.auti\.sm/
+        /^https:\/\/www\.auti\.sm/,
+        /^https:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.varcel\.app/
     ]
 }
 
