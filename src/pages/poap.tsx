@@ -1,5 +1,4 @@
 import {
-    Box,
     Container,
     Heading,
     HStack,
@@ -126,9 +125,9 @@ export default function PoapProviderPage(): JSX.Element {
                         get started joining POAP groups.
                     </Text>
                 </VStack>
-                <Box w="600px">
-                    <Image src="./poap-heading.png" alt="POAP" />
-                </Box>
+                <HStack w="700px" justify="center">
+                    <Image src="./poap-illustration.png" alt="POAP" h="150px" />
+                </HStack>
             </HStack>
 
             <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">

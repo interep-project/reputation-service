@@ -1,5 +1,4 @@
 import {
-    Box,
     Container,
     Divider,
     Heading,
@@ -136,9 +135,9 @@ export default function OAuthGroupPage(): JSX.Element {
                         social groups.
                     </Text>
                 </VStack>
-                <Box w="700px">
-                    <Image src="./oauth-heading.png" alt="POAP" />
-                </Box>
+                <HStack w="600px" justify="center">
+                    <Image src="./oauth-illustration.png" alt="POAP" h="120px" />
+                </HStack>
             </HStack>
 
             <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">

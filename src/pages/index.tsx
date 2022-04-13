@@ -1,10 +1,9 @@
 import {
-    Box,
     Container,
     Heading,
-    Image,
     HStack,
     Icon,
+    Image,
     Input,
     InputGroup,
     InputLeftElement,
@@ -119,9 +118,9 @@ export default function OAuthProvidersPage(): JSX.Element {
                         your credentials with Interep.
                     </Text>
                 </VStack>
-                <Box w="700px">
-                    <Image src="./oauth-heading.png" alt="POAP" />
-                </Box>
+                <HStack w="600px" justify="center">
+                    <Image src="./oauth-illustration.png" alt="POAP" h="120px" />
+                </HStack>
             </HStack>
 
             <Steps activeStep={0} colorScheme="background" size="sm" py="4">
