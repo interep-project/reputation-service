@@ -8,8 +8,8 @@ export default function Footer(): JSX.Element {
             <Container my="15px" px="80px" maxW="container.xl">
                 <HStack justify="space-between">
                     <HStack spacing="4">
-                        <Text>Copyright © 2021 Interep</Text>
-                        <Text>|</Text>
+                        <Text color="background.300">© Interep</Text>
+                        <Text color="background.300">|</Text>
                         <Link fontWeight="bold" href="https://interep.link" isExternal>
                             About
                         </Link>
