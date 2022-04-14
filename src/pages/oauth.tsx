@@ -7,6 +7,7 @@ import {
     Image,
     Spinner,
     Table,
+    TableCaption,
     Tbody,
     Td,
     Text,
@@ -183,34 +184,41 @@ export default function OAuthGroupPage(): JSX.Element {
                         </Heading>
 
                         {_reputationCriteria && (
-                            <Table variant="grid" colorScheme="background">
-                                <Thead>
-                                    <Tr>
-                                        <Th />
-                                        {_reputationCriteria.parameters.map((parameter, i) => (
-                                            <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
-                                        ))}
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {_reputationCriteria.reputationLevels
-                                        .filter((reputation) => reputation.name === _group.name)
-                                        .map((reputation, i) => (
-                                            <Tr key={i.toString()}>
-                                                <Td>{capitalize(reputation.name)} group</Td>
-                                                {reputation.rules.map((rule, i) => (
-                                                    <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
-                                                ))}
-                                            </Tr>
-                                        ))}
-                                    <Tr>
-                                        <Td>{session.user.username as string}</Td>
-                                        {_reputationCriteria.parameters.map((parameter, i) => (
-                                            <Td key={i.toString()}>{mapUserParameter(session.user[parameter.name])}</Td>
-                                        ))}
-                                    </Tr>
-                                </Tbody>
-                            </Table>
+                            <>
+                                <Table variant="grid" colorScheme="background">
+                                    {session.user.reputation === ReputationLevel.UNRATED && (
+                                        <TableCaption>Unrated groups are cannot be used in production.</TableCaption>
+                                    )}
+                                    <Thead>
+                                        <Tr>
+                                            <Th />
+                                            {_reputationCriteria.parameters.map((parameter, i) => (
+                                                <Th key={i.toString()}>{parameter.name.replace(/([A-Z])/g, " $1")}</Th>
+                                            ))}
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {_reputationCriteria.reputationLevels
+                                            .filter((reputation) => reputation.name === _group.name)
+                                            .map((reputation, i) => (
+                                                <Tr key={i.toString()}>
+                                                    <Td>{capitalize(reputation.name)} group</Td>
+                                                    {reputation.rules.map((rule, i) => (
+                                                        <Td key={i.toString()}>{mapReputationRule(rule)}</Td>
+                                                    ))}
+                                                </Tr>
+                                            ))}
+                                        <Tr>
+                                            <Td>{session.user.username as string}</Td>
+                                            {_reputationCriteria.parameters.map((parameter, i) => (
+                                                <Td key={i.toString()}>
+                                                    {mapUserParameter(session.user[parameter.name])}
+                                                </Td>
+                                            ))}
+                                        </Tr>
+                                    </Tbody>
+                                </Table>
+                            </>
                         )}
                     </VStack>
                 </HStack>

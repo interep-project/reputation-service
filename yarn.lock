@@ -2012,12 +2012,12 @@
     "@interep/reputation" "^0.1.0"
     mongoose "^5.12.1"
 
-"@interep/db@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@interep/db/-/db-0.2.0.tgz#ec1bdb37c5eb7f6badeaf902c5beab03a55332ca"
-  integrity sha512-UngZ82p9lf7KVQg9mSp2vrQ9DZeotsa19LQNfVAni6kR2+8vNZD4TrotWY2cvCIb1/KDXShg98xnGhTLFr0fdQ==
+"@interep/db@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@interep/db/-/db-0.3.1.tgz#e1888b477c505bbd7e8f2519f5d02eba9ab7b622"
+  integrity sha512-UWyrlLPsaY9dWOb8Kqqf+sNhNgF/19ZT3dU+GXhA+LmPxFeQst2UgpXN3sM+CPLypG74bJpzkI6r6rSaLlYbiA==
   dependencies:
-    "@interep/reputation" "^0.1.0"
+    "@interep/reputation" "^0.4.0"
     mongoose "^5.12.1"
 
 "@interep/identity@^0.1.1":
@@ -2032,10 +2032,10 @@
   resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
   integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
 
-"@interep/reputation@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.3.0.tgz#586b536c206132086f35ed81fd7d14f287093bda"
-  integrity sha512-qdq1mwtlKNCUx8sqShu9+eC/6TvPCyn2XRvdlEQqudyTZUPxkjUXBBI0hUUuG05cUHyB3QK1WQE5csMJk085QA==
+"@interep/reputation@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.4.0.tgz#9bf9a6ece1428e05d24457ba8590d17977ce4808"
+  integrity sha512-tsswlUTX2Fh0+wzUxUT3qRdMTQtLkiwxmTAJzrWUqLxCaM/HzspbHWa8AE1fzkKZUNovzFThB9v4PLurO/gm+A==
 
 "@interep/telegram-bot@^0.2.0":
   version "0.2.0"

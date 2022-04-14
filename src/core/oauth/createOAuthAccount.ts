@@ -9,8 +9,9 @@ import { Account } from "next-auth"
 import { OAuthAccount } from "@interep/db"
 import { User } from "src/types/next-auth"
 import { connectDatabase } from "src/utils/backend/database"
+import { currentNetwork, SupportedChainId } from "src/config"
 
-export default async function createOAuthAccount(user: User, nextAuthAccount: Account): Promise<void> {
+export default async function createOAuthAccount(user: User, nextAuthAccount: Account): Promise<boolean> {
     await connectDatabase()
 
     const provider = nextAuthAccount.provider as OAuthProvider
@@ -26,40 +27,46 @@ export default async function createOAuthAccount(user: User, nextAuthAccount: Ac
             refreshToken: nextAuthAccount.refreshToken
         })
 
-        switch (provider) {
-            case OAuthProvider.GITHUB: {
-                const { proPlan, followers, receivedStars } = user as GithubParameters
+        try {
+            switch (provider) {
+                case OAuthProvider.GITHUB: {
+                    const { proPlan, followers, receivedStars } = user as GithubParameters
 
-                account.reputation = calculateReputation(provider, {
-                    proPlan,
-                    followers,
-                    receivedStars
-                })
+                    account.reputation = calculateReputation(provider, {
+                        proPlan,
+                        followers,
+                        receivedStars
+                    })
 
-                break
+                    break
+                }
+                case OAuthProvider.REDDIT: {
+                    const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
+
+                    account.reputation = calculateReputation(provider, {
+                        premiumSubscription,
+                        karma,
+                        coins,
+                        linkedIdentities
+                    })
+
+                    break
+                }
+                default: {
+                    const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
+
+                    account.reputation = calculateReputation(provider, {
+                        verifiedProfile,
+                        followers,
+                        botometerOverallScore
+                    })
+
+                    break
+                }
             }
-            case OAuthProvider.REDDIT: {
-                const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
-
-                account.reputation = calculateReputation(provider, {
-                    premiumSubscription,
-                    karma,
-                    coins,
-                    linkedIdentities
-                })
-
-                break
-            }
-            default: {
-                const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
-
-                account.reputation = calculateReputation(provider, {
-                    verifiedProfile,
-                    followers,
-                    botometerOverallScore
-                })
-
-                break
+        } catch (error) {
+            if (currentNetwork.chainId === SupportedChainId.ARBITRUM) {
+                return false
             }
         }
     } else {
@@ -68,4 +75,6 @@ export default async function createOAuthAccount(user: User, nextAuthAccount: Ac
     }
 
     await account.save()
+
+    return true
 }
