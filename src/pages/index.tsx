@@ -137,6 +137,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                     </InputLeftElement>
                     <Input
                         colorScheme="primary"
+                        focusBorderColor="primary.500"
                         placeholder="Search"
                         value={_searchValue}
                         onChange={(event) => setSearchValue(event.target.value)}
@@ -147,6 +148,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                     value={_sortingValue}
                     onChange={(event) => setSortingValue(event.target.value)}
                     maxWidth="250px"
+                    focusBorderColor="primary.500"
                 >
                     <option value="1">Most members</option>
                     <option value="2">A-Z</option>
