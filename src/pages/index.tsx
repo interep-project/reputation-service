@@ -77,9 +77,9 @@ export default function OAuthProvidersPage(): JSX.Element {
         (oAuthProviderA: any, oAuthProviderB: any) => {
             switch (_sortingValue) {
                 case "2":
-                    return oAuthProviderA[0].localeCompare(oAuthProviderB.title)
+                    return oAuthProviderA[0].localeCompare(oAuthProviderB[0])
                 case "3":
-                    return oAuthProviderA[0].localeCompare(oAuthProviderA.title)
+                    return oAuthProviderA[0].localeCompare(oAuthProviderA[0])
                 case "1":
                 default:
                     return getTotalGroupSizes(oAuthProviderB) - getTotalGroupSizes(oAuthProviderA)
