@@ -80,7 +80,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                 case "2":
                     return oAuthProviderA[0].localeCompare(oAuthProviderB[0])
                 case "3":
-                    return oAuthProviderA[0].localeCompare(oAuthProviderA[0])
+                    return oAuthProviderB[0].localeCompare(oAuthProviderA[0])
                 case "1":
                 default:
                     return getTotalGroupSizes(oAuthProviderB) - getTotalGroupSizes(oAuthProviderA)
@@ -198,7 +198,7 @@ export default function OAuthProvidersPage(): JSX.Element {
 
             {_reputationCriteria && (
                 <Modal isOpen={isModalOpen} onClose={onModalClose} size="3xl" isCentered>
-                    <ModalOverlay />
+                    <ModalOverlay bg="blackAlpha.700" />
 
                     <ModalContent>
                         <ModalHeader>{capitalize(_reputationCriteria.provider)} group qualifications</ModalHeader>
