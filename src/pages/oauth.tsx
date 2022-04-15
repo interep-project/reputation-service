@@ -138,7 +138,7 @@ export default function OAuthGroupPage(): JSX.Element {
                     </Text>
                 </VStack>
                 <HStack flex="1" justify="center">
-                    <Image src="./oauth-illustration.png" alt="Social network illustration" />
+                    <Image src="./oauth-illustration.svg" alt="Social network illustration" />
                 </HStack>
             </Stack>
 
