@@ -9,6 +9,7 @@ import {
     Select,
     SimpleGrid,
     Skeleton,
+    Stack,
     Text,
     VStack
 } from "@chakra-ui/react"
@@ -114,8 +115,8 @@ export default function PoapProviderPage(): JSX.Element {
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            <HStack mb="6" spacing="10">
-                <VStack align="left">
+            <Stack direction={["column", "column", "row"]} mt="6" spacing="10">
+                <VStack flex="1" align="left">
                     <Heading as="h3" size="lg" mb="2">
                         Anonymously prove you where there
                     </Heading>
@@ -125,17 +126,17 @@ export default function PoapProviderPage(): JSX.Element {
                         get started joining POAP groups.
                     </Text>
                 </VStack>
-                <HStack w="700px" justify="center">
-                    <Image src="./poap-illustration.png" alt="POAP" h="150px" />
+                <HStack flex="1" justify="center">
+                    <Image src="./poap-illustration.svg" alt="POAP illustration" h="150px" />
                 </HStack>
-            </HStack>
+            </Stack>
 
-            <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
+            <Steps activeStep={activeStep} colorScheme="background" size="sm" my="12">
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join POAP groups" />
             </Steps>
 
-            <HStack justify="space-between" mt="6" mb="10">
+            <HStack justify="space-between" mb="10">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />
@@ -169,7 +170,7 @@ export default function PoapProviderPage(): JSX.Element {
                 </Text>
             ) : _poapGroups ? (
                 _poapGroups.length > 0 ? (
-                    <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                    <SimpleGrid minChildWidth="250px" spacing={5}>
                         {_poapGroups
                             .sort(sortCb)
                             .filter(filterCb)

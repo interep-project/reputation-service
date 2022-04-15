@@ -6,6 +6,7 @@ import {
     IconButton,
     Image,
     Spinner,
+    Stack,
     Table,
     TableCaption,
     Tbody,
@@ -125,8 +126,8 @@ export default function OAuthGroupPage(): JSX.Element {
 
             <Divider />
 
-            <HStack my="6" spacing="10">
-                <VStack align="left">
+            <Stack direction={["column", "column", "row"]} mt="6" spacing="10">
+                <VStack flex="1" align="left">
                     <Heading as="h3" size="lg" mb="2">
                         Anonymously use your social reputation on-chain
                     </Heading>
@@ -136,12 +137,12 @@ export default function OAuthGroupPage(): JSX.Element {
                         social groups.
                     </Text>
                 </VStack>
-                <HStack w="600px" justify="center">
-                    <Image src="./oauth-illustration.png" alt="POAP" h="120px" />
+                <HStack flex="1" justify="center">
+                    <Image src="./oauth-illustration.png" alt="Social network illustration" />
                 </HStack>
-            </HStack>
+            </Stack>
 
-            <Steps activeStep={activeStep} colorScheme="background" size="sm" py="4">
+            <Steps activeStep={activeStep} colorScheme="background" size="sm" my="12">
                 <Step label="Authorize provider" />
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join social network group" />
@@ -160,7 +161,7 @@ export default function OAuthGroupPage(): JSX.Element {
                     <Spinner thickness="4px" speed="0.65s" size="xl" />
                 </VStack>
             ) : (
-                <HStack spacing="4" align="start" my="6">
+                <Stack direction={["column", "column", "column", "row"]} spacing="4">
                     <GroupBox>
                         <GroupBoxHeader
                             title={capitalize(_group.name)}
@@ -187,7 +188,7 @@ export default function OAuthGroupPage(): JSX.Element {
                             <>
                                 <Table variant="grid" colorScheme="background">
                                     {session.user.reputation === ReputationLevel.UNRATED && (
-                                        <TableCaption>Unrated groups are cannot be used in production.</TableCaption>
+                                        <TableCaption>Unrated groups cannot be used in production.</TableCaption>
                                     )}
                                     <Thead>
                                         <Tr>
@@ -221,7 +222,7 @@ export default function OAuthGroupPage(): JSX.Element {
                             </>
                         )}
                     </VStack>
-                </HStack>
+                </Stack>
             )}
         </Container>
     )

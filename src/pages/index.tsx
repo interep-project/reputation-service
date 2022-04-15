@@ -16,6 +16,7 @@ import {
     Select,
     SimpleGrid,
     Skeleton,
+    Stack,
     Table,
     Tbody,
     Td,
@@ -107,8 +108,8 @@ export default function OAuthProvidersPage(): JSX.Element {
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            <HStack mb="6" spacing="10">
-                <VStack align="left">
+            <Stack direction={["column", "column", "row"]} spacing="10">
+                <VStack flex="1" align="left">
                     <Heading as="h3" size="lg" mb="2">
                         Anonymously use your social reputation on-chain
                     </Heading>
@@ -118,18 +119,18 @@ export default function OAuthProvidersPage(): JSX.Element {
                         your credentials with Interep.
                     </Text>
                 </VStack>
-                <HStack w="600px" justify="center">
-                    <Image src="./oauth-illustration.png" alt="POAP" h="120px" />
+                <HStack flex="1" justify="center">
+                    <Image src="./oauth-illustration.png" alt="Social network illustration" />
                 </HStack>
-            </HStack>
+            </Stack>
 
-            <Steps activeStep={0} colorScheme="background" size="sm" py="4">
+            <Steps activeStep={0} colorScheme="background" size="sm" my="12">
                 <Step label="Authorize provider" />
                 <Step label="Generate Semaphore ID" />
                 <Step label="Join social network group" />
             </Steps>
 
-            <HStack justify="space-between" mt="6" mb="10">
+            <HStack justify="space-between" mb="10">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />
@@ -154,7 +155,7 @@ export default function OAuthProvidersPage(): JSX.Element {
             </HStack>
 
             {_oAuthProviders ? (
-                <SimpleGrid columns={{ sm: 2, md: 3 }} spacing={5}>
+                <SimpleGrid minChildWidth="325px" spacing={5}>
                     {_oAuthProviders
                         .sort(sortCb)
                         .filter(filterCb)
