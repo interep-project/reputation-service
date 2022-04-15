@@ -89,7 +89,7 @@ export default function NavBar(): JSX.Element {
                                             _identityCommitment ? (
                                                 <FaCheck color="green" />
                                             ) : (
-                                                <Image boxSize="24px" src="./semaphore-icon.png" />
+                                                <Image boxSize="24px" src="./semaphore-icon.svg" />
                                             )
                                         }
                                         onClick={
