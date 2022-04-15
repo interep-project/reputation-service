@@ -3,7 +3,8 @@ import {
     GithubParameters,
     RedditParameters,
     TwitterParameters,
-    OAuthProvider
+    OAuthProvider,
+    ReputationLevel
 } from "@interep/reputation"
 import { Account } from "next-auth"
 import { OAuthAccount } from "@interep/db"
@@ -27,47 +28,46 @@ export default async function createOAuthAccount(user: User, nextAuthAccount: Ac
             refreshToken: nextAuthAccount.refreshToken
         })
 
-        try {
-            switch (provider) {
-                case OAuthProvider.GITHUB: {
-                    const { proPlan, followers, receivedStars } = user as GithubParameters
+        switch (provider) {
+            case OAuthProvider.GITHUB: {
+                const { proPlan, followers, receivedStars } = user as GithubParameters
 
-                    account.reputation = calculateReputation(provider, {
-                        proPlan,
-                        followers,
-                        receivedStars
-                    })
+                account.reputation = calculateReputation(provider, {
+                    proPlan,
+                    followers,
+                    receivedStars
+                })
 
-                    break
-                }
-                case OAuthProvider.REDDIT: {
-                    const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
-
-                    account.reputation = calculateReputation(provider, {
-                        premiumSubscription,
-                        karma,
-                        coins,
-                        linkedIdentities
-                    })
-
-                    break
-                }
-                default: {
-                    const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
-
-                    account.reputation = calculateReputation(provider, {
-                        verifiedProfile,
-                        followers,
-                        botometerOverallScore
-                    })
-
-                    break
-                }
+                break
             }
-        } catch (error) {
-            if (currentNetwork.chainId === SupportedChainId.ARBITRUM) {
-                return false
+            case OAuthProvider.REDDIT: {
+                const { premiumSubscription, karma, coins, linkedIdentities } = user as RedditParameters
+
+                account.reputation = calculateReputation(provider, {
+                    premiumSubscription,
+                    karma,
+                    coins,
+                    linkedIdentities
+                })
+
+                break
             }
+            default: {
+                const { verifiedProfile, followers, botometerOverallScore } = user as TwitterParameters
+
+                account.reputation = calculateReputation(provider, {
+                    verifiedProfile,
+                    followers,
+                    botometerOverallScore
+                })
+
+                break
+            }
+        }
+
+        /* istanbul ignore next */
+        if (currentNetwork.chainId === SupportedChainId.ARBITRUM && account.reputation === ReputationLevel.UNRATED) {
+            return false
         }
     } else {
         account.accessToken = nextAuthAccount.accessToken
