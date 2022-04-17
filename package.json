@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "npm-run-all -p tasks next:start",
-        "dev": "npm-run-all -p tasks next:dev",
+        "dev": "yarn db:reset && npm-run-all -p tasks next:dev",
         "build": "yarn lint && NODE_OPTIONS='--max-old-space-size=1536' next build --debug",
         "analyze": "ANALYZE=true yarn build",
         "script": "node -r dotenv/config -r tsconfig-paths/register -r ts-node/register",
