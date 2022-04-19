@@ -166,6 +166,7 @@ export default function OAuthGroupPage(): JSX.Element {
                         <GroupBoxHeader
                             title={capitalize(_group.name)}
                             icon={oAuthIcons[session.provider]}
+                            iconColor={`${session.user.reputation}.400`}
                             joined={_hasJoined}
                         />
                         <GroupBoxContent group={_group} />
