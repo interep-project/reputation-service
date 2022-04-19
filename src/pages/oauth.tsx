@@ -188,7 +188,10 @@ export default function OAuthGroupPage(): JSX.Element {
                             <>
                                 <Table variant="grid" colorScheme="background">
                                     {session.user.reputation === ReputationLevel.UNRATED && (
-                                        <TableCaption>Unrated groups cannot be used in production.</TableCaption>
+                                        <TableCaption px="0" textAlign="left" fontSize="md" color="secondary.200">
+                                            Unrated identity groups lack anti-sybil properties because there are no
+                                            requirements to join. They are primarily used for testing purposes.
+                                        </TableCaption>
                                     )}
                                     <Thead>
                                         <Tr>
