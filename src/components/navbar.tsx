@@ -3,7 +3,6 @@ import { useSession } from "next-auth/client"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
 import { isBrowser } from "react-device-detect"
-import { FaCheck } from "react-icons/fa"
 import EthereumWalletContext from "src/context/EthereumWalletContext"
 import { Provider } from "src/types/groups"
 import { capitalize } from "src/utils/common"
@@ -82,15 +81,19 @@ export default function NavBar(): JSX.Element {
                                     hasArrow
                                 >
                                     <IconButton
-                                        colorScheme={_identityCommitment ? "gray" : "primary"}
+                                        colorScheme={!_provider || _identityCommitment ? "gray" : "primary"}
+                                        variant={!_provider || _identityCommitment ? "outline" : "solid"}
                                         aria-label="Semaphore ID"
-                                        borderRightWidth={_identityCommitment ? 1 : 0}
+                                        borderRightWidth="0"
                                         icon={
-                                            _identityCommitment ? (
-                                                <FaCheck color="green" />
-                                            ) : (
-                                                <Image boxSize="24px" src="./semaphore-icon.svg" />
-                                            )
+                                            <Image
+                                                boxSize="24px"
+                                                src={
+                                                    !_identityCommitment
+                                                        ? "./semaphore-icon.svg"
+                                                        : "./semaphore-icon-success.svg"
+                                                }
+                                            />
                                         }
                                         onClick={
                                             !_identityCommitment
@@ -103,7 +106,7 @@ export default function NavBar(): JSX.Element {
                                 </Tooltip>
 
                                 <Tooltip label={hasCopied ? "Copied!" : "Copy"} closeOnClick={false} hasArrow>
-                                    <Button onClick={onCopy} onMouseDown={(e) => e.preventDefault()}>
+                                    <Button variant="outline" onClick={onCopy} onMouseDown={(e) => e.preventDefault()}>
                                         {shortenAddress(_account)}
                                     </Button>
                                 </Tooltip>

@@ -61,6 +61,9 @@ const Button = {
                 _active: { bg: `${c}.400` }
             }
         },
+        outline: (): SystemStyleObject => ({
+            color: "whiteAlpha.700"
+        }),
         link: (): SystemStyleObject => ({
             _hover: {
                 textDecoration: "none"
