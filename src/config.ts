@@ -7,11 +7,11 @@ const defaultEnv = {
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
-        /^https:\/\/vercel\.app/,
         /^https:\/\/kovan\.interep\.link/,
-        /^https:\/\/interep\.link/,
+        /^https:\/\/goerli\.interep\.link/,
         /^https:\/\/auti\.sm/,
         /^https:\/\/www\.auti\.sm/,
+        /^https:\/\/vercel\.app/,
         /^https:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.varcel\.app/
     ]
 }
@@ -28,6 +28,7 @@ export enum ContractName {
 
 export enum SupportedChainId {
     LOCALHOST = 31337,
+    GOERLI = 5,
     KOVAN = 42,
     ARBITRUM = 42161
 }
@@ -35,6 +36,9 @@ export enum SupportedChainId {
 export const contractAddresses: Record<number, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
         [ContractName.INTEREP]: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    },
+    [SupportedChainId.GOERLI]: {
+        [ContractName.INTEREP]: "0x181B7f34538cE3BceC68597d4A212aB3f7881648"
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.INTEREP]: "0xF58D3b710cDD337df432e20a806Ad04f6CfE53De"
@@ -48,6 +52,10 @@ export const supportedNetworks: Record<string, NetworkData> = {
     localhost: {
         name: "localhost",
         chainId: SupportedChainId.LOCALHOST
+    },
+    goerli: {
+        name: "goerli",
+        chainId: SupportedChainId.GOERLI
     },
     kovan: {
         name: "kovan",
