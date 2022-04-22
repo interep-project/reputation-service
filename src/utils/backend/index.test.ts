@@ -21,14 +21,14 @@ describe("# utils/backend", () => {
             const { req, res } = createNextMocks({
                 method: "POST",
                 headers: {
-                    origin: "https://interep.link"
+                    origin: "https://goerli.interep.link"
                 }
             })
 
             await runAPIMiddleware(req, res, getCors())
             const expectedValue = res.getHeader("Access-Control-Allow-Origin")
 
-            expect(expectedValue).toBe("https://interep.link")
+            expect(expectedValue).toBe("https://goerli.interep.link")
         })
 
         it("Should fail if the origin is not part of the whitelist", async () => {
