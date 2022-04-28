@@ -51,6 +51,23 @@ export default function OAuthGroupPage(): JSX.Element {
 
     useEffect(() => {
         ;(async () => {
+            if (session) {
+                const reputationCriteria = getReputationCriteria(session.provider)
+
+                setReputationCriteria(reputationCriteria)
+
+                const group = await getGroup(session.provider, session.user.reputation as ReputationLevel)
+
+                if (group) {
+                    setGroup(group)
+                }
+            }
+        })()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session])
+
+    useEffect(() => {
+        ;(async () => {
             if (session && _identityCommitment) {
                 let hasJoined = await hasIdentityCommitment(
                     _identityCommitment,
@@ -69,16 +86,6 @@ export default function OAuthGroupPage(): JSX.Element {
                 }
 
                 setHasJoined(hasJoined)
-
-                const reputationCriteria = getReputationCriteria(session.provider)
-
-                setReputationCriteria(reputationCriteria)
-
-                const group = await getGroup(session.provider, session.user.reputation as ReputationLevel)
-
-                if (group) {
-                    setGroup(group)
-                }
             }
         })()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,10 +158,6 @@ export default function OAuthGroupPage(): JSX.Element {
             {!_account ? (
                 <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
                     You need to connect your wallet!
-                </Text>
-            ) : !_identityCommitment ? (
-                <Text textAlign="center" color="background.400" fontSize="lg" pt="100px">
-                    You need to generate your Semaphore ID!
                 </Text>
             ) : !session || !_group ? (
                 <VStack h="300px" align="center" justify="center">

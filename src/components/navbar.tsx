@@ -101,6 +101,7 @@ export default function NavBar(): JSX.Element {
                                                 : undefined
                                         }
                                         onMouseDown={(e) => e.preventDefault()}
+                                        borderColor={!_provider ? "whiteAlpha.500" : "inherit"}
                                         disabled={!_provider}
                                     />
                                 </Tooltip>
