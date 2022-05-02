@@ -1,4 +1,4 @@
-import { MerkleTreeNode } from "@interep/db"
+import { MerkleTreeNode, MerkleTreeRootBatch } from "@interep/db"
 import config from "src/config"
 import { Group, GroupName, Provider } from "src/types/groups"
 import { defaultIncrementalMerkleTreeRoot } from "src/utils/common/crypto"
@@ -11,7 +11,7 @@ export default async function getGroup(provider: Provider, name: GroupName): Pro
 
     const root = await MerkleTreeNode.findByGroupAndLevelAndIndex({ name, provider }, config.MERKLE_TREE_DEPTH, 0)
 
-    return {
+    const group: Group = {
         provider,
         name,
         depth: config.MERKLE_TREE_DEPTH,
@@ -19,4 +19,16 @@ export default async function getGroup(provider: Provider, name: GroupName): Pro
         size: await MerkleTreeNode.getNumberOfActiveLeaves({ name, provider }),
         numberOfLeaves: await MerkleTreeNode.getNumberOfNodes({ name, provider }, 0)
     }
+
+    const [rootBatch] = await MerkleTreeRootBatch.find({
+        group: { provider, name }
+    })
+        .sort({ "transaction.blockNumber": -1 })
+        .limit(1)
+
+    if (rootBatch && rootBatch.transaction && rootBatch.transaction.hash) {
+        group.onchainRoot = rootBatch.roots[rootBatch.roots.length - 1]
+    }
+
+    return group
 }

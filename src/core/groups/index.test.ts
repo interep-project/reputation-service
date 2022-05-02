@@ -1,3 +1,4 @@
+import { MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { poseidon } from "circomlibjs"
 import config from "src/config"
@@ -71,6 +72,48 @@ describe("# core/groups", () => {
                 size: 10
             })
         })
+
+        it("Should return the group the onchain root", async () => {
+            const rootBatch = (await MerkleTreeRootBatch.findOne({
+                group: { provider: OAuthProvider.TWITTER, name: ReputationLevel.GOLD },
+                transaction: undefined
+            })) as MerkleTreeRootBatchDocument
+
+            rootBatch.transaction = {
+                hash: "0x111",
+                blockNumber: 1
+            }
+
+            await rootBatch.save()
+
+            const idCommitment = poseidon([BigInt(11)]).toString()
+
+            await appendLeaf(OAuthProvider.TWITTER, ReputationLevel.GOLD, idCommitment)
+
+            const rootBatch2 = (await MerkleTreeRootBatch.findOne({
+                group: { provider: OAuthProvider.TWITTER, name: ReputationLevel.GOLD },
+                transaction: undefined
+            })) as MerkleTreeRootBatchDocument
+
+            rootBatch2.transaction = {
+                hash: "0x222",
+                blockNumber: 2
+            }
+
+            await rootBatch2.save()
+
+            const expectedGroup = await getGroup(OAuthProvider.TWITTER, ReputationLevel.GOLD)
+
+            expect(expectedGroup).toStrictEqual({
+                provider: OAuthProvider.TWITTER,
+                name: ReputationLevel.GOLD,
+                depth: config.MERKLE_TREE_DEPTH,
+                root: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
+                onchainRoot: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
+                numberOfLeaves: 11,
+                size: 11
+            })
+        })
     })
 
     describe("# getGroups", () => {
@@ -81,9 +124,10 @@ describe("# core/groups", () => {
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
                 depth: config.MERKLE_TREE_DEPTH,
-                root: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
-                numberOfLeaves: 10,
-                size: 10
+                root: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
+                onchainRoot: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
+                numberOfLeaves: 11,
+                size: 11
             })
         })
     })
