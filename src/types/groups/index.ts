@@ -11,6 +11,7 @@ export type Group = {
     name: GroupName
     depth: number
     root: string
+    onchainRoot?: string
     size: number
     numberOfLeaves: number
 }
