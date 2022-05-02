@@ -1,4 +1,4 @@
-import updateOffchainGroups from "./updateOffchainGroups"
+import updateGroups from "./updateGroups"
 import retrieveEvents from "./retrieveEvents"
 
-export { updateOffchainGroups, retrieveEvents }
+export { updateGroups, retrieveEvents }
