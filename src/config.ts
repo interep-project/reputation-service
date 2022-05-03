@@ -38,7 +38,7 @@ export const contractAddresses: Record<number, Record<ContractName, any>> = {
         [ContractName.INTEREP]: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
     },
     [SupportedChainId.GOERLI]: {
-        [ContractName.INTEREP]: "0x181B7f34538cE3BceC68597d4A212aB3f7881648"
+        [ContractName.INTEREP]: "0x9f44be9F69aF1e049dCeCDb2d9296f36C49Ceafb"
     },
     [SupportedChainId.KOVAN]: {
         [ContractName.INTEREP]: "0xF58D3b710cDD337df432e20a806Ad04f6CfE53De"
