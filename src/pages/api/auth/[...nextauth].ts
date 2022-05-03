@@ -18,7 +18,8 @@ export default NextAuth({
         Providers.GitHub({
             clientId: config.GITHUB_CLIENT_ID || "",
             clientSecret: config.GITHUB_CLIENT_SECRET || "",
-            profile: mapGithubProfile
+            profile: mapGithubProfile,
+            scope: ["read:user"]
         }),
         Providers.Reddit({
             clientId: config.REDDIT_CLIENT_ID || "",
