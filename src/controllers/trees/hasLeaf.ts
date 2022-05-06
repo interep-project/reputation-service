@@ -1,6 +1,5 @@
 import { MerkleTreeNode } from "@interep/db"
 import { NextApiRequest, NextApiResponse } from "next"
-import config from "src/config"
 import { getCors, logger, runAPIMiddleware } from "src/utils/backend"
 import { connectDatabase } from "src/utils/backend/database"
 
@@ -25,7 +24,7 @@ export default async function hasLeafController(req: NextApiRequest, res: NextAp
 
         const rootNode = await MerkleTreeNode.findOne({ hash: root })
 
-        if (!rootNode || rootNode.level !== config.MERKLE_TREE_DEPTH) {
+        if (!rootNode || rootNode.siblingHash) {
             res.status(404).end("The root does not exist")
             return
         }

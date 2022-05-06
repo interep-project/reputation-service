@@ -1,5 +1,4 @@
 import { MerkleTreeZero } from "@interep/db"
-import config from "src/config"
 import { logger } from "src/utils/backend"
 import { poseidon } from "src/utils/common/crypto"
 
@@ -16,7 +15,7 @@ export default async function seedZeroHashes(): Promise<void> {
         zeroHash = zeroHashes[level - 1].hash
     }
 
-    for (level; level < config.MERKLE_TREE_DEPTH; level++) {
+    for (level; level < 32; level++) {
         zeroHash = level === 0 ? zeroHash : poseidon(zeroHash, zeroHash)
 
         await MerkleTreeZero.create({

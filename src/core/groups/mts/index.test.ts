@@ -1,11 +1,11 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
-import config from "src/config"
+import { merkleTreeDepths } from "src/config"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
 import { clearDatabase, connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import { createIncrementalMerkleTree, poseidon } from "src/utils/common/crypto"
-import { appendLeaf, deleteLeaf, createProof } from "."
+import { appendLeaf, createProof, deleteLeaf } from "."
 
 describe("# core/groups/mts", () => {
     const idCommitment = poseidon(2, 1)
@@ -134,7 +134,7 @@ describe("# core/groups/mts", () => {
 
             const expectedValue = await deleteLeaf(provider, reputation, idCommitments[0].toString())
 
-            const tree = createIncrementalMerkleTree()
+            const tree = createIncrementalMerkleTree(provider)
 
             tree.insert(idCommitments[0])
             tree.insert(idCommitments[1])
@@ -173,7 +173,7 @@ describe("# core/groups/mts", () => {
         })
 
         it("Should delete 5 leaves correctly", async () => {
-            const tree = createIncrementalMerkleTree()
+            const tree = createIncrementalMerkleTree(provider)
 
             await seedZeroHashes()
 
@@ -212,7 +212,7 @@ describe("# core/groups/mts", () => {
             await expect(fun).rejects.toThrow("does not exist")
         })
 
-        it(`Should return a proof of ${config.MERKLE_TREE_DEPTH} hashes`, async () => {
+        it(`Should return a proof of ${merkleTreeDepths[provider]} hashes`, async () => {
             await seedZeroHashes()
 
             const idCommitments = []
@@ -225,14 +225,14 @@ describe("# core/groups/mts", () => {
 
             const expectedValue = await createProof(provider, reputation, idCommitments[5])
 
-            expect(expectedValue.siblings).toHaveLength(config.MERKLE_TREE_DEPTH)
-            expect(expectedValue.pathIndices).toHaveLength(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue.siblings).toHaveLength(merkleTreeDepths[provider])
+            expect(expectedValue.pathIndices).toHaveLength(merkleTreeDepths[provider])
         })
 
         it("Should match the proof obtained with the 'incrementalquintree' library", async () => {
             await seedZeroHashes()
 
-            const tree = createIncrementalMerkleTree()
+            const tree = createIncrementalMerkleTree(provider)
             const idCommitments = []
 
             for (let i = 0; i < 10; i++) {

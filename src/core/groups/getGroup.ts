@@ -1,7 +1,7 @@
 import { MerkleTreeNode, MerkleTreeRootBatch } from "@interep/db"
-import config from "src/config"
+import { merkleTreeDepths } from "src/config"
 import { Group, GroupName, Provider } from "src/types/groups"
-import { defaultIncrementalMerkleTreeRoot } from "src/utils/common/crypto"
+import { createIncrementalMerkleTree } from "src/utils/common/crypto"
 import checkGroup from "./checkGroup"
 
 export default async function getGroup(provider: Provider, name: GroupName): Promise<Group> {
@@ -9,13 +9,13 @@ export default async function getGroup(provider: Provider, name: GroupName): Pro
         throw new Error(`The ${provider} ${name} group does not exist`)
     }
 
-    const root = await MerkleTreeNode.findByGroupAndLevelAndIndex({ name, provider }, config.MERKLE_TREE_DEPTH, 0)
+    const root = await MerkleTreeNode.findOne({ group: { provider, name }, siblingHash: undefined })
 
     const group: Group = {
         provider,
         name,
-        depth: config.MERKLE_TREE_DEPTH,
-        root: root ? root.hash : defaultIncrementalMerkleTreeRoot.toString(),
+        depth: merkleTreeDepths[provider],
+        root: root ? root.hash : createIncrementalMerkleTree(provider).root.toString(),
         size: await MerkleTreeNode.getNumberOfActiveLeaves({ name, provider }),
         numberOfLeaves: await MerkleTreeNode.getNumberOfNodes({ name, provider }, 0)
     }

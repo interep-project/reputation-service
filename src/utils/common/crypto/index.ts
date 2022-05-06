@@ -1,5 +1,5 @@
 import sha256 from "./sha256"
 import poseidon from "./poseidon"
-import createIncrementalMerkleTree, { defaultIncrementalMerkleTreeRoot } from "./createMerkleTree"
+import createIncrementalMerkleTree from "./createMerkleTree"
 
-export { sha256, poseidon, createIncrementalMerkleTree, defaultIncrementalMerkleTreeRoot }
+export { sha256, poseidon, createIncrementalMerkleTree }
