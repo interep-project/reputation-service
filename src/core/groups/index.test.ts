@@ -1,7 +1,7 @@
 import { MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
 import { OAuthProvider, ReputationLevel } from "@interep/reputation"
 import { poseidon } from "circomlibjs"
-import config from "src/config"
+import { merkleTreeDepths } from "src/config"
 import { appendLeaf } from "src/core/groups/mts"
 import { PoapEvent } from "src/core/poap"
 import { seedZeroHashes } from "src/utils/backend/seeding"
@@ -45,7 +45,7 @@ describe("# core/groups", () => {
             expect(expectedValue).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                depth: config.MERKLE_TREE_DEPTH,
+                depth: merkleTreeDepths[OAuthProvider.TWITTER],
                 root: "15019797232609675441998260052101280400536945603062888308240081994073687793470",
                 numberOfLeaves: 0,
                 size: 0
@@ -66,7 +66,7 @@ describe("# core/groups", () => {
             expect(expectedGroup).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                depth: config.MERKLE_TREE_DEPTH,
+                depth: merkleTreeDepths[OAuthProvider.TWITTER],
                 root: "2346325402389036006139851956948263441053316394607771938966160513162637822911",
                 numberOfLeaves: 10,
                 size: 10
@@ -107,7 +107,7 @@ describe("# core/groups", () => {
             expect(expectedGroup).toStrictEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                depth: config.MERKLE_TREE_DEPTH,
+                depth: merkleTreeDepths[OAuthProvider.TWITTER],
                 root: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
                 onchainRoot: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
                 numberOfLeaves: 11,
@@ -123,7 +123,7 @@ describe("# core/groups", () => {
             expect(expectedGroups).toContainEqual({
                 provider: OAuthProvider.TWITTER,
                 name: ReputationLevel.GOLD,
-                depth: config.MERKLE_TREE_DEPTH,
+                depth: merkleTreeDepths[OAuthProvider.TWITTER],
                 root: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
                 onchainRoot: "11148132906138131584567320799756324174125089710919999370159441748514793203679",
                 numberOfLeaves: 11,

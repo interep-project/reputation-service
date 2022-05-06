@@ -1,5 +1,6 @@
+import { OAuthProvider } from "@interep/reputation"
 import { IncrementalMerkleTree } from "@zk-kit/incremental-merkle-tree"
-import { createIncrementalMerkleTree, defaultIncrementalMerkleTreeRoot } from "."
+import { createIncrementalMerkleTree } from "."
 import poseidon from "./poseidon"
 import sha256 from "./sha256"
 
@@ -22,14 +23,10 @@ describe("# utils/common/crypto", () => {
 
     describe("# createMerkleTree", () => {
         it("Should create a Merkle tree", () => {
-            const expectedValue = createIncrementalMerkleTree()
+            const expectedValue = createIncrementalMerkleTree(OAuthProvider.TWITTER)
 
             expect(expectedValue).toBeInstanceOf(IncrementalMerkleTree)
             expect(expectedValue.root).toContain("15019797232609")
-        })
-
-        it("Should import the right default Merkle tree root", () => {
-            expect(defaultIncrementalMerkleTreeRoot).toContain("15019797232609")
         })
     })
 })

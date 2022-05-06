@@ -15,7 +15,7 @@ export async function run() {
 
             // Get all the new db root nodes not yet published onchain.
             const merkleRoots = await MerkleTreeNode.find({
-                level: config.MERKLE_TREE_DEPTH,
+                siblingHash: undefined,
                 hash: { $nin: events.map((e) => e.root.toString()) }
             })
 
@@ -41,7 +41,7 @@ export async function run() {
                     await rootBatch.save()
                 }
 
-                logger.info(`The Merkle roots have been published onchain (${merkleRoots.length})`)
+                logger.info(`The Merkle roots have been published on-chain (${merkleRoots.length})`)
             }
         } catch (error: any) {
             logger.error(`Cron error: ${error.message}`)

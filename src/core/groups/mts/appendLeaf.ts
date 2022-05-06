@@ -1,5 +1,5 @@
 import { MerkleTreeNode, MerkleTreeNodeDocument, MerkleTreeRootBatch, MerkleTreeZero } from "@interep/db"
-import config from "src/config"
+import { merkleTreeDepths } from "src/config"
 import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
@@ -23,7 +23,7 @@ export default async function appendLeaf(
     // Get the zero hashes.
     const zeroes = await MerkleTreeZero.find()
 
-    if (!zeroes || zeroes.length !== config.MERKLE_TREE_DEPTH) {
+    if (!zeroes || zeroes.length !== 32) {
         throw new Error(`The zero hashes have not yet been created`)
     }
 
@@ -35,7 +35,7 @@ export default async function appendLeaf(
     let currentIndex = await MerkleTreeNode.getNumberOfNodes({ provider, name }, 0)
 
     /* istanbul ignore next */
-    if (currentIndex >= 2 ** config.MERKLE_TREE_DEPTH) {
+    if (currentIndex >= 2 ** merkleTreeDepths[provider]) {
         throw new Error(`The tree is full`)
     }
 
@@ -46,7 +46,7 @@ export default async function appendLeaf(
         hash: identityCommitment
     })
 
-    for (let level = 0; level < config.MERKLE_TREE_DEPTH; level++) {
+    for (let level = 0; level < merkleTreeDepths[provider]; level++) {
         if (currentIndex % 2 === 0) {
             node.siblingHash = zeroes[level].hash
 

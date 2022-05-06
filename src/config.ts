@@ -1,9 +1,10 @@
+import { OAuthProvider } from "@interep/reputation"
 import getNextConfig from "next/config"
+import { Provider } from "./types/groups"
 import { NetworkData } from "./types/network"
 
 const defaultEnv = {
     CRON_INTERVAL: 1, // Minutes.
-    MERKLE_TREE_DEPTH: 20, // 2^20 = 1048576
     API_WHITELIST: [
         /^http:\/\/localhost/,
         /^http:\/\/127.0.0.1/,
@@ -14,6 +15,15 @@ const defaultEnv = {
         /^https:\/\/vercel\.app/,
         /^https:\/\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.varcel\.app/
     ]
+}
+
+export const merkleTreeDepths: Record<Provider, number> = {
+    [OAuthProvider.TWITTER]: 20,
+    [OAuthProvider.REDDIT]: 20,
+    [OAuthProvider.GITHUB]: 20,
+    telegram: 20,
+    email: 20,
+    poap: 20
 }
 
 export enum Environment {
@@ -33,7 +43,7 @@ export enum SupportedChainId {
     ARBITRUM = 42161
 }
 
-export const contractAddresses: Record<number, Record<ContractName, any>> = {
+export const contractAddresses: Record<SupportedChainId, Record<ContractName, any>> = {
     [SupportedChainId.LOCALHOST]: {
         [ContractName.INTEREP]: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
     },
@@ -112,6 +122,5 @@ export default {
     JWT_SIGNING_PRIVATE_KEY: process.env.JWT_SIGNING_PRIVATE_KEY,
     JWT_SECRET: process.env.JWT_SECRET,
     CRON_INTERVAL: defaultEnv.CRON_INTERVAL,
-    MERKLE_TREE_DEPTH: Number(process.env.MERKLE_TREE_DEPTH) || defaultEnv.MERKLE_TREE_DEPTH,
     API_WHITELIST: defaultEnv.API_WHITELIST
 }

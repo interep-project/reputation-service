@@ -1,5 +1,4 @@
 import { MerkleTreeZero } from "@interep/db"
-import config from "src/config"
 import { connectDatabase, disconnectDatabase } from "src/utils/backend/testingDatabase"
 import seedZeroHashes from "./seedZeroHashes"
 
@@ -13,12 +12,12 @@ describe("# utils/backend/seeding", () => {
     })
 
     describe("# seedZeroHashes", () => {
-        it(`Should add ${config.MERKLE_TREE_DEPTH} zero hashes in the db`, async () => {
+        it(`Should add 32 zero hashes in the db`, async () => {
             await seedZeroHashes()
 
             const expectedValue = await MerkleTreeZero.countDocuments()
 
-            expect(expectedValue).toBe(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue).toBe(32)
         })
 
         it("Should not add any zero hash if they are already there", async () => {
@@ -26,7 +25,7 @@ describe("# utils/backend/seeding", () => {
 
             const expectedValue = await MerkleTreeZero.countDocuments()
 
-            expect(expectedValue).toBe(config.MERKLE_TREE_DEPTH)
+            expect(expectedValue).toBe(32)
         })
     })
 })
