@@ -120,7 +120,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                     </Text>
                 </VStack>
                 <HStack flex="1" justify="center">
-                    <Image src="./oauth-illustration.svg" alt="Social network illustration" />
+                    <Image src="./oauth-illustration.svg" alt="Social network illustration" h="150px" />
                 </HStack>
             </Stack>
 
@@ -130,7 +130,7 @@ export default function OAuthProvidersPage(): JSX.Element {
                 <Step label="Join social network group" />
             </Steps>
 
-            <HStack justify="space-between" mb="10">
+            <HStack justify="space-between" mt="80px" mb="10">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />

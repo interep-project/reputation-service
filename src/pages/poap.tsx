@@ -115,7 +115,7 @@ export default function PoapProviderPage(): JSX.Element {
 
     return (
         <Container flex="1" mb="80px" mt="160px" px="80px" maxW="container.xl">
-            <Stack direction={["column", "column", "row"]} mt="6" spacing="10">
+            <Stack direction={["column", "column", "row"]} spacing="10">
                 <VStack flex="1" align="left">
                     <Heading as="h3" size="lg" mb="2">
                         Anonymously prove you where there
@@ -136,7 +136,7 @@ export default function PoapProviderPage(): JSX.Element {
                 <Step label="Join POAP groups" />
             </Steps>
 
-            <HStack justify="space-between" mb="10">
+            <HStack justify="space-between" mt="80px" mb="10">
                 <InputGroup maxWidth="250px">
                     <InputLeftElement pointerEvents="none">
                         <GoSearch color="gray" />

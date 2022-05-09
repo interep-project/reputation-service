@@ -164,7 +164,7 @@ export default function OAuthGroupPage(): JSX.Element {
                     <Spinner thickness="4px" speed="0.65s" size="xl" />
                 </VStack>
             ) : (
-                <Stack direction={["column", "column", "column", "row"]} spacing="4">
+                <Stack direction={["column", "column", "column", "row"]} mt="80px" spacing="4">
                     <GroupBox>
                         <GroupBoxHeader
                             title={capitalize(_group.name)}
