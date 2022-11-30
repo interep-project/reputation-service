@@ -13,7 +13,7 @@ export default function Footer(): JSX.Element {
                         <Link fontWeight="bold" href="https://interep.link" isExternal>
                             About
                         </Link>
-                        <Link fontWeight="bold" href="https://interep.link/docs" isExternal>
+                        <Link fontWeight="bold" href="https://docs.interep.link" isExternal>
                             Docs
                         </Link>
                     </HStack>
