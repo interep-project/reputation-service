@@ -23,7 +23,7 @@
         "precommit": "lint-staged"
     },
     "engines": {
-        "node": "16.x",
+        "node": "18.x",
         "yarn": "1.x"
     },
     "cacheDirectories": [
