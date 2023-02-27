@@ -68,7 +68,7 @@ export default function useEthereumWallet(): EthereumWalletContextType {
 
             try {
                 const identity = await createIdentity((message) => _signer.signMessage(message), capitalize(provider))
-                const identityCommitment = identity.genIdentityCommitment().toString()
+                const identityCommitment = identity.generateCommitment().toString()
 
                 localStorage.setItem(`ic-${utils.id(provider + _account)}`, identityCommitment)
 
