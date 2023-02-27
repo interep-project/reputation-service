@@ -23,7 +23,7 @@
         "precommit": "lint-staged"
     },
     "engines": {
-        "node": ">=16.x <=18.x",
+        "node": "16.x",
         "yarn": "1.x"
     },
     "cacheDirectories": [
@@ -40,7 +40,6 @@
         "@interep/reputation": "0.4.0",
         "@interep/telegram-bot": "0.2.0",
         "@metamask/detect-provider": "^1.2.0",
-        "@sentry/nextjs": "^6.16.1",
         "@types/cors": "^2.8.12",
         "@types/node-schedule": "^1.3.2",
         "@types/nodemailer": "^6.4.4",
