@@ -12,8 +12,7 @@ const styles: Styles = {
         },
         "#__next": {
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center"
+            flexDirection: "column"
         }
     })
 }

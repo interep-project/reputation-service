@@ -37,7 +37,7 @@
             🤝 Code of conduct
         </a>
         <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-        <a href="https://discord.gg/Tp9He7qws4">
+        <a href="https://appliedzkp.org/discord">
             🗣️ Chat &amp; Support
         </a>
     </h4>

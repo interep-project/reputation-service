@@ -19,7 +19,7 @@ export default function Footer(): JSX.Element {
                     </HStack>
 
                     <HStack spacing={4}>
-                        <Link href="https://discord.gg/Tp9He7qws4" h={5} isExternal>
+                        <Link href="https://appliedzkp.org/discord" h={5} isExternal>
                             <Icon as={FaDiscord} w={5} h={5} />
                         </Link>
                         <Link href="https://github.com/interep-project" h={5} isExternal>
