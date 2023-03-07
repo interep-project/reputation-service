@@ -2073,15 +2073,22 @@
   dependencies:
     "@semaphore-protocol/identity" "2.0.0"
 
-"@interep/reputation@0.4.0", "@interep/reputation@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.4.0.tgz#9bf9a6ece1428e05d24457ba8590d17977ce4808"
-  integrity sha512-tsswlUTX2Fh0+wzUxUT3qRdMTQtLkiwxmTAJzrWUqLxCaM/HzspbHWa8AE1fzkKZUNovzFThB9v4PLurO/gm+A==
+"@interep/reputation@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.5.0.tgz#cb5e1a4ed768744f7de78eed7a97af5791a9999b"
+  integrity sha512-xSvy1MP9iSSVuZf/TnqXWwwsgyjxsc8ZEQNj6eGwVNZA14jB8MQqHxeqzaJ3eQq6WCSI94N109/aAY/EOnjI0Q==
+  dependencies:
+    superstruct "^1.0.3"
 
 "@interep/reputation@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.1.0.tgz#b771898537d375a9920950c81ff93e3c862174ec"
   integrity sha512-bSK8S1ZetMzYyirec57S1lDVRoaS6gysy5ZuSHqvuL9NGdjgSH4I/EWk9gsQ1RdnUOyqSzkULF3oomeDp3VY1w==
+
+"@interep/reputation@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@interep/reputation/-/reputation-0.4.0.tgz#9bf9a6ece1428e05d24457ba8590d17977ce4808"
+  integrity sha512-tsswlUTX2Fh0+wzUxUT3qRdMTQtLkiwxmTAJzrWUqLxCaM/HzspbHWa8AE1fzkKZUNovzFThB9v4PLurO/gm+A==
 
 "@interep/telegram-bot@0.2.0":
   version "0.2.0"
@@ -11170,6 +11177,11 @@ superagent@^5.2.2:
     qs "^6.9.4"
     readable-stream "^3.6.0"
     semver "^7.3.2"
+
+superstruct@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-1.0.3.tgz#de626a5b49c6641ff4d37da3c7598e7a87697046"
+  integrity sha512-8iTn3oSS8nRGn+C2pgXSKPI3jmpm6FExNazNpjvqS6ZUJQCej3PUXEKM8NjHBOs54ExM+LPW/FBRhymrdcCiSg==
 
 supports-color@^2.0.0:
   version "2.0.0"

@@ -37,7 +37,7 @@
         "@fontsource/inter": "^4.5.5",
         "@interep/db": "^0.3.1",
         "@interep/identity": "0.2.0",
-        "@interep/reputation": "0.4.0",
+        "@interep/reputation": "0.5.0",
         "@interep/telegram-bot": "0.2.0",
         "@metamask/detect-provider": "^1.2.0",
         "@octokit/core": "^4.2.0",
