@@ -26,15 +26,15 @@ async function getReputationParamsByGhLogin(login: string) {
         sponsors: { sponsorsCount },
         sponsoring: { sponsoringCount }
     } = user
-    const stars = (user.repositories?.nodes ?? []).reduce(
-        (stars: number, repo: { stars: number }) => stars + repo.stars,
+    const receivedStars = (user.repositories?.nodes ?? []).reduce(
+        (receivedStars: number, repo: { stargazerCount: number }) => receivedStars + repo.stargazerCount,
         0
     )
 
-    return { stars, sponsoringCount, sponsorsCount }
+    return { receivedStars, sponsoringCount, sponsorsCount }
 }
 
-export async function getReputationParamsByToken(token: string) {
+export async function getGhReputationParams(token: string) {
     const login = await getGhLoginByToken(token)
     return getReputationParamsByGhLogin(login)
 }

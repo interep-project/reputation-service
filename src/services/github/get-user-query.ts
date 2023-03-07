@@ -3,7 +3,7 @@ query getUser($login: String!, $cursor: String) {
     user(login: $login) {
         repositories(first: 100, after: $cursor) {
             nodes {
-                stars: stargazerCount
+                stargazerCount
             }
             pageInfo {
                 endCursor
