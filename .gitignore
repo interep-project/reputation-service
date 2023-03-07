@@ -47,3 +47,6 @@ node_modules
 
 # Sentry
 .sentryclirc
+
+# jetbrains IDE
+.idea
