@@ -23,8 +23,8 @@ export async function getGhLoginByToken(token: string) {
 async function getReputationParamsByGhLogin(login: string) {
     const { user } = await octokit.graphql.paginate(getUserQuery, { login })
     const {
-        sponsors: { sponsoringCount },
-        sponsoring: { sponsorsCount }
+        sponsors: { sponsorsCount },
+        sponsoring: { sponsoringCount }
     } = user
     const stars = (user.repositories?.nodes ?? []).reduce(
         (stars: number, repo: { stars: number }) => stars + repo.stars,
