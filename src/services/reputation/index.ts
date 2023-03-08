@@ -4,24 +4,26 @@ import {
     ReputationLevel,
     calculateReputation as calculateProviderReputation
 } from "@interep/reputation"
-import { getGhReputationParams } from "../github"
-import { getRedditReputationParams } from "../reddit"
-import { getTwitterReputationParams } from "../twitter"
+import { getGithubUserByToken } from "../github"
+import { getRedditUserByToken } from "../reddit"
+import { getTwitterUserByToken } from "../twitter"
 
 const FUNCS: {
-    [K in OAuthProvider]: (token: string) => Promise<ProviderParameters>
+    [K in OAuthProvider]: (token: string) => Promise<{ id: string; reputationParams: ProviderParameters }>
 } = {
-    [OAuthProvider.GITHUB]: getGhReputationParams,
-    [OAuthProvider.REDDIT]: getRedditReputationParams,
-    [OAuthProvider.TWITTER]: getTwitterReputationParams
+    [OAuthProvider.GITHUB]: getGithubUserByToken,
+    [OAuthProvider.REDDIT]: getRedditUserByToken,
+    [OAuthProvider.TWITTER]: getTwitterUserByToken
 }
+
 export async function calculateReputation({
     provider,
     token
 }: {
-    provider: Exclude<OAuthProvider, OAuthProvider.TWITTER | OAuthProvider.REDDIT>
+    provider: OAuthProvider
     token: string
-}): Promise<ReputationLevel> {
-    const params = await FUNCS[provider](token)
-    return calculateProviderReputation(provider, params) as ReputationLevel
+}): Promise<{ id: string; reputation: ReputationLevel }> {
+    const { id, reputationParams } = await FUNCS[provider](token)
+    const reputation = calculateProviderReputation(provider, reputationParams) as ReputationLevel
+    return { id, reputation }
 }
