@@ -21,7 +21,8 @@
         "prettier:fix": "prettier -w src",
         "validate": "concurrently tsc 'yarn run lint' 'yarn run prettier'",
         "commit": "cz",
-        "precommit": "lint-staged"
+        "precommit": "lint-staged",
+        "barrels":"barrelsby --config .barrelsby.json"
     },
     "engines": {
         "node": "16.x",
@@ -80,6 +81,7 @@
         "@typescript-eslint/eslint-plugin": "^4.29.3",
         "@typescript-eslint/parser": "^4.29.3",
         "babel-jest": "^26.6.3",
+        "barrelsby": "^2.5.1",
         "chai": "^4.2.0",
         "commitizen": "^4.2.4",
         "concurrently": "^7.6.0",
