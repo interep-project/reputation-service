@@ -3,7 +3,9 @@ import { getBotometerScore } from "../botometer"
 
 const url = "https://api.twitter.com/1.1"
 
-export const getTwitterUserByToken = async (token: string) => {
+async function getPartialTwitterUserByToken(
+    token: string
+): Promise<{ id: string; login: string; reputationParams: Omit<TwitterParameters, "botometerOverallScore"> }> {
     const headers = new Headers({
         Authorization: token
     })
@@ -12,15 +14,22 @@ export const getTwitterUserByToken = async (token: string) => {
         headers
     })
 
-    const { followers_count: followers, screen_name: login, verified: verifiedProfile } = await userResponse.json()
-    return { followers, verifiedProfile, login }
+    const {
+        id_str: id,
+        followers_count: followers,
+        screen_name: login,
+        verified: verifiedProfile
+    } = await userResponse.json()
+    return { id, login, reputationParams: { followers, verifiedProfile } }
 }
 
-export async function getTwitterReputationParams(token: string): Promise<TwitterParameters> {
-    const { followers, verifiedProfile, login } = await getTwitterUserByToken(token)
+export async function getTwitterUserByToken(
+    token: string
+): Promise<{ id: string; reputationParams: TwitterParameters }> {
+    const { id, login, reputationParams } = await getPartialTwitterUserByToken(token)
     const {
         cap: { universal: botometerOverallScore }
     } = await getBotometerScore(login)
 
-    return { followers, verifiedProfile, botometerOverallScore }
+    return { id, reputationParams: { ...reputationParams, botometerOverallScore } }
 }
