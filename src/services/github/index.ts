@@ -3,6 +3,7 @@ import { paginateGraphql } from "@octokit/plugin-paginate-graphql"
 import * as url from "url"
 import { ok } from "assert"
 import { getUserQuery } from "./get-user-query"
+import { GithubParameters } from "@interep/reputation"
 
 ok(process.env.GH_PAT, "GH_PAT is not defined")
 
@@ -34,7 +35,7 @@ async function getReputationParamsByGhLogin(login: string) {
     return { receivedStars, sponsoringCount, sponsorsCount }
 }
 
-export async function getGhReputationParams(token: string) {
+export async function getGhReputationParams(token: string): Promise<GithubParameters> {
     const login = await getGhLoginByToken(token)
     return getReputationParamsByGhLogin(login)
 }
