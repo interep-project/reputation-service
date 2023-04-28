@@ -1,8 +1,0 @@
-{
-    "crons": [
-        {
-            "path": "/api/cron/publish-merkle-roots",
-            "schedule": "*/1 * * * *"
-        }
-    ]
-}

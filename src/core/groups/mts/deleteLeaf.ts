@@ -3,6 +3,7 @@ import { merkleTreeDepths } from "src/config"
 import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
+import publishMerkleRoots from "../publish-merkle-roots"
 
 /**
  * Deletes a leaf from a tree.
@@ -83,6 +84,8 @@ export default async function deleteLeaf(
     rootBatch.roots.push(node.hash)
 
     await rootBatch.save()
+
+    await publishMerkleRoots()
 
     return node.hash
 }

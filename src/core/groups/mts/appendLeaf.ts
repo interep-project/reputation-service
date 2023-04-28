@@ -3,6 +3,7 @@ import { merkleTreeDepths } from "src/config"
 import { checkGroup } from "src/core/groups"
 import { GroupName, Provider } from "src/types/groups"
 import { poseidon } from "src/utils/common/crypto"
+import publishMerkleRoots from "../publish-merkle-roots"
 
 /**
  * Appends a leaf on a tree.
@@ -121,6 +122,8 @@ export default async function appendLeaf(
     rootBatch.roots.push(node.hash)
 
     await rootBatch.save()
+
+    await publishMerkleRoots()
 
     return node.hash
 }

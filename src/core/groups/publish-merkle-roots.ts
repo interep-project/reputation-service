@@ -1,10 +1,9 @@
 import { MerkleTreeNode, MerkleTreeRootBatch, MerkleTreeRootBatchDocument } from "@interep/db"
-import { NextApiRequest, NextApiResponse } from "next"
 import { retrieveEvents, updateGroups } from "src/core/contracts/Interep"
 import { GroupName, Provider } from "src/types/groups"
 import { logger } from "src/utils/backend"
 
-export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
+export default async function publishMerkleRoots() {
     try {
         const events = await retrieveEvents("GroupUpdated")
 
@@ -38,13 +37,7 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
 
             logger.info(`The Merkle roots have been published on-chain (${merkleRoots.length})`)
         }
-
-        res.send({
-            status: 200
-        })
     } catch (error: any) {
-        res.status(500).end()
-
         logger.error(error)
     }
 }
