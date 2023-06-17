@@ -27,5 +27,6 @@
         }
     },
     "exclude": ["node_modules"],
-    "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts", "src/types"]
+    "include": ["**/*.d.ts", "**/*.ts", "*.ts", "**/*.tsx", "*.config.ts", "src/types"],
+    "files": ["node_modules/jest-chain/types/index.d.ts"]
 }

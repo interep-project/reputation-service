@@ -1,15 +1,11 @@
 import { OAuthAccount } from "@interep/db"
-import { calculateReputation, OAuthProvider, ReputationLevel } from "@interep/reputation"
+import { OAuthProvider } from "@interep/reputation"
 import { NextApiRequest, NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { appendLeaf } from "src/core/groups/mts"
-import { getBotometerScore } from "src/services/botometer"
-import { getGithubUserByToken } from "src/services/github"
-import { getRedditUserByToken } from "src/services/reddit"
-import { getTwitterUserByToken } from "src/services/twitter"
+import { calculateReputation } from "src/services"
 import { GroupName } from "src/types/groups"
-import { logger } from "src/utils/backend"
-import { connectDatabase } from "src/utils/backend/database"
+import { connectDatabase, logger } from "src/utils"
 
 export default async function handleOAuthMemberController(req: NextApiRequest, res: NextApiResponse) {
     const provider = req.query?.provider as OAuthProvider
@@ -19,57 +15,8 @@ export default async function handleOAuthMemberController(req: NextApiRequest, r
     const token = req.headers.authorization
 
     if (token) {
-        let reputation: ReputationLevel
-        let providerAccountId: string
-
         try {
-            switch (provider) {
-                case OAuthProvider.GITHUB: {
-                    const { id, plan, followers, receivedStars } = await getGithubUserByToken(token)
-
-                    providerAccountId = id
-                    reputation = calculateReputation(OAuthProvider.GITHUB, {
-                        proPlan: plan.name === "pro",
-                        followers,
-                        receivedStars
-                    })
-
-                    break
-                }
-                case OAuthProvider.REDDIT: {
-                    const {
-                        id,
-                        has_subscribed_to_premium,
-                        total_karma,
-                        coins,
-                        linked_identities
-                    } = await getRedditUserByToken(token)
-
-                    providerAccountId = id
-                    reputation = calculateReputation(OAuthProvider.REDDIT, {
-                        premiumSubscription: has_subscribed_to_premium,
-                        karma: total_karma,
-                        coins,
-                        linkedIdentities: linked_identities.length
-                    })
-
-                    break
-                }
-                default: {
-                    const { id_str, screen_name, followers_count, verified } = await getTwitterUserByToken(token)
-                    const botometerResult = await getBotometerScore(screen_name)
-
-                    providerAccountId = id_str
-                    reputation = calculateReputation(OAuthProvider.TWITTER, {
-                        followers: followers_count,
-                        verifiedProfile: verified,
-                        botometerOverallScore: botometerResult?.display_scores?.universal?.overall
-                    })
-
-                    break
-                }
-            }
-
+            const { id: providerAccountId, reputation } = await calculateReputation({ provider, token })
             await connectDatabase()
 
             let account = await OAuthAccount.findByProviderAccountId(provider, providerAccountId)
@@ -134,6 +81,7 @@ export default async function handleOAuthMemberController(req: NextApiRequest, r
             throw new Error("The account provider is wrong")
         }
 
+        // @ts-expect-error says no overlap between ReputationLevel and GroupName ??
         if (!account.reputation || account.reputation !== name) {
             throw new Error("The account reputation does not match")
         }

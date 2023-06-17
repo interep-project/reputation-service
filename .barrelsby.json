@@ -1,0 +1,6 @@
+{
+  "directory": ["src/services", "src/utils"],
+  "delete": true,
+  "noSemicolon": true,
+  "singleQuotes": true
+}

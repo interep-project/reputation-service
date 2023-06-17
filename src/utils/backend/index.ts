@@ -5,5 +5,15 @@ import logger from "./logger"
 import removeDBFields from "./removeDBFields"
 import runAPIMiddleware from "./runAPIMiddleware"
 import getCors from "./getCors"
+import { connectDatabase } from "./database"
 
-export { getSigner, getProvider, getBackendContractInstance, runAPIMiddleware, logger, removeDBFields, getCors }
+export {
+    connectDatabase,
+    getSigner,
+    getProvider,
+    getBackendContractInstance,
+    runAPIMiddleware,
+    logger,
+    removeDBFields,
+    getCors
+}

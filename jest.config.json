@@ -5,6 +5,7 @@
     "modulePaths": ["<rootDir>"],
     "clearMocks": true,
     "setupFiles": ["dotenv/config"],
+    "setupFilesAfterEnv": ["jest-chain", "./setupJest.ts"],
     "transform": {
         "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest"
     },
